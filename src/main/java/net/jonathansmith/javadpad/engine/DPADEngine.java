@@ -56,8 +56,7 @@ public class DPADEngine extends Observable implements Runnable {
     
     public void init() {
         this.status = true;
-        this.currentRuntime = RuntimeType.DATABASE;
-        this.runtime = null;
+        this.setRuntime(RuntimeType.DATABASE);
     }
     
     @SuppressWarnings({"CallToThreadDumpStack", "SleepWhileInLoop"})

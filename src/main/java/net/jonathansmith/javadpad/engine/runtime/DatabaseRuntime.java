@@ -91,18 +91,8 @@ public class DatabaseRuntime extends RuntimeThread {
 
     @Override
     public void forceShutdown(boolean error) {
-        if (error == true) {
-            this.engine.endRuntime(true);
-            
-        } else {
-            if (this.state == State.CONNECTED) {
-                this.disconnect();
-            }
-            
-            if (this.running) {
-                this.running = false;
-            }
-        }
+        this.running = false;
+        super.end(error);
     }
     
     public State getProgressState() {
@@ -135,10 +125,6 @@ public class DatabaseRuntime extends RuntimeThread {
         config = DatabaseRuntime.addMappings(config);
         
         return config;
-    }
-    
-    private void disconnect() {
-        this.factory.close();
     }
     
     private static Configuration addMappings(Configuration config) {

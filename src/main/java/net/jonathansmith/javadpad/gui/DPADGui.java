@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -361,10 +362,6 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
     
     @Override
     public void run() {
-        // Manual state push for gui setup
-        this.type = this.engine.getCurrentRuntime();
-        
-        this.validateState();
         this.setVisible(true);
     }
     
@@ -386,10 +383,23 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
     
     public void validateState() {
         switch (this.type) {
-            case USER_SELECT:   this.validateUserSelectRuntime();
+            case DATABASE:      this.setCorePanels(this.databasePanel, this.databaseToolbar);
+                                break;
+            
+            case USER_SELECT:   this.setCorePanels(this.userPanel, this.userToolbar);
                                 break;
                 
-            case IDLE:          this.validateIdleRuntime();
+            case IDLE:          this.setCorePanels(this.idlePanel, this.idleToolbar);
+                                if (!this.engine.hasUser) {
+                                    this.newExperiment.setEnabled(false);
+                                    this.loadExperiment.setEnabled(false);
+                                    this.addBatch.setEnabled(false);
+                                    return;
+                                }
+
+                                if (!this.engine.hasExperiment) {
+                                    this.addBatch.setEnabled(false);
+                                }
                                 break;
                 
             default:            
@@ -398,52 +408,26 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
         this.maintainMinimumDividerSizes();
     }
     
-    private void validateIdleRuntime() {
-        // Enable Main Panel
-        this.idlePanel.setVisible(true);
-        this.idleToolbar.setVisible(true);
-        
-        // Disable User Panel
-        this.userPanel.setVisible(false);
-        this.userToolbar.setVisible(false);
-        
-        // Disable LP Panel
-        this.lPPanel.setVisible(false);
-        this.lPToolbar.setVisible(false);
-        
-        // Ensure the components are associated
-        this.displaySplitPane.setLeftComponent(this.idlePanel);
-        this.toolbarSplitPane.setLeftComponent(this.idleToolbar);
-        
-        // Evaluate the button status
-        if (!this.engine.hasUser) {
-            this.newExperiment.setEnabled(false);
-            this.loadExperiment.setEnabled(false);
-            this.addBatch.setEnabled(false);
-            return;
-        }
-        
-        if (!this.engine.hasExperiment) {
-            this.addBatch.setEnabled(false);
-        }
+    private void setCorePanels(JPanel panel, JPanel toolbar) {
+        this.hideAllPanels();
+        panel.setVisible(true);
+        this.displaySplitPane.setLeftComponent(panel);
+        toolbar.setVisible(true);
+        this.toolbarSplitPane.setLeftComponent(toolbar);
     }
     
-    private void validateUserSelectRuntime() {
-        // Diable Main Panel
+    private void hideAllPanels() {
         this.idlePanel.setVisible(false);
         this.idleToolbar.setVisible(false);
         
-        // Enable User Panel
-        this.userPanel.setVisible(true);
-        this.userToolbar.setVisible(true);
+        this.databasePanel.setVisible(false);
+        this.databaseToolbar.setVisible(false);
         
-        // Disable LP Panel
+        this.userPanel.setVisible(false);
+        this.userToolbar.setVisible(false);
+        
         this.lPPanel.setVisible(false);
         this.lPToolbar.setVisible(false);
-        
-        // Ensure the components are associated
-        this.displaySplitPane.setLeftComponent(this.userPanel);
-        this.toolbarSplitPane.setLeftComponent(this.userToolbar);
     }
     
     private void maintainMinimumDividerSizes() {
