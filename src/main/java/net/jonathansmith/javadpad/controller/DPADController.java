@@ -17,6 +17,7 @@
 
 package net.jonathansmith.javadpad.controller;
 
+import net.jonathansmith.javadpad.controller.listener.DatabaseListener;
 import net.jonathansmith.javadpad.controller.listener.RuntimeListener;
 import net.jonathansmith.javadpad.controller.listener.UserListener;
 import net.jonathansmith.javadpad.engine.DPADEngine;
@@ -44,6 +45,7 @@ public class DPADController implements Runnable {
     
     public void init() {
         this.gui.addRuntimeListener(new RuntimeListener(this));
+        this.gui.addDatabaseListener(new DatabaseListener(this));
         this.gui.addUserRuntimeListener(new UserListener(this));
     }
     

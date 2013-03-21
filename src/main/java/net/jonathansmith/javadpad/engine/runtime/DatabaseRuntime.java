@@ -103,8 +103,9 @@ public class DatabaseRuntime extends RuntimeThread {
         this.create = true;
     }
     
-    public void setAttemptConnection() {
+    public void setAttemptConnection(String path) {
         this.state = State.CONNECTING;
+        this.path = path;
     }
     
     private Configuration buildSessionConfiguration() {

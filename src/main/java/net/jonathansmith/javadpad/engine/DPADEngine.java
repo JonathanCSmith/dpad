@@ -101,6 +101,11 @@ public class DPADEngine extends Observable implements Runnable {
         return this.currentRuntime;
     }
     
+    public RuntimeThread getRuntime() {
+        this.logger.info("Retrieving runtime");
+        return this.runtime;
+    }
+    
     public void setRuntime(RuntimeType runtime) {
         if (!this.status) {
             this.logger.severe("Cannot switch runtimes when the engine has crashed");
