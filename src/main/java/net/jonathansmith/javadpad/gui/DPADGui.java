@@ -26,8 +26,8 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.UnsupportedLookAndFeelException;
 
-import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.runtime.RuntimeType;
 import net.jonathansmith.javadpad.gui.handler.LogHandler;
@@ -345,9 +345,15 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
                 }
             }
             
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            DPAD.getInstance().getLogger().severe("Could not instantiate look and feel");
-        }
+        } catch (InstantiationException ex) {
+            this.logger.severe("Look and feel instantiation exception");
+        } catch (IllegalAccessException ex) {
+            this.logger.severe("Illegal access of look and feel");
+        } catch (UnsupportedLookAndFeelException ex) {
+            this.logger.severe("Unsupported look and feel");
+        } catch (ClassNotFoundException ex) {
+            this.logger.severe("Class not found when setting look and feel");
+        } 
         
         this.initComponents();
         this.logger.addLogger(new LogHandler(this));
@@ -460,33 +466,6 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
     
     public void addUserRuntimeListener(ActionListener listener) {
         this.userBack.addActionListener(listener);
-    }
-    
-    public File getFileSystem() {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setDialogTitle("Please select your root directory (database)");
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        
-        try {
-            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-            
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            DPAD.getInstance().getLogger().severe("Could not instantiate look and feel");
-        }
-        
-        chooser.updateUI();
-        int returnValue = chooser.showOpenDialog(null);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            return chooser.getSelectedFile();
-            
-        } else {
-            return null;
-        }
     }
     
     public JButton load;

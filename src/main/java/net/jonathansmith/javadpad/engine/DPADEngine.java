@@ -19,9 +19,11 @@ package net.jonathansmith.javadpad.engine;
 
 import java.util.Observable;
 
-import net.jonathansmith.javadpad.engine.database.ExperimentEntry;
-import net.jonathansmith.javadpad.engine.database.UserEntry;
+import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
+import net.jonathansmith.javadpad.engine.database.entry.ExperimentEntry;
+import net.jonathansmith.javadpad.engine.database.entry.UserEntry;
 import net.jonathansmith.javadpad.engine.runtime.ADRuntime;
+import net.jonathansmith.javadpad.engine.runtime.DatabaseRuntime;
 import net.jonathansmith.javadpad.engine.runtime.LPRuntime;
 import net.jonathansmith.javadpad.engine.runtime.RuntimeThread;
 import net.jonathansmith.javadpad.engine.runtime.RuntimeType;
@@ -46,6 +48,7 @@ public class DPADEngine extends Observable implements Runnable {
     private RuntimeThread runtime;
     private UserEntry user = null;
     private ExperimentEntry experiment = null;
+    private DatabaseConnection session = null;
     
     public DPADEngine(DPADLogger logger) {
         this.logger = logger;
@@ -53,7 +56,7 @@ public class DPADEngine extends Observable implements Runnable {
     
     public void init() {
         this.status = true;
-        this.currentRuntime = RuntimeType.IDLE;
+        this.currentRuntime = RuntimeType.DATABASE;
         this.runtime = null;
     }
     
@@ -116,6 +119,9 @@ public class DPADEngine extends Observable implements Runnable {
         }
         
         switch (runtime) {
+            case DATABASE:              this.runtime = new DatabaseRuntime(this);
+                                        break;
+            
             case USER_SELECT:           this.runtime = new UserRuntime(this);
                                         break;
             
@@ -149,5 +155,9 @@ public class DPADEngine extends Observable implements Runnable {
         
         this.setChanged();
         this.notifyObservers();
+    }
+    
+    public void setDatabaseConnection(DatabaseConnection connection) {
+        this.session = connection;
     }
 }
