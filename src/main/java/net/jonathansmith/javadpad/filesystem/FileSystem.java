@@ -39,13 +39,19 @@ public class FileSystem{
     }
     
     public void setup(File directory) {
-        if (!directory.exists() && !directory.mkdir()) {
-            this.main.getLogger().severe("Could not create database directory");
+        if (!directory.exists()) {
+            this.main.getLogger().severe("Somehow the directory you are working on does not exist");
+            return;
+        }
+        
+        File file = new File(directory, "DPAD");
+        if (!file.exists() && !file.mkdir()) {
+            this.main.getLogger().severe("Could not find or create the DPAD folder");
             return;
         }
         
         this.path = directory.getAbsolutePath();
-        this.parentDir = directory;
+        this.parentDir = file;
         this.initialiseDatabase();
     }
     
@@ -55,24 +61,12 @@ public class FileSystem{
         }
         
         boolean successful = true;
-        if (!this.getPluginDirectory().exists()) {
-            successful &= this.getPluginDirectory().mkdir();
+        if (!this.getLoaderPluginDirectory().exists()) {
+            successful &= this.getLoaderPluginDirectory().mkdir();
         }
         
-        if (!this.getExperimentDirectory().exists()) {
-            successful &= this.getExperimentDirectory().mkdir();
-        }
-        
-        if (!this.getLoadedDataDirectory().exists()) {
-            successful &= this.getLoadedDataDirectory().mkdir();
-        }
-        
-        if (!this.getProcessedDataDirectory().exists()) {
-            successful &= this.getProcessedDataDirectory().mkdir();
-        }
-        
-        if (!this.getAnalysedDataDirectory().exists()) {
-            successful &= this.getAnalysedDataDirectory().mkdir();
+        if (!this.getAnalyserPluginDirectory().exists()) {
+            successful &= this.getAnalyserPluginDirectory().mkdir();
         }
         
         if (successful) {
@@ -80,24 +74,12 @@ public class FileSystem{
         }
     }
     
-    public File getPluginDirectory() {
-        return new File(this.parentDir, "Plugins");
+    public File getLoaderPluginDirectory() {
+        return new File(this.parentDir, "LoadPlugins");
     }
     
-    public File getExperimentDirectory() {
-        return new File(this.parentDir, "Experiments");
-    }
-    
-    public File getLoadedDataDirectory() {
-        return new File(this.parentDir, "Loaded");
-    }
-    
-    public File getProcessedDataDirectory() {
-        return new File(this.parentDir, "Processed");
-    }
-    
-    public File getAnalysedDataDirectory() {
-        return new File(this.parentDir, "Analysed");
+    public File getAnalyserPluginDirectory() {
+        return new File(this.parentDir, "AnalysePlugins");
     }
     
     public boolean isInitialised() {

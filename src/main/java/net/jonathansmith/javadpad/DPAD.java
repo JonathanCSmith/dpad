@@ -20,8 +20,7 @@ import java.io.File;
 
 import java.awt.EventQueue;
 
-import javax.swing.UIManager;
-
+import java.net.URLDecoder;
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.filesystem.FileSystem;
@@ -44,7 +43,7 @@ public class DPAD extends Thread {
     private DPADEngine engine;
     private DPADGui gui;
     private DPADController controller;
-    private FileSystem database;
+    private FileSystem fileSystem;
     
     /**
      * @param args the command line arguments
@@ -84,7 +83,7 @@ public class DPAD extends Thread {
         this.engine = new DPADEngine(this.mainLogger);
         this.gui = new DPADGui(this.mainLogger, this.engine);
         this.controller = new DPADController(this.mainLogger, this.engine, this.gui);
-        this.database = new FileSystem(this);
+        this.fileSystem = new FileSystem(this);
     }
     
     public static DPAD getInstance() {
@@ -98,19 +97,21 @@ public class DPAD extends Thread {
     @SuppressWarnings("CallToThreadDumpStack")
     private void init() {
         try {
-            File file = this.gui.getFileSystem();
-            if (file == null) {
-                this.mainLogger.severe("User failed to provide directory");
-                return;
+            String classPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            
+            File file = new File(classPath);
+            
+            if (classPath.contains(".jar")) {
+                file = file.getParentFile();
             }
             
-            this.database.setup(file);
-            if (!this.database.isInitialised()) {
+            this.fileSystem.setup(file);
+            if (!this.fileSystem.isInitialised()) {
                 this.mainLogger.severe("Failure to validate database");
                 return;
                 
             } else {
-                this.mainLogger.info("Database successfully setup at: " + this.database.getAbsolutePath());
+                this.mainLogger.info("Database successfully setup at: " + this.fileSystem.getAbsolutePath());
             }
             
             this.engine.init();
@@ -156,7 +157,7 @@ public class DPAD extends Thread {
     }
     
     public FileSystem getFileSystem() {
-        return this.database;
+        return this.fileSystem;
     }
     
     public DPADLogger getLogger() {

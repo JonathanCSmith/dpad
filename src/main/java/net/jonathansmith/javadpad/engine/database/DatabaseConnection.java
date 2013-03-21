@@ -16,10 +16,29 @@
  */
 package net.jonathansmith.javadpad.engine.database;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.service.ServiceRegistry;
+
 /**
  *
  * @author Jon
  */
-public class UserEntry {
+public class DatabaseConnection {
     
+    public SessionFactory factory;
+    public ServiceRegistry registry;
+    
+    public DatabaseConnection(SessionFactory factory, ServiceRegistry registry) {
+        this.factory = factory;
+        this.registry = registry;
+    }
+    
+    public void savePojo(Object obj) {
+        Session sess = this.factory.getCurrentSession();
+        sess.beginTransaction();
+        sess.save(obj);
+        sess.getTransaction().commit();
+        sess.close();
+    }
 }
