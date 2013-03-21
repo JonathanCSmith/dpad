@@ -135,8 +135,8 @@ public class DPAD extends Thread {
                 throw new RuntimeException();
             }
             
-            EventQueue.invokeLater(this.gui);
             this.engine.run();
+            EventQueue.invokeLater(this.gui);
             this.controller.run();
             
             this.mainLogger.info("Threads started: idling in main");
