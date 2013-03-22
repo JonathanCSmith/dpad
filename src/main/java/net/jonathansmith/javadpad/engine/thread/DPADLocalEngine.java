@@ -78,7 +78,7 @@ public class DPADLocalEngine extends DPADEngine {
             }
             
             if (!this.running) {
-                this.runtime.run();
+                this.runtime.start();
                 this.running = true;
                 
             } else {
