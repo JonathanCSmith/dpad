@@ -15,24 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jonathansmith.javadpad.engine.runtime;
+package net.jonathansmith.javadpad.engine.process;
 
-import net.jonathansmith.javadpad.engine.DPADLocalEngine;
+import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
 
 /**
- * ADRuntime
+ * LPRuntime
  *
  * @author Jonathan Smith
  */
-public class ADRuntime extends RuntimeThread {
+public class LPRuntime extends RuntimeThread {
     
-    public ADRuntime(DPADLocalEngine engine) {
+    public LPRuntime(DPADLocalEngine engine) {
         super(engine);
     }
 
     @Override
     public void init() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void run() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

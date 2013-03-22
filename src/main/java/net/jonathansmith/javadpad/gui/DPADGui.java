@@ -29,7 +29,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import net.jonathansmith.javadpad.engine.DPADEngine;
-import net.jonathansmith.javadpad.engine.DPADLocalEngine;
+import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import static net.jonathansmith.javadpad.util.RuntimeType.IDLE_LOCAL;
 import net.jonathansmith.javadpad.gui.handler.LogHandler;
