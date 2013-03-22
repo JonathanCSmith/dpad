@@ -14,31 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.engine;
-
-import java.util.Observable;
-
-import net.jonathansmith.javadpad.util.RuntimeType;
-import net.jonathansmith.javadpad.util.DPADLogger;
-import net.jonathansmith.javadpad.util.ThreadType;
+package net.jonathansmith.javadpad.util;
 
 /**
  *
  * @author Jon
  */
-public abstract class DPADEngine extends Observable implements Runnable {
+public enum ThreadType {
     
-    public DPADLogger logger;
+    LOCAL,
+    HOST,
+    CLIENT;
     
-    public DPADEngine(DPADLogger logger) {
-        this.logger = logger;
-    }
-    
-    public abstract void init();
-    
-    public abstract ThreadType getThreadType();
-    public abstract RuntimeType getCurrentRuntime();
-    public abstract void sendQuitToRuntime();
-    public abstract void quitEngine();
-    public abstract void runtimeFinished(boolean status);
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2013 Jon
+/* 
+ * Copyright (C) 2013 Jonathan Smith
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,39 +14,49 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package net.jonathansmith.javadpad.controller.listener;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import net.jonathansmith.javadpad.controller.DPADController;
-import net.jonathansmith.javadpad.engine.thread.DPADConnectEngine;
-import net.jonathansmith.javadpad.engine.thread.DPADHostEngine;
+import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
+import net.jonathansmith.javadpad.util.RuntimeType;
 
 /**
+ * RuntimeListener
  *
- * @author Jon
+ * @author Jonathan Smith
  */
 public class ClientMainPanelListener implements ActionListener {
     
-    private DPADController parent;
+    private DPADController controller;
     
     public ClientMainPanelListener(DPADController controller) {
-        this.parent = controller;
+        this.controller = controller;
     }
     
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (evt.getSource() == this.parent.getGui().localRuntime) {
-            this.parent.setEngine(new DPADLocalEngine(this.parent.logger));
+        DPADEngine engine = this.controller.getEngine();
+        if (engine == null || !(engine instanceof DPADLocalEngine)) {
+            return;
         }
         
-        else if (evt.getSource() == this.parent.getGui().hostRuntime) {
-            this.parent.setEngine(new DPADHostEngine(this.parent.logger));
+        DPADLocalEngine local = (DPADLocalEngine) engine;
+        
+        if (evt.getSource() == this.controller.getGui().load) {
+            local.setRuntime(RuntimeType.LOAD_AND_PROCESS);
+        } 
+
+        else if (evt.getSource() == this.controller.getGui().analyse) {
+            local.setRuntime(RuntimeType.ANALYSE_AND_DISPLAY);
         }
         
-        else if (evt.getSource() == this.parent.getGui().connectRuntime) {
-            this.parent.setEngine(new DPADConnectEngine(this.parent.logger));
+        else if (evt.getSource() == this.controller.getGui().user) {
+            local.setRuntime(RuntimeType.USER_SELECT);
         }
     }
 }

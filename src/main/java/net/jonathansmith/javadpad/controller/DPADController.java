@@ -23,13 +23,15 @@ import java.net.URISyntaxException;
 
 import java.awt.EventQueue;
 
-import net.jonathansmith.javadpad.controller.listener.DatabasePanelListener;
 import net.jonathansmith.javadpad.controller.listener.ClientMainPanelListener;
+import net.jonathansmith.javadpad.controller.listener.FileChooserPanelListener;
+import net.jonathansmith.javadpad.controller.listener.StartupPanelListener;
 import net.jonathansmith.javadpad.controller.listener.UserPanelListener;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.gui.DPADGui;
 import net.jonathansmith.javadpad.util.DPADLogger;
+import net.jonathansmith.javadpad.util.ThreadType;
 
 /**
  * DPADController
@@ -57,10 +59,10 @@ public class DPADController extends Thread {
         EventQueue.invokeLater(this.gui);
         this.buildLocalFileSystem();
         
-        this.gui.addRuntimeSelectListener(new ClientMainPanelListener(this));
+        this.gui.addStartupSelectListener(new StartupPanelListener(this));
         
-        this.gui.addMainMenuListener(new DatabasePanelListener(this));
-        this.gui.addUserRuntimeListener(new UserPanelListener(this));
+        
+        
         
         this.initialised = true;
     }
@@ -95,10 +97,27 @@ public class DPADController extends Thread {
             return;
         }
         
+        this.addListeners(eng.getThreadType());
         this.engine = eng;
         this.gui.setEngine(eng);
         this.engine.init();
         this.engine.run();
+    }
+    
+    private void addListeners(ThreadType type) {
+        switch (type) {
+            case LOCAL:             this.gui.addMainMenuListener(new ClientMainPanelListener(this));
+                                    this.gui.addFileChooserListener(new FileChooserPanelListener(this));
+                                    this.gui.addUserRuntimeListener(new UserPanelListener(this));
+                                    break;
+                
+            case CLIENT:            this.gui.addMainMenuListener(new ClientMainPanelListener(this));
+                                    this.gui.addFileChooserListener(new FileChooserPanelListener(this));
+                                    this.gui.addUserRuntimeListener(new UserPanelListener(this));
+                                    break;
+                
+            case HOST:              break;
+        }
     }
     
     private void buildLocalFileSystem() {

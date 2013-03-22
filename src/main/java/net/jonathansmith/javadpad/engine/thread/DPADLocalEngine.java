@@ -28,6 +28,7 @@ import net.jonathansmith.javadpad.engine.process.RuntimeThread;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.engine.process.UserRuntime;
 import net.jonathansmith.javadpad.util.DPADLogger;
+import net.jonathansmith.javadpad.util.ThreadType;
 
 /**
  * DPADEngine
@@ -144,6 +145,11 @@ public class DPADLocalEngine extends DPADEngine {
         this.setChanged();
         this.notifyObservers();
         this.logger.info("Notified observers of engine changed");
+    }
+
+    @Override
+    public ThreadType getThreadType() {
+        return ThreadType.LOCAL;
     }
     
     @Override
