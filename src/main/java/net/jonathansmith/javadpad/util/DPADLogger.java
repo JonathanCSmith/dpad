@@ -38,6 +38,10 @@ public class DPADLogger {
         this.dpadLogger.log(Level.INFO, "[DPAD] {0}", msg);
     }
     
+    public void warning(String msg) {
+        this.dpadLogger.log(Level.WARNING, "[DPAD] {0}", msg);
+    }
+    
     public void severe(String msg) {
         this.dpadLogger.log(Level.SEVERE, "[DPAD] {0}", msg);
     }

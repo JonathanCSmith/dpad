@@ -17,7 +17,7 @@
 
 package net.jonathansmith.javadpad.engine.runtime;
 
-import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.DPADLocalEngine;
 
 /**
  * ADRuntime
@@ -26,7 +26,7 @@ import net.jonathansmith.javadpad.engine.DPADEngine;
  */
 public class ADRuntime extends RuntimeThread {
     
-    public ADRuntime(DPADEngine engine) {
+    public ADRuntime(DPADLocalEngine engine) {
         super(engine);
     }
 

@@ -4,7 +4,7 @@
  */
 package net.jonathansmith.javadpad.engine.runtime;
 
-import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.DPADLocalEngine;
 import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -36,7 +36,7 @@ public class DatabaseRuntime extends RuntimeThread {
     private ServiceRegistry registry;
     private SessionFactory factory;
     
-    public DatabaseRuntime(DPADEngine parent) {
+    public DatabaseRuntime(DPADLocalEngine parent) {
         super(parent);
     }
 

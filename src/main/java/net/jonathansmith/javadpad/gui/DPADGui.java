@@ -29,7 +29,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.DPADLocalEngine;
 import net.jonathansmith.javadpad.engine.runtime.RuntimeType;
 import static net.jonathansmith.javadpad.engine.runtime.RuntimeType.IDLE;
 import net.jonathansmith.javadpad.gui.handler.LogHandler;
@@ -41,7 +41,7 @@ import net.jonathansmith.javadpad.util.DPADLogger;
  */
 public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
 
-    public DPADEngine engine;
+    public DPADLocalEngine engine;
     public DPADLogger logger;
     public RuntimeType type;
     public boolean errored = false;
@@ -49,9 +49,8 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
     /**
      * Creates new form DPADG
      */
-    public DPADGui(DPADLogger logger, DPADEngine engine) {
+    public DPADGui(DPADLogger logger) {
         this.logger = logger;
-        this.engine = engine;
     }
 
     /**
@@ -420,7 +419,7 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
     }// </editor-fold>//GEN-END:initComponents
     
     public void init() {
-        this.engine.addObserver(this);
+        //this.engine.addObserver(this);
         
         try {
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -447,6 +446,18 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
     @Override
     public void run() {
         this.setVisible(true);
+        this.type = RuntimeType.RUNTIME_SELECT;
+        this.validateState();
+    }
+    
+    public void setEngine(DPADLocalEngine engine) {
+        if (this.engine != null) {
+            this.logger.warning("Cannot change the DPAD engine once it has been set");
+            return;
+        }
+        
+        this.engine = engine;
+        this.engine.addObserver(this);
     }
     
     @Override
@@ -467,6 +478,12 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
     
     public void validateState() {
         switch (this.type) {
+            case RUNTIME_SELECT:    this.setCorePanels(this.databasePanel, this.databaseToolbar);
+                                    break;
+            
+            
+            
+            
             case DATABASE:      this.setCorePanels(this.databasePanel, this.databaseToolbar);
                                 break;
                 
@@ -528,7 +545,13 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
         }
     }
     
-    public void addRuntimeListener(ActionListener listener) {
+    public void addRuntimeSelectListener(ActionListener listener) {
+        this.localRuntime.addActionListener(listener);
+        this.hostRuntime.addActionListener(listener);
+        this.connectRuntime.addActionListener(listener);
+    }
+    
+    public void addMainMenuListener(ActionListener listener) {
         this.user.addActionListener(listener);
     }
     
