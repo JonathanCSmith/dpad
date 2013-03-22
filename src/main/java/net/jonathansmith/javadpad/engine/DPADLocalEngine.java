@@ -17,8 +17,6 @@
 
 package net.jonathansmith.javadpad.engine;
 
-import java.util.Observable;
-
 import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
 import net.jonathansmith.javadpad.engine.database.entry.ExperimentEntry;
 import net.jonathansmith.javadpad.engine.database.entry.UserEntry;
@@ -26,7 +24,7 @@ import net.jonathansmith.javadpad.engine.runtime.ADRuntime;
 import net.jonathansmith.javadpad.engine.runtime.DatabaseRuntime;
 import net.jonathansmith.javadpad.engine.runtime.LPRuntime;
 import net.jonathansmith.javadpad.engine.runtime.RuntimeThread;
-import net.jonathansmith.javadpad.engine.runtime.RuntimeType;
+import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.engine.runtime.UserRuntime;
 import net.jonathansmith.javadpad.util.DPADLogger;
 
@@ -35,9 +33,8 @@ import net.jonathansmith.javadpad.util.DPADLogger;
  *
  * @author Jonathan Smith
  */
-public class DPADLocalEngine extends Observable implements Runnable {
+public class DPADLocalEngine extends DPADEngine {
     
-    public DPADLogger logger;
     public boolean status;
     public boolean errored = false;
     public boolean running = false;
@@ -51,12 +48,12 @@ public class DPADLocalEngine extends Observable implements Runnable {
     private DatabaseConnection session = null;
     
     public DPADLocalEngine(DPADLogger logger) {
-        this.logger = logger;
+        super(logger);
     }
     
     public void init() {
         this.status = true;
-        this.setRuntime(RuntimeType.DATABASE);
+        this.setRuntime(RuntimeType.IDLE_LOCAL);
     }
     
     @SuppressWarnings({"CallToThreadDumpStack", "SleepWhileInLoop"})
@@ -69,7 +66,7 @@ public class DPADLocalEngine extends Observable implements Runnable {
                 continue;
             }
             
-            while (this.currentRuntime == RuntimeType.IDLE) {
+            while (this.currentRuntime == RuntimeType.IDLE_LOCAL) {
                 try {
                     Thread.sleep(100);
                 } catch (Throwable t) {
@@ -117,15 +114,12 @@ public class DPADLocalEngine extends Observable implements Runnable {
             return;
         }
         
-        if (this.currentRuntime != RuntimeType.IDLE) {
+        if (this.currentRuntime != RuntimeType.IDLE_LOCAL) {
             this.logger.severe("Cannot change runtime as it is currently in: " + this.currentRuntime.toString());
             return;
         }
         
         switch (runtime) {
-            case DATABASE:              this.runtime = new DatabaseRuntime(this);
-                                        break;
-            
             case USER_SELECT:           this.runtime = new UserRuntime(this);
                                         break;
             
@@ -144,16 +138,17 @@ public class DPADLocalEngine extends Observable implements Runnable {
         this.notifyObservers();
     }
     
-    public void quitCurrentRuntime() {
+    @Override
+    public void sendQuitToRuntime() {
         this.logger.info("Forcing runtime shutdown of current thread, assumed reason: back was called");
-        if (this.currentRuntime != RuntimeType.IDLE) {
+        if (this.currentRuntime != RuntimeType.IDLE_LOCAL) {
             this.runtime.forceShutdown(false);
         }
     }
     
-    public void endRuntime(boolean status) {
+    public void runtimeFinished(boolean status) {
         this.runtime = null;
-        this.currentRuntime = RuntimeType.IDLE;
+        this.currentRuntime = RuntimeType.IDLE_LOCAL;
         this.errored = status;
         this.running = false;
         
@@ -163,5 +158,11 @@ public class DPADLocalEngine extends Observable implements Runnable {
     
     public void setDatabaseConnection(DatabaseConnection connection) {
         this.session = connection;
+    }
+
+    @Override
+    public void quitEngine() {
+        this.sendQuitToRuntime();
+        this.status = false;
     }
 }

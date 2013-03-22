@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2013 Jon
+/* 
+ * Copyright (C) 2013 Jonathan Smith
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,25 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.engine.runtime;
 
-import net.jonathansmith.javadpad.engine.DPADLocalEngine;
+package net.jonathansmith.javadpad.util;
 
 /**
+ * Runtime
  *
- * @author Jon
+ * @author Jonathan Smith
  */
-public abstract class RuntimeThread extends Thread {
+public enum RuntimeType {
+
+    RUNTIME_SELECT,
     
-    public DPADLocalEngine engine;
+    USER_SELECT,
+    LOAD_AND_PROCESS,
+    ANALYSE_AND_DISPLAY,
+    IDLE_LOCAL;
     
-    public RuntimeThread(DPADLocalEngine engine) {
-        this.engine = engine;
-    }
-    
-    public abstract void init();
-    public abstract void forceShutdown(boolean error);
-    public void end(boolean status) {
-        this.engine.runtimeFinished(status);
-    }
 }

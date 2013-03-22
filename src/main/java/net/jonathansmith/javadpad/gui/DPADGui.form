@@ -546,18 +546,33 @@
                               <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jScrollPane1" pref="499" max="32767" attributes="0"/>
                                   <Group type="102" attributes="0">
-                                      <Component id="databaseURLText" max="32767" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="jScrollPane1" pref="499" max="32767" attributes="0"/>
+                                          <Group type="102" alignment="1" attributes="0">
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="databaseURLText" pref="427" max="32767" attributes="0"/>
+                                                  <Component id="localInf" max="32767" attributes="0"/>
+                                              </Group>
+                                              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                  <Component id="localRuntime" linkSize="5" alignment="1" max="32767" attributes="0"/>
+                                                  <Component id="connectRuntime" linkSize="5" alignment="1" max="32767" attributes="0"/>
+                                              </Group>
+                                          </Group>
+                                      </Group>
+                                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="jLabel9" max="32767" attributes="0"/>
                                       <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                                      <Component id="connectDatabase" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                      <Component id="hostRuntime" linkSize="5" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -567,12 +582,21 @@
                               <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="databaseURLText" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="connectDatabase" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="localRuntime" linkSize="6" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="localInf" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="hostRuntime" linkSize="6" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="databaseURLText" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="connectRuntime" linkSize="6" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                               <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="52" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -585,10 +609,10 @@
                     </Component>
                     <Component class="javax.swing.JTextField" name="databaseURLText">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Database URL:"/>
+                        <Property name="text" type="java.lang.String" value="Connect to Database URL:"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JButton" name="connectDatabase">
+                    <Component class="javax.swing.JButton" name="connectRuntime">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Connect"/>
                       </Properties>
@@ -624,6 +648,30 @@
                         </Component>
                       </SubComponents>
                     </Container>
+                    <Component class="javax.swing.JButton" name="localRuntime">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Local"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JTextField" name="localInf">
+                      <Properties>
+                        <Property name="editable" type="boolean" value="false"/>
+                        <Property name="text" type="java.lang.String" value="Create or load a local database (jar location)"/>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="null"/>
+                        </Property>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel9">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Host a TCP database (no user functionality)"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JButton" name="hostRuntime">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Host"/>
+                      </Properties>
+                    </Component>
                   </SubComponents>
                 </Container>
               </SubComponents>

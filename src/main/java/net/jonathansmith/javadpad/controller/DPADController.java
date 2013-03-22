@@ -19,14 +19,14 @@ package net.jonathansmith.javadpad.controller;
 
 import java.io.File;
 
+import java.net.URISyntaxException;
 
 import java.awt.EventQueue;
-import java.net.URISyntaxException;
-import net.jonathansmith.javadpad.controller.listener.DatabaseListener;
+
 import net.jonathansmith.javadpad.controller.listener.RuntimeListener;
 import net.jonathansmith.javadpad.controller.listener.RuntimeSelectListener;
 import net.jonathansmith.javadpad.controller.listener.UserListener;
-import net.jonathansmith.javadpad.engine.DPADLocalEngine;
+import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.gui.DPADGui;
 import net.jonathansmith.javadpad.util.DPADLogger;
@@ -44,7 +44,7 @@ public class DPADController extends Thread {
     
     public boolean errored = false;
     public boolean initialised = false;
-    public DPADLocalEngine engine = null;
+    public DPADEngine engine = null;
     
     public DPADController() {
         this.logger = new DPADLogger();
@@ -60,7 +60,6 @@ public class DPADController extends Thread {
         this.gui.addRuntimeSelectListener(new RuntimeSelectListener(this));
         
         this.gui.addMainMenuListener(new RuntimeListener(this));
-        this.gui.addDatabaseListener(new DatabaseListener(this));
         this.gui.addUserRuntimeListener(new UserListener(this));
         
         this.initialised = true;
@@ -81,6 +80,26 @@ public class DPADController extends Thread {
             this.logger.severe("Main thread interrupted, program will exit");
         }
     }
+
+    public DPADGui getGui() {
+        return this.gui;
+    }
+
+    public DPADEngine getEngine() {
+        return this.engine;
+    }
+    
+    public void setEngine(DPADEngine eng) {
+        if (this.engine != null || eng == null) {
+            this.logger.warning("Cannot change the DPAD engine once it has been set");
+            return;
+        }
+        
+        this.engine = eng;
+        this.gui.setEngine(eng);
+        this.engine.init();
+        this.engine.run();
+    }
     
     private void buildLocalFileSystem() {
         try {
@@ -100,25 +119,5 @@ public class DPADController extends Thread {
         } catch (URISyntaxException ex) {
             this.logger.severe("Could not retrieve path URI, DPAD likely to exit");
         }
-    }
-
-    public DPADGui getGui() {
-        return this.gui;
-    }
-
-    public DPADLocalEngine getEngine() {
-        return this.engine;
-    }
-    
-    public void setEngine(DPADLocalEngine eng) {
-        if (this.engine != null || eng == null) {
-            this.logger.warning("Cannot change the DPAD engine once it has been set");
-            return;
-        }
-        
-        this.engine = eng;
-        this.gui.setEngine(eng);
-        this.engine.init();
-        this.engine.run();
     }
 }

@@ -21,7 +21,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import net.jonathansmith.javadpad.controller.DPADController;
-import net.jonathansmith.javadpad.engine.runtime.RuntimeType;
+import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.DPADLocalEngine;
+import net.jonathansmith.javadpad.util.RuntimeType;
 
 /**
  * RuntimeListener
@@ -38,16 +40,23 @@ public class RuntimeListener implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent evt) {
+        DPADEngine engine = this.controller.getEngine();
+        if (engine == null || !(engine instanceof DPADLocalEngine)) {
+            return;
+        }
+        
+        DPADLocalEngine local = (DPADLocalEngine) engine;
+        
         if (evt.getSource() == this.controller.getGui().load) {
-            this.controller.getEngine().setRuntime(RuntimeType.LOAD_AND_PROCESS);
+            local.setRuntime(RuntimeType.LOAD_AND_PROCESS);
         } 
 
         else if (evt.getSource() == this.controller.getGui().analyse) {
-            this.controller.getEngine().setRuntime(RuntimeType.ANALYSE_AND_DISPLAY);
+            local.setRuntime(RuntimeType.ANALYSE_AND_DISPLAY);
         }
         
         else if (evt.getSource() == this.controller.getGui().user) {
-            this.controller.getEngine().setRuntime(RuntimeType.USER_SELECT);
+            local.setRuntime(RuntimeType.USER_SELECT);
         }
     }
 }

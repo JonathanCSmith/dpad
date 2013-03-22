@@ -16,22 +16,22 @@
  */
 package net.jonathansmith.javadpad.gui;
 
-import java.io.File;
 
 import java.util.Observable;
 import java.util.Observer;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.DPADLocalEngine;
-import net.jonathansmith.javadpad.engine.runtime.RuntimeType;
-import static net.jonathansmith.javadpad.engine.runtime.RuntimeType.IDLE;
+import net.jonathansmith.javadpad.util.RuntimeType;
+import static net.jonathansmith.javadpad.util.RuntimeType.IDLE_LOCAL;
 import net.jonathansmith.javadpad.gui.handler.LogHandler;
 import net.jonathansmith.javadpad.util.DPADLogger;
 
@@ -39,9 +39,9 @@ import net.jonathansmith.javadpad.util.DPADLogger;
  *
  * @author Jonathan Smith
  */
-public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
+public class DPADGui extends JFrame implements Runnable, Observer {
 
-    public DPADLocalEngine engine;
+    public DPADEngine engine;
     public DPADLogger logger;
     public RuntimeType type;
     public boolean errored = false;
@@ -91,9 +91,13 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
         databasePanel = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         databaseURLText = new javax.swing.JTextField();
-        connectDatabase = new javax.swing.JButton();
+        connectRuntime = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        localRuntime = new javax.swing.JButton();
+        localInf = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        hostRuntime = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -350,9 +354,9 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
 
         jLabel8.setText("Database Connection:");
 
-        databaseURLText.setText("Database URL:");
+        databaseURLText.setText("Connect to Database URL:");
 
-        connectDatabase.setText("Connect");
+        connectRuntime.setText("Connect");
 
         jScrollPane1.setBorder(null);
 
@@ -367,6 +371,16 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
         jTextArea1.setCaretColor(new java.awt.Color(240, 240, 240));
         jScrollPane1.setViewportView(jTextArea1);
 
+        localRuntime.setText("Local");
+
+        localInf.setEditable(false);
+        localInf.setText("Create or load a local database (jar location)");
+        localInf.setBorder(null);
+
+        jLabel9.setText("Host a TCP database (no user functionality)");
+
+        hostRuntime.setText("Host");
+
         javax.swing.GroupLayout databasePanelLayout = new javax.swing.GroupLayout(databasePanel);
         databasePanel.setLayout(databasePanelLayout);
         databasePanelLayout.setHorizontalGroup(
@@ -375,28 +389,50 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
                 .addComponent(jLabel8)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(databasePanelLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(10, 10, 10)
                 .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE)
                     .addGroup(databasePanelLayout.createSequentialGroup()
-                        .addComponent(databaseURLText)
+                        .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, databasePanelLayout.createSequentialGroup()
+                                .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(databaseURLText, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+                                    .addComponent(localInf))
+                                .addGap(5, 5, 5)
+                                .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(localRuntime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(connectRuntime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGap(10, 10, 10))
+                    .addGroup(databasePanelLayout.createSequentialGroup()
+                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(5, 5, 5)
-                        .addComponent(connectDatabase)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(hostRuntime)
+                        .addContainerGap())))
         );
+
+        databasePanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {connectRuntime, hostRuntime, localRuntime});
+
         databasePanelLayout.setVerticalGroup(
             databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(databasePanelLayout.createSequentialGroup()
                 .addComponent(jLabel8)
                 .addGap(10, 10, 10)
                 .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(localRuntime)
+                    .addComponent(localInf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(5, 5, 5)
+                .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel9)
+                    .addComponent(hostRuntime))
+                .addGap(5, 5, 5)
+                .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(databaseURLText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(connectDatabase))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(52, Short.MAX_VALUE))
+                    .addComponent(connectRuntime))
+                .addGap(5, 5, 5)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
+
+        databasePanelLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {connectRuntime, hostRuntime, localRuntime});
 
         displaySplitPane.setLeftComponent(databasePanel);
 
@@ -450,7 +486,7 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
         this.validateState();
     }
     
-    public void setEngine(DPADLocalEngine engine) {
+    public void setEngine(DPADEngine engine) {
         if (this.engine != null) {
             this.logger.warning("Cannot change the DPAD engine once it has been set");
             return;
@@ -481,29 +517,23 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
             case RUNTIME_SELECT:    this.setCorePanels(this.databasePanel, this.databaseToolbar);
                                     break;
             
-            
-            
-            
-            case DATABASE:      this.setCorePanels(this.databasePanel, this.databaseToolbar);
-                                break;
-                
-            case IDLE:          this.setCorePanels(this.idlePanel, this.idleToolbar);
-                                if (!this.engine.hasUser) {
-                                    this.newExperiment.setEnabled(false);
-                                    this.loadExperiment.setEnabled(false);
-                                    this.addBatch.setEnabled(false);
-                                    return;
-                                }
+            case IDLE_LOCAL:        this.setCorePanels(this.idlePanel, this.idleToolbar);
+                                    if (!((DPADLocalEngine) this.engine).hasUser) {
+                                        this.newExperiment.setEnabled(false);
+                                        this.loadExperiment.setEnabled(false);
+                                        this.addBatch.setEnabled(false);
+                                        return;
+                                    }
 
-                                if (!this.engine.hasExperiment) {
-                                    this.addBatch.setEnabled(false);
-                                }
-                                break;
+                                    if (!((DPADLocalEngine) this.engine).hasExperiment) {
+                                        this.addBatch.setEnabled(false);
+                                    }
+                                    break;
             
-            case USER_SELECT:   this.setCorePanels(this.userPanel, this.userToolbar);
-                                break;
+            case USER_SELECT:       this.setCorePanels(this.userPanel, this.userToolbar);
+                                    break;
                 
-            default:            
+            default:                break;
         }
         
         this.maintainMinimumDividerSizes();
@@ -560,7 +590,7 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
     }
     
     public void addDatabaseListener(ActionListener listener) {
-        this.connectDatabase.addActionListener(listener);
+        this.connectRuntime.addActionListener(listener);
     }
     
     public JButton load;
@@ -568,13 +598,14 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton addBatch;
-    public javax.swing.JButton connectDatabase;
+    public javax.swing.JButton connectRuntime;
     public javax.swing.JPanel databasePanel;
     public javax.swing.JPanel databaseToolbar;
     public javax.swing.JTextField databaseURLText;
     public javax.swing.JSplitPane displaySplitPane;
     public javax.swing.JPanel headerPanel;
     public javax.swing.JSplitPane headerSplitPane;
+    public javax.swing.JButton hostRuntime;
     public javax.swing.JPanel idlePanel;
     public javax.swing.JPanel idleToolbar;
     public javax.swing.JLabel jLabel1;
@@ -585,11 +616,14 @@ public class DPADGui extends javax.swing.JFrame implements Runnable, Observer {
     public javax.swing.JLabel jLabel6;
     public javax.swing.JLabel jLabel7;
     public javax.swing.JLabel jLabel8;
+    public javax.swing.JLabel jLabel9;
     public javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JTextArea jTextArea1;
     public javax.swing.JPanel lPPanel;
     public javax.swing.JPanel lPToolbar;
     public javax.swing.JButton loadExperiment;
+    public javax.swing.JTextField localInf;
+    public javax.swing.JButton localRuntime;
     public javax.swing.JButton newExperiment;
     public javax.swing.JTextArea textArea;
     public javax.swing.JScrollPane textScroll;
