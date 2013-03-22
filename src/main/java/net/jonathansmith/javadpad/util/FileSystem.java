@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jonathansmith.javadpad.filesystem;
+package net.jonathansmith.javadpad.util;
 
 import java.io.File;
 
-import net.jonathansmith.javadpad.DPAD;
+import net.jonathansmith.javadpad.controller.DPADController;
 
 /**
  * FileSystem
@@ -28,25 +28,25 @@ import net.jonathansmith.javadpad.DPAD;
  */
 public class FileSystem{
     
-    public final DPAD main;
+    public final DPADController controller;
     
     private boolean initialised = false;
     private String path = "";
     private File parentDir;
     
-    public FileSystem(DPAD main) {
-        this.main = main;
+    public FileSystem(DPADController controller) {
+        this.controller = controller;
     }
     
     public void setup(File directory) {
         if (!directory.exists()) {
-            this.main.getLogger().severe("Somehow the directory you are working on does not exist");
+            this.controller.logger.severe("Somehow the directory you are working on does not exist");
             return;
         }
         
         File file = new File(directory, "DPAD");
         if (!file.exists() && !file.mkdir()) {
-            this.main.getLogger().severe("Could not find or create the DPAD folder");
+            this.controller.logger.severe("Could not find or create the DPAD folder");
             return;
         }
         
@@ -82,7 +82,7 @@ public class FileSystem{
         return new File(this.parentDir, "AnalysePlugins");
     }
     
-    public boolean isInitialised() {
+    public boolean isSetup() {
         return this.initialised;
     }
     

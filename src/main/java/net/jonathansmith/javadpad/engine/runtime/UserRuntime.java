@@ -17,7 +17,7 @@
 
 package net.jonathansmith.javadpad.engine.runtime;
 
-import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.DPADLocalEngine;
 
 /**
  * UserRuntime
@@ -28,7 +28,7 @@ public class UserRuntime extends RuntimeThread {
 
     boolean shutdownFlag = false;
     
-    public UserRuntime(DPADEngine engine) {
+    public UserRuntime(DPADLocalEngine engine) {
         super(engine);
     }
     

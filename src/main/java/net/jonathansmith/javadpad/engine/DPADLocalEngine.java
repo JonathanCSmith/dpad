@@ -35,7 +35,7 @@ import net.jonathansmith.javadpad.util.DPADLogger;
  *
  * @author Jonathan Smith
  */
-public class DPADEngine extends Observable implements Runnable {
+public class DPADLocalEngine extends Observable implements Runnable {
     
     public DPADLogger logger;
     public boolean status;
@@ -50,7 +50,7 @@ public class DPADEngine extends Observable implements Runnable {
     private ExperimentEntry experiment = null;
     private DatabaseConnection session = null;
     
-    public DPADEngine(DPADLogger logger) {
+    public DPADLocalEngine(DPADLogger logger) {
         this.logger = logger;
     }
     

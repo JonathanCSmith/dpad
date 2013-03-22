@@ -24,6 +24,8 @@ package net.jonathansmith.javadpad.engine.runtime;
  */
 public enum RuntimeType {
 
+    RUNTIME_SELECT,
+    
     DATABASE,
     USER_SELECT,
     LOAD_AND_PROCESS,

@@ -17,10 +17,17 @@
 
 package net.jonathansmith.javadpad.controller;
 
+import java.io.File;
+
+
+import java.awt.EventQueue;
+import java.net.URISyntaxException;
 import net.jonathansmith.javadpad.controller.listener.DatabaseListener;
 import net.jonathansmith.javadpad.controller.listener.RuntimeListener;
+import net.jonathansmith.javadpad.controller.listener.RuntimeSelectListener;
 import net.jonathansmith.javadpad.controller.listener.UserListener;
-import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.DPADLocalEngine;
+import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.gui.DPADGui;
 import net.jonathansmith.javadpad.util.DPADLogger;
 
@@ -29,36 +36,89 @@ import net.jonathansmith.javadpad.util.DPADLogger;
  *
  * @author Jonathan Smith
  */
-public class DPADController implements Runnable {
+public class DPADController extends Thread {
     
     public final DPADLogger logger;
-    public final DPADEngine engine;
     public final DPADGui gui;
+    public final FileSystem fileSystem;
     
     public boolean errored = false;
+    public boolean initialised = false;
+    public DPADLocalEngine engine = null;
     
-    public DPADController(DPADLogger logger, DPADEngine engine, DPADGui gui) {
-        this.logger = logger;
-        this.engine = engine;
-        this.gui = gui;
+    public DPADController() {
+        this.logger = new DPADLogger();
+        this.gui = new DPADGui(this.logger);
+        this.fileSystem = new FileSystem(this);
     }
     
     public void init() {
-        this.gui.addRuntimeListener(new RuntimeListener(this));
+        this.gui.init();
+        EventQueue.invokeLater(this.gui);
+        this.buildLocalFileSystem();
+        
+        this.gui.addRuntimeSelectListener(new RuntimeSelectListener(this));
+        
+        this.gui.addMainMenuListener(new RuntimeListener(this));
         this.gui.addDatabaseListener(new DatabaseListener(this));
         this.gui.addUserRuntimeListener(new UserListener(this));
+        
+        this.initialised = true;
     }
     
     @Override
     public void run() {
-        
+        try {
+            this.logger.info("Threads started, idling in main");
+            while (!this.errored || !this.gui.isShowing()) {
+                Thread.sleep(100);
+                
+                // Should do error checking and handling here, specific to each
+                // child thread
+            }
+            
+        } catch (InterruptedException ex) {
+            this.logger.severe("Main thread interrupted, program will exit");
+        }
+    }
+    
+    private void buildLocalFileSystem() {
+        try {
+            String classPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            File file = new File(classPath);
+            if (classPath.contains(".jar")) {
+                file = file.getParentFile();
+            }
+            
+            this.fileSystem.setup(file);
+            if (!this.fileSystem.isSetup()) {
+                this.logger.severe("Failure to validate filesystem, program will exit");
+                
+            } else {
+                this.logger.info("File system successfully setup at: " + this.fileSystem.getAbsolutePath());
+            }
+        } catch (URISyntaxException ex) {
+            this.logger.severe("Could not retrieve path URI, DPAD likely to exit");
+        }
     }
 
-    public DPADEngine getEngine() {
+    public DPADGui getGui() {
+        return this.gui;
+    }
+
+    public DPADLocalEngine getEngine() {
         return this.engine;
     }
     
-    public DPADGui getGui() {
-        return this.gui;
+    public void setEngine(DPADLocalEngine eng) {
+        if (this.engine != null || eng == null) {
+            this.logger.warning("Cannot change the DPAD engine once it has been set");
+            return;
+        }
+        
+        this.engine = eng;
+        this.gui.setEngine(eng);
+        this.engine.init();
+        this.engine.run();
     }
 }
