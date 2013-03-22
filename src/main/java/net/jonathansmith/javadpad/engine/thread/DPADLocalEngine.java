@@ -22,7 +22,7 @@ import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
 import net.jonathansmith.javadpad.engine.database.entry.ExperimentEntry;
 import net.jonathansmith.javadpad.engine.database.entry.UserEntry;
 import net.jonathansmith.javadpad.engine.process.ADRuntime;
-import net.jonathansmith.javadpad.engine.process.DatabaseRuntime;
+import net.jonathansmith.javadpad.engine.process.FileDatabaseRuntime;
 import net.jonathansmith.javadpad.engine.process.LPRuntime;
 import net.jonathansmith.javadpad.engine.process.RuntimeThread;
 import net.jonathansmith.javadpad.util.RuntimeType;
@@ -54,7 +54,7 @@ public class DPADLocalEngine extends DPADEngine {
     
     public void init() {
         this.status = true;
-        this.setRuntime(RuntimeType.IDLE_LOCAL);
+        this.setRuntime(RuntimeType.FILE_CONNECT);
     }
     
     @SuppressWarnings({"CallToThreadDumpStack", "SleepWhileInLoop"})
@@ -115,12 +115,16 @@ public class DPADLocalEngine extends DPADEngine {
             return;
         }
         
-        if (this.currentRuntime != RuntimeType.IDLE_LOCAL) {
+        if (this.runtime != null && this.runtime.isAlive()) {
             this.logger.severe("Cannot change runtime as it is currently in: " + this.currentRuntime.toString());
             return;
         }
         
         switch (runtime) {
+            case FILE_CONNECT:         this.runtime = new FileDatabaseRuntime(this);
+                                        break;
+            
+            
             case USER_SELECT:           this.runtime = new UserRuntime(this);
                                         break;
             
@@ -130,13 +134,16 @@ public class DPADLocalEngine extends DPADEngine {
             case ANALYSE_AND_DISPLAY:   this.runtime = new ADRuntime(this);
                                         break;
                 
-            default:                    return;
+            default:                    break;
         }
         
-        this.runtime.init();
+        if (runtime != RuntimeType.IDLE_LOCAL) {
+            this.runtime.init();
+        }
         this.currentRuntime = runtime;
         this.setChanged();
         this.notifyObservers();
+        this.logger.info("Notified observers of engine changed");
     }
     
     @Override

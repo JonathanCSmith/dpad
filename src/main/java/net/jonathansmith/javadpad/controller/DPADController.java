@@ -23,9 +23,9 @@ import java.net.URISyntaxException;
 
 import java.awt.EventQueue;
 
-import net.jonathansmith.javadpad.controller.listener.RuntimeListener;
-import net.jonathansmith.javadpad.controller.listener.RuntimeSelectListener;
-import net.jonathansmith.javadpad.controller.listener.UserListener;
+import net.jonathansmith.javadpad.controller.listener.DatabasePanelListener;
+import net.jonathansmith.javadpad.controller.listener.ClientMainPanelListener;
+import net.jonathansmith.javadpad.controller.listener.UserPanelListener;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.gui.DPADGui;
@@ -57,10 +57,10 @@ public class DPADController extends Thread {
         EventQueue.invokeLater(this.gui);
         this.buildLocalFileSystem();
         
-        this.gui.addRuntimeSelectListener(new RuntimeSelectListener(this));
+        this.gui.addRuntimeSelectListener(new ClientMainPanelListener(this));
         
-        this.gui.addMainMenuListener(new RuntimeListener(this));
-        this.gui.addUserRuntimeListener(new UserListener(this));
+        this.gui.addMainMenuListener(new DatabasePanelListener(this));
+        this.gui.addUserRuntimeListener(new UserPanelListener(this));
         
         this.initialised = true;
     }

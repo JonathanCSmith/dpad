@@ -72,7 +72,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         jLabel7 = new javax.swing.JLabel();
         userToolbar = new javax.swing.JPanel();
         userBack = new javax.swing.JButton();
-        idleToolbar = new javax.swing.JPanel();
+        clientMainToolbar = new javax.swing.JPanel();
         user = new javax.swing.JButton();
         newExperiment = new javax.swing.JButton();
         loadExperiment = new javax.swing.JButton();
@@ -82,7 +82,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         displaySplitPane = new javax.swing.JSplitPane();
         textScroll = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
-        idlePanel = new javax.swing.JPanel();
+        clientMainPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         lPPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -95,9 +95,9 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         localRuntime = new javax.swing.JButton();
-        localInf = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
+        hostInfo = new javax.swing.JLabel();
         hostRuntime = new javax.swing.JButton();
+        localInfo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -204,9 +204,9 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
         toolbarSplitPane.setLeftComponent(userToolbar);
 
-        idleToolbar.setMaximumSize(new java.awt.Dimension(120, 32767));
-        idleToolbar.setMinimumSize(new java.awt.Dimension(120, 406));
-        idleToolbar.setPreferredSize(new java.awt.Dimension(120, 428));
+        clientMainToolbar.setMaximumSize(new java.awt.Dimension(120, 32767));
+        clientMainToolbar.setMinimumSize(new java.awt.Dimension(120, 406));
+        clientMainToolbar.setPreferredSize(new java.awt.Dimension(120, 428));
 
         user.setText("Set User");
         user.setToolTipText("Set the current user, either by creating or loading one in the datase");
@@ -234,16 +234,16 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
         addBatch.setText("Add");
 
-        javax.swing.GroupLayout idleToolbarLayout = new javax.swing.GroupLayout(idleToolbar);
-        idleToolbar.setLayout(idleToolbarLayout);
-        idleToolbarLayout.setHorizontalGroup(
-            idleToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(idleToolbarLayout.createSequentialGroup()
+        javax.swing.GroupLayout clientMainToolbarLayout = new javax.swing.GroupLayout(clientMainToolbar);
+        clientMainToolbar.setLayout(clientMainToolbarLayout);
+        clientMainToolbarLayout.setHorizontalGroup(
+            clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(clientMainToolbarLayout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addGroup(idleToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(addBatch)
-                    .addGroup(idleToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, idleToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addGroup(clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(newExperiment, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(loadExperiment, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -252,11 +252,11 @@ public class DPADGui extends JFrame implements Runnable, Observer {
                 .addGap(5, 5, 5))
         );
 
-        idleToolbarLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addBatch, loadExperiment, newExperiment, user});
+        clientMainToolbarLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addBatch, loadExperiment, newExperiment, user});
 
-        idleToolbarLayout.setVerticalGroup(
-            idleToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(idleToolbarLayout.createSequentialGroup()
+        clientMainToolbarLayout.setVerticalGroup(
+            clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(clientMainToolbarLayout.createSequentialGroup()
                 .addGap(5, 5, 5)
                 .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
@@ -272,9 +272,9 @@ public class DPADGui extends JFrame implements Runnable, Observer {
                 .addContainerGap(270, Short.MAX_VALUE))
         );
 
-        idleToolbarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {addBatch, loadExperiment, newExperiment, user});
+        clientMainToolbarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {addBatch, loadExperiment, newExperiment, user});
 
-        toolbarSplitPane.setLeftComponent(idleToolbar);
+        toolbarSplitPane.setLeftComponent(clientMainToolbar);
 
         displaySplitPane.setDividerLocation(200);
         displaySplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
@@ -293,26 +293,26 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
         displaySplitPane.setRightComponent(textScroll);
 
-        idlePanel.setPreferredSize(new java.awt.Dimension(32767, 32767));
+        clientMainPanel.setPreferredSize(new java.awt.Dimension(32767, 32767));
 
         jLabel1.setText("idle panel");
 
-        javax.swing.GroupLayout idlePanelLayout = new javax.swing.GroupLayout(idlePanel);
-        idlePanel.setLayout(idlePanelLayout);
-        idlePanelLayout.setHorizontalGroup(
-            idlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(idlePanelLayout.createSequentialGroup()
+        javax.swing.GroupLayout clientMainPanelLayout = new javax.swing.GroupLayout(clientMainPanel);
+        clientMainPanel.setLayout(clientMainPanelLayout);
+        clientMainPanelLayout.setHorizontalGroup(
+            clientMainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(clientMainPanelLayout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
-        idlePanelLayout.setVerticalGroup(
-            idlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(idlePanelLayout.createSequentialGroup()
+        clientMainPanelLayout.setVerticalGroup(
+            clientMainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(clientMainPanelLayout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        displaySplitPane.setLeftComponent(idlePanel);
+        displaySplitPane.setLeftComponent(clientMainPanel);
 
         jLabel2.setText("lp panel");
 
@@ -373,13 +373,11 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
         localRuntime.setText("Local");
 
-        localInf.setEditable(false);
-        localInf.setText("Create or load a local database (jar location)");
-        localInf.setBorder(null);
-
-        jLabel9.setText("Host a TCP database (no user functionality)");
+        hostInfo.setText("Host a TCP database (no user functionality)");
 
         hostRuntime.setText("Host");
+
+        localInfo.setText("Create or load a local database (jar location)");
 
         javax.swing.GroupLayout databasePanelLayout = new javax.swing.GroupLayout(databasePanel);
         databasePanel.setLayout(databasePanelLayout);
@@ -393,21 +391,16 @@ public class DPADGui extends JFrame implements Runnable, Observer {
                 .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(databasePanelLayout.createSequentialGroup()
                         .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, databasePanelLayout.createSequentialGroup()
-                                .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(databaseURLText, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
-                                    .addComponent(localInf))
-                                .addGap(5, 5, 5)
-                                .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(localRuntime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(connectRuntime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addGap(10, 10, 10))
-                    .addGroup(databasePanelLayout.createSequentialGroup()
-                        .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(databaseURLText, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE)
+                            .addComponent(hostInfo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(localInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(5, 5, 5)
-                        .addComponent(hostRuntime)
-                        .addContainerGap())))
+                        .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(hostRuntime, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(localRuntime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(connectRuntime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE))
+                .addGap(10, 10, 10))
         );
 
         databasePanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {connectRuntime, hostRuntime, localRuntime});
@@ -419,10 +412,10 @@ public class DPADGui extends JFrame implements Runnable, Observer {
                 .addGap(10, 10, 10)
                 .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(localRuntime)
-                    .addComponent(localInf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(localInfo))
                 .addGap(5, 5, 5)
                 .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
+                    .addComponent(hostInfo)
                     .addComponent(hostRuntime))
                 .addGap(5, 5, 5)
                 .addGroup(databasePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -516,8 +509,11 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         switch (this.type) {
             case RUNTIME_SELECT:    this.setCorePanels(this.databasePanel, this.databaseToolbar);
                                     break;
+                
+            case FILE_CONNECT:      this.setCorePanels(this.fileChooser, this.fileChooser);
+                                    break;
             
-            case IDLE_LOCAL:        this.setCorePanels(this.idlePanel, this.idleToolbar);
+            case IDLE_LOCAL:        this.setCorePanels(this.clientMainPanel, this.clientMainToolbar);
                                     if (!((DPADLocalEngine) this.engine).hasUser) {
                                         this.newExperiment.setEnabled(false);
                                         this.loadExperiment.setEnabled(false);
@@ -548,8 +544,8 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     }
     
     private void hideAllPanels() {
-        this.idlePanel.setVisible(false);
-        this.idleToolbar.setVisible(false);
+        this.clientMainPanel.setVisible(false);
+        this.clientMainToolbar.setVisible(false);
         
         this.databasePanel.setVisible(false);
         this.databaseToolbar.setVisible(false);
@@ -598,6 +594,8 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton addBatch;
+    public javax.swing.JPanel clientMainPanel;
+    public javax.swing.JPanel clientMainToolbar;
     public javax.swing.JButton connectRuntime;
     public javax.swing.JPanel databasePanel;
     public javax.swing.JPanel databaseToolbar;
@@ -605,9 +603,8 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public javax.swing.JSplitPane displaySplitPane;
     public javax.swing.JPanel headerPanel;
     public javax.swing.JSplitPane headerSplitPane;
+    public javax.swing.JLabel hostInfo;
     public javax.swing.JButton hostRuntime;
-    public javax.swing.JPanel idlePanel;
-    public javax.swing.JPanel idleToolbar;
     public javax.swing.JLabel jLabel1;
     public javax.swing.JLabel jLabel2;
     public javax.swing.JLabel jLabel3;
@@ -616,13 +613,12 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public javax.swing.JLabel jLabel6;
     public javax.swing.JLabel jLabel7;
     public javax.swing.JLabel jLabel8;
-    public javax.swing.JLabel jLabel9;
     public javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JTextArea jTextArea1;
     public javax.swing.JPanel lPPanel;
     public javax.swing.JPanel lPToolbar;
     public javax.swing.JButton loadExperiment;
-    public javax.swing.JTextField localInf;
+    public javax.swing.JLabel localInfo;
     public javax.swing.JButton localRuntime;
     public javax.swing.JButton newExperiment;
     public javax.swing.JTextArea textArea;

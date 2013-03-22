@@ -246,7 +246,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="idleToolbar">
+            <Container class="javax.swing.JPanel" name="clientMainToolbar">
               <Properties>
                 <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="[120, 32767]"/>
@@ -428,7 +428,7 @@
                     </Component>
                   </SubComponents>
                 </Container>
-                <Container class="javax.swing.JPanel" name="idlePanel">
+                <Container class="javax.swing.JPanel" name="clientMainPanel">
                   <Properties>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[32767, 32767]"/>
@@ -551,28 +551,20 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jScrollPane1" pref="499" max="32767" attributes="0"/>
-                                          <Group type="102" alignment="1" attributes="0">
-                                              <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="databaseURLText" pref="427" max="32767" attributes="0"/>
-                                                  <Component id="localInf" max="32767" attributes="0"/>
-                                              </Group>
-                                              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                                  <Component id="localRuntime" linkSize="5" alignment="1" max="32767" attributes="0"/>
-                                                  <Component id="connectRuntime" linkSize="5" alignment="1" max="32767" attributes="0"/>
-                                              </Group>
-                                          </Group>
+                                          <Component id="databaseURLText" pref="427" max="32767" attributes="0"/>
+                                          <Component id="hostInfo" alignment="1" max="32767" attributes="0"/>
+                                          <Component id="localInfo" max="32767" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                                  </Group>
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <Component id="jLabel9" max="32767" attributes="0"/>
                                       <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                                      <Component id="hostRuntime" linkSize="5" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="hostRuntime" linkSize="5" alignment="1" min="-2" max="-2" attributes="0"/>
+                                          <Component id="localRuntime" linkSize="5" alignment="1" max="32767" attributes="0"/>
+                                          <Component id="connectRuntime" linkSize="5" alignment="1" max="32767" attributes="0"/>
+                                      </Group>
                                   </Group>
+                                  <Component id="jScrollPane1" pref="499" max="32767" attributes="0"/>
                               </Group>
+                              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -583,11 +575,11 @@
                               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="localRuntime" linkSize="6" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="localInf" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="localInfo" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jLabel9" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="hostInfo" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="hostRuntime" linkSize="6" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
@@ -653,16 +645,7 @@
                         <Property name="text" type="java.lang.String" value="Local"/>
                       </Properties>
                     </Component>
-                    <Component class="javax.swing.JTextField" name="localInf">
-                      <Properties>
-                        <Property name="editable" type="boolean" value="false"/>
-                        <Property name="text" type="java.lang.String" value="Create or load a local database (jar location)"/>
-                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                          <Border info="null"/>
-                        </Property>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="jLabel9">
+                    <Component class="javax.swing.JLabel" name="hostInfo">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Host a TCP database (no user functionality)"/>
                       </Properties>
@@ -670,6 +653,11 @@
                     <Component class="javax.swing.JButton" name="hostRuntime">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Host"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="localInfo">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="Create or load a local database (jar location)"/>
                       </Properties>
                     </Component>
                   </SubComponents>
