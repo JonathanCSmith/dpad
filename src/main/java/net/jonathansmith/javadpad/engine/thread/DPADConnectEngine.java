@@ -19,6 +19,7 @@ package net.jonathansmith.javadpad.engine.thread;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.util.DPADLogger;
 import net.jonathansmith.javadpad.util.RuntimeType;
+import net.jonathansmith.javadpad.util.ThreadType;
 
 /**
  *
@@ -33,6 +34,11 @@ public class DPADConnectEngine extends DPADEngine {
     @Override
     public void init() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ThreadType getThreadType() {
+        return ThreadType.CLIENT;
     }
 
     @Override
@@ -58,5 +64,4 @@ public class DPADConnectEngine extends DPADEngine {
     public void run() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
 }

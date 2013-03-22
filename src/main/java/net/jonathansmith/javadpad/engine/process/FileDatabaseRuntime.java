@@ -4,6 +4,7 @@
  */
 package net.jonathansmith.javadpad.engine.process;
 
+import java.io.File;
 import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
 import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
 import org.hibernate.HibernateException;
@@ -29,7 +30,6 @@ public class FileDatabaseRuntime extends RuntimeThread {
     }
     
     public boolean running = false;
-    public boolean create = false;
     public String path = null;
     public State state;
     
@@ -99,10 +99,6 @@ public class FileDatabaseRuntime extends RuntimeThread {
         return this.state;
     }
     
-    public void setCreateDatabase() {
-        this.create = true;
-    }
-    
     public void setAttemptConnection(String path) {
         this.state = State.CONNECTING;
         this.path = path;
@@ -116,7 +112,8 @@ public class FileDatabaseRuntime extends RuntimeThread {
         config.setProperty("hibernate.connection.username", "sa");
         config.setProperty("hibernate.connection.password", "");
         
-        if (this.create) {
+        File file = new File(this.path + "/JDPADDatabase.h2.db");
+        if (!file.exists()) {
             config.setProperty("hibernate.hbm2ddl.auto", "create");
             
         } else {

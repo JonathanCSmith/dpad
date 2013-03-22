@@ -20,6 +20,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.process.FileDatabaseRuntime;
+import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
+import net.jonathansmith.javadpad.util.RuntimeType;
+import net.jonathansmith.javadpad.util.ThreadType;
 
 /**
  *
@@ -33,8 +38,18 @@ public class FileChooserPanelListener implements ActionListener {
         this.parent = controller;
     }
     
-    public void actionPerformed(ActionEvent ae) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void actionPerformed(ActionEvent evt) {
+        DPADEngine engine = this.parent.getEngine();
+        if (engine != null && engine.getThreadType() == ThreadType.LOCAL) {
+            DPADLocalEngine local = (DPADLocalEngine) engine;
+            if (local.getCurrentRuntime() == RuntimeType.FILE_CONNECT) {
+                String path = this.parent.gui.fileChooser.getSelectedFile().getAbsolutePath();
+                if (path != null && !path.contentEquals("")) {
+                    FileDatabaseRuntime runtime = (FileDatabaseRuntime) local.getRuntime();
+                    runtime.setAttemptConnection(path);
+                }
+            }
+        }
     }
     
 }
