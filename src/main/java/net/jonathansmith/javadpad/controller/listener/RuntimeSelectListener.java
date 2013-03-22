@@ -19,6 +19,7 @@ package net.jonathansmith.javadpad.controller.listener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.engine.DPADLocalEngine;
 
 /**
  *
@@ -35,15 +36,15 @@ public class RuntimeSelectListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent evt) {
         if (evt.getSource() == this.parent.getGui().localRuntime) {
-            this.parent.setEngine(new DPADLocalEngine());
+            this.parent.setEngine(new DPADLocalEngine(this.parent.logger));
         }
         
         else if (evt.getSource() == this.parent.getGui().hostRuntime) {
-            this.parent.setEngine(new DPADHostEngine());
+            this.parent.setEngine(new DPADHostEngine(this.parent.logger));
         }
         
         else if (evt.getSource() == this.parent.getGui().connectRuntime) {
-            this.parent.setEngine(new DPADConnectEngine());
+            this.parent.setEngine(new DPADConnectEngine(this.parent.logger));
         }
     }
 }

@@ -38,7 +38,7 @@ public class UserListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent evt) {
         if (evt.getSource() == this.controller.getGui().userBack) {
-            this.controller.getEngine().quitCurrentRuntime();
+            this.controller.getEngine().sendQuitToRuntime();
         }
     }
 }

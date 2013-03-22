@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2013 Jonathan Smith
+/*
+ * Copyright (C) 2013 Jon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,22 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package net.jonathansmith.javadpad.engine;
 
-package net.jonathansmith.javadpad.engine.runtime;
+import java.util.Observable;
+
+import net.jonathansmith.javadpad.util.RuntimeType;
+import net.jonathansmith.javadpad.util.DPADLogger;
 
 /**
- * Runtime
  *
- * @author Jonathan Smith
+ * @author Jon
  */
-public enum RuntimeType {
-
-    RUNTIME_SELECT,
+public abstract class DPADEngine extends Observable implements Runnable {
     
-    DATABASE,
-    USER_SELECT,
-    LOAD_AND_PROCESS,
-    ANALYSE_AND_DISPLAY,
-    IDLE;
+    public DPADLogger logger;
     
+    public DPADEngine(DPADLogger logger) {
+        this.logger = logger;
+    }
+    
+    public abstract void init();
+    
+    public abstract RuntimeType getCurrentRuntime();
+    public abstract void sendQuitToRuntime();
+    public abstract void quitEngine();
+    public abstract void runtimeFinished(boolean status);
 }
