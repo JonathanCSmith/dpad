@@ -30,11 +30,11 @@ import net.jonathansmith.javadpad.util.RuntimeType;
  *
  * @author Jonathan Smith
  */
-public class RuntimeListener implements ActionListener {
+public class DatabasePanelListener implements ActionListener {
     
     private DPADController controller;
     
-    public RuntimeListener(DPADController controller) {
+    public DatabasePanelListener(DPADController controller) {
         this.controller = controller;
     }
     
