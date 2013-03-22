@@ -15,33 +15,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jonathansmith.javadpad.engine.runtime;
+package net.jonathansmith.javadpad.engine.process;
 
-import net.jonathansmith.javadpad.engine.DPADLocalEngine;
+import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
 
 /**
- * LPRuntime
+ * UserRuntime
  *
  * @author Jonathan Smith
  */
-public class LPRuntime extends RuntimeThread {
+public class UserRuntime extends RuntimeThread {
+
+    boolean shutdownFlag = false;
     
-    public LPRuntime(DPADLocalEngine engine) {
+    public UserRuntime(DPADLocalEngine engine) {
         super(engine);
     }
-
+    
     @Override
     public void init() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
     }
 
+    @SuppressWarnings({"SleepWhileInLoop", "CallToThreadDumpStack"})
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        while (!shutdownFlag) {
+            try {
+                Thread.sleep(100);
+                
+            } catch (Throwable t) {
+                this.engine.logger.severe("Interrupted!");
+                t.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void forceShutdown(boolean error) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.engine.logger.info("Called force shutdown in user thread...");
+        this.shutdownFlag = true;
+        super.end(error);
     }
 }

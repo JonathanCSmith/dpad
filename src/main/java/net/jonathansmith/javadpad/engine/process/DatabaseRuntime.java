@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.jonathansmith.javadpad.engine.runtime;
+package net.jonathansmith.javadpad.engine.process;
 
-import net.jonathansmith.javadpad.engine.DPADLocalEngine;
+import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
 import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;

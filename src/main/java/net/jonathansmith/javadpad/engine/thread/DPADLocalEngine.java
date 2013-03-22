@@ -15,17 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jonathansmith.javadpad.engine;
+package net.jonathansmith.javadpad.engine.thread;
 
+import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
 import net.jonathansmith.javadpad.engine.database.entry.ExperimentEntry;
 import net.jonathansmith.javadpad.engine.database.entry.UserEntry;
-import net.jonathansmith.javadpad.engine.runtime.ADRuntime;
-import net.jonathansmith.javadpad.engine.runtime.DatabaseRuntime;
-import net.jonathansmith.javadpad.engine.runtime.LPRuntime;
-import net.jonathansmith.javadpad.engine.runtime.RuntimeThread;
+import net.jonathansmith.javadpad.engine.process.ADRuntime;
+import net.jonathansmith.javadpad.engine.process.DatabaseRuntime;
+import net.jonathansmith.javadpad.engine.process.LPRuntime;
+import net.jonathansmith.javadpad.engine.process.RuntimeThread;
 import net.jonathansmith.javadpad.util.RuntimeType;
-import net.jonathansmith.javadpad.engine.runtime.UserRuntime;
+import net.jonathansmith.javadpad.engine.process.UserRuntime;
 import net.jonathansmith.javadpad.util.DPADLogger;
 
 /**

@@ -19,7 +19,9 @@ package net.jonathansmith.javadpad.controller.listener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import net.jonathansmith.javadpad.controller.DPADController;
-import net.jonathansmith.javadpad.engine.DPADLocalEngine;
+import net.jonathansmith.javadpad.engine.thread.DPADConnectEngine;
+import net.jonathansmith.javadpad.engine.thread.DPADHostEngine;
+import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
 
 /**
  *
