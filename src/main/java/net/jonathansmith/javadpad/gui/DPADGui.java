@@ -17,8 +17,11 @@
 package net.jonathansmith.javadpad.gui;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
@@ -46,6 +49,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public DPADLogger logger;
     public RuntimeType type;
     public boolean errored = false;
+    private List<ActionListener> chooserListeners = new ArrayList<ActionListener> ();
     
     /**
      * Creates new form DPADG
@@ -73,8 +77,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         jLabel7 = new javax.swing.JLabel();
         userToolbar = new javax.swing.JPanel();
         userBack = new javax.swing.JButton();
-        fileChooserToolbar = new javax.swing.JPanel();
-        jLabel9 = new javax.swing.JLabel();
         clientMainToolbar = new javax.swing.JPanel();
         user = new javax.swing.JButton();
         newExperiment = new javax.swing.JButton();
@@ -101,8 +103,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         hostInfo = new javax.swing.JLabel();
         hostRuntime = new javax.swing.JButton();
         localInfo = new javax.swing.JLabel();
-        fileChooserPanel = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -121,7 +121,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
             headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(headerPanelLayout.createSequentialGroup()
                 .addComponent(title)
-                .addGap(0, 388, Short.MAX_VALUE))
+                .addGap(0, 394, Short.MAX_VALUE))
         );
         headerPanelLayout.setVerticalGroup(
             headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -208,29 +208,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         );
 
         toolbarSplitPane.setLeftComponent(userToolbar);
-
-        fileChooserToolbar.setMaximumSize(new java.awt.Dimension(120, 32767));
-        fileChooserToolbar.setMinimumSize(new java.awt.Dimension(120, 0));
-        fileChooserToolbar.setPreferredSize(new java.awt.Dimension(120, 400));
-
-        jLabel9.setText("file chooser toolbar");
-
-        javax.swing.GroupLayout fileChooserToolbarLayout = new javax.swing.GroupLayout(fileChooserToolbar);
-        fileChooserToolbar.setLayout(fileChooserToolbarLayout);
-        fileChooserToolbarLayout.setHorizontalGroup(
-            fileChooserToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(fileChooserToolbarLayout.createSequentialGroup()
-                .addComponent(jLabel9)
-                .addGap(0, 38, Short.MAX_VALUE))
-        );
-        fileChooserToolbarLayout.setVerticalGroup(
-            fileChooserToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(fileChooserToolbarLayout.createSequentialGroup()
-                .addComponent(jLabel9)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        toolbarSplitPane.setLeftComponent(fileChooserToolbar);
 
         clientMainToolbar.setMaximumSize(new java.awt.Dimension(120, 32767));
         clientMainToolbar.setMinimumSize(new java.awt.Dimension(120, 406));
@@ -419,15 +396,15 @@ public class DPADGui extends JFrame implements Runnable, Observer {
                 .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(startupPanelLayout.createSequentialGroup()
                         .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(databaseURLText, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
+                            .addComponent(databaseURLText)
                             .addComponent(hostInfo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(localInfo, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE))
+                            .addComponent(localInfo, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE))
                         .addGap(5, 5, 5)
                         .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(hostRuntime, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(localRuntime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(connectRuntime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 499, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
                 .addGap(10, 10, 10))
         );
 
@@ -457,25 +434,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
         displaySplitPane.setLeftComponent(startupPanel);
 
-        jLabel10.setText("lp panel");
-
-        javax.swing.GroupLayout fileChooserPanelLayout = new javax.swing.GroupLayout(fileChooserPanel);
-        fileChooserPanel.setLayout(fileChooserPanelLayout);
-        fileChooserPanelLayout.setHorizontalGroup(
-            fileChooserPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(fileChooserPanelLayout.createSequentialGroup()
-                .addComponent(jLabel10)
-                .addGap(0, 488, Short.MAX_VALUE))
-        );
-        fileChooserPanelLayout.setVerticalGroup(
-            fileChooserPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(fileChooserPanelLayout.createSequentialGroup()
-                .addComponent(jLabel10)
-                .addGap(0, 376, Short.MAX_VALUE))
-        );
-
-        displaySplitPane.setLeftComponent(fileChooserPanel);
-
         toolbarSplitPane.setRightComponent(displaySplitPane);
 
         headerSplitPane.setRightComponent(toolbarSplitPane);
@@ -484,7 +442,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(headerSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE)
+            .addComponent(headerSplitPane)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -516,6 +474,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         } 
         
         this.initComponents();
+        
         this.logger.addLogger(new LogHandler(this));
     }
     
@@ -552,16 +511,24 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.getContentPane().validate();
     }
     
+    public void getDirectory() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Select a directory");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        
+        for (ActionListener listener : this.chooserListeners) {
+            chooser.addActionListener(listener);
+        }
+        
+        chooser.showOpenDialog(this);
+    }
+    
     public void validateState() {
         switch (this.type) {
             case RUNTIME_SELECT:    this.setCorePanels(this.startupPanel, this.startupToolbar);
                                     break;
                 
-            case FILE_CONNECT:      this.setCorePanels(this.fileChooserPanel, this.fileChooserToolbar);
-                                    fileChooser = new JFileChooser();
-                                    fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                                    fileChooser.setDialogTitle("Select the location");
-                                    this.fileChooserPanel.add(fileChooser);
+            case FILE_CONNECT:      this.getDirectory();
                                     break;
             
             case IDLE_LOCAL:        this.setCorePanels(this.clientMainPanel, this.clientMainToolbar);
@@ -595,11 +562,11 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     }
     
     private void hideAllPanels() {
-        this.clientMainPanel.setVisible(false);
-        this.clientMainToolbar.setVisible(false);
-        
         this.startupPanel.setVisible(false);
         this.startupToolbar.setVisible(false);
+        
+        this.clientMainPanel.setVisible(false);
+        this.clientMainToolbar.setVisible(false);
         
         this.userPanel.setVisible(false);
         this.userToolbar.setVisible(false);
@@ -629,7 +596,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     }
     
     public void addFileChooserListener(ActionListener listener) {
-        this.fileChooser.addActionListener(listener);
+        this.chooserListeners.add(listener);
     }
     
     public void addMainMenuListener(ActionListener listener) {
@@ -643,8 +610,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public JButton load;
     public JButton analyse;
     
-    public JFileChooser fileChooser;
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton addBatch;
     public javax.swing.JPanel clientMainPanel;
@@ -652,14 +617,11 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public javax.swing.JButton connectRuntime;
     public javax.swing.JTextField databaseURLText;
     public javax.swing.JSplitPane displaySplitPane;
-    public javax.swing.JPanel fileChooserPanel;
-    public javax.swing.JPanel fileChooserToolbar;
     public javax.swing.JPanel headerPanel;
     public javax.swing.JSplitPane headerSplitPane;
     public javax.swing.JLabel hostInfo;
     public javax.swing.JButton hostRuntime;
     public javax.swing.JLabel jLabel1;
-    public javax.swing.JLabel jLabel10;
     public javax.swing.JLabel jLabel2;
     public javax.swing.JLabel jLabel3;
     public javax.swing.JLabel jLabel4;
@@ -667,7 +629,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public javax.swing.JLabel jLabel6;
     public javax.swing.JLabel jLabel7;
     public javax.swing.JLabel jLabel8;
-    public javax.swing.JLabel jLabel9;
     public javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JTextArea jTextArea1;
     public javax.swing.JPanel lPPanel;

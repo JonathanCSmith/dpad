@@ -31,7 +31,7 @@ public class FileDatabaseRuntime extends RuntimeThread {
     
     public boolean running = false;
     public String path = null;
-    public State state;
+    public State state = State.DISCONNECTED;
     
     private ServiceRegistry registry;
     private SessionFactory factory;
@@ -43,13 +43,12 @@ public class FileDatabaseRuntime extends RuntimeThread {
     @Override
     public void init() {
         this.running = true;
-        this.state = State.DISCONNECTED;
     }
     
     @SuppressWarnings({"SleepWhileInLoop", "CallToThreadDumpStack"})
     @Override
     public void run() {
-        while (this.state == State.DISCONNECTED || this.running) {
+        while (this.state == State.DISCONNECTED && this.running) {
             try {
                 Thread.sleep(100);
                 
@@ -87,6 +86,7 @@ public class FileDatabaseRuntime extends RuntimeThread {
         
         this.state = State.CONNECTED;
         this.engine.setDatabaseConnection(databaseConnection);
+        this.forceShutdown(false);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class FileDatabaseRuntime extends RuntimeThread {
     }
     
     private Configuration buildSessionConfiguration() {
-        Configuration config = new Configuration().configure();
+        Configuration config = new Configuration();
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         config.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
         config.setProperty("hibernate.connection.url", "jdbc:h2:file:" + this.path + "/JDPADDatabase");

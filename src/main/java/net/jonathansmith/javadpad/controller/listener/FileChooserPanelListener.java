@@ -19,6 +19,7 @@ package net.jonathansmith.javadpad.controller.listener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JFileChooser;
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.process.FileDatabaseRuntime;
@@ -39,14 +40,20 @@ public class FileChooserPanelListener implements ActionListener {
     }
     
     public void actionPerformed(ActionEvent evt) {
-        DPADEngine engine = this.parent.getEngine();
-        if (engine != null && engine.getThreadType() == ThreadType.LOCAL) {
-            DPADLocalEngine local = (DPADLocalEngine) engine;
-            if (local.getCurrentRuntime() == RuntimeType.FILE_CONNECT) {
-                String path = this.parent.gui.fileChooser.getSelectedFile().getAbsolutePath();
-                if (path != null && !path.contentEquals("")) {
-                    FileDatabaseRuntime runtime = (FileDatabaseRuntime) local.getRuntime();
-                    runtime.setAttemptConnection(path);
+        JFileChooser fc = (JFileChooser) evt.getSource();
+        String cmd = evt.getActionCommand();
+        
+        if (cmd.equals(JFileChooser.APPROVE_SELECTION)) {
+        
+            DPADEngine engine = this.parent.getEngine();
+            if (engine != null && engine.getThreadType() == ThreadType.LOCAL) {
+                DPADLocalEngine local = (DPADLocalEngine) engine;
+                if (local.getCurrentRuntime() == RuntimeType.FILE_CONNECT) {
+                    String path = fc.getSelectedFile().getAbsolutePath();
+                    if (path != null && !path.contentEquals("")) {
+                        FileDatabaseRuntime runtime = (FileDatabaseRuntime) local.getRuntime();
+                        runtime.setAttemptConnection(path);
+                    }
                 }
             }
         }
