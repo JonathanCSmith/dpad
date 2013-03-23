@@ -21,13 +21,13 @@ import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
 import net.jonathansmith.javadpad.engine.database.entry.ExperimentEntry;
 import net.jonathansmith.javadpad.engine.database.entry.UserEntry;
-import net.jonathansmith.javadpad.engine.process.ADRuntime;
-import net.jonathansmith.javadpad.engine.process.FileDatabaseRuntime;
-import net.jonathansmith.javadpad.engine.process.LPRuntime;
-import net.jonathansmith.javadpad.engine.process.RuntimeThread;
+import net.jonathansmith.javadpad.engine.process.AnalyseDisplayProcess;
+import net.jonathansmith.javadpad.engine.process.FileDatabaseProcess;
+import net.jonathansmith.javadpad.engine.process.LoadProcessProcess;
+import net.jonathansmith.javadpad.engine.process.RuntimeProcess;
 import net.jonathansmith.javadpad.util.RuntimeType;
-import net.jonathansmith.javadpad.engine.process.UserRuntime;
-import net.jonathansmith.javadpad.util.DPADLogger;
+import net.jonathansmith.javadpad.engine.process.UserSetProcess;
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.ThreadType;
 
 /**
@@ -44,7 +44,7 @@ public class DPADLocalEngine extends DPADEngine {
     public boolean hasExperiment = false;
     
     private RuntimeType currentRuntime;
-    private RuntimeThread runtime;
+    private RuntimeProcess runtime;
     private UserEntry user = null;
     private ExperimentEntry experiment = null;
     private DatabaseConnection session = null;
@@ -68,7 +68,7 @@ public class DPADLocalEngine extends DPADEngine {
                 continue;
             }
             
-            while (this.currentRuntime == RuntimeType.IDLE_LOCAL) {
+            while (!this.currentRuntime.isRunnable()) {
                 try {
                     Thread.sleep(100);
                 } catch (Throwable t) {
@@ -95,12 +95,12 @@ public class DPADLocalEngine extends DPADEngine {
         }
     }
     
-    public RuntimeType getCurrentRuntime() {
+    public synchronized RuntimeType getCurrentRuntime() {
         this.logger.info("Retrieving current runtime");
         return this.currentRuntime;
     }
     
-    public RuntimeThread getRuntime() {
+    public synchronized RuntimeProcess getRuntime() {
         this.logger.info("Retrieving runtime");
         return this.runtime;
     }
@@ -122,29 +122,29 @@ public class DPADLocalEngine extends DPADEngine {
         }
         
         switch (runtime) {
-            case FILE_CONNECT:         this.runtime = new FileDatabaseRuntime(this);
+            case FILE_CONNECT:         this.runtime = new FileDatabaseProcess(this);
                                         break;
             
-            
-            case USER_SELECT:           this.runtime = new UserRuntime(this);
+            case USER_SELECT:           this.runtime = new UserSetProcess(this);
                                         break;
             
-            case LOAD_AND_PROCESS:      this.runtime = new LPRuntime(this);
+            case LOAD_AND_PROCESS:      this.runtime = new LoadProcessProcess(this);
                                         break;
                 
-            case ANALYSE_AND_DISPLAY:   this.runtime = new ADRuntime(this);
+            case ANALYSE_AND_DISPLAY:   this.runtime = new AnalyseDisplayProcess(this);
                                         break;
                 
             default:                    break;
         }
         
-        if (runtime != RuntimeType.IDLE_LOCAL) {
+        this.currentRuntime = runtime;
+        if (this.currentRuntime.isRunnable()) {
             this.runtime.init();
         }
-        this.currentRuntime = runtime;
+        
         this.setChanged();
         this.notifyObservers();
-        this.logger.info("Notified observers of engine changed");
+        this.logger.info("Notified observers of engine changed to: " + this.currentRuntime.toString());
     }
 
     @Override

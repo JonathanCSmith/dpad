@@ -14,31 +14,44 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.engine;
+package net.jonathansmith.javadpad.util.log;
 
-import java.util.Observable;
+import java.io.IOException;
+import java.io.OutputStream;
 
-import net.jonathansmith.javadpad.util.RuntimeType;
-import net.jonathansmith.javadpad.util.logging.DPADLogger;
-import net.jonathansmith.javadpad.util.ThreadType;
+import java.util.logging.Level;
 
 /**
  *
  * @author Jon
  */
-public abstract class DPADEngine extends Observable implements Runnable {
-    
+public class LoggerOutputStream extends OutputStream {
+
     public DPADLogger logger;
+    public Level level;
+    private String mem;
     
-    public DPADEngine(DPADLogger logger) {
+    public LoggerOutputStream(DPADLogger logger, Level level) {
         this.logger = logger;
+        this.level = level;
+        this.mem = "";
     }
     
-    public abstract void init();
+    @Override
+    public void write(int i) throws IOException {
+        byte[] bytes = new byte[1];
+        bytes[0] = (byte) (i & 0xff);
+        mem = mem + new String(bytes);
+        
+        if (mem.endsWith("\n")) {
+            mem = mem.substring(0, mem.length() - 1);
+            flush();
+        }
+    }
     
-    public abstract ThreadType getThreadType();
-    public abstract RuntimeType getCurrentRuntime();
-    public abstract void sendQuitToRuntime();
-    public abstract void quitEngine();
-    public abstract void runtimeFinished(boolean status);
+    @Override
+    public void flush() {
+        //logger.log(level, mem);
+        mem = "";
+    }
 }

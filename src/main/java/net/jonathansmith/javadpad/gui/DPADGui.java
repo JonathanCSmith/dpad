@@ -37,7 +37,7 @@ import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import static net.jonathansmith.javadpad.util.RuntimeType.IDLE_LOCAL;
 import net.jonathansmith.javadpad.gui.handler.LogHandler;
-import net.jonathansmith.javadpad.util.DPADLogger;
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *
@@ -49,7 +49,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public DPADLogger logger;
     public RuntimeType type;
     public boolean errored = false;
-    private List<ActionListener> chooserListeners = new ArrayList<ActionListener> ();
     
     /**
      * Creates new form DPADG
@@ -453,8 +452,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     }// </editor-fold>//GEN-END:initComponents
     
     public void init() {
-        //this.engine.addObserver(this);
-        
         try {
             for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -474,7 +471,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         } 
         
         this.initComponents();
-        
         this.logger.addLogger(new LogHandler(this));
     }
     
@@ -498,7 +494,8 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     @Override
     public void update(Observable obs, Object obj) {
         if (obs == this.engine) {
-            if (this.engine.getCurrentRuntime() != this.type) {
+            RuntimeType currentRuntime = this.engine.getCurrentRuntime();
+            if (currentRuntime != this.type && currentRuntime.isDisplayable()) {
                 this.type = this.engine.getCurrentRuntime();
                 this.validateState();
             }
@@ -511,24 +508,26 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.getContentPane().validate();
     }
     
-    public void getDirectory() {
+    public String getDirectory() {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Select a directory");
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int outcome = chooser.showOpenDialog(this);
         
-        for (ActionListener listener : this.chooserListeners) {
-            chooser.addActionListener(listener);
+        String output;
+        if (outcome == JFileChooser.APPROVE_OPTION) {
+            output = chooser.getSelectedFile().getAbsolutePath();
+            
+        } else {
+            output = "";
         }
         
-        chooser.showOpenDialog(this);
+        return output;
     }
     
     public void validateState() {
         switch (this.type) {
             case RUNTIME_SELECT:    this.setCorePanels(this.startupPanel, this.startupToolbar);
-                                    break;
-                
-            case FILE_CONNECT:      this.getDirectory();
                                     break;
             
             case IDLE_LOCAL:        this.setCorePanels(this.clientMainPanel, this.clientMainToolbar);
@@ -593,10 +592,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.localRuntime.addActionListener(listener);
         this.hostRuntime.addActionListener(listener);
         this.connectRuntime.addActionListener(listener);
-    }
-    
-    public void addFileChooserListener(ActionListener listener) {
-        this.chooserListeners.add(listener);
     }
     
     public void addMainMenuListener(ActionListener listener) {

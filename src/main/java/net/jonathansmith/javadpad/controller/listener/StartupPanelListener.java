@@ -16,9 +16,12 @@
  */
 package net.jonathansmith.javadpad.controller.listener;
 
+import java.io.File;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.engine.process.FileDatabaseProcess;
 import net.jonathansmith.javadpad.engine.thread.DPADConnectEngine;
 import net.jonathansmith.javadpad.engine.thread.DPADHostEngine;
 import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
@@ -38,11 +41,35 @@ public class StartupPanelListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent evt) {
         if (evt.getSource() == this.parent.getGui().localRuntime) {
-            this.parent.setEngine(new DPADLocalEngine(this.parent.logger));
+            String outcome = this.parent.getGui().getDirectory();
+            if (outcome.equals("")) {
+                return;    
+            }
+            
+            File file = new File(outcome);
+            if (!file.exists()) {
+                return;
+            }
+            
+            DPADLocalEngine local = new DPADLocalEngine(this.parent.logger);
+            this.parent.setEngine(local);
+            ((FileDatabaseProcess) local.getRuntime()).setAttemptConnection(outcome);
         }
         
         else if (evt.getSource() == this.parent.getGui().hostRuntime) {
-            this.parent.setEngine(new DPADHostEngine(this.parent.logger));
+            String outcome = this.parent.getGui().getDirectory();
+            if (outcome.equals("")) {
+                return;    
+            }
+            
+            File file = new File(outcome);
+            if (!file.exists()) {
+                return;
+            }
+            
+            DPADHostEngine host = new DPADHostEngine(this.parent.logger);
+            this.parent.setEngine(host);
+            //((DPADHostEngine) host.getRuntime()).createOrManageDatabase(outcome);
         }
         
         else if (evt.getSource() == this.parent.getGui().connectRuntime) {

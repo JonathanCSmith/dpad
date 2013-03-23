@@ -23,12 +23,27 @@ package net.jonathansmith.javadpad.util;
  * @author Jonathan Smith
  */
 public enum RuntimeType {
-    RUNTIME_SELECT,
-    FILE_CONNECT,
+    RUNTIME_SELECT(false, true),
+    FILE_CONNECT(true, false),
+    IDLE_LOCAL(false, true),
     
-    USER_SELECT,
-    LOAD_AND_PROCESS,
-    ANALYSE_AND_DISPLAY,
-    IDLE_LOCAL;
+    USER_SELECT(true, true),
+    LOAD_AND_PROCESS(true, true),
+    ANALYSE_AND_DISPLAY(true, true);
     
+    private final boolean runnable;
+    private final boolean displayable;
+    
+    private RuntimeType(boolean runnable, boolean displayable) {
+        this.runnable = runnable;
+        this.displayable = displayable;
+    }
+    
+    public boolean isRunnable() {
+        return this.runnable;
+    }
+    
+    public boolean isDisplayable() {
+        return this.displayable;
+    }
 }

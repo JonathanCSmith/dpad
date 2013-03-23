@@ -20,7 +20,7 @@ import net.jonathansmith.javadpad.engine.database.entry.ExperimentEntry;
  * a major refactor :S
  * @author Jon
  */
-public class FileDatabaseRuntime extends RuntimeThread {
+public class FileDatabaseProcess extends RuntimeProcess {
     
     public enum State {
         DISCONNECTED,
@@ -36,7 +36,7 @@ public class FileDatabaseRuntime extends RuntimeThread {
     private ServiceRegistry registry;
     private SessionFactory factory;
     
-    public FileDatabaseRuntime(DPADLocalEngine parent) {
+    public FileDatabaseProcess(DPADLocalEngine parent) {
         super(parent);
     }
 
@@ -120,7 +120,7 @@ public class FileDatabaseRuntime extends RuntimeThread {
             config.setProperty("hibernate.hbm2ddl.auto", "validate");
         }
         
-        config = FileDatabaseRuntime.addMappings(config);
+        config = FileDatabaseProcess.addMappings(config);
         
         return config;
     }
