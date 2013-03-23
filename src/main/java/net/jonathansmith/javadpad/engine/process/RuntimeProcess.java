@@ -22,11 +22,11 @@ import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
  *
  * @author Jon
  */
-public abstract class RuntimeThread extends Thread {
+public abstract class RuntimeProcess extends Thread {
     
     public DPADLocalEngine engine;
     
-    public RuntimeThread(DPADLocalEngine engine) {
+    public RuntimeProcess(DPADLocalEngine engine) {
         this.engine = engine;
     }
     

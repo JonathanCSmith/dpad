@@ -24,9 +24,9 @@ import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
  *
  * @author Jonathan Smith
  */
-public class LPRuntime extends RuntimeThread {
+public class LoadProcessProcess extends RuntimeProcess {
     
-    public LPRuntime(DPADLocalEngine engine) {
+    public LoadProcessProcess(DPADLocalEngine engine) {
         super(engine);
     }
 

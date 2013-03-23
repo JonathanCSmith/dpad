@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jonathansmith.javadpad.util;
+package net.jonathansmith.javadpad.util.logging;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;

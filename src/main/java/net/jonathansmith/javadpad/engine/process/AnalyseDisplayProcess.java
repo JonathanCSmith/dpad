@@ -20,41 +20,23 @@ package net.jonathansmith.javadpad.engine.process;
 import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
 
 /**
- * UserRuntime
+ * ADRuntime
  *
  * @author Jonathan Smith
  */
-public class UserRuntime extends RuntimeThread {
-
-    boolean shutdownFlag = false;
+public class AnalyseDisplayProcess extends RuntimeProcess {
     
-    public UserRuntime(DPADLocalEngine engine) {
+    public AnalyseDisplayProcess(DPADLocalEngine engine) {
         super(engine);
     }
-    
+
     @Override
     public void init() {
-        
-    }
-
-    @SuppressWarnings({"SleepWhileInLoop", "CallToThreadDumpStack"})
-    @Override
-    public void run() {
-        while (!shutdownFlag) {
-            try {
-                Thread.sleep(100);
-                
-            } catch (Throwable t) {
-                this.engine.logger.severe("Interrupted!");
-                t.printStackTrace();
-            }
-        }
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void forceShutdown(boolean error) {
-        this.engine.logger.info("Called force shutdown in user thread...");
-        this.shutdownFlag = true;
-        super.end(error);
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
