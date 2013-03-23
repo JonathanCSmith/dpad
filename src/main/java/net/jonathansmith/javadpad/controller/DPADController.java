@@ -18,9 +18,11 @@
 package net.jonathansmith.javadpad.controller;
 
 import java.io.File;
+import java.io.PrintStream;
 
 import java.net.URISyntaxException;
 
+import java.util.logging.Level;
 import java.awt.EventQueue;
 
 import net.jonathansmith.javadpad.controller.listener.ClientMainPanelListener;
@@ -31,6 +33,8 @@ import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.gui.DPADGui;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.ThreadType;
+import net.jonathansmith.javadpad.util.logging.LoggerOutputStream;
+import org.jboss.logging.Logger;
 
 /**
  * DPADController
@@ -54,15 +58,14 @@ public class DPADController extends Thread {
     }
     
     public void init() {
+        System.setOut(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
+        System.setErr(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
+        
         this.gui.init();
         EventQueue.invokeLater(this.gui);
+        
         this.buildLocalFileSystem();
-        
         this.gui.addStartupSelectListener(new StartupPanelListener(this));
-        
-        
-        
-        
         this.initialised = true;
     }
     

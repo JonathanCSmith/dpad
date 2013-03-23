@@ -17,8 +17,6 @@
 package net.jonathansmith.javadpad.gui;
 
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -36,7 +34,7 @@ import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import static net.jonathansmith.javadpad.util.RuntimeType.IDLE_LOCAL;
-import net.jonathansmith.javadpad.gui.handler.LogHandler;
+import net.jonathansmith.javadpad.util.logging.LogHandler;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
@@ -280,7 +278,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
         toolbarSplitPane.setLeftComponent(clientMainToolbar);
 
-        displaySplitPane.setDividerLocation(200);
+        displaySplitPane.setDividerLocation(250);
         displaySplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         displaySplitPane.setResizeWeight(1.0);
         displaySplitPane.setAutoscrolls(true);
@@ -535,12 +533,13 @@ public class DPADGui extends JFrame implements Runnable, Observer {
                                         this.newExperiment.setEnabled(false);
                                         this.loadExperiment.setEnabled(false);
                                         this.addBatch.setEnabled(false);
-                                        return;
+                                        
+                                    } else {
+                                        if (!((DPADLocalEngine) this.engine).hasExperiment) {
+                                            this.addBatch.setEnabled(false);
+                                        }
                                     }
 
-                                    if (!((DPADLocalEngine) this.engine).hasExperiment) {
-                                        this.addBatch.setEnabled(false);
-                                    }
                                     break;
             
             case USER_SELECT:       this.setCorePanels(this.userPanel, this.userToolbar);
@@ -584,7 +583,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         }
         
         if (this.displaySplitPane.getDividerLocation() <= (this.displaySplitPane.getHeight() - 120)) {
-            this.displaySplitPane.setDividerLocation(this.displaySplitPane.getHeight() - 120);
+            this.displaySplitPane.setDividerLocation(this.displaySplitPane.getSize().height - 120);
         }
     }
     

@@ -28,29 +28,33 @@ import java.util.logging.Logger;
  */
 public class DPADLogger {
     
-    private Logger dpadLogger;
+    private static final Logger dpadLogger = Logger.getLogger("DPAD");
     
     public DPADLogger() {
-        this.dpadLogger = Logger.getLogger("DPAD");
+        dpadLogger.setUseParentHandlers(false);
+    }
+    
+    protected void log(String msg, Level lvl) {
+        DPADLogger.dpadLogger.log(lvl, "{0}", msg);
     }
     
     public void info(String msg) {
-        this.dpadLogger.log(Level.INFO, "[DPAD] {0}", msg);
+        DPADLogger.dpadLogger.log(Level.INFO, "{0}", msg);
     }
     
     public void warning(String msg) {
-        this.dpadLogger.log(Level.WARNING, "[DPAD] {0}", msg);
+        DPADLogger.dpadLogger.log(Level.WARNING, "{0}", msg);
     }
     
     public void severe(String msg) {
-        this.dpadLogger.log(Level.SEVERE, "[DPAD] {0}", msg);
+        DPADLogger.dpadLogger.log(Level.SEVERE, "{0}", msg);
     }
     
     public Logger getLogger() {
-        return this.dpadLogger;
+        return DPADLogger.dpadLogger;
     }
     
     public void addLogger(Handler handler) {
-        this.dpadLogger.addHandler(handler);
+        DPADLogger.dpadLogger.addHandler(handler);
     }
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.gui.handler;
+package net.jonathansmith.javadpad.util.logging;
 
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -34,7 +34,7 @@ public class LogHandler extends Handler {
     public LogHandler(DPADGui gui) {
         this.gui = gui;
         this.setLevel(Level.ALL);
-        this.setFormatter(new SimpleFormatter());
+        this.setFormatter(new DPADFormatter());
     }
 
     @Override

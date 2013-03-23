@@ -14,12 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.util.log;
+package net.jonathansmith.javadpad.util.logging;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 import java.util.logging.Level;
+
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *
@@ -51,7 +53,7 @@ public class LoggerOutputStream extends OutputStream {
     
     @Override
     public void flush() {
-        //logger.log(level, mem);
+        logger.log(mem, level);
         mem = "";
     }
 }
