@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.engine.thread;
+package net.jonathansmith.javadpad.engine.connect;
 
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
@@ -25,12 +25,12 @@ import net.jonathansmith.javadpad.util.ThreadType;
  *
  * @author Jon
  */
-public class DPADHostEngine extends DPADEngine {
-    
-    public DPADHostEngine(DPADLogger logger) {
+public class DPADConnectEngine extends DPADEngine {
+
+    public DPADConnectEngine(DPADLogger logger) {
         super(logger);
     }
-
+    
     @Override
     public void init() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -38,11 +38,26 @@ public class DPADHostEngine extends DPADEngine {
 
     @Override
     public ThreadType getThreadType() {
-        return ThreadType.HOST;
+        return ThreadType.CLIENT;
     }
 
     @Override
     public RuntimeType getCurrentRuntime() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getProgressMax() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int getCurrentProgress() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void incrementProgress() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -64,5 +79,4 @@ public class DPADHostEngine extends DPADEngine {
     public void run() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
 }

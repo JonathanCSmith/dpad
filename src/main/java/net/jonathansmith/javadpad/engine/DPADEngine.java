@@ -38,6 +38,10 @@ public abstract class DPADEngine extends Observable implements Runnable {
     
     public abstract ThreadType getThreadType();
     public abstract RuntimeType getCurrentRuntime();
+    public abstract int getProgressMax();
+    public abstract int getCurrentProgress();
+    public abstract void incrementProgress();
+    
     public abstract void sendQuitToRuntime();
     public abstract void quitEngine();
     public abstract void runtimeFinished(boolean status);

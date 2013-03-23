@@ -2,10 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.jonathansmith.javadpad.engine.process;
+package net.jonathansmith.javadpad.engine.local.process;
 
 import java.io.File;
-import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
+
+import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -20,7 +21,7 @@ import net.jonathansmith.javadpad.engine.database.entry.ExperimentEntry;
  * a major refactor :S
  * @author Jon
  */
-public class FileDatabaseProcess extends RuntimeProcess {
+public class LocalStartupProcess extends RuntimeProcess {
     
     public enum State {
         DISCONNECTED,
@@ -36,7 +37,7 @@ public class FileDatabaseProcess extends RuntimeProcess {
     private ServiceRegistry registry;
     private SessionFactory factory;
     
-    public FileDatabaseProcess(DPADLocalEngine parent) {
+    public LocalStartupProcess(DPADLocalEngine parent) {
         super(parent);
     }
 
@@ -120,7 +121,7 @@ public class FileDatabaseProcess extends RuntimeProcess {
             config.setProperty("hibernate.hbm2ddl.auto", "validate");
         }
         
-        config = FileDatabaseProcess.addMappings(config);
+        config = LocalStartupProcess.addMappings(config);
         
         return config;
     }
