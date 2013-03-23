@@ -22,7 +22,7 @@ import java.awt.event.ActionListener;
 
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.engine.DPADEngine;
-import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
+import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.util.RuntimeType;
 
 /**

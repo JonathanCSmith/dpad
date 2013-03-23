@@ -21,10 +21,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import net.jonathansmith.javadpad.controller.DPADController;
-import net.jonathansmith.javadpad.engine.process.FileDatabaseProcess;
-import net.jonathansmith.javadpad.engine.thread.DPADConnectEngine;
-import net.jonathansmith.javadpad.engine.thread.DPADHostEngine;
-import net.jonathansmith.javadpad.engine.thread.DPADLocalEngine;
+import net.jonathansmith.javadpad.engine.local.process.LocalStartupProcess;
+import net.jonathansmith.javadpad.engine.connect.DPADConnectEngine;
+import net.jonathansmith.javadpad.engine.host.DPADHostEngine;
+import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 
 /**
  *
@@ -53,7 +53,7 @@ public class StartupPanelListener implements ActionListener {
             
             DPADLocalEngine local = new DPADLocalEngine(this.parent.logger);
             this.parent.setEngine(local);
-            ((FileDatabaseProcess) local.getRuntime()).setAttemptConnection(outcome);
+            ((LocalStartupProcess) local.getRuntime()).setAttemptConnection(outcome);
         }
         
         else if (evt.getSource() == this.parent.getGui().hostRuntime) {

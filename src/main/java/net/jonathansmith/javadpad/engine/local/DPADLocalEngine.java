@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.jonathansmith.javadpad.engine.thread;
+package net.jonathansmith.javadpad.engine.local;
 
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
 import net.jonathansmith.javadpad.engine.database.entry.ExperimentEntry;
 import net.jonathansmith.javadpad.engine.database.entry.UserEntry;
-import net.jonathansmith.javadpad.engine.process.AnalyseDisplayProcess;
-import net.jonathansmith.javadpad.engine.process.FileDatabaseProcess;
-import net.jonathansmith.javadpad.engine.process.LoadProcessProcess;
-import net.jonathansmith.javadpad.engine.process.RuntimeProcess;
+import net.jonathansmith.javadpad.engine.local.process.AnalyseDisplayProcess;
+import net.jonathansmith.javadpad.engine.local.process.LocalStartupProcess;
+import net.jonathansmith.javadpad.engine.local.process.LoadProcessProcess;
+import net.jonathansmith.javadpad.engine.local.process.RuntimeProcess;
 import net.jonathansmith.javadpad.util.RuntimeType;
-import net.jonathansmith.javadpad.engine.process.UserSetProcess;
+import net.jonathansmith.javadpad.engine.local.process.UserSetProcess;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.ThreadType;
 
@@ -37,11 +37,14 @@ import net.jonathansmith.javadpad.util.ThreadType;
  */
 public class DPADLocalEngine extends DPADEngine {
     
+    public static final int PROGRESS_MAX = 20;
+    
     public boolean status;
     public boolean errored = false;
     public boolean running = false;
     public boolean hasUser = false;
     public boolean hasExperiment = false;
+    public int progress = 0;
     
     private RuntimeType currentRuntime;
     private RuntimeProcess runtime;
@@ -122,7 +125,7 @@ public class DPADLocalEngine extends DPADEngine {
         }
         
         switch (runtime) {
-            case FILE_CONNECT:         this.runtime = new FileDatabaseProcess(this);
+            case FILE_CONNECT:         this.runtime = new LocalStartupProcess(this);
                                         break;
             
             case USER_SELECT:           this.runtime = new UserSetProcess(this);
@@ -150,6 +153,23 @@ public class DPADLocalEngine extends DPADEngine {
     @Override
     public ThreadType getThreadType() {
         return ThreadType.LOCAL;
+    }
+    
+    @Override
+    public int getProgressMax() {
+        return PROGRESS_MAX;
+    }
+    
+    @Override
+    public int getCurrentProgress() {
+        return this.progress;
+    }
+    
+    @Override
+    public void incrementProgress() {
+        if (this.progress < PROGRESS_MAX) {
+            this.progress++;
+        }
     }
     
     @Override
