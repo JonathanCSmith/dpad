@@ -44,6 +44,7 @@ public class LocalStartupProcess extends RuntimeProcess {
     @Override
     public void init() {
         this.running = true;
+        this.engine.incrementProgress();
     }
     
     @SuppressWarnings({"SleepWhileInLoop", "CallToThreadDumpStack"})
@@ -60,20 +61,26 @@ public class LocalStartupProcess extends RuntimeProcess {
                 return;
             }
         }
+        this.engine.incrementProgress();
         
         if (!this.running) {
             this.forceShutdown(false);
             return;
         }
+        this.engine.incrementProgress();
         
         Configuration config = this.buildSessionConfiguration();
+        this.engine.incrementProgress();
+        
         this.registry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
+        this.engine.incrementProgress();
         
         try {
             // Connection
             this.state = State.CONNECTING;
             this.factory = config.buildSessionFactory(this.registry);
             this.factory.openSession();
+            this.engine.incrementProgress();
             
         } catch (HibernateException ex) {
             this.state = State.CONNECTION_FAILURE;
@@ -84,9 +91,14 @@ public class LocalStartupProcess extends RuntimeProcess {
         }
         
         DatabaseConnection databaseConnection = new DatabaseConnection(this.factory, this.registry);
+        this.engine.incrementProgress();
         
         this.state = State.CONNECTED;
         this.engine.setDatabaseConnection(databaseConnection);
+        this.engine.incrementProgress();
+        
+        // Load plugins...
+        
         this.forceShutdown(false);
     }
 
@@ -112,6 +124,7 @@ public class LocalStartupProcess extends RuntimeProcess {
         config.setProperty("hibernate.connection.url", "jdbc:h2:file:" + this.path + "/JDPADDatabase");
         config.setProperty("hibernate.connection.username", "sa");
         config.setProperty("hibernate.connection.password", "");
+        this.engine.incrementProgress();
         
         File file = new File(this.path + "/JDPADDatabase.h2.db");
         if (!file.exists()) {
@@ -120,14 +133,15 @@ public class LocalStartupProcess extends RuntimeProcess {
         } else {
             config.setProperty("hibernate.hbm2ddl.auto", "validate");
         }
+        this.engine.incrementProgress();
         
-        config = LocalStartupProcess.addMappings(config);
-        
+        config = this.addMappings(config);
         return config;
     }
     
-    private static Configuration addMappings(Configuration config) {
+    private Configuration addMappings(Configuration config) {
         config.addAnnotatedClass(ExperimentEntry.class);
+        this.engine.incrementProgress();
         return config;
     }
 }
