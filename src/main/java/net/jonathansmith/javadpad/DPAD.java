@@ -29,7 +29,6 @@ public class DPAD extends Thread {
      */
     @SuppressWarnings({"CallToThreadDumpStack", "SleepWhileInLoop"})
     public static void main(String[] args) {
-        System.out.println("Starting DPAD");
         DPADController controller = new DPADController();
         controller.init();
         
