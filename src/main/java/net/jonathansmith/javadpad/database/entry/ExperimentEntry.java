@@ -18,11 +18,14 @@ package net.jonathansmith.javadpad.database.entry;
 
 import java.io.Serializable;
 
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -31,22 +34,33 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Jon
  */
 @Entity
-@Table(name = "Experiment")
+@Table(name = "Experiment", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
 public class ExperimentEntry implements Serializable {
     
     private String uuid;
+    private Set<BatchEntry> batches;
     
     public ExperimentEntry() {}
     
     @Id
     @GeneratedValue(generator = "system-uuid")
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
-    @Column(name = "uuid", updatable = false, nullable = false)
+    @Column(name = "uuid", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
     }
     
     public void setUUID(String uuid) {
         this.uuid = uuid;
+    }
+    
+    @Column(name = "Batches")
+    @OneToMany
+    public Set<BatchEntry> getBatches() {
+        return this.batches;
+    }
+    
+    public void setBatches(Set<BatchEntry> batches) {
+        this.batches = batches;
     }
 }
