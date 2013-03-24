@@ -607,7 +607,7 @@
                 <Container class="javax.swing.JPanel" name="clientMainPanel">
                   <Properties>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-                      <Dimension value="[32767, 32767]"/>
+                      <Dimension value="[312, 202]"/>
                     </Property>
                   </Properties>
                   <Constraints>

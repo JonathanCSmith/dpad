@@ -24,7 +24,7 @@ package net.jonathansmith.javadpad.util;
  */
 public enum RuntimeType {
     RUNTIME_SELECT(false, true),
-    FILE_CONNECT(true, true),
+    SETUP_LOCAL(true, true),
     IDLE_LOCAL(false, true),
     
     USER_SELECT(true, true),

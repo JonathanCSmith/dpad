@@ -18,6 +18,7 @@ package net.jonathansmith.javadpad.engine;
 
 import java.util.Observable;
 
+import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.ThreadType;
@@ -29,9 +30,11 @@ import net.jonathansmith.javadpad.util.ThreadType;
 public abstract class DPADEngine extends Observable implements Runnable {
     
     public DPADLogger logger;
+    public FileSystem fileSystem;
     
-    public DPADEngine(DPADLogger logger) {
+    public DPADEngine(DPADLogger logger, FileSystem fileSystem) {
         this.logger = logger;
+        this.fileSystem = fileSystem;
     }
     
     public abstract void init();

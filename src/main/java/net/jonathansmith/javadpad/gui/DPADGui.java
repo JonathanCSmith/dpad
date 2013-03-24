@@ -400,7 +400,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
         displaySplitPane.setLeftComponent(userPanel);
 
-        clientMainPanel.setPreferredSize(new java.awt.Dimension(32767, 32767));
+        clientMainPanel.setPreferredSize(new java.awt.Dimension(312, 202));
 
         javax.swing.GroupLayout clientMainPanelLayout = new javax.swing.GroupLayout(clientMainPanel);
         clientMainPanel.setLayout(clientMainPanelLayout);
