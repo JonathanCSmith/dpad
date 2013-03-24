@@ -37,7 +37,7 @@ public class UserPanelListener implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (evt.getSource() == this.controller.getGui().userBack) {
+        if (evt.getSource() == this.controller.getGui().userToolbar.userBack) {
             this.controller.getEngine().sendQuitToRuntime();
         }
     }
