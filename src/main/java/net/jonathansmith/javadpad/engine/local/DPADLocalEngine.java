@@ -37,14 +37,11 @@ import net.jonathansmith.javadpad.util.ThreadType;
  */
 public class DPADLocalEngine extends DPADEngine {
     
-    public static final int PROGRESS_MAX = 20;
-    
     public boolean status;
     public boolean errored = false;
     public boolean running = false;
     public boolean hasUser = false;
     public boolean hasExperiment = false;
-    public int progress = 0;
     
     private RuntimeType currentRuntime;
     private RuntimeProcess runtime;
@@ -153,23 +150,6 @@ public class DPADLocalEngine extends DPADEngine {
     @Override
     public ThreadType getThreadType() {
         return ThreadType.LOCAL;
-    }
-    
-    @Override
-    public int getProgressMax() {
-        return PROGRESS_MAX;
-    }
-    
-    @Override
-    public int getCurrentProgress() {
-        return this.progress;
-    }
-    
-    @Override
-    public void incrementProgress() {
-        if (this.progress < PROGRESS_MAX) {
-            this.progress++;
-        }
     }
     
     @Override
