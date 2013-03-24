@@ -21,7 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import net.jonathansmith.javadpad.controller.DPADController;
-import net.jonathansmith.javadpad.engine.local.process.LocalStartupProcess;
+import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess;
 import net.jonathansmith.javadpad.engine.connect.DPADConnectEngine;
 import net.jonathansmith.javadpad.engine.host.DPADHostEngine;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
@@ -51,9 +51,9 @@ public class StartupPanelListener implements ActionListener {
                 return;
             }
             
-            DPADLocalEngine local = new DPADLocalEngine(this.parent.logger);
+            DPADLocalEngine local = new DPADLocalEngine(this.parent.logger, this.parent.fileSystem);
             this.parent.setEngine(local);
-            ((LocalStartupProcess) local.getRuntime()).setAttemptConnection(outcome);
+            ((Startup_LocalProcess) local.getRuntime()).setAttemptConnection(outcome);
         }
         
         else if (evt.getSource() == this.parent.getGui().hostRuntime) {
@@ -67,13 +67,13 @@ public class StartupPanelListener implements ActionListener {
                 return;
             }
             
-            DPADHostEngine host = new DPADHostEngine(this.parent.logger);
+            DPADHostEngine host = new DPADHostEngine(this.parent.logger, this.parent.fileSystem);
             this.parent.setEngine(host);
             //((DPADHostEngine) host.getRuntime()).createOrManageDatabase(outcome);
         }
         
         else if (evt.getSource() == this.parent.getGui().connectRuntime) {
-            this.parent.setEngine(new DPADConnectEngine(this.parent.logger));
+            this.parent.setEngine(new DPADConnectEngine(this.parent.logger, this.parent.fileSystem));
         }
     }
 }

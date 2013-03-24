@@ -18,15 +18,18 @@
 package net.jonathansmith.javadpad.engine.local;
 
 import net.jonathansmith.javadpad.engine.DPADEngine;
-import net.jonathansmith.javadpad.engine.database.DatabaseConnection;
-import net.jonathansmith.javadpad.engine.database.entry.ExperimentEntry;
-import net.jonathansmith.javadpad.engine.database.entry.UserEntry;
+import net.jonathansmith.javadpad.database.DatabaseConnection;
+import net.jonathansmith.javadpad.database.entry.ExperimentEntry;
+import net.jonathansmith.javadpad.database.entry.UserEntry;
 import net.jonathansmith.javadpad.engine.local.process.AnalyseDisplayProcess;
-import net.jonathansmith.javadpad.engine.local.process.LocalStartupProcess;
+import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess;
 import net.jonathansmith.javadpad.engine.local.process.LoadProcessProcess;
 import net.jonathansmith.javadpad.engine.local.process.RuntimeProcess;
+import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess.State;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.engine.local.process.UserSetProcess;
+import net.jonathansmith.javadpad.plugin.DPADPluginManager;
+import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.ThreadType;
 
@@ -37,25 +40,29 @@ import net.jonathansmith.javadpad.util.ThreadType;
  */
 public class DPADLocalEngine extends DPADEngine {
     
-    public boolean status;
+    public boolean status = false;
     public boolean errored = false;
     public boolean running = false;
+    
     public boolean hasUser = false;
     public boolean hasExperiment = false;
     
     private RuntimeType currentRuntime;
     private RuntimeProcess runtime;
+    
+    private DatabaseConnection session = null;
+    private DPADPluginManager pluginManager = null;
+    
     private UserEntry user = null;
     private ExperimentEntry experiment = null;
-    private DatabaseConnection session = null;
     
-    public DPADLocalEngine(DPADLogger logger) {
-        super(logger);
+    public DPADLocalEngine(DPADLogger logger, FileSystem fileSystem) {
+        super(logger, fileSystem);
     }
     
     public void init() {
         this.status = true;
-        this.setRuntime(RuntimeType.FILE_CONNECT);
+        this.setRuntime(RuntimeType.SETUP_LOCAL);
     }
     
     @SuppressWarnings({"CallToThreadDumpStack", "SleepWhileInLoop"})
@@ -95,6 +102,19 @@ public class DPADLocalEngine extends DPADEngine {
         }
     }
     
+    public void setupEngine() {
+        if (this.currentRuntime != RuntimeType.SETUP_LOCAL 
+            || !(this.runtime instanceof Startup_LocalProcess)
+            || ((Startup_LocalProcess) this.runtime).getProgressState() != State.CONNECTED) {
+            return;
+        }
+        
+        Startup_LocalProcess setup = (Startup_LocalProcess) this.runtime;
+        this.session = setup.getDatabaseConnection();
+        this.pluginManager = setup.getPluginManager();
+        this.sendQuitToRuntime();
+    }
+    
     public synchronized RuntimeType getCurrentRuntime() {
         this.logger.info("Retrieving current runtime");
         return this.currentRuntime;
@@ -122,7 +142,7 @@ public class DPADLocalEngine extends DPADEngine {
         }
         
         switch (runtime) {
-            case FILE_CONNECT:         this.runtime = new LocalStartupProcess(this);
+            case SETUP_LOCAL:         this.runtime = new Startup_LocalProcess(this);
                                         break;
             
             case USER_SELECT:           this.runtime = new UserSetProcess(this);
@@ -168,10 +188,6 @@ public class DPADLocalEngine extends DPADEngine {
         
         this.setChanged();
         this.notifyObservers();
-    }
-    
-    public void setDatabaseConnection(DatabaseConnection connection) {
-        this.session = connection;
     }
 
     @Override
