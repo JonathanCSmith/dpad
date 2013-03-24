@@ -20,6 +20,7 @@ import net.jonathansmith.javadpad.util.FileSystem;
 import net.xeoh.plugins.base.PluginManager;
 import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
+import net.xeoh.plugins.base.util.PluginManagerUtil;
 
 /**
  *
@@ -28,6 +29,7 @@ import net.xeoh.plugins.base.util.JSPFProperties;
 public class DPADPluginManager {
     
     public PluginManager pluginManager;
+    public PluginManagerUtil utils;
     public final JSPFProperties props;
     public FileSystem fileSystem;
     
@@ -38,6 +40,7 @@ public class DPADPluginManager {
         this.props.setProperty(PluginManager.class, "cache.file",    "jspf.cache");
         
         this.pluginManager = PluginManagerFactory.createPluginManager(this.props);
+        this.utils = new PluginManagerUtil(this.pluginManager);
     }
     
     public void setFileSystemAndSetup(FileSystem fileSystem) {
