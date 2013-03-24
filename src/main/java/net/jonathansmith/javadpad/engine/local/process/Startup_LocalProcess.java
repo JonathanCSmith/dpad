@@ -15,6 +15,8 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import net.jonathansmith.javadpad.database.entry.ExperimentEntry;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.database.DatabaseConnection;
+import net.jonathansmith.javadpad.database.entry.BatchEntry;
+import net.jonathansmith.javadpad.database.entry.UserEntry;
 import net.jonathansmith.javadpad.plugin.DPADPluginManager;
 
 /**
@@ -82,7 +84,7 @@ public class Startup_LocalProcess extends RuntimeProcess {
         } catch (HibernateException ex) {
             this.state = State.CONNECTION_FAILURE;
             this.engine.logger.severe("Connection to: " + this.path + " was rejected or unavailable");
-            ex.printStackTrace();
+            this.engine.logger.logStackTrace(ex);
             this.forceShutdown(true);
             return;
         }
@@ -92,7 +94,6 @@ public class Startup_LocalProcess extends RuntimeProcess {
         
         // Load plugins...
         this.pluginManager = new DPADPluginManager();
-        
         this.engine.setupEngine();
     }
 
@@ -132,7 +133,9 @@ public class Startup_LocalProcess extends RuntimeProcess {
     }
     
     private Configuration addMappings(Configuration config) {
+        config.addAnnotatedClass(UserEntry.class);
         config.addAnnotatedClass(ExperimentEntry.class);
+        config.addAnnotatedClass(BatchEntry.class);
         return config;
     }
     

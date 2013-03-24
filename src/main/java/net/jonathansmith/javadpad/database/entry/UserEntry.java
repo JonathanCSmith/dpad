@@ -28,8 +28,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
@@ -38,7 +36,7 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "Users", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class UserEntry implements Serializable, DPADEntry {
+public class UserEntry implements Serializable {
     
     private String uuid;
     private String username;
@@ -90,9 +88,5 @@ public class UserEntry implements Serializable, DPADEntry {
     
     public void setExperiments(Set<ExperimentEntry> experiments) {
         this.experiments = experiments;
-    }
-    
-    public String getTableName() {
-        return "Users";
     }
 }

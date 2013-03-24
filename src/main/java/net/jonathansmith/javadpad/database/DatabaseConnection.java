@@ -16,8 +16,6 @@
  */
 package net.jonathansmith.javadpad.database;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -25,8 +23,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.service.ServiceRegistry;
-
-import net.jonathansmith.javadpad.database.entry.DPADEntry;
 
 /**
  *
@@ -42,96 +38,96 @@ public class DatabaseConnection {
         this.registry = registry;
     }
     
-    public List listEntries(DPADEntry entry) {
-        Transaction tx = null;
-        Session sess = this.factory.getCurrentSession();
-        
-        try {
-            tx = sess.beginTransaction();
-            List entries = sess.createQuery("select h from " + entry.getTableName() + " as h").list();
-            tx.commit();
-            return entries;
-            
-        } catch (RuntimeException ex) {
-            if (tx != null && tx.isActive()) {
-                try {
-                    tx.rollback();
-                    
-                } catch (HibernateException ex2) {
-                    // Exception handling here
-                }
-            }
-            
-            throw ex;
-        }
-    }
-    
-    public void createEntry(DPADEntry entry) {
-        Transaction tx = null;
-        Session sess = this.factory.getCurrentSession();
-        
-        try {
-            tx = sess.beginTransaction();
-            sess.save(entry);
-            tx.commit();
-            
-        } catch (RuntimeException ex) {
-            if (tx != null && tx.isActive()) {
-                try {
-                    tx.rollback();
-                    
-                } catch (HibernateException ex2) {
-                    // Exception handling here
-                }
-            }
-            
-            throw ex;
-        }
-    }
-    
-    public void deleteEntry(DPADEntry entry) {
-        Transaction tx = null;
-        Session sess = this.factory.getCurrentSession();
-        
-        try {
-            tx = sess.beginTransaction();
-            sess.delete(entry);
-            tx.commit();
-            
-        } catch (RuntimeException ex) {
-            if (tx != null && tx.isActive()) {
-                try {
-                    tx.rollback();
-                    
-                } catch (HibernateException ex2) {
-                    // Exception handling here
-                }
-            }
-            
-            throw ex;
-        }
-    }
-    
-    public void updateEntry(DPADEntry entry) {
-        Transaction tx = null;
-        Session sess = this.factory.getCurrentSession();
-        
-        try {
-            tx = sess.beginTransaction();
-            sess.update(entry);
-            tx.commit();
-            
-        } catch (RuntimeException ex) {
-            if (tx != null && tx.isActive()) {
-                try {
-                    tx.rollback();
-                    
-                } catch (HibernateException ex2) {
-                    // Exception handling here
-                }
-            }
-            
-            throw ex;
-        }
-    }
+//    public List listEntries(DPADEntry entry) {
+//        Transaction tx = null;
+//        Session sess = this.factory.getCurrentSession();
+//        
+//        try {
+//            tx = sess.beginTransaction();
+//            List entries = sess.createQuery("select h from " + entry.getTableName() + " as h").list();
+//            tx.commit();
+//            return entries;
+//            
+//        } catch (RuntimeException ex) {
+//            if (tx != null && tx.isActive()) {
+//                try {
+//                    tx.rollback();
+//                    
+//                } catch (HibernateException ex2) {
+//                    // Exception handling here
+//                }
+//            }
+//            
+//            throw ex;
+//        }
+//    }
+//    
+//    public void createEntry(DPADEntry entry) {
+//        Transaction tx = null;
+//        Session sess = this.factory.getCurrentSession();
+//        
+//        try {
+//            tx = sess.beginTransaction();
+//            sess.save(entry);
+//            tx.commit();
+//            
+//        } catch (RuntimeException ex) {
+//            if (tx != null && tx.isActive()) {
+//                try {
+//                    tx.rollback();
+//                    
+//                } catch (HibernateException ex2) {
+//                    // Exception handling here
+//                }
+//            }
+//            
+//            throw ex;
+//        }
+//    }
+//    
+//    public void deleteEntry(DPADEntry entry) {
+//        Transaction tx = null;
+//        Session sess = this.factory.getCurrentSession();
+//        
+//        try {
+//            tx = sess.beginTransaction();
+//            sess.delete(entry);
+//            tx.commit();
+//            
+//        } catch (RuntimeException ex) {
+//            if (tx != null && tx.isActive()) {
+//                try {
+//                    tx.rollback();
+//                    
+//                } catch (HibernateException ex2) {
+//                    // Exception handling here
+//                }
+//            }
+//            
+//            throw ex;
+//        }
+//    }
+//    
+//    public void updateEntry(DPADEntry entry) {
+//        Transaction tx = null;
+//        Session sess = this.factory.getCurrentSession();
+//        
+//        try {
+//            tx = sess.beginTransaction();
+//            sess.update(entry);
+//            tx.commit();
+//            
+//        } catch (RuntimeException ex) {
+//            if (tx != null && tx.isActive()) {
+//                try {
+//                    tx.rollback();
+//                    
+//                } catch (HibernateException ex2) {
+//                    // Exception handling here
+//                }
+//            }
+//            
+//            throw ex;
+//        }
+//    }
 }

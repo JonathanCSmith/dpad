@@ -80,7 +80,7 @@ public class DPADLocalEngine extends DPADClientEngine {
                     Thread.sleep(100);
                 } catch (Throwable t) {
                     this.logger.severe("Exception in worker, runtime execution halted");
-                    t.printStackTrace();
+                    this.logger.logStackTrace(t);
                 }
             }
             
@@ -95,7 +95,7 @@ public class DPADLocalEngine extends DPADClientEngine {
                         
                     } catch (Throwable t) {
                         this.logger.severe("Exception in worker, runtime execution halted");
-                        t.printStackTrace();
+                        this.logger.logStackTrace(t);
                     }
                 }
             }
