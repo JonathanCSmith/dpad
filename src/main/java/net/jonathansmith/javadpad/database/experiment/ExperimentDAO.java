@@ -14,30 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.engine;
+package net.jonathansmith.javadpad.database.experiment;
 
-import net.jonathansmith.javadpad.database.experiment.Experiment;
-import net.jonathansmith.javadpad.database.user.User;
-import net.jonathansmith.javadpad.util.FileSystem;
+import net.jonathansmith.javadpad.database.GenericDAO;
 
 /**
  *
  * @author Jon
  */
-public abstract class DPADClientEngine extends DPADEngine {
-
-    public User user = null;
-    public Experiment experiment = null;
+public class ExperimentDAO extends GenericDAO<Experiment, String> {
     
-    public DPADClientEngine(FileSystem fileSystem) {
-        super(fileSystem);
-    }
-    
-    public User getUser() {
-        return this.user;
-    }
-    
-    public Experiment getExperiment() {
-        return this.experiment;
-    }
 }

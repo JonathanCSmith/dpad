@@ -14,11 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.database.entry;
+package net.jonathansmith.javadpad.database.user;
 
 import java.io.Serializable;
 
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,6 +28,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.database.experiment.Experiment;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
@@ -34,13 +36,20 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Jon
  */
 @Entity
-@Table(name = "Experiments", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class ExperimentEntry implements Serializable {
+@Table(name = "User", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+public class User implements Serializable {
     
     private String uuid;
-    private Set<BatchEntry> batches;
+    private String username;
+    private String password;
+    private Set<Experiment> experiments;
     
-    public ExperimentEntry() {}
+    public User() {}
+    
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
     
     @Id
     @GeneratedValue(generator = "system-uuid")
@@ -54,13 +63,31 @@ public class ExperimentEntry implements Serializable {
         this.uuid = uuid;
     }
     
-    @Column(name = "Batches")
-    @OneToMany(orphanRemoval = true)
-    public Set<BatchEntry> getBatches() {
-        return this.batches;
+    @Column(name = "Name")
+    public String getName() {
+        return this.username;
     }
     
-    public void setBatches(Set<BatchEntry> batches) {
-        this.batches = batches;
+    public void setName(String username) {
+        this.username = username;
+    }
+    
+    @Column(name = "Password")
+    public String getPassword() {
+        return this.password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    @Column(name = "Experiment")
+    @OneToMany(orphanRemoval = true)
+    public Set<Experiment> getExperiments() {
+        return this.experiments;
+    }
+    
+    public void setExperiments(Set<Experiment> experiments) {
+        this.experiments = experiments;
     }
 }

@@ -18,8 +18,8 @@
 package net.jonathansmith.javadpad.engine.local;
 
 import net.jonathansmith.javadpad.database.DatabaseConnection;
-import net.jonathansmith.javadpad.database.entry.ExperimentEntry;
-import net.jonathansmith.javadpad.database.entry.UserEntry;
+import net.jonathansmith.javadpad.database.experiment.Experiment;
+import net.jonathansmith.javadpad.database.user.User;
 import net.jonathansmith.javadpad.engine.DPADClientEngine;
 import net.jonathansmith.javadpad.engine.local.process.AnalyseDisplayProcess;
 import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess;
@@ -53,11 +53,11 @@ public class DPADLocalEngine extends DPADClientEngine {
     private DatabaseConnection session = null;
     private DPADPluginManager pluginManager = null;
     
-    private UserEntry user = null;
-    private ExperimentEntry experiment = null;
+    private User user = null;
+    private Experiment experiment = null;
     
-    public DPADLocalEngine(DPADLogger logger, FileSystem fileSystem) {
-        super(logger, fileSystem);
+    public DPADLocalEngine(FileSystem fileSystem) {
+        super(fileSystem);
     }
     
     public void init() {
@@ -70,7 +70,7 @@ public class DPADLocalEngine extends DPADClientEngine {
     public void run() {
         while (this.status) {
             if (this.errored) {
-                this.logger.severe("Exception in worker, runtime execution halted");
+                DPADLogger.severe("Exception in worker, runtime execution halted");
                 this.status = false;
                 continue;
             }
@@ -79,8 +79,8 @@ public class DPADLocalEngine extends DPADClientEngine {
                 try {
                     Thread.sleep(100);
                 } catch (Throwable t) {
-                    this.logger.severe("Exception in worker, runtime execution halted");
-                    this.logger.logStackTrace(t);
+                    DPADLogger.severe("Exception in worker, runtime execution halted");
+                    DPADLogger.logStackTrace(t);
                 }
             }
             
@@ -94,8 +94,8 @@ public class DPADLocalEngine extends DPADClientEngine {
                         Thread.sleep(100);
                         
                     } catch (Throwable t) {
-                        this.logger.severe("Exception in worker, runtime execution halted");
-                        this.logger.logStackTrace(t);
+                        DPADLogger.severe("Exception in worker, runtime execution halted");
+                        DPADLogger.logStackTrace(t);
                     }
                 }
             }
@@ -116,28 +116,28 @@ public class DPADLocalEngine extends DPADClientEngine {
     }
     
     public synchronized RuntimeType getCurrentRuntime() {
-        this.logger.info("Retrieving current runtime");
+        DPADLogger.info("Retrieving current runtime");
         return this.currentRuntime;
     }
     
     public synchronized RuntimeProcess getRuntime() {
-        this.logger.info("Retrieving runtime");
+        DPADLogger.info("Retrieving runtime");
         return this.runtime;
     }
     
     public void setRuntime(RuntimeType runtime) {
         if (!this.status) {
-            this.logger.severe("Cannot switch runtimes when the engine has crashed");
+            DPADLogger.severe("Cannot switch runtimes when the engine has crashed");
             return;
         }
         
         if (this.errored) {
-            this.logger.severe("Cannot continue as the engine has thrown an unhandled error");
+            DPADLogger.severe("Cannot continue as the engine has thrown an unhandled error");
             return;
         }
         
         if (this.runtime != null && this.runtime.isAlive()) {
-            this.logger.severe("Cannot change runtime as it is currently in: " + this.currentRuntime.toString());
+            DPADLogger.severe("Cannot change runtime as it is currently in: " + this.currentRuntime.toString());
             return;
         }
         
@@ -164,7 +164,7 @@ public class DPADLocalEngine extends DPADClientEngine {
         
         this.setChanged();
         this.notifyObservers();
-        this.logger.info("Notified observers of engine changed to: " + this.currentRuntime.toString());
+        DPADLogger.info("Notified observers of engine changed to: " + this.currentRuntime.toString());
     }
 
     @Override
@@ -174,7 +174,7 @@ public class DPADLocalEngine extends DPADClientEngine {
     
     @Override
     public void sendQuitToRuntime() {
-        this.logger.info("Forcing runtime shutdown of current thread, assumed reason: back was called");
+        DPADLogger.info("Forcing runtime shutdown of current thread, assumed reason: back was called");
         if (this.currentRuntime != RuntimeType.IDLE_LOCAL) {
             this.runtime.forceShutdown(false);
         }

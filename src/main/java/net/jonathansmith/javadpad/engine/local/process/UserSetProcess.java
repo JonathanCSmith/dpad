@@ -18,6 +18,7 @@
 package net.jonathansmith.javadpad.engine.local.process;
 
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  * UserRuntime
@@ -45,15 +46,15 @@ public class UserSetProcess extends RuntimeProcess {
                 Thread.sleep(100);
                 
             } catch (Throwable t) {
-                this.engine.logger.severe("Interrupted!");
-                t.printStackTrace();
+                DPADLogger.severe("Interrupted!");
+                DPADLogger.logStackTrace(t);
             }
         }
     }
 
     @Override
     public void forceShutdown(boolean error) {
-        this.engine.logger.info("Called force shutdown in user thread...");
+        DPADLogger.info("Called force shutdown in user thread...");
         this.shutdownFlag = true;
         super.end(error);
     }

@@ -14,17 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.database.entry;
+package net.jonathansmith.javadpad.database.experiment;
 
 import java.io.Serializable;
 
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.database.entry.Batch;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
@@ -32,12 +35,13 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Jon
  */
 @Entity
-@Table(name = "Batches", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class BatchEntry implements Serializable {
+@Table(name = "Experiment", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+public class Experiment implements Serializable {
     
     private String uuid;
+    private Set<Batch> batches;
     
-    public BatchEntry() {}
+    public Experiment() {}
     
     @Id
     @GeneratedValue(generator = "system-uuid")
@@ -49,5 +53,15 @@ public class BatchEntry implements Serializable {
     
     public void setUUID(String uuid) {
         this.uuid = uuid;
+    }
+    
+    @Column(name = "Batch")
+    @OneToMany(orphanRemoval = true)
+    public Set<Batch> getBatches() {
+        return this.batches;
+    }
+    
+    public void setBatches(Set<Batch> batches) {
+        this.batches = batches;
     }
 }

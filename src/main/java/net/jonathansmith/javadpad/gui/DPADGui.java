@@ -51,7 +51,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
     public DPADEngine engine;
     public DPADController controller;
-    public DPADLogger logger;
     public RuntimeType type;
     public boolean errored = false;
     
@@ -67,8 +66,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     /**
      * Creates new form DPADG
      */
-    public DPADGui(DPADLogger logger, DPADController controller) {
-        this.logger = logger;
+    public DPADGui(DPADController controller) {
         this.controller = controller;
     }
 
@@ -166,13 +164,13 @@ public class DPADGui extends JFrame implements Runnable, Observer {
             }
             
         } catch (InstantiationException ex) {
-            this.logger.severe("Look and feel instantiation exception");
+            DPADLogger.severe("Look and feel instantiation exception");
         } catch (IllegalAccessException ex) {
-            this.logger.severe("Illegal access of look and feel");
+            DPADLogger.severe("Illegal access of look and feel");
         } catch (UnsupportedLookAndFeelException ex) {
-            this.logger.severe("Unsupported look and feel");
+            DPADLogger.severe("Unsupported look and feel");
         } catch (ClassNotFoundException ex) {
-            this.logger.severe("Class not found when setting look and feel");
+            DPADLogger.severe("Class not found when setting look and feel");
         } 
         
         this.initComponents();
@@ -186,7 +184,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.userPane = new UserPane();
         this.userToolbar = new UserToolbar();
         
-        this.logger.addLogger(new LogHandler(this));
+        DPADLogger.addLogHandler(new LogHandler(this));
     }
     
     @Override
@@ -198,7 +196,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     
     public void setEngine(DPADEngine engine) {
         if (this.engine != null) {
-            this.logger.warning("Cannot change the DPAD engine once it has been set");
+            DPADLogger.warning("Cannot change the DPAD engine once it has been set");
             return;
         }
         

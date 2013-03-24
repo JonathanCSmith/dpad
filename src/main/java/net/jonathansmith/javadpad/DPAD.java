@@ -17,6 +17,7 @@
 package net.jonathansmith.javadpad;
 
 import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *
@@ -38,15 +39,15 @@ public class DPAD extends Thread {
             try {
                 controller.join();
             } catch (InterruptedException ex) {
-                controller.logger.severe("Runtime interruption, DPAD shutting down");
+                DPADLogger.severe("Runtime interruption, DPAD shutting down");
             }
             
             if (controller.errored) {
-                controller.logger.severe("Runtime failure, DPAD shutting down");
+                DPADLogger.severe("Runtime failure, DPAD shutting down");
             }
             
         } else {
-            controller.logger.severe("Failed to setup runtime environment");
+            DPADLogger.severe("Failed to setup runtime environment");
         }
         
         Runtime.getRuntime().halt(1);

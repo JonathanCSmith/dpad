@@ -12,12 +12,13 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
-import net.jonathansmith.javadpad.database.entry.ExperimentEntry;
+import net.jonathansmith.javadpad.database.experiment.Experiment;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.database.DatabaseConnection;
-import net.jonathansmith.javadpad.database.entry.BatchEntry;
-import net.jonathansmith.javadpad.database.entry.UserEntry;
+import net.jonathansmith.javadpad.database.entry.Batch;
+import net.jonathansmith.javadpad.database.user.User;
 import net.jonathansmith.javadpad.plugin.DPADPluginManager;
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  * Note this should be client side in the future, will probably require
@@ -60,8 +61,8 @@ public class Startup_LocalProcess extends RuntimeProcess {
                 Thread.sleep(100);
                 
             } catch (InterruptedException ex) {
-                this.engine.logger.severe("Database thread interrupted");
-                ex.printStackTrace();
+                DPADLogger.severe("Database thread interrupted");
+                DPADLogger.logStackTrace(ex);
                 this.forceShutdown(true);
                 return;
             }
@@ -83,8 +84,8 @@ public class Startup_LocalProcess extends RuntimeProcess {
             
         } catch (HibernateException ex) {
             this.state = State.CONNECTION_FAILURE;
-            this.engine.logger.severe("Connection to: " + this.path + " was rejected or unavailable");
-            this.engine.logger.logStackTrace(ex);
+            DPADLogger.severe("Connection to: " + this.path + " was rejected or unavailable");
+            DPADLogger.logStackTrace(ex);
             this.forceShutdown(true);
             return;
         }
@@ -133,9 +134,9 @@ public class Startup_LocalProcess extends RuntimeProcess {
     }
     
     private Configuration addMappings(Configuration config) {
-        config.addAnnotatedClass(UserEntry.class);
-        config.addAnnotatedClass(ExperimentEntry.class);
-        config.addAnnotatedClass(BatchEntry.class);
+        config.addAnnotatedClass(User.class);
+        config.addAnnotatedClass(Experiment.class);
+        config.addAnnotatedClass(Batch.class);
         return config;
     }
     
