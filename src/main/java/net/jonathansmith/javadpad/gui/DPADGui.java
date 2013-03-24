@@ -69,6 +69,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
      */
     public DPADGui(DPADLogger logger, DPADController controller) {
         this.logger = logger;
+        this.controller = controller;
     }
 
     /**
@@ -302,7 +303,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
             this.toolbarSplitPane.setDividerLocation(115);
         }
         
-        if (this.displaySplitPane.getDividerLocation() <= (this.displaySplitPane.getHeight() - 120)) {
+        if (this.displaySplitPane.getDividerLocation() <= (this.displaySplitPane.getSize().height - 120)) {
             this.displaySplitPane.setDividerLocation(this.displaySplitPane.getSize().height - 120);
         }
     }

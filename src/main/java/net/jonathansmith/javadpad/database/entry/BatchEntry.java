@@ -33,7 +33,7 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "Batches", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class BatchEntry implements Serializable, DPADEntry {
+public class BatchEntry implements Serializable {
     
     private String uuid;
     
@@ -49,9 +49,5 @@ public class BatchEntry implements Serializable, DPADEntry {
     
     public void setUUID(String uuid) {
         this.uuid = uuid;
-    }
-    
-    public String getTableName() {
-        return "Batches";
     }
 }

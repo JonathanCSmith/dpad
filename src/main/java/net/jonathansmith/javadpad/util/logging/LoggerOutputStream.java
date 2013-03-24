@@ -21,8 +21,6 @@ import java.io.OutputStream;
 
 import java.util.logging.Level;
 
-import net.jonathansmith.javadpad.util.logging.DPADLogger;
-
 /**
  *
  * @author Jon
