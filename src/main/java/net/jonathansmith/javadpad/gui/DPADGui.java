@@ -98,8 +98,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         userPanel = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         clientMainPanel = new javax.swing.JPanel();
-        setupProgressBar = new javax.swing.JProgressBar();
-        jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -233,20 +231,16 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         clientMainToolbarLayout.setHorizontalGroup(
             clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(clientMainToolbarLayout.createSequentialGroup()
+                .addGap(5, 5, 5)
                 .addGroup(clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(clientMainToolbarLayout.createSequentialGroup()
-                        .addGap(5, 5, 5)
-                        .addGroup(clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                                    .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(setExperiment, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addComponent(jLabel4))
-                            .addComponent(setBatch)
-                            .addComponent(jLabel6)))
-                    .addGroup(clientMainToolbarLayout.createSequentialGroup()
-                        .addGap(5, 5, 5)
-                        .addComponent(jLabel7)))
+                    .addGroup(clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(setExperiment, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel4))
+                    .addComponent(setBatch)
+                    .addComponent(jLabel6)
+                    .addComponent(jLabel7))
                 .addContainerGap())
         );
 
@@ -321,7 +315,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
                         .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(databaseURLText)
                             .addComponent(hostInfo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(localInfo, javax.swing.GroupLayout.DEFAULT_SIZE, 427, Short.MAX_VALUE))
+                            .addComponent(localInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(5, 5, 5)
                         .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(hostRuntime, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -408,29 +402,15 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
         clientMainPanel.setPreferredSize(new java.awt.Dimension(32767, 32767));
 
-        jLabel9.setText("Setup Progress");
-
         javax.swing.GroupLayout clientMainPanelLayout = new javax.swing.GroupLayout(clientMainPanel);
         clientMainPanel.setLayout(clientMainPanelLayout);
         clientMainPanelLayout.setHorizontalGroup(
             clientMainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(clientMainPanelLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addGroup(clientMainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(setupProgressBar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
-                    .addGroup(clientMainPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel9)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addGap(5, 5, 5))
+            .addGap(0, 531, Short.MAX_VALUE)
         );
         clientMainPanelLayout.setVerticalGroup(
             clientMainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(clientMainPanelLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(jLabel9)
-                .addGap(5, 5, 5)
-                .addComponent(setupProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(352, Short.MAX_VALUE))
+            .addGap(0, 390, Short.MAX_VALUE)
         );
 
         displaySplitPane.setLeftComponent(clientMainPanel);
@@ -491,8 +471,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         
         this.engine = engine;
         this.engine.addObserver(this);
-        this.setupProgressBar.setMaximum(this.engine.getProgressMax());
-        this.setupProgressBar.setValue(this.engine.getCurrentProgress());
     }
     
     @Override
@@ -502,10 +480,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
             if (currentRuntime != this.type && currentRuntime.isDisplayable()) {
                 this.type = this.engine.getCurrentRuntime();
                 this.validateState();
-            }
-            
-            else if (this.engine.getCurrentProgress() != this.setupProgressBar.getValue()) {
-                this.setupProgressBar.setValue(this.engine.getCurrentProgress());
             }
         }
     }
@@ -535,10 +509,12 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     
     public void validateState() {
         switch (this.type) {
-            case RUNTIME_SELECT:    this.setCorePanels(this.startupPanel, this.startupToolbar);
+            case RUNTIME_SELECT:        
+                                    this.setCorePanels(this.startupPanel, this.startupToolbar);
                                     break;
             
-            case IDLE_LOCAL:        this.setCorePanels(this.clientMainPanel, this.clientMainToolbar);
+            case IDLE_LOCAL:        
+                                    this.setCorePanels(this.clientMainPanel, this.clientMainToolbar);
                                     if (!((DPADLocalEngine) this.engine).hasUser) {
                                         this.setExperiment.setEnabled(false);
                                         this.setBatch.setEnabled(false);
@@ -551,7 +527,8 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
                                     break;
             
-            case USER_SELECT:       this.setCorePanels(this.userPanel, this.userToolbar);
+            case USER_SELECT:       
+                                    this.setCorePanels(this.userPanel, this.userToolbar);
                                     break;
                 
             default:                break;
@@ -630,7 +607,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public javax.swing.JLabel jLabel6;
     public javax.swing.JLabel jLabel7;
     public javax.swing.JLabel jLabel8;
-    public javax.swing.JLabel jLabel9;
     public javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JTextArea jTextArea1;
     public javax.swing.JPanel lPPanel;
@@ -639,7 +615,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public javax.swing.JButton localRuntime;
     public javax.swing.JButton setBatch;
     public javax.swing.JButton setExperiment;
-    public javax.swing.JProgressBar setupProgressBar;
     public javax.swing.JPanel startupPanel;
     public javax.swing.JPanel startupToolbar;
     public javax.swing.JTextArea textArea;
