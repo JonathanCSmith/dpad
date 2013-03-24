@@ -20,6 +20,7 @@ package net.jonathansmith.javadpad.util;
 import java.io.File;
 
 import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  * FileSystem
@@ -40,13 +41,13 @@ public class FileSystem{
     
     public void setup(File directory) {
         if (!directory.exists()) {
-            this.controller.logger.severe("Somehow the directory you are working on does not exist");
+            DPADLogger.severe("Somehow the directory you are working on does not exist");
             return;
         }
         
         File file = new File(directory, "DPAD");
         if (!file.exists() && !file.mkdir()) {
-            this.controller.logger.severe("Could not find or create the DPAD folder");
+            DPADLogger.severe("Could not find or create the DPAD folder");
             return;
         }
         

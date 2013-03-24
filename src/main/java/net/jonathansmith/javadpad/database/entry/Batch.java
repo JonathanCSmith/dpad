@@ -18,13 +18,10 @@ package net.jonathansmith.javadpad.database.entry;
 
 import java.io.Serializable;
 
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -35,20 +32,12 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Jon
  */
 @Entity
-@Table(name = "Users", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class UserEntry implements Serializable {
+@Table(name = "Batch", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+public class Batch implements Serializable {
     
     private String uuid;
-    private String username;
-    private String password;
-    private Set<ExperimentEntry> experiments;
     
-    public UserEntry() {}
-    
-    public UserEntry(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+    public Batch() {}
     
     @Id
     @GeneratedValue(generator = "system-uuid")
@@ -60,33 +49,5 @@ public class UserEntry implements Serializable {
     
     public void setUUID(String uuid) {
         this.uuid = uuid;
-    }
-    
-    @Column(name = "Name")
-    public String getName() {
-        return this.username;
-    }
-    
-    public void setName(String username) {
-        this.username = username;
-    }
-    
-    @Column(name = "Password")
-    public String getPassword() {
-        return this.password;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-    @Column(name = "Experiments")
-    @OneToMany(orphanRemoval = true)
-    public Set<ExperimentEntry> getExperiments() {
-        return this.experiments;
-    }
-    
-    public void setExperiments(Set<ExperimentEntry> experiments) {
-        this.experiments = experiments;
     }
 }

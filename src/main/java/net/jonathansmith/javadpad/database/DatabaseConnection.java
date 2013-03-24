@@ -16,12 +16,8 @@
  */
 package net.jonathansmith.javadpad.database;
 
-import java.util.List;
-
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.service.ServiceRegistry;
 
 /**
@@ -30,104 +26,38 @@ import org.hibernate.service.ServiceRegistry;
  */
 public class DatabaseConnection {
     
-    public SessionFactory factory;
-    public ServiceRegistry registry;
+    public static SessionFactory factory;
+    public static ServiceRegistry registry;
     
     public DatabaseConnection(SessionFactory factory, ServiceRegistry registry) {
-        this.factory = factory;
-        this.registry = registry;
+        DatabaseConnection.factory = factory;
+        DatabaseConnection.registry = registry;
     }
     
-//    public List listEntries(DPADEntry entry) {
-//        Transaction tx = null;
-//        Session sess = this.factory.getCurrentSession();
-//        
-//        try {
-//            tx = sess.beginTransaction();
-//            List entries = sess.createQuery("select h from " + entry.getTableName() + " as h").list();
-//            tx.commit();
-//            return entries;
-//            
-//        } catch (RuntimeException ex) {
-//            if (tx != null && tx.isActive()) {
-//                try {
-//                    tx.rollback();
-//                    
-//                } catch (HibernateException ex2) {
-//                    // Exception handling here
-//                }
-//            }
-//            
-//            throw ex;
-//        }
-//    }
-//    
-//    public void createEntry(DPADEntry entry) {
-//        Transaction tx = null;
-//        Session sess = this.factory.getCurrentSession();
-//        
-//        try {
-//            tx = sess.beginTransaction();
-//            sess.save(entry);
-//            tx.commit();
-//            
-//        } catch (RuntimeException ex) {
-//            if (tx != null && tx.isActive()) {
-//                try {
-//                    tx.rollback();
-//                    
-//                } catch (HibernateException ex2) {
-//                    // Exception handling here
-//                }
-//            }
-//            
-//            throw ex;
-//        }
-//    }
-//    
-//    public void deleteEntry(DPADEntry entry) {
-//        Transaction tx = null;
-//        Session sess = this.factory.getCurrentSession();
-//        
-//        try {
-//            tx = sess.beginTransaction();
-//            sess.delete(entry);
-//            tx.commit();
-//            
-//        } catch (RuntimeException ex) {
-//            if (tx != null && tx.isActive()) {
-//                try {
-//                    tx.rollback();
-//                    
-//                } catch (HibernateException ex2) {
-//                    // Exception handling here
-//                }
-//            }
-//            
-//            throw ex;
-//        }
-//    }
-//    
-//    public void updateEntry(DPADEntry entry) {
-//        Transaction tx = null;
-//        Session sess = this.factory.getCurrentSession();
-//        
-//        try {
-//            tx = sess.beginTransaction();
-//            sess.update(entry);
-//            tx.commit();
-//            
-//        } catch (RuntimeException ex) {
-//            if (tx != null && tx.isActive()) {
-//                try {
-//                    tx.rollback();
-//                    
-//                } catch (HibernateException ex2) {
-//                    // Exception handling here
-//                }
-//            }
-//            
-//            throw ex;
-//        }
-//    }
+    public static SessionFactory getSessionFactory() {
+        return DatabaseConnection.factory;
+    }
+    
+    public static Session getSession() {
+        Session sess = DatabaseConnection.getSessionFactory().getCurrentSession();
+        return sess;
+    }
+    
+    public static Session beginTransaction() {
+        Session sess = DatabaseConnection.getSession();
+        sess.beginTransaction();
+        return sess;
+    }
+    
+    public static void commitTransaction() {
+        DatabaseConnection.getSession().getTransaction().commit();
+    }
+    
+    public static void rollbackTransaction() {
+        DatabaseConnection.getSession().getTransaction().rollback();
+    }
+    
+    public static void closeSession() {
+        DatabaseConnection.getSession().close();
+    }
 }

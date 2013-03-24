@@ -34,31 +34,31 @@ public class DPADLogger {
         dpadLogger.setUseParentHandlers(false);
     }
     
-    protected void log(String msg, Level lvl) {
+    protected static void log(String msg, Level lvl) {
         DPADLogger.dpadLogger.log(lvl, "{0}", msg);
     }
     
-    public void info(String msg) {
+    public static void info(String msg) {
         DPADLogger.dpadLogger.log(Level.INFO, "{0}", msg);
     }
     
-    public void warning(String msg) {
+    public static void warning(String msg) {
         DPADLogger.dpadLogger.log(Level.WARNING, "{0}", msg);
     }
     
-    public void severe(String msg) {
+    public static void severe(String msg) {
         DPADLogger.dpadLogger.log(Level.SEVERE, "{0}", msg);
     }
     
-    public void logStackTrace(Object ex) {
+    public static void logStackTrace(Object ex) {
         DPADLogger.dpadLogger.log(Level.SEVERE, "", ex);
     }
     
-    public Logger getLogger() {
+    public static Logger getLogger() {
         return DPADLogger.dpadLogger;
     }
     
-    public void addLogger(Handler handler) {
+    public static void addLogHandler(Handler handler) {
         DPADLogger.dpadLogger.addHandler(handler);
     }
 }

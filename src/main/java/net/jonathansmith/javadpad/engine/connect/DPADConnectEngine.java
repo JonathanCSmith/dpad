@@ -18,7 +18,6 @@ package net.jonathansmith.javadpad.engine.connect;
 
 import net.jonathansmith.javadpad.engine.DPADClientEngine;
 import net.jonathansmith.javadpad.util.FileSystem;
-import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.ThreadType;
 
@@ -28,8 +27,8 @@ import net.jonathansmith.javadpad.util.ThreadType;
  */
 public class DPADConnectEngine extends DPADClientEngine {
 
-    public DPADConnectEngine(DPADLogger logger, FileSystem fileSystem) {
-        super(logger, fileSystem);
+    public DPADConnectEngine(FileSystem fileSystem) {
+        super(fileSystem);
     }
     
     @Override

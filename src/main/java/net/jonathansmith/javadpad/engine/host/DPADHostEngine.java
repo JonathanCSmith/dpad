@@ -28,8 +28,8 @@ import net.jonathansmith.javadpad.util.ThreadType;
  */
 public class DPADHostEngine extends DPADEngine {
     
-    public DPADHostEngine(DPADLogger logger, FileSystem fileSystem) {
-        super(logger, fileSystem);
+    public DPADHostEngine(FileSystem fileSystem) {
+        super(fileSystem);
     }
 
     @Override

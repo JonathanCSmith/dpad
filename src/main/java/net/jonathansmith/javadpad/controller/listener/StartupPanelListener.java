@@ -51,7 +51,7 @@ public class StartupPanelListener implements ActionListener {
                 return;
             }
             
-            DPADLocalEngine local = new DPADLocalEngine(this.parent.logger, this.parent.fileSystem);
+            DPADLocalEngine local = new DPADLocalEngine(this.parent.fileSystem);
             this.parent.setEngine(local);
             ((Startup_LocalProcess) local.getRuntime()).setAttemptConnection(outcome);
         }
@@ -67,13 +67,13 @@ public class StartupPanelListener implements ActionListener {
                 return;
             }
             
-            DPADHostEngine host = new DPADHostEngine(this.parent.logger, this.parent.fileSystem);
+            DPADHostEngine host = new DPADHostEngine(this.parent.fileSystem);
             this.parent.setEngine(host);
             //((DPADHostEngine) host.getRuntime()).createOrManageDatabase(outcome);
         }
         
         else if (evt.getSource() == this.parent.getGui().startupPane.connectRuntime) {
-            this.parent.setEngine(new DPADConnectEngine(this.parent.logger, this.parent.fileSystem));
+            this.parent.setEngine(new DPADConnectEngine(this.parent.fileSystem));
         }
     }
 }

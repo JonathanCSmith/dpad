@@ -14,30 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.engine;
+package net.jonathansmith.javadpad.database.user;
 
-import net.jonathansmith.javadpad.database.experiment.Experiment;
-import net.jonathansmith.javadpad.database.user.User;
-import net.jonathansmith.javadpad.util.FileSystem;
+import org.hibernate.Query;
+import net.jonathansmith.javadpad.database.DatabaseConnection;
+import net.jonathansmith.javadpad.database.GenericDAO;
 
 /**
  *
  * @author Jon
  */
-public abstract class DPADClientEngine extends DPADEngine {
-
-    public User user = null;
-    public Experiment experiment = null;
+public class UserDAO extends GenericDAO<User, String> {
     
-    public DPADClientEngine(FileSystem fileSystem) {
-        super(fileSystem);
-    }
-    
-    public User getUser() {
-        return this.user;
-    }
-    
-    public Experiment getExperiment() {
-        return this.experiment;
+    public User findByName(String username) {
+        String sql = "SELECT p FROM User p WHERE p.name :name";
+        Query query = DatabaseConnection.getSession().createQuery(sql).setParameter("name", username);
+        User user = findOne(query);
+        return user;
     }
 }
