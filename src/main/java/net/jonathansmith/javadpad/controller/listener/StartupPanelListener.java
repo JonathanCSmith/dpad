@@ -40,7 +40,7 @@ public class StartupPanelListener implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (evt.getSource() == this.parent.getGui().localRuntime) {
+        if (evt.getSource() == this.parent.getGui().startupPane.localRuntime) {
             String outcome = this.parent.getGui().getDirectory();
             if (outcome.equals("")) {
                 return;    
@@ -56,7 +56,7 @@ public class StartupPanelListener implements ActionListener {
             ((Startup_LocalProcess) local.getRuntime()).setAttemptConnection(outcome);
         }
         
-        else if (evt.getSource() == this.parent.getGui().hostRuntime) {
+        else if (evt.getSource() == this.parent.getGui().startupPane.hostRuntime) {
             String outcome = this.parent.getGui().getDirectory();
             if (outcome.equals("")) {
                 return;    
@@ -72,7 +72,7 @@ public class StartupPanelListener implements ActionListener {
             //((DPADHostEngine) host.getRuntime()).createOrManageDatabase(outcome);
         }
         
-        else if (evt.getSource() == this.parent.getGui().connectRuntime) {
+        else if (evt.getSource() == this.parent.getGui().startupPane.connectRuntime) {
             this.parent.setEngine(new DPADConnectEngine(this.parent.logger, this.parent.fileSystem));
         }
     }

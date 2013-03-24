@@ -17,10 +17,10 @@
 
 package net.jonathansmith.javadpad.engine.local;
 
-import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.database.DatabaseConnection;
 import net.jonathansmith.javadpad.database.entry.ExperimentEntry;
 import net.jonathansmith.javadpad.database.entry.UserEntry;
+import net.jonathansmith.javadpad.engine.DPADClientEngine;
 import net.jonathansmith.javadpad.engine.local.process.AnalyseDisplayProcess;
 import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess;
 import net.jonathansmith.javadpad.engine.local.process.LoadProcessProcess;
@@ -38,7 +38,7 @@ import net.jonathansmith.javadpad.util.ThreadType;
  *
  * @author Jonathan Smith
  */
-public class DPADLocalEngine extends DPADEngine {
+public class DPADLocalEngine extends DPADClientEngine {
     
     public boolean status = false;
     public boolean errored = false;

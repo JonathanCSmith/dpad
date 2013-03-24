@@ -22,7 +22,6 @@ import java.util.Observer;
 
 import java.awt.event.ActionListener;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -30,8 +29,15 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
+import net.jonathansmith.javadpad.gui.clientmain.ClientMainPane;
+import net.jonathansmith.javadpad.gui.clientmain.ClientMainToolbar;
+import net.jonathansmith.javadpad.gui.startup.StartupPane;
+import net.jonathansmith.javadpad.gui.startup.StartupToolbar;
+import net.jonathansmith.javadpad.gui.user.UserPane;
+import net.jonathansmith.javadpad.gui.user.UserToolbar;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import static net.jonathansmith.javadpad.util.RuntimeType.IDLE_LOCAL;
 import net.jonathansmith.javadpad.util.logging.LogHandler;
@@ -44,14 +50,24 @@ import net.jonathansmith.javadpad.util.logging.DPADLogger;
 public class DPADGui extends JFrame implements Runnable, Observer {
 
     public DPADEngine engine;
+    public DPADController controller;
     public DPADLogger logger;
     public RuntimeType type;
     public boolean errored = false;
     
+    public StartupPane startupPane;
+    public StartupToolbar startupToolbar;
+    
+    public ClientMainPane clientMainPane;
+    public ClientMainToolbar clientMainToolbar;
+    
+    public UserPane userPane;
+    public UserToolbar userToolbar;
+    
     /**
      * Creates new form DPADG
      */
-    public DPADGui(DPADLogger logger) {
+    public DPADGui(DPADLogger logger, DPADController controller) {
         this.logger = logger;
     }
 
@@ -68,36 +84,9 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         headerPanel = new javax.swing.JPanel();
         title = new javax.swing.JLabel();
         toolbarSplitPane = new javax.swing.JSplitPane();
-        startupToolbar = new javax.swing.JPanel();
-        lPToolbar = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        userToolbar = new javax.swing.JPanel();
-        userBack = new javax.swing.JButton();
-        clientMainToolbar = new javax.swing.JPanel();
-        user = new javax.swing.JButton();
-        setExperiment = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        setBatch = new javax.swing.JButton();
-        jLabel7 = new javax.swing.JLabel();
         displaySplitPane = new javax.swing.JSplitPane();
-        startupPanel = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
-        databaseURLText = new javax.swing.JTextField();
-        connectRuntime = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        localRuntime = new javax.swing.JButton();
-        hostInfo = new javax.swing.JLabel();
-        hostRuntime = new javax.swing.JButton();
-        localInfo = new javax.swing.JLabel();
         textScroll = new javax.swing.JScrollPane();
         textArea = new javax.swing.JTextArea();
-        lPPanel = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        userPanel = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        clientMainPanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -129,227 +118,11 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
         toolbarSplitPane.setDividerLocation(115);
 
-        startupToolbar.setMaximumSize(new java.awt.Dimension(120, 32767));
-        startupToolbar.setMinimumSize(new java.awt.Dimension(120, 0));
-        startupToolbar.setPreferredSize(new java.awt.Dimension(120, 400));
-
-        javax.swing.GroupLayout startupToolbarLayout = new javax.swing.GroupLayout(startupToolbar);
-        startupToolbar.setLayout(startupToolbarLayout);
-        startupToolbarLayout.setHorizontalGroup(
-            startupToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 120, Short.MAX_VALUE)
-        );
-        startupToolbarLayout.setVerticalGroup(
-            startupToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
-        toolbarSplitPane.setLeftComponent(startupToolbar);
-
-        lPToolbar.setMaximumSize(new java.awt.Dimension(120, 32767));
-        lPToolbar.setMinimumSize(new java.awt.Dimension(120, 0));
-        lPToolbar.setPreferredSize(new java.awt.Dimension(120, 400));
-
-        jLabel3.setText("lp toolbar");
-
-        javax.swing.GroupLayout lPToolbarLayout = new javax.swing.GroupLayout(lPToolbar);
-        lPToolbar.setLayout(lPToolbarLayout);
-        lPToolbarLayout.setHorizontalGroup(
-            lPToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(lPToolbarLayout.createSequentialGroup()
-                .addComponent(jLabel3)
-                .addGap(0, 75, Short.MAX_VALUE))
-        );
-        lPToolbarLayout.setVerticalGroup(
-            lPToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(lPToolbarLayout.createSequentialGroup()
-                .addComponent(jLabel3)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        toolbarSplitPane.setLeftComponent(lPToolbar);
-
-        userToolbar.setMaximumSize(new java.awt.Dimension(120, 32767));
-        userToolbar.setMinimumSize(new java.awt.Dimension(120, 0));
-        userToolbar.setPreferredSize(new java.awt.Dimension(120, 400));
-
-        userBack.setText("Back");
-        userBack.setMargin(new java.awt.Insets(2, 8, 2, 8));
-        userBack.setMaximumSize(new java.awt.Dimension(105, 23));
-        userBack.setMinimumSize(new java.awt.Dimension(105, 23));
-        userBack.setPreferredSize(new java.awt.Dimension(105, 23));
-
-        javax.swing.GroupLayout userToolbarLayout = new javax.swing.GroupLayout(userToolbar);
-        userToolbar.setLayout(userToolbarLayout);
-        userToolbarLayout.setHorizontalGroup(
-            userToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(userToolbarLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(userBack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5))
-        );
-        userToolbarLayout.setVerticalGroup(
-            userToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(userToolbarLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(userBack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        toolbarSplitPane.setLeftComponent(userToolbar);
-
-        clientMainToolbar.setMaximumSize(new java.awt.Dimension(120, 32767));
-        clientMainToolbar.setMinimumSize(new java.awt.Dimension(120, 406));
-        clientMainToolbar.setPreferredSize(new java.awt.Dimension(120, 428));
-
-        user.setText("Set User");
-        user.setToolTipText("Set the current user, either by creating or loading one in the datase");
-        user.setBorder(null);
-        user.setMargin(new java.awt.Insets(2, 8, 2, 8));
-        user.setMaximumSize(new java.awt.Dimension(105, 23));
-        user.setMinimumSize(new java.awt.Dimension(105, 23));
-        user.setPreferredSize(new java.awt.Dimension(105, 23));
-
-        setExperiment.setText("Set Experiment");
-        setExperiment.setToolTipText("Create a new experiment");
-        setExperiment.setBorder(null);
-        setExperiment.setMargin(new java.awt.Insets(2, 8, 2, 8));
-        setExperiment.setMaximumSize(new java.awt.Dimension(105, 23));
-        setExperiment.setMinimumSize(new java.awt.Dimension(105, 23));
-        setExperiment.setPreferredSize(new java.awt.Dimension(105, 23));
-
-        jLabel4.setText("Experiment:");
-
-        jLabel6.setText("Batch");
-
-        setBatch.setText("Set Batch");
-
-        jLabel7.setText("User");
-
-        javax.swing.GroupLayout clientMainToolbarLayout = new javax.swing.GroupLayout(clientMainToolbar);
-        clientMainToolbar.setLayout(clientMainToolbarLayout);
-        clientMainToolbarLayout.setHorizontalGroup(
-            clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(clientMainToolbarLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addGroup(clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                            .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(setExperiment, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(jLabel4))
-                    .addComponent(setBatch)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel7))
-                .addContainerGap())
-        );
-
-        clientMainToolbarLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {setBatch, setExperiment, user});
-
-        clientMainToolbarLayout.setVerticalGroup(
-            clientMainToolbarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(clientMainToolbarLayout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(jLabel7)
-                .addGap(5, 5, 5)
-                .addComponent(user, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(jLabel4)
-                .addGap(5, 5, 5)
-                .addComponent(setExperiment, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(jLabel6)
-                .addGap(5, 5, 5)
-                .addComponent(setBatch)
-                .addContainerGap(279, Short.MAX_VALUE))
-        );
-
-        clientMainToolbarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {setBatch, setExperiment, user});
-
-        toolbarSplitPane.setLeftComponent(clientMainToolbar);
-
-        displaySplitPane.setDividerLocation(250);
+        displaySplitPane.setDividerLocation(240);
         displaySplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         displaySplitPane.setResizeWeight(1.0);
         displaySplitPane.setAutoscrolls(true);
         displaySplitPane.setPreferredSize(new java.awt.Dimension(522, 228));
-
-        jLabel8.setText("Database Connection:");
-
-        databaseURLText.setText("Connect to Database URL:");
-
-        connectRuntime.setText("Connect");
-
-        jScrollPane1.setBorder(null);
-
-        jTextArea1.setEditable(false);
-        jTextArea1.setBackground(new java.awt.Color(240, 240, 240));
-        jTextArea1.setColumns(20);
-        jTextArea1.setLineWrap(true);
-        jTextArea1.setRows(5);
-        jTextArea1.setText("Enter the URL of your database in the box above. If you do not have a configured database enter the path of a local database that you would like to use. This path will be used to search for viable databases or create a new one.");
-        jTextArea1.setToolTipText("");
-        jTextArea1.setWrapStyleWord(true);
-        jTextArea1.setCaretColor(new java.awt.Color(240, 240, 240));
-        jScrollPane1.setViewportView(jTextArea1);
-
-        localRuntime.setText("Local");
-
-        hostInfo.setText("Host a TCP database (no user functionality)");
-
-        hostRuntime.setText("Host");
-
-        localInfo.setText("Create or load a local database (jar location)");
-
-        javax.swing.GroupLayout startupPanelLayout = new javax.swing.GroupLayout(startupPanel);
-        startupPanel.setLayout(startupPanelLayout);
-        startupPanelLayout.setHorizontalGroup(
-            startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(startupPanelLayout.createSequentialGroup()
-                .addComponent(jLabel8)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(startupPanelLayout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(startupPanelLayout.createSequentialGroup()
-                        .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(databaseURLText)
-                            .addComponent(hostInfo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(localInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(5, 5, 5)
-                        .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(hostRuntime, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(localRuntime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(connectRuntime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addComponent(jScrollPane1))
-                .addGap(10, 10, 10))
-        );
-
-        startupPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {connectRuntime, hostRuntime, localRuntime});
-
-        startupPanelLayout.setVerticalGroup(
-            startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(startupPanelLayout.createSequentialGroup()
-                .addComponent(jLabel8)
-                .addGap(10, 10, 10)
-                .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(localRuntime)
-                    .addComponent(localInfo))
-                .addGap(5, 5, 5)
-                .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(hostInfo)
-                    .addComponent(hostRuntime))
-                .addGap(5, 5, 5)
-                .addGroup(startupPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(databaseURLText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(connectRuntime))
-                .addGap(5, 5, 5)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        startupPanelLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {connectRuntime, hostRuntime, localRuntime});
-
-        displaySplitPane.setLeftComponent(startupPanel);
 
         textScroll.setMinimumSize(new java.awt.Dimension(120, 23));
         textScroll.setPreferredSize(new java.awt.Dimension(120, 22));
@@ -358,62 +131,11 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         textArea.setColumns(20);
         textArea.setRows(5);
         textArea.setText("DPAD Console Log:");
+        textArea.setMinimumSize(new java.awt.Dimension(140, 120));
+        textArea.setPreferredSize(new java.awt.Dimension(164, 120));
         textScroll.setViewportView(textArea);
 
         displaySplitPane.setRightComponent(textScroll);
-
-        jLabel2.setText("lp panel");
-
-        javax.swing.GroupLayout lPPanelLayout = new javax.swing.GroupLayout(lPPanel);
-        lPPanel.setLayout(lPPanelLayout);
-        lPPanelLayout.setHorizontalGroup(
-            lPPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(lPPanelLayout.createSequentialGroup()
-                .addComponent(jLabel2)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        lPPanelLayout.setVerticalGroup(
-            lPPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(lPPanelLayout.createSequentialGroup()
-                .addComponent(jLabel2)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        displaySplitPane.setLeftComponent(lPPanel);
-
-        jLabel5.setText("user panel");
-
-        javax.swing.GroupLayout userPanelLayout = new javax.swing.GroupLayout(userPanel);
-        userPanel.setLayout(userPanelLayout);
-        userPanelLayout.setHorizontalGroup(
-            userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(userPanelLayout.createSequentialGroup()
-                .addComponent(jLabel5)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-        userPanelLayout.setVerticalGroup(
-            userPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(userPanelLayout.createSequentialGroup()
-                .addComponent(jLabel5)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
-
-        displaySplitPane.setLeftComponent(userPanel);
-
-        clientMainPanel.setPreferredSize(new java.awt.Dimension(312, 202));
-
-        javax.swing.GroupLayout clientMainPanelLayout = new javax.swing.GroupLayout(clientMainPanel);
-        clientMainPanel.setLayout(clientMainPanelLayout);
-        clientMainPanelLayout.setHorizontalGroup(
-            clientMainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 531, Short.MAX_VALUE)
-        );
-        clientMainPanelLayout.setVerticalGroup(
-            clientMainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 390, Short.MAX_VALUE)
-        );
-
-        displaySplitPane.setLeftComponent(clientMainPanel);
 
         toolbarSplitPane.setRightComponent(displaySplitPane);
 
@@ -427,7 +149,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(headerSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
+            .addComponent(headerSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
         );
 
         pack();
@@ -453,6 +175,16 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         } 
         
         this.initComponents();
+        
+        this.startupPane = new StartupPane();
+        this.startupToolbar = new StartupToolbar();
+        
+        this.clientMainPane = new ClientMainPane();
+        this.clientMainToolbar = new ClientMainToolbar();
+        
+        this.userPane = new UserPane();
+        this.userToolbar = new UserToolbar();
+        
         this.logger.addLogger(new LogHandler(this));
     }
     
@@ -510,25 +242,30 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public void validateState() {
         switch (this.type) {
             case RUNTIME_SELECT:        
-                                    this.setCorePanels(this.startupPanel, this.startupToolbar);
+                                    this.setCorePanels(this.startupPane, this.startupToolbar);
                                     break;
             
             case IDLE_LOCAL:        
-                                    this.setCorePanels(this.clientMainPanel, this.clientMainToolbar);
-                                    if (!((DPADLocalEngine) this.engine).hasUser) {
-                                        this.setExperiment.setEnabled(false);
-                                        this.setBatch.setEnabled(false);
+                                    this.setCorePanels(this.clientMainPane, this.clientMainToolbar);
+                                    if (this.controller.getSessionUser() == null) {
+                                        this.clientMainToolbar.setExperiment.setEnabled(false);
+                                        this.clientMainToolbar.setBatch.setEnabled(false);
                                         
                                     } else {
-                                        if (!((DPADLocalEngine) this.engine).hasExperiment) {
-                                            this.setBatch.setEnabled(false);
+                                        this.clientMainToolbar.setExperiment.setEnabled(true);
+                                        
+                                        if (this.controller.getSessionExperiment() == null) {
+                                            this.clientMainToolbar.setBatch.setEnabled(false);
+                                            
+                                        } else {
+                                            this.clientMainToolbar.setBatch.setEnabled(true);
                                         }
                                     }
 
                                     break;
             
             case USER_SELECT:       
-                                    this.setCorePanels(this.userPanel, this.userToolbar);
+                                    this.setCorePanels(this.userPane, this.userToolbar);
                                     break;
                 
             default:                break;
@@ -546,17 +283,14 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     }
     
     private void hideAllPanels() {
-        this.startupPanel.setVisible(false);
+        this.startupPane.setVisible(false);
         this.startupToolbar.setVisible(false);
         
-        this.clientMainPanel.setVisible(false);
+        this.clientMainPane.setVisible(false);
         this.clientMainToolbar.setVisible(false);
         
-        this.userPanel.setVisible(false);
+        this.userPane.setVisible(false);
         this.userToolbar.setVisible(false);
-        
-        this.lPPanel.setVisible(false);
-        this.lPToolbar.setVisible(false);
     }
     
     private void maintainMinimumDividerSizes() {
@@ -574,56 +308,26 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     }
     
     public void addStartupSelectListener(ActionListener listener) {
-        this.localRuntime.addActionListener(listener);
-        this.hostRuntime.addActionListener(listener);
-        this.connectRuntime.addActionListener(listener);
+        this.startupPane.localRuntime.addActionListener(listener);
+        this.startupPane.hostRuntime.addActionListener(listener);
+        this.startupPane.connectRuntime.addActionListener(listener);
     }
     
     public void addMainMenuListener(ActionListener listener) {
-        this.user.addActionListener(listener);
+        this.clientMainToolbar.setUser.addActionListener(listener);
     }
     
     public void addUserRuntimeListener(ActionListener listener) {
-        this.userBack.addActionListener(listener);
+        this.userToolbar.userBack.addActionListener(listener);
     }
     
-    public JButton load;
-    public JButton analyse;
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JPanel clientMainPanel;
-    public javax.swing.JPanel clientMainToolbar;
-    public javax.swing.JButton connectRuntime;
-    public javax.swing.JTextField databaseURLText;
     public javax.swing.JSplitPane displaySplitPane;
     public javax.swing.JPanel headerPanel;
     public javax.swing.JSplitPane headerSplitPane;
-    public javax.swing.JLabel hostInfo;
-    public javax.swing.JButton hostRuntime;
-    public javax.swing.JLabel jLabel2;
-    public javax.swing.JLabel jLabel3;
-    public javax.swing.JLabel jLabel4;
-    public javax.swing.JLabel jLabel5;
-    public javax.swing.JLabel jLabel6;
-    public javax.swing.JLabel jLabel7;
-    public javax.swing.JLabel jLabel8;
-    public javax.swing.JScrollPane jScrollPane1;
-    public javax.swing.JTextArea jTextArea1;
-    public javax.swing.JPanel lPPanel;
-    public javax.swing.JPanel lPToolbar;
-    public javax.swing.JLabel localInfo;
-    public javax.swing.JButton localRuntime;
-    public javax.swing.JButton setBatch;
-    public javax.swing.JButton setExperiment;
-    public javax.swing.JPanel startupPanel;
-    public javax.swing.JPanel startupToolbar;
     public javax.swing.JTextArea textArea;
     public javax.swing.JScrollPane textScroll;
     public javax.swing.JLabel title;
     public javax.swing.JSplitPane toolbarSplitPane;
-    public javax.swing.JButton user;
-    public javax.swing.JButton userBack;
-    public javax.swing.JPanel userPanel;
-    public javax.swing.JPanel userToolbar;
     // End of variables declaration//GEN-END:variables
 }

@@ -28,13 +28,16 @@ import java.awt.EventQueue;
 import net.jonathansmith.javadpad.controller.listener.ClientMainPanelListener;
 import net.jonathansmith.javadpad.controller.listener.StartupPanelListener;
 import net.jonathansmith.javadpad.controller.listener.UserPanelListener;
+import net.jonathansmith.javadpad.database.entry.ExperimentEntry;
+import net.jonathansmith.javadpad.database.entry.UserEntry;
+import net.jonathansmith.javadpad.engine.DPADClientEngine;
 import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.host.DPADHostEngine;
 import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.gui.DPADGui;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.ThreadType;
 import net.jonathansmith.javadpad.util.logging.LoggerOutputStream;
-import org.jboss.logging.Logger;
 
 /**
  * DPADController
@@ -53,7 +56,7 @@ public class DPADController extends Thread {
     
     public DPADController() {
         this.logger = new DPADLogger();
-        this.gui = new DPADGui(this.logger);
+        this.gui = new DPADGui(this.logger, this);
         this.fileSystem = new FileSystem(this);
     }
     
@@ -104,6 +107,24 @@ public class DPADController extends Thread {
         this.gui.setEngine(eng);
         this.engine.init();
         (new Thread(this.engine)).start();
+    }
+    
+    public UserEntry getSessionUser() {
+        if (this.engine instanceof DPADHostEngine) {
+            return null;
+        }
+        
+        DPADClientEngine client = (DPADClientEngine) this.engine;
+        return client.getUser();
+    }
+    
+    public ExperimentEntry getSessionExperiment() {
+        if (this.engine instanceof DPADHostEngine) {
+            return null;
+        }
+        
+        DPADClientEngine client = (DPADClientEngine) this.engine;
+        return client.getExperiment();
     }
     
     private void addListeners(ThreadType type) {

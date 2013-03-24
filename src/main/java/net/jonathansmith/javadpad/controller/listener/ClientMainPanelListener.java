@@ -47,15 +47,7 @@ public class ClientMainPanelListener implements ActionListener {
         
         DPADLocalEngine local = (DPADLocalEngine) engine;
         
-        if (evt.getSource() == this.controller.getGui().load) {
-            local.setRuntime(RuntimeType.LOAD_AND_PROCESS);
-        } 
-
-        else if (evt.getSource() == this.controller.getGui().analyse) {
-            local.setRuntime(RuntimeType.ANALYSE_AND_DISPLAY);
-        }
-        
-        else if (evt.getSource() == this.controller.getGui().user) {
+        if (evt.getSource() == this.controller.getGui().userToolbar.userBack) {
             local.setRuntime(RuntimeType.USER_SELECT);
         }
     }
