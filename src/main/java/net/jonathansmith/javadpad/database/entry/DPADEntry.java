@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.plugin;
-
+package net.jonathansmith.javadpad.database.entry;
 
 /**
  *
  * @author Jon
  */
-public interface ILoadPlugin {
+public interface DPADEntry {
+    
+    public String getTableName();
     
 }

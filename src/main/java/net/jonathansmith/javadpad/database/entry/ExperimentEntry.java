@@ -34,8 +34,8 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Jon
  */
 @Entity
-@Table(name = "Experiment", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class ExperimentEntry implements Serializable {
+@Table(name = "Experiments", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+public class ExperimentEntry implements Serializable, DPADEntry {
     
     private String uuid;
     private Set<BatchEntry> batches;
@@ -55,12 +55,16 @@ public class ExperimentEntry implements Serializable {
     }
     
     @Column(name = "Batches")
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     public Set<BatchEntry> getBatches() {
         return this.batches;
     }
     
     public void setBatches(Set<BatchEntry> batches) {
         this.batches = batches;
+    }
+    
+    public String getTableName() {
+        return "Experiments";
     }
 }
