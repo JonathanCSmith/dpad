@@ -19,6 +19,7 @@ package net.jonathansmith.javadpad.database.entry;
 import java.io.Serializable;
 
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,6 +28,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
@@ -34,8 +37,8 @@ import org.hibernate.annotations.GenericGenerator;
  * @author Jon
  */
 @Entity
-@Table(name = "User", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class UserEntry implements Serializable {
+@Table(name = "Users", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+public class UserEntry implements Serializable, DPADEntry {
     
     private String uuid;
     private String username;
@@ -80,12 +83,16 @@ public class UserEntry implements Serializable {
     }
     
     @Column(name = "Experiments")
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     public Set<ExperimentEntry> getExperiments() {
         return this.experiments;
     }
     
     public void setExperiments(Set<ExperimentEntry> experiments) {
         this.experiments = experiments;
+    }
+    
+    public String getTableName() {
+        return "Users";
     }
 }
