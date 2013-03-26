@@ -302,6 +302,8 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     }
     
     public void addUserRuntimeListener(ActionListener listener) {
+        this.userSelect.userToolbar.newUser.addActionListener(listener);
+        this.userSelect.userToolbar.loadUser.addActionListener(listener);
         this.userSelect.userToolbar.userBack.addActionListener(listener);
         this.userSelect.newUserPane.submit.addActionListener(listener);
         this.userSelect.existingUserPane.submit.addActionListener(listener);
