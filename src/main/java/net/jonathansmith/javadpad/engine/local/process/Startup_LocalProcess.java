@@ -120,6 +120,7 @@ public class Startup_LocalProcess extends RuntimeProcess {
         config.setProperty("hibernate.connection.url", "jdbc:h2:file:" + this.path + "/JDPADDatabase");
         config.setProperty("hibernate.connection.username", "sa");
         config.setProperty("hibernate.connection.password", "");
+        config.setProperty("hibernate.current_session_context_class", "thread");
         
         File file = new File(this.path + "/JDPADDatabase.h2.db");
         if (!file.exists()) {

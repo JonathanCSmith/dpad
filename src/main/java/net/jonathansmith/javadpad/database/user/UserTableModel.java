@@ -19,7 +19,6 @@ package net.jonathansmith.javadpad.database.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -64,10 +63,10 @@ public class UserTableModel extends AbstractTableModel {
         User user = this.users.get(i);
         
         switch (i1) {
-            case 1:     return user.getUsername();
-            case 2:     return user.getFirstName();
-            case 3:     return user.getLastName();
-            case 4:     return user.getExperiments().size();
+            case 0:     return user.getUsername();
+            case 1:     return user.getFirstName();
+            case 2:     return user.getLastName();
+            case 3:     return user.getExperiments().size();
             default:    return null;
         }
     }
