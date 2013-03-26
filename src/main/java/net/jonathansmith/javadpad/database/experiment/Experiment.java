@@ -27,7 +27,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import net.jonathansmith.javadpad.database.entry.Batch;
+import net.jonathansmith.javadpad.database.batch.Batch;
 import org.hibernate.annotations.GenericGenerator;
 
 /**

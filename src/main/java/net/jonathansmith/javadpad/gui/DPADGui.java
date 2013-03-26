@@ -36,8 +36,9 @@ import net.jonathansmith.javadpad.gui.clientmain.ClientMainPane;
 import net.jonathansmith.javadpad.gui.clientmain.ClientMainToolbar;
 import net.jonathansmith.javadpad.gui.startup.StartupPane;
 import net.jonathansmith.javadpad.gui.startup.StartupToolbar;
-import net.jonathansmith.javadpad.gui.user.UserPane;
-import net.jonathansmith.javadpad.gui.user.UserToolbar;
+import net.jonathansmith.javadpad.gui.user.panel.NewUserPane;
+import net.jonathansmith.javadpad.gui.user.UserSelect;
+import net.jonathansmith.javadpad.gui.user.toolbar.UserToolbar;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import static net.jonathansmith.javadpad.util.RuntimeType.IDLE_LOCAL;
 import net.jonathansmith.javadpad.util.logging.LogHandler;
@@ -60,8 +61,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public ClientMainPane clientMainPane;
     public ClientMainToolbar clientMainToolbar;
     
-    public UserPane userPane;
-    public UserToolbar userToolbar;
+    public UserSelect userSelect;
     
     /**
      * Creates new form DPADG
@@ -181,8 +181,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.clientMainPane = new ClientMainPane();
         this.clientMainToolbar = new ClientMainToolbar();
         
-        this.userPane = new UserPane();
-        this.userToolbar = new UserToolbar();
+        this.userSelect = new UserSelect();
         
         DPADLogger.addLogHandler(new LogHandler(this));
     }
@@ -264,7 +263,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
                                     break;
             
             case USER_SELECT:       
-                                    this.setCorePanels(this.userPane, this.userToolbar);
+                                    this.setCorePanels(this.userSelect.getCurrentView(), this.userSelect.userToolbar);
                                     break;
                 
             default:                break;
@@ -274,22 +273,8 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     }
     
     private void setCorePanels(JPanel panel, JPanel toolbar) {
-        this.hideAllPanels();
-        panel.setVisible(true);
         this.displaySplitPane.setLeftComponent(panel);
-        toolbar.setVisible(true);
         this.toolbarSplitPane.setLeftComponent(toolbar);
-    }
-    
-    private void hideAllPanels() {
-        this.startupPane.setVisible(false);
-        this.startupToolbar.setVisible(false);
-        
-        this.clientMainPane.setVisible(false);
-        this.clientMainToolbar.setVisible(false);
-        
-        this.userPane.setVisible(false);
-        this.userToolbar.setVisible(false);
     }
     
     private void maintainMinimumDividerSizes() {
@@ -317,7 +302,9 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     }
     
     public void addUserRuntimeListener(ActionListener listener) {
-        this.userToolbar.userBack.addActionListener(listener);
+        this.userSelect.userToolbar.userBack.addActionListener(listener);
+        this.userSelect.newUserPane.submit.addActionListener(listener);
+        this.userSelect.existingUserPane.submit.addActionListener(listener);
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -41,13 +41,17 @@ public class User implements Serializable {
     
     private String uuid;
     private String username;
-    private String password;
+    private String firstName;
+    private String lastName;
+    private char[] password;
     private Set<Experiment> experiments;
     
     public User() {}
     
-    public User(String username, String password) {
+    public User(String username, String firstName, String lastName, char[] password) {
         this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.password = password;
     }
     
@@ -63,21 +67,39 @@ public class User implements Serializable {
         this.uuid = uuid;
     }
     
-    @Column(name = "Name")
-    public String getName() {
+    @Column(name = "Username")
+    public String getUsername() {
         return this.username;
     }
     
-    public void setName(String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
     
+    @Column(name = "Firstname")
+    public String getFirstName() {
+        return this.firstName;
+    }
+    
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+    
+    @Column(name = "Lastname")
+    public String getLastName() {
+        return this.lastName;
+    }
+    
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+    
     @Column(name = "Password")
-    public String getPassword() {
+    public char[] getPassword() {
         return this.password;
     }
     
-    public void setPassword(String password) {
+    public void setPassword(char[] password) {
         this.password = password;
     }
     

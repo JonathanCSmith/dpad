@@ -37,6 +37,10 @@ public abstract class DPADClientEngine extends DPADEngine {
         return this.user;
     }
     
+    public void setUser(User user) {
+        this.user = user;
+    }
+    
     public Experiment getExperiment() {
         return this.experiment;
     }

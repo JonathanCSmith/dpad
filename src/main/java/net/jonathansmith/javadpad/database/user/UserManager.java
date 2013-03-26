@@ -30,9 +30,18 @@ import net.jonathansmith.javadpad.util.logging.DPADLogger;
  */
 public class UserManager {
     
+    private static UserManager instance = null;
     private UserDAO userDAO = new UserDAO();
     
-    public User findUserByUserName(String name) {
+    public static UserManager getInstance() {
+        if (instance == null) {
+            instance = new UserManager();
+        }
+        
+        return instance;
+    }
+    
+    public User findUserByUsername(String name) {
         User user = null;
         try {
             DatabaseConnection.beginTransaction();
