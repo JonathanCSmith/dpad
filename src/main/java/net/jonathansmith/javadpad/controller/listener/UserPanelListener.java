@@ -45,6 +45,7 @@ public class UserPanelListener implements ActionListener {
         if (evt.getSource() == this.controller.getGui().userSelect.userToolbar.newUser) {
             if (!(this.controller.getGui().userSelect.getCurrentView() instanceof NewUserPane)) {
                 this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.newUserPane);
+                this.controller.getGui().validateState();
             }
         }
         
@@ -52,16 +53,19 @@ public class UserPanelListener implements ActionListener {
             if (!(this.controller.getGui().userSelect.getCurrentView() instanceof ExistingUserPane)) {
                 this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.existingUserPane);
                 this.controller.getGui().userSelect.existingUserPane.insertData(UserManager.getInstance().loadUsers());
+                this.controller.getGui().validateState();
             }
         }
         
         else if (evt.getSource() == this.controller.getGui().userSelect.userToolbar.userBack) {
             if (this.controller.getGui().userSelect.getCurrentView() instanceof NewUserPane) {
                 this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.blankPanel);
+                this.controller.getGui().validateState();
             }
             
             else if (this.controller.getGui().userSelect.getCurrentView() instanceof ExistingUserPane) {
                 this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.blankPanel);
+                this.controller.getGui().validateState();
                 
             } else {
                 this.controller.getEngine().sendQuitToRuntime();
@@ -89,6 +93,7 @@ public class UserPanelListener implements ActionListener {
             }
             
             this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.blankPanel);
+            this.controller.getGui().validateState();
         }
         
         else if (evt.getSource() == this.controller.getGui().userSelect.existingUserPane.submit) {
@@ -102,6 +107,7 @@ public class UserPanelListener implements ActionListener {
             }
             
             this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.blankPanel);
+            this.controller.getGui().validateState();
         }
     }
 }
