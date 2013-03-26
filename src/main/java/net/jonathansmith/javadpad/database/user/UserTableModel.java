@@ -32,8 +32,7 @@ public class UserTableModel extends AbstractTableModel {
     private String[] columnNames = {
         "Username",
         "First Name",
-        "Last Name",
-        "Experiment No."
+        "Last Name"
     };
     
     public UserTableModel() {}
@@ -43,7 +42,7 @@ public class UserTableModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 4;
+        return 3;
     }
 
     @Override
@@ -66,7 +65,6 @@ public class UserTableModel extends AbstractTableModel {
             case 0:     return user.getUsername();
             case 1:     return user.getFirstName();
             case 2:     return user.getLastName();
-            case 3:     return user.getExperiments().size();
             default:    return null;
         }
     }
