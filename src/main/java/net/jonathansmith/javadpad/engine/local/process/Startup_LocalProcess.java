@@ -15,7 +15,7 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import net.jonathansmith.javadpad.database.experiment.Experiment;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.database.DatabaseConnection;
-import net.jonathansmith.javadpad.database.entry.Batch;
+import net.jonathansmith.javadpad.database.batch.Batch;
 import net.jonathansmith.javadpad.database.user.User;
 import net.jonathansmith.javadpad.plugin.DPADPluginManager;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;

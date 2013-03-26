@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.gui.user;
+package net.jonathansmith.javadpad.gui.user.toolbar;
 
 /**
  *
@@ -39,6 +39,9 @@ public class UserToolbar extends javax.swing.JPanel {
     private void initComponents() {
 
         userBack = new javax.swing.JButton();
+        newUser = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        loadUser = new javax.swing.JButton();
 
         setMaximumSize(new java.awt.Dimension(120, 32767));
         setMinimumSize(new java.awt.Dimension(120, 0));
@@ -50,24 +53,50 @@ public class UserToolbar extends javax.swing.JPanel {
         userBack.setMinimumSize(new java.awt.Dimension(105, 23));
         userBack.setPreferredSize(new java.awt.Dimension(105, 23));
 
+        newUser.setText("New");
+
+        jLabel1.setText("User Toolbar:");
+
+        loadUser.setText("Existing");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(userBack, javax.swing.GroupLayout.DEFAULT_SIZE, 110, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(userBack, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(loadUser)
+                            .addComponent(newUser))))
                 .addGap(5, 5, 5))
         );
+
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {loadUser, newUser, userBack});
+
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel1)
+                .addGap(5, 5, 5)
+                .addComponent(newUser)
+                .addGap(5, 5, 5)
+                .addComponent(loadUser)
                 .addGap(5, 5, 5)
                 .addComponent(userBack, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(272, Short.MAX_VALUE))
+                .addContainerGap(202, Short.MAX_VALUE))
         );
+
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {loadUser, newUser, userBack});
+
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    public javax.swing.JButton loadUser;
+    public javax.swing.JButton newUser;
     public javax.swing.JButton userBack;
     // End of variables declaration//GEN-END:variables
 }

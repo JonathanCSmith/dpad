@@ -118,6 +118,13 @@ public class DPADController extends Thread {
         return client.getUser();
     }
     
+    public void setSessionUser(User user) {
+        if (!(this.engine instanceof DPADHostEngine)) {
+            DPADClientEngine client = (DPADClientEngine) this.engine;
+            client.setUser(user);
+        }
+    }
+    
     public Experiment getSessionExperiment() {
         if (this.engine instanceof DPADHostEngine) {
             return null;
