@@ -145,9 +145,6 @@ public class DPADLocalEngine extends DPADClientEngine {
             case SETUP_LOCAL:         this.runtime = new Startup_LocalProcess(this);
                                         break;
             
-            case USER_SELECT:           this.runtime = new UserSetProcess(this);
-                                        break;
-            
             case LOAD_AND_PROCESS:      this.runtime = new LoadProcessProcess(this);
                                         break;
                 

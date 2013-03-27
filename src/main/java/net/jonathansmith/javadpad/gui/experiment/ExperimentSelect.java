@@ -38,6 +38,7 @@ public class ExperimentSelect {
         this.blankPanel = new JPanel();
         this.newExperimentPane = new NewExperimentPane();
         this.existingExperimentPane = new ExistingExperimentPane();
+        this.experimentToolbar = new ExperimentToolbar();
         this.currentPanel = this.blankPanel;
     }
     
