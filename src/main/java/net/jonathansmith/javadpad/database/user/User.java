@@ -67,7 +67,7 @@ public class User implements Serializable {
         this.uuid = uuid;
     }
     
-    @Column(name = "Username")
+    @Column(name = "Username", unique = true)
     public String getUsername() {
         return this.username;
     }

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.HibernateException;
+
 import net.jonathansmith.javadpad.database.DatabaseConnection;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
@@ -29,7 +30,16 @@ import net.jonathansmith.javadpad.util.logging.DPADLogger;
  */
 public class ExperimentManager {
     
+    private static ExperimentManager instance = null;
     private ExperimentDAO experimentDAO = new ExperimentDAO();
+    
+    public static ExperimentManager getInstance() {
+        if (instance == null) {
+            instance = new ExperimentManager();
+        }
+        
+        return instance;
+    }
     
     public List<Experiment> loadExperiments() {
         List<Experiment> experiments = new ArrayList<Experiment> ();

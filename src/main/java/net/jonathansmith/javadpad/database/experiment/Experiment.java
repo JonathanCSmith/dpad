@@ -39,6 +39,8 @@ import org.hibernate.annotations.GenericGenerator;
 public class Experiment implements Serializable {
     
     private String uuid;
+    private String name;
+    private String description;
     private Set<Batch> batches;
     
     public Experiment() {}
@@ -53,6 +55,24 @@ public class Experiment implements Serializable {
     
     public void setUUID(String uuid) {
         this.uuid = uuid;
+    }
+    
+    @Column(name = "Name")
+    public String getName() {
+        return this.name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    @Column(name = "Description")
+    public String getDescription() {
+        return this.description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
     }
     
     @Column(name = "Batch")

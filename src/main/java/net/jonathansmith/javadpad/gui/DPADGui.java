@@ -31,18 +31,16 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.engine.DPADEngine;
-import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.gui.clientmain.ClientMainPane;
 import net.jonathansmith.javadpad.gui.clientmain.ClientMainToolbar;
+import net.jonathansmith.javadpad.gui.experiment.ExperimentSelect;
 import net.jonathansmith.javadpad.gui.startup.StartupPane;
 import net.jonathansmith.javadpad.gui.startup.StartupToolbar;
-import net.jonathansmith.javadpad.gui.user.panel.NewUserPane;
 import net.jonathansmith.javadpad.gui.user.UserSelect;
-import net.jonathansmith.javadpad.gui.user.toolbar.UserToolbar;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import static net.jonathansmith.javadpad.util.RuntimeType.IDLE_LOCAL;
-import net.jonathansmith.javadpad.util.logging.LogHandler;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
+import net.jonathansmith.javadpad.util.logging.LogHandler;
 
 /**
  *
@@ -62,6 +60,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public ClientMainToolbar clientMainToolbar;
     
     public UserSelect userSelect;
+    public ExperimentSelect experimentSelect;
     
     /**
      * Creates new form DPADG
@@ -182,6 +181,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.clientMainToolbar = new ClientMainToolbar();
         
         this.userSelect = new UserSelect();
+        this.experimentSelect = new ExperimentSelect();
         
         DPADLogger.addLogHandler(new LogHandler(this));
     }
@@ -266,6 +266,10 @@ public class DPADGui extends JFrame implements Runnable, Observer {
                                     this.setCorePanels(this.userSelect.getCurrentView(), this.userSelect.userToolbar);
                                     break;
                 
+            case EXPERIMENT_SELECT: 
+                                    this.setCorePanels(this.experimentSelect.getCurrentView(), this.experimentSelect.experimentToolbar);
+                                    break;
+                
             default:                break;
         }
         
@@ -307,6 +311,14 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.userSelect.userToolbar.userBack.addActionListener(listener);
         this.userSelect.newUserPane.submit.addActionListener(listener);
         this.userSelect.existingUserPane.submit.addActionListener(listener);
+    }
+    
+    public void addExperimentRuntimeListener(ActionListener listener) {
+        this.experimentSelect.experimentToolbar.newExperiment.addActionListener(listener);
+        this.experimentSelect.experimentToolbar.loadExperiment.addActionListener(listener);
+        this.experimentSelect.experimentToolbar.experimentBack.addActionListener(listener);
+        this.experimentSelect.newExperimentPane.submit.addActionListener(listener);
+        this.experimentSelect.existingExperimentPane.submit.addActionListener(listener);
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

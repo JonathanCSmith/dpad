@@ -85,7 +85,10 @@ public class UserPanelListener implements ActionListener {
             char[] password = this.controller.getGui().userSelect.newUserPane.password.getPassword();
             this.controller.getGui().userSelect.newUserPane.password.setText("");
             
-            if (!username.contentEquals("") && !firstName.contentEquals("") && !lastName.contentEquals("") && password.length != 0) {
+            if (!username.contentEquals("") 
+                && !firstName.contentEquals("") 
+                    && !lastName.contentEquals("") 
+                        && password.length != 0) {
                 User user = new User();
                 user.setUsername(username);
                 user.setFirstName(firstName);

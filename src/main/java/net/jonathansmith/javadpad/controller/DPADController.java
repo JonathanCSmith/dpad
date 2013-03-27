@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.awt.EventQueue;
 
 import net.jonathansmith.javadpad.controller.listener.ClientMainPanelListener;
+import net.jonathansmith.javadpad.controller.listener.ExperimentPanelListener;
 import net.jonathansmith.javadpad.controller.listener.StartupPanelListener;
 import net.jonathansmith.javadpad.controller.listener.UserPanelListener;
 import net.jonathansmith.javadpad.database.experiment.Experiment;
@@ -134,14 +135,22 @@ public class DPADController extends Thread {
         return client.getExperiment();
     }
     
+    public void setSessionExperiment(Experiment experiment) {
+        if (!(this.engine instanceof DPADHostEngine)) {
+            DPADClientEngine client = (DPADClientEngine) this.engine;
+        }
+    }
+    
     private void addListeners(ThreadType type) {
         switch (type) {
             case LOCAL:             this.gui.addMainMenuListener(new ClientMainPanelListener(this));
                                     this.gui.addUserRuntimeListener(new UserPanelListener(this));
+                                    this.gui.addExperimentRuntimeListener(new ExperimentPanelListener(this));
                                     break;
                 
             case CLIENT:            this.gui.addMainMenuListener(new ClientMainPanelListener(this));
                                     this.gui.addUserRuntimeListener(new UserPanelListener(this));
+                                    this.gui.addExperimentRuntimeListener(new ExperimentPanelListener(this));
                                     break;
                 
             case HOST:              break;

@@ -38,7 +38,7 @@ public class UserTableModel extends AbstractTableModel {
     public UserTableModel() {}
     
     public int getRowCount() {
-        return users.size();
+        return this.users.size();
     }
 
     public int getColumnCount() {
