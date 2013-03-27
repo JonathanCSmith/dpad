@@ -17,6 +17,7 @@
 package net.jonathansmith.javadpad.database.user;
 
 import org.hibernate.Query;
+
 import net.jonathansmith.javadpad.database.DatabaseConnection;
 import net.jonathansmith.javadpad.database.GenericDAO;
 

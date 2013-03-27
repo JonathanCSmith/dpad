@@ -19,7 +19,6 @@ package net.jonathansmith.javadpad.util.logging;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.logging.SimpleFormatter;
 
 import net.jonathansmith.javadpad.gui.DPADGui;
 

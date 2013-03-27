@@ -28,6 +28,7 @@ public enum RuntimeType {
     IDLE_LOCAL(false, true),
     
     USER_SELECT(true, true),
+    EXPERIMENT_SELECT(true, true),
     LOAD_AND_PROCESS(true, true),
     ANALYSE_AND_DISPLAY(true, true);
     

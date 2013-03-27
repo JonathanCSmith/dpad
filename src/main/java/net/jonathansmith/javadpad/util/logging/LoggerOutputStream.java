@@ -51,7 +51,7 @@ public class LoggerOutputStream extends OutputStream {
     
     @Override
     public void flush() {
-        logger.log(mem, level);
+        DPADLogger.log(mem, level);
         mem = "";
     }
 }
