@@ -49,5 +49,9 @@ public class ClientMainPanelListener implements ActionListener {
         if (evt.getSource() == this.controller.getGui().clientMainToolbar.setUser) {
             local.setRuntime(RuntimeType.USER_SELECT);
         }
+        
+        else if (evt.getSource() == this.controller.getGui().clientMainToolbar.setExperiment) {
+            local.setRuntime(RuntimeType.EXPERIMENT_SELECT);
+        }
     }
 }
