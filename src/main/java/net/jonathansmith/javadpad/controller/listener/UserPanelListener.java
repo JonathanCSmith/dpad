@@ -59,12 +59,12 @@ public class UserPanelListener implements ActionListener {
         
         else if (evt.getSource() == this.controller.getGui().userSelect.userToolbar.userBack) {
             if (this.controller.getGui().userSelect.getCurrentView() instanceof NewUserPane) {
-                this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.blankPanel);
+                this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.displayPanel);
                 this.controller.getGui().validateState();
             }
             
             else if (this.controller.getGui().userSelect.getCurrentView() instanceof ExistingUserPane) {
-                this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.blankPanel);
+                this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.displayPanel);
                 this.controller.getGui().validateState();
                 
             } else {
@@ -97,12 +97,13 @@ public class UserPanelListener implements ActionListener {
                 
                 UserManager manager = UserManager.getInstance();
                 manager.saveNewUser(user);
+                this.controller.setSessionUser(user);
                 
             } else {
                 DPADLogger.warning("Some fields were incomplete, returning. Your entry was not saved.");
             }
             
-            this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.blankPanel);
+            this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.displayPanel);
             this.controller.getGui().validateState();
         }
         
@@ -116,7 +117,7 @@ public class UserPanelListener implements ActionListener {
                 this.controller.setSessionUser(user);
             }
             
-            this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.blankPanel);
+            this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.displayPanel);
             this.controller.getGui().validateState();
         }
     }

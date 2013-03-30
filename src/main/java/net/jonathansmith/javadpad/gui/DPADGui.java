@@ -180,8 +180,8 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.clientMainPane = new ClientMainPane();
         this.clientMainToolbar = new ClientMainToolbar();
         
-        this.userSelect = new UserSelect();
-        this.experimentSelect = new ExperimentSelect();
+        this.userSelect = new UserSelect(this.controller);
+        this.experimentSelect = new ExperimentSelect(this.controller);
         
         DPADLogger.addLogHandler(new LogHandler(this));
     }
@@ -303,6 +303,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     
     public void addMainMenuListener(ActionListener listener) {
         this.clientMainToolbar.setUser.addActionListener(listener);
+        this.clientMainToolbar.setExperiment.addActionListener(listener);
     }
     
     public void addUserRuntimeListener(ActionListener listener) {

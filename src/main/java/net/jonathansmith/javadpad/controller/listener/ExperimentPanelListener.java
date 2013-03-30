@@ -56,12 +56,12 @@ public class ExperimentPanelListener implements ActionListener {
         
         else if (evt.getSource() == this.controller.getGui().experimentSelect.experimentToolbar.experimentBack) {
             if (this.controller.getGui().experimentSelect.getCurrentView() instanceof NewExperimentPane) {
-                this.controller.getGui().experimentSelect.setCurrentView(this.controller.getGui().experimentSelect.blankPanel);
+                this.controller.getGui().experimentSelect.setCurrentView(this.controller.getGui().experimentSelect.displayPanel);
                 this.controller.getGui().validateState();
             }
             
             else if (this.controller.getGui().experimentSelect.currentPanel instanceof ExistingExperimentPane) {
-                this.controller.getGui().experimentSelect.setCurrentView(this.controller.getGui().experimentSelect.blankPanel);
+                this.controller.getGui().experimentSelect.setCurrentView(this.controller.getGui().experimentSelect.displayPanel);
                 this.controller.getGui().validateState();
                 
             } else {
@@ -84,12 +84,13 @@ public class ExperimentPanelListener implements ActionListener {
                 
                 ExperimentManager manager = ExperimentManager.getInstance();
                 manager.saveNewExperiment(experiment);
+                this.controller.setSessionExperiment(experiment);
                 
             } else {
                 DPADLogger.warning("Some fields were incomplete, returning. Your entry was not saved");
             }
             
-            this.controller.getGui().experimentSelect.setCurrentView(this.controller.getGui().experimentSelect.blankPanel);
+            this.controller.getGui().experimentSelect.setCurrentView(this.controller.getGui().experimentSelect.displayPanel);
             this.controller.getGui().validateState();
         }
         
@@ -103,7 +104,7 @@ public class ExperimentPanelListener implements ActionListener {
                 this.controller.setSessionExperiment(experiment);
             }
             
-            this.controller.getGui().experimentSelect.setCurrentView(this.controller.getGui().experimentSelect.blankPanel);
+            this.controller.getGui().experimentSelect.setCurrentView(this.controller.getGui().experimentSelect.displayPanel);
             this.controller.getGui().validateState();
         }
     }
