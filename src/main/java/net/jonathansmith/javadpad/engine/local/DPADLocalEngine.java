@@ -142,7 +142,7 @@ public class DPADLocalEngine extends DPADClientEngine {
         }
         
         switch (runtime) {
-            case SETUP_LOCAL:         this.runtime = new Startup_LocalProcess(this);
+            case SETUP_LOCAL:           this.runtime = new Startup_LocalProcess(this);
                                         break;
             
             case LOAD_AND_PROCESS:      this.runtime = new LoadProcessProcess(this);
@@ -172,8 +172,12 @@ public class DPADLocalEngine extends DPADClientEngine {
     @Override
     public void sendQuitToRuntime() {
         DPADLogger.info("Forcing runtime shutdown of current thread, assumed reason: back was called");
-        if (this.currentRuntime != RuntimeType.IDLE_LOCAL) {
+        if (this.currentRuntime != RuntimeType.IDLE_LOCAL && this.currentRuntime.isRunnable()) {
             this.runtime.forceShutdown(false);
+        }
+        
+        else if (this.currentRuntime != RuntimeType.IDLE_LOCAL && !this.currentRuntime.isRunnable()) {
+            this.runtimeFinished(false);
         }
     }
     

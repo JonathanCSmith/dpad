@@ -17,7 +17,10 @@
 package net.jonathansmith.javadpad.gui.user;
 
 import javax.swing.JPanel;
+import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.database.user.User;
 
+import net.jonathansmith.javadpad.gui.user.panel.DisplayUserPane;
 import net.jonathansmith.javadpad.gui.user.panel.ExistingUserPane;
 import net.jonathansmith.javadpad.gui.user.panel.NewUserPane;
 import net.jonathansmith.javadpad.gui.user.toolbar.UserToolbar;
@@ -28,18 +31,22 @@ import net.jonathansmith.javadpad.gui.user.toolbar.UserToolbar;
  */
 public class UserSelect {
     
-    public JPanel blankPanel;
+    public DisplayUserPane displayPanel;
     public NewUserPane newUserPane;
     public ExistingUserPane existingUserPane;
     public UserToolbar userToolbar;
     public JPanel currentPanel;
     
-    public UserSelect() {
-        this.blankPanel = new JPanel();
+    private DPADController controller;
+    
+    public UserSelect(DPADController controller) {
+        this.controller = controller;
+        
+        this.displayPanel = new DisplayUserPane();
         this.newUserPane = new NewUserPane();
         this.existingUserPane = new ExistingUserPane();
         this.userToolbar = new UserToolbar();
-        this.currentPanel = this.blankPanel;
+        this.currentPanel = this.displayPanel;
     }
     
     public JPanel getCurrentView() {
@@ -47,6 +54,11 @@ public class UserSelect {
     }
     
     public void setCurrentView(JPanel panel) {
+        if (panel instanceof DisplayUserPane) {
+            User user = this.controller.getSessionUser();
+            this.displayPanel.setCurrentUser(user);
+        }
+        
         this.currentPanel = panel;
     }
 }

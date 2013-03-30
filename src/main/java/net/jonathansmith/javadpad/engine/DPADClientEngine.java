@@ -44,4 +44,8 @@ public abstract class DPADClientEngine extends DPADEngine {
     public Experiment getExperiment() {
         return this.experiment;
     }
+    
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+    }
 }

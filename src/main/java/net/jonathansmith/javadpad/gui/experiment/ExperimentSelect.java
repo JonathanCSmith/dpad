@@ -17,6 +17,9 @@
 package net.jonathansmith.javadpad.gui.experiment;
 
 import javax.swing.JPanel;
+import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.database.experiment.Experiment;
+import net.jonathansmith.javadpad.gui.experiment.panel.DisplayExperimentPane;
 
 import net.jonathansmith.javadpad.gui.experiment.panel.ExistingExperimentPane;
 import net.jonathansmith.javadpad.gui.experiment.panel.NewExperimentPane;
@@ -28,18 +31,22 @@ import net.jonathansmith.javadpad.gui.experiment.toolbar.ExperimentToolbar;
  */
 public class ExperimentSelect {
     
-    public JPanel blankPanel;
+    public DisplayExperimentPane displayPanel;
     public NewExperimentPane newExperimentPane;
     public ExistingExperimentPane existingExperimentPane;
     public ExperimentToolbar experimentToolbar;
     public JPanel currentPanel;
     
-    public ExperimentSelect() {
-        this.blankPanel = new JPanel();
+    private DPADController controller;
+    
+    public ExperimentSelect(DPADController controller) {
+        this.controller = controller;
+        
+        this.displayPanel = new DisplayExperimentPane();
         this.newExperimentPane = new NewExperimentPane();
         this.existingExperimentPane = new ExistingExperimentPane();
         this.experimentToolbar = new ExperimentToolbar();
-        this.currentPanel = this.blankPanel;
+        this.currentPanel = this.displayPanel;
     }
     
     public JPanel getCurrentView() {
@@ -47,6 +54,11 @@ public class ExperimentSelect {
     }
     
     public void setCurrentView(JPanel panel) {
+        if (panel instanceof DisplayExperimentPane) {
+            Experiment experiment = this.controller.getSessionExperiment();
+            this.displayPanel.setCurrentExperiment(experiment);
+        }
+        
         this.currentPanel = panel;
     }
 }
