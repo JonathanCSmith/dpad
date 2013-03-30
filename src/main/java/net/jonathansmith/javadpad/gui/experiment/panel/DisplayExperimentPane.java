@@ -63,7 +63,9 @@ public class DisplayExperimentPane extends javax.swing.JPanel {
 
         dispDescription.setEditable(false);
         dispDescription.setColumns(20);
+        dispDescription.setLineWrap(true);
         dispDescription.setRows(5);
+        dispDescription.setWrapStyleWord(true);
         jScrollPane1.setViewportView(dispDescription);
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
