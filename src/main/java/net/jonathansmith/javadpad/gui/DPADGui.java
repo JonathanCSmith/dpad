@@ -272,27 +272,11 @@ public class DPADGui extends JFrame implements Runnable, Observer {
                 
             default:                break;
         }
-        
-        this.maintainMinimumDividerSizes();
     }
     
     private void setCorePanels(JPanel panel, JPanel toolbar) {
         this.displaySplitPane.setLeftComponent(panel);
         this.toolbarSplitPane.setLeftComponent(toolbar);
-    }
-    
-    private void maintainMinimumDividerSizes() {
-        if (this.headerSplitPane.getDividerLocation() < 70) {
-            this.headerSplitPane.setDividerLocation(70);
-        }
-        
-        if (this.toolbarSplitPane.getDividerLocation() <= 115) {
-            this.toolbarSplitPane.setDividerLocation(115);
-        }
-        
-        if (this.displaySplitPane.getDividerLocation() <= (this.displaySplitPane.getSize().height - 120)) {
-            this.displaySplitPane.setDividerLocation(this.displaySplitPane.getSize().height - 120);
-        }
     }
     
     public void addStartupSelectListener(ActionListener listener) {
