@@ -122,15 +122,17 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         displaySplitPane.setAutoscrolls(true);
         displaySplitPane.setPreferredSize(new java.awt.Dimension(522, 228));
 
-        textScroll.setMinimumSize(new java.awt.Dimension(120, 23));
-        textScroll.setPreferredSize(new java.awt.Dimension(120, 22));
+        textScroll.setMaximumSize(new java.awt.Dimension(140, 32767));
+        textScroll.setMinimumSize(new java.awt.Dimension(140, 23));
+        textScroll.setPreferredSize(new java.awt.Dimension(140, 22));
 
         textArea.setEditable(false);
         textArea.setColumns(20);
         textArea.setRows(5);
         textArea.setText("DPAD Console Log:");
+        textArea.setMaximumSize(new java.awt.Dimension(140, 2147483647));
         textArea.setMinimumSize(new java.awt.Dimension(140, 120));
-        textArea.setPreferredSize(new java.awt.Dimension(164, 120));
+        textArea.setPreferredSize(new java.awt.Dimension(140, 120));
         textScroll.setViewportView(textArea);
 
         displaySplitPane.setRightComponent(textScroll);
