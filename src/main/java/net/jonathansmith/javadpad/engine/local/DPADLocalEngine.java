@@ -27,7 +27,6 @@ import net.jonathansmith.javadpad.engine.local.process.LoadProcessProcess;
 import net.jonathansmith.javadpad.engine.local.process.RuntimeProcess;
 import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess.State;
 import net.jonathansmith.javadpad.util.RuntimeType;
-import net.jonathansmith.javadpad.engine.local.process.UserSetProcess;
 import net.jonathansmith.javadpad.plugin.DPADPluginManager;
 import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
@@ -52,9 +51,6 @@ public class DPADLocalEngine extends DPADClientEngine {
     
     private DatabaseConnection session = null;
     private DPADPluginManager pluginManager = null;
-    
-    private User user = null;
-    private Experiment experiment = null;
     
     public DPADLocalEngine(FileSystem fileSystem) {
         super(fileSystem);
