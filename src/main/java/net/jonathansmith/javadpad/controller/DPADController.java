@@ -62,8 +62,8 @@ public class DPADController extends Thread {
     }
     
     public void init() {
-        System.setOut(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
-        System.setErr(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
+        //System.setOut(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
+        //System.setErr(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
         
         this.gui.init();
         EventQueue.invokeLater(this.gui);
