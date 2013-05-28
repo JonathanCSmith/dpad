@@ -19,6 +19,7 @@ package net.jonathansmith.javadpad.database.experiment;
 import java.io.Serializable;
 
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,8 +28,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import net.jonathansmith.javadpad.database.batch.Batch;
 import org.hibernate.annotations.GenericGenerator;
+
+import net.jonathansmith.javadpad.database.batch.Batch;
 
 /**
  *
