@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Jon
+ * Copyright (C) 2013 jonathansmith
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,38 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.database.batch;
+package net.jonathansmith.javadpad.database.datagroup;
 
 import java.io.Serializable;
-
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import net.jonathansmith.javadpad.database.datagroup.DataGroup;
-import net.jonathansmith.javadpad.database.equipment.Equipment;
+import net.jonathansmith.javadpad.database.datatype.DataType;
 
 /**
  *
- * @author Jon
+ * @author jonathansmith
  */
 @Entity
-@Table(name = "Batch", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class Batch implements Serializable {
+@Table(name = "DataGroup", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+public class DataGroup implements Serializable {
     
     private String uuid;
-    private Equipment equipment;
-    private Set<DataGroup> dataGroup;
+    private int[] times;
+    private int[] data;
+    private DataType dataType;
     
-    public Batch() {}
+    public DataGroup() {}
     
     @Id
     @GeneratedValue(generator = "system-uuid")
@@ -59,22 +56,30 @@ public class Batch implements Serializable {
         this.uuid = uuid;
     }
     
-    @Column(name = "Equipment")
-    public Equipment getEquipment() {
-        return this.equipment;
+    @Column(name = "Times")
+    public int[] getTimes() {
+        return this.times;
     }
     
-    public void setEquipment(Equipment eqp) {
-        this.equipment = eqp;
+    public void setTimes(int[] times) {
+        this.times = times;
     }
     
-    @Column(name = "DataGroup")
-    @OneToMany(orphanRemoval = true)
-    public Set<DataGroup> getDataGroup() {
-        return this.dataGroup;
+    @Column(name = "Data")
+    public int[] getData() {
+        return this.data;
     }
     
-    public void setDataGroup(Set<DataGroup> dataGroup) {
-        this.dataGroup = dataGroup;
+    public void setData(int[] data) {
+        this.data = data;
+    }
+    
+    @Column(name = "DataType")
+    public DataType getDataType() {
+        return this.dataType;
+    }
+    
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
     }
 }

@@ -27,7 +27,7 @@ import org.hibernate.Session;
  *
  * @author Jon
  */
-public abstract class GenericDAO<T, ID extends Serializable> {
+public class GenericDAO<T, ID extends Serializable> {
     
     protected Session getSession() {
         return DatabaseConnection.getSession();

@@ -52,7 +52,7 @@ public class UserPanelListener implements ActionListener {
         else if (evt.getSource() == this.controller.getGui().userSelect.userToolbar.loadUser) {
             if (!(this.controller.getGui().userSelect.getCurrentView() instanceof ExistingUserPane)) {
                 this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.existingUserPane);
-                this.controller.getGui().userSelect.existingUserPane.insertData(UserManager.getInstance().loadUsers());
+                this.controller.getGui().userSelect.existingUserPane.insertData(UserManager.getInstance().loadAll());
                 this.controller.getGui().validateState();
             }
         }
@@ -96,7 +96,7 @@ public class UserPanelListener implements ActionListener {
                 user.setPassword(password);
                 
                 UserManager manager = UserManager.getInstance();
-                manager.saveNewUser(user);
+                manager.saveNew(user);
                 this.controller.setSessionUser(user);
                 
             } else {

@@ -49,7 +49,7 @@ public class ExperimentPanelListener implements ActionListener {
         else if (evt.getSource() == this.controller.getGui().experimentSelect.experimentToolbar.loadExperiment) {
             if (!(this.controller.getGui().experimentSelect.getCurrentView() instanceof ExistingExperimentPane)) {
                 this.controller.getGui().experimentSelect.setCurrentView(this.controller.getGui().experimentSelect.existingExperimentPane);
-                this.controller.getGui().experimentSelect.existingExperimentPane.insertData(ExperimentManager.getInstance().loadExperiments());
+                this.controller.getGui().experimentSelect.existingExperimentPane.insertData(ExperimentManager.getInstance().loadAll());
                 this.controller.getGui().validateState();
             }
         }
@@ -83,7 +83,7 @@ public class ExperimentPanelListener implements ActionListener {
                 experiment.setDescription(description);
                 
                 ExperimentManager manager = ExperimentManager.getInstance();
-                manager.saveNewExperiment(experiment);
+                manager.saveNew(experiment);
                 this.controller.setSessionExperiment(experiment);
                 
             } else {
