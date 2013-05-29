@@ -16,10 +16,31 @@
  */
 package net.jonathansmith.javadpad.database.batch;
 
+import net.jonathansmith.javadpad.database.GenericDAO;
+import net.jonathansmith.javadpad.database.GenericManager;
+
 /**
  *
  * @author jonathansmith
  */
-public class BatchManager {
+public class BatchManager extends GenericManager<Batch> {
     
+    private static BatchManager instance;
+    
+    private BatchManager() {
+        super(new GenericDAO<Batch, String>(), Batch.class);
+    }
+    
+    public static BatchManager getInstance() {
+        if (instance == null) {
+            instance = new BatchManager();
+        }
+        
+        return instance;
+    }
+    
+    @Override
+    public GenericDAO getDAO() {
+        return this.dao;
+    }
 }
