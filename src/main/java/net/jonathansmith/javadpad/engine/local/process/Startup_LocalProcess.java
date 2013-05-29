@@ -12,11 +12,14 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
-import net.jonathansmith.javadpad.database.experiment.Experiment;
-import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.database.DatabaseConnection;
 import net.jonathansmith.javadpad.database.batch.Batch;
+import net.jonathansmith.javadpad.database.datagroup.DataGroup;
+import net.jonathansmith.javadpad.database.datatype.DataType;
+import net.jonathansmith.javadpad.database.equipment.Equipment;
+import net.jonathansmith.javadpad.database.experiment.Experiment;
 import net.jonathansmith.javadpad.database.user.User;
+import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.plugin.DPADPluginManager;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
@@ -138,6 +141,9 @@ public class Startup_LocalProcess extends RuntimeProcess {
         config.addAnnotatedClass(User.class);
         config.addAnnotatedClass(Experiment.class);
         config.addAnnotatedClass(Batch.class);
+        config.addAnnotatedClass(DataGroup.class);
+        config.addAnnotatedClass(DataType.class);
+        config.addAnnotatedClass(Equipment.class);
         return config;
     }
     
