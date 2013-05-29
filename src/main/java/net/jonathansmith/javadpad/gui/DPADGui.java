@@ -17,14 +17,15 @@
 package net.jonathansmith.javadpad.gui;
 
 
+import java.awt.event.ActionListener;
+
 import java.util.Observable;
 import java.util.Observer;
-
-import java.awt.event.ActionListener;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -38,7 +39,6 @@ import net.jonathansmith.javadpad.gui.startup.StartupPane;
 import net.jonathansmith.javadpad.gui.startup.StartupToolbar;
 import net.jonathansmith.javadpad.gui.user.UserSelect;
 import net.jonathansmith.javadpad.util.RuntimeType;
-import static net.jonathansmith.javadpad.util.RuntimeType.IDLE_LOCAL;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.logging.LogHandler;
 
@@ -61,6 +61,9 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     
     public UserSelect userSelect;
     public ExperimentSelect experimentSelect;
+    
+    private int[] textFieldLength = new int[1024];
+    private int currentTextLength = 0;
     
     /**
      * Creates new form DPADG
@@ -118,21 +121,22 @@ public class DPADGui extends JFrame implements Runnable, Observer {
 
         displaySplitPane.setDividerLocation(240);
         displaySplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        displaySplitPane.setResizeWeight(1.0);
+        displaySplitPane.setResizeWeight(0.5);
         displaySplitPane.setAutoscrolls(true);
         displaySplitPane.setPreferredSize(new java.awt.Dimension(522, 228));
 
-        textScroll.setMaximumSize(new java.awt.Dimension(140, 32767));
+        textScroll.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         textScroll.setMinimumSize(new java.awt.Dimension(140, 23));
         textScroll.setPreferredSize(new java.awt.Dimension(140, 22));
+        textScroll.setViewportView(textArea);
 
         textArea.setEditable(false);
         textArea.setColumns(20);
         textArea.setRows(5);
         textArea.setText("DPAD Console Log:");
-        textArea.setMaximumSize(new java.awt.Dimension(140, 2147483647));
-        textArea.setMinimumSize(new java.awt.Dimension(140, 120));
-        textArea.setPreferredSize(new java.awt.Dimension(140, 120));
+        textArea.setMaximumSize(null);
+        textArea.setMinimumSize(null);
+        textArea.setPreferredSize(null);
         textScroll.setViewportView(textArea);
 
         displaySplitPane.setRightComponent(textScroll);
@@ -185,7 +189,8 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.userSelect = new UserSelect(this.controller);
         this.experimentSelect = new ExperimentSelect(this.controller);
         
-        DPADLogger.addLogHandler(new LogHandler(this));
+        LogHandler handler = new LogHandler(this);
+        DPADLogger.addLogHandler(handler);
     }
     
     @Override
@@ -218,8 +223,17 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     
     public void updateLog(String message) {
         this.textArea.append(message);
+        
+        int oldLength = this.textArea.getDocument().getLength();
         this.textArea.setCaretPosition(this.textArea.getDocument().getLength());
-        this.getContentPane().validate();
+        int addedSize = this.textArea.getDocument().getLength() - oldLength;
+        
+        if (this.textFieldLength[this.currentTextLength] != 0) {
+            this.textArea.replaceRange("", 0, this.textFieldLength[this.currentTextLength]);
+        }
+        
+        this.textFieldLength[this.currentTextLength] = addedSize;
+        this.currentTextLength = (this.currentTextLength + 1) % 1024;
     }
     
     public String getDirectory() {
@@ -279,6 +293,7 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     private void setCorePanels(JPanel panel, JPanel toolbar) {
         this.displaySplitPane.setLeftComponent(panel);
         this.toolbarSplitPane.setLeftComponent(toolbar);
+        this.getContentPane().validate();
     }
     
     public void addStartupSelectListener(ActionListener listener) {

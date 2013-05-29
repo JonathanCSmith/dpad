@@ -51,7 +51,7 @@ public class LogHandler extends Handler {
             ex.printStackTrace();
         }
         
-        if (message != null) {
+        if (message != null || message.contentEquals("")) {
             this.gui.updateLog(message);
         }
     }

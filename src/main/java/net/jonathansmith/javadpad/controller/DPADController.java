@@ -17,13 +17,14 @@
 
 package net.jonathansmith.javadpad.controller;
 
+import java.awt.EventQueue;
+
 import java.io.File;
 import java.io.PrintStream;
 
 import java.net.URISyntaxException;
 
 import java.util.logging.Level;
-import java.awt.EventQueue;
 
 import net.jonathansmith.javadpad.controller.listener.ClientMainPanelListener;
 import net.jonathansmith.javadpad.controller.listener.ExperimentPanelListener;
@@ -34,10 +35,10 @@ import net.jonathansmith.javadpad.database.user.User;
 import net.jonathansmith.javadpad.engine.DPADClientEngine;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.host.DPADHostEngine;
-import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.gui.DPADGui;
-import net.jonathansmith.javadpad.util.logging.DPADLogger;
+import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.util.ThreadType;
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.logging.LoggerOutputStream;
 
 /**
@@ -62,8 +63,8 @@ public class DPADController extends Thread {
     }
     
     public void init() {
-        //System.setOut(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
-        //System.setErr(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
+        System.setOut(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
+        System.setErr(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
         
         this.gui.init();
         EventQueue.invokeLater(this.gui);
