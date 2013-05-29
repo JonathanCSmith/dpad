@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Jon
+ * Copyright (C) 2013 jonathansmith
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,32 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.database.experiment;
+package net.jonathansmith.javadpad.database.equipment;
 
-import net.jonathansmith.javadpad.database.GenericManager;
+import org.hibernate.Query;
+
+import net.jonathansmith.javadpad.database.DatabaseConnection;
+import net.jonathansmith.javadpad.database.GenericDAO;
 
 /**
  *
- * @author Jon
+ * @author jonathansmith
  */
-public class ExperimentManager extends GenericManager<Experiment> {
+public class EquipmentDAO extends GenericDAO<Equipment, String> {
     
-    private static ExperimentManager instance = null;
-    
-    private ExperimentManager() {
-        super(new ExperimentDAO(), Experiment.class);
-    }
-    
-    public static ExperimentManager getInstance() {
-        if (instance == null) {
-            instance = new ExperimentManager();
-        }
-        
-        return instance;
-    }
-    
-    @Override
-    public ExperimentDAO getDAO() {
-        return (ExperimentDAO) this.dao;
+    public Equipment findByEquipmentUUID(String uuid) {
+        String sql = "Select p FROM Equipment p WHERE p.EquipmentUUID :uuid";
+        Query query = DatabaseConnection.getSession().createQuery(sql).setParameter("uuid", uuid);
+        Equipment equipment = findOne(query);
+        return equipment;
     }
 }

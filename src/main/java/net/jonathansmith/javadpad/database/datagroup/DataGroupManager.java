@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Jon
+ * Copyright (C) 2013 jonathansmith
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,32 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.database.experiment;
+package net.jonathansmith.javadpad.database.datagroup;
 
+import net.jonathansmith.javadpad.database.GenericDAO;
 import net.jonathansmith.javadpad.database.GenericManager;
 
 /**
  *
- * @author Jon
+ * @author jonathansmith
  */
-public class ExperimentManager extends GenericManager<Experiment> {
+public class DataGroupManager extends GenericManager<DataGroup> {
     
-    private static ExperimentManager instance = null;
+    private static DataGroupManager instance;
     
-    private ExperimentManager() {
-        super(new ExperimentDAO(), Experiment.class);
+    private DataGroupManager() {
+        super(new GenericDAO<DataGroup, String>(), DataGroup.class);
     }
     
-    public static ExperimentManager getInstance() {
+    private static DataGroupManager getInstance() {
         if (instance == null) {
-            instance = new ExperimentManager();
+            instance = new DataGroupManager();
         }
         
         return instance;
     }
     
     @Override
-    public ExperimentDAO getDAO() {
-        return (ExperimentDAO) this.dao;
+    public GenericDAO getDAO() {
+        return this.dao;
     }
 }

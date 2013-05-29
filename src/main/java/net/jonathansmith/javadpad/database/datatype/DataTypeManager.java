@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Jon
+ * Copyright (C) 2013 jonathansmith
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,10 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.database.user;
-
-import java.util.ArrayList;
-import java.util.List;
+package net.jonathansmith.javadpad.database.datatype;
 
 import javax.persistence.NonUniqueResultException;
 
@@ -29,29 +26,29 @@ import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *
- * @author Jon
+ * @author jonathansmith
  */
-public class UserManager extends GenericManager<User> {
+public class DataTypeManager extends GenericManager<DataType> {
     
-    private static UserManager instance;
+    private static DataTypeManager instance;
     
-    private UserManager() {
-        super(new UserDAO(), User.class);
+    private DataTypeManager() {
+        super(new DataTypeDAO(), DataType.class);
     }
     
-    public static UserManager getInstance() {
+    public static DataTypeManager getInstance() {
         if (instance == null) {
-            instance = new UserManager();
+            instance = new DataTypeManager();
         }
         
         return instance;
     }
     
-    public User findUserByUsername(String name) {
-        User user = null;
+    public DataType findDataTypeByName(String name) {
+        DataType dataType = null;
         try {
             DatabaseConnection.beginTransaction();
-            user = this.getDAO().findByName(name);
+            dataType = this.getDAO().findByName(name);
             DatabaseConnection.commitTransaction();
             
         } catch (NonUniqueResultException ex) {
@@ -61,11 +58,11 @@ public class UserManager extends GenericManager<User> {
             DPADLogger.logStackTrace(ex);
         }
         
-        return user;
+        return dataType;
     }
     
     @Override
-    public UserDAO getDAO() {
-        return (UserDAO) this.dao;
+    public DataTypeDAO getDAO() {
+        return (DataTypeDAO) this.dao;
     }
 }
