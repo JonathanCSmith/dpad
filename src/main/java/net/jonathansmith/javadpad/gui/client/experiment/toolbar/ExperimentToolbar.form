@@ -42,7 +42,7 @@
                       <Component id="back" linkSize="1" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="4" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -64,7 +64,7 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Experiment Panel:"/>
+        <Property name="text" type="java.lang.String" value="Experiment Toolbar:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="newEntry">

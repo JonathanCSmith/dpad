@@ -18,7 +18,6 @@ package net.jonathansmith.javadpad.engine.host;
 
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.util.FileSystem;
-import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.ThreadType;
 

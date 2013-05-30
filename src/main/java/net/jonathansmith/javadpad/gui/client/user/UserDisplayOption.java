@@ -16,16 +16,22 @@
  */
 package net.jonathansmith.javadpad.gui.client.user;
 
-import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.database.user.User;
+import net.jonathansmith.javadpad.database.user.UserManager;
+import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.gui.client.DisplayOption;
 import net.jonathansmith.javadpad.gui.client.user.panel.DisplayUserPane;
 import net.jonathansmith.javadpad.gui.client.user.panel.ExistingUserPane;
 import net.jonathansmith.javadpad.gui.client.user.panel.NewUserPane;
 import net.jonathansmith.javadpad.gui.client.user.toolbar.UserToolbar;
+import net.jonathansmith.javadpad.util.RuntimeType;
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *
@@ -46,6 +52,12 @@ public class UserDisplayOption extends DisplayOption {
         this.userToolbar = new UserToolbar();
         this.currentPanel = this.displayPanel;
         this.currentToolbar = this.userToolbar;
+        
+        this.userToolbar.newUser.addActionListener(this);
+        this.userToolbar.loadUser.addActionListener(this);
+        this.userToolbar.userBack.addActionListener(this);
+        this.newUserPane.submit.addActionListener(this);
+        this.existingUserPane.submit.addActionListener(this);
     }
     
     @Override
@@ -60,12 +72,90 @@ public class UserDisplayOption extends DisplayOption {
     @Override
     public void validateState(DPADController controlller) {}
 
-    @Override
-    public void addDisplayListener(ActionListener listener) {
-        this.userToolbar.newUser.addActionListener(listener);
-        this.userToolbar.loadUser.addActionListener(listener);
-        this.userToolbar.userBack.addActionListener(listener);
-        this.newUserPane.submit.addActionListener(listener);
-        this.existingUserPane.submit.addActionListener(listener);
+    public void actionPerformed(ActionEvent evt) {
+        DPADEngine engine = this.controller.getEngine();
+        if (engine == null || !(engine instanceof DPADLocalEngine)) {
+            return;
+        }
+        
+        UserDisplayOption display = (UserDisplayOption) RuntimeType.USER_SELECT.getDisplay();
+        if (evt.getSource() == display.userToolbar.newUser) {
+            if (!(display.getCurrentView() instanceof NewUserPane)) {
+                display.setCurrentView(display.newUserPane);
+                this.controller.getGui().validateState();
+            }
+        }
+        
+        else if (evt.getSource() == display.userToolbar.loadUser) {
+            if (!(display.getCurrentView() instanceof ExistingUserPane)) {
+                display.setCurrentView(display.existingUserPane);
+                display.existingUserPane.insertData(UserManager.getInstance().loadAll());
+                this.controller.getGui().validateState();
+            }
+        }
+        
+        else if (evt.getSource() == display.userToolbar.userBack) {
+            if (display.getCurrentView() instanceof NewUserPane) {
+                display.setCurrentView(display.displayPanel);
+                this.controller.getGui().validateState();
+            }
+            
+            else if (display.getCurrentView() instanceof ExistingUserPane) {
+                display.setCurrentView(display.displayPanel);
+                this.controller.getGui().validateState();
+                
+            } else {
+                this.controller.getEngine().sendQuitToRuntime();
+            }
+        }
+        
+        else if (evt.getSource() == display.newUserPane.submit) {
+            String username = display.newUserPane.username.getText();
+            display.newUserPane.username.setText("");
+            
+            String firstName = display.newUserPane.firstName.getText();
+            display.newUserPane.firstName.setText("");
+            
+            String lastName = display.newUserPane.lastName.getText();
+            display.newUserPane.lastName.setText("");
+            
+            char[] password = display.newUserPane.password.getPassword();
+            display.newUserPane.password.setText("");
+            
+            if (!username.contentEquals("") 
+                && !firstName.contentEquals("") 
+                    && !lastName.contentEquals("") 
+                        && password.length != 0) {
+                User user = new User();
+                user.setUsername(username);
+                user.setFirstName(firstName);
+                user.setLastName(lastName);
+                user.setPassword(password);
+                
+                UserManager manager = UserManager.getInstance();
+                manager.saveNew(user);
+                this.controller.setSessionUser(user);
+                
+            } else {
+                DPADLogger.warning("Some fields were incomplete, returning. Your entry was not saved.");
+            }
+            
+            display.setCurrentView(display.displayPanel);
+            this.controller.getGui().validateState();
+        }
+        
+        else if (evt.getSource() == display.existingUserPane.submit) {
+            User user = display.existingUserPane.getSelectedUser();
+            
+            if (user == null) {
+                DPADLogger.warning("No user selected, returning to main user screen.");
+            
+            } else {
+                this.controller.setSessionUser(user);
+            }
+            
+            display.setCurrentView(display.displayPanel);
+            this.controller.getGui().validateState();
+        }
     }
 }

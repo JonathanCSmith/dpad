@@ -23,11 +23,6 @@ import java.io.File;
 
 import java.net.URISyntaxException;
 
-
-import net.jonathansmith.javadpad.controller.listener.ClientMainPanelListener;
-import net.jonathansmith.javadpad.controller.listener.ExperimentPanelListener;
-import net.jonathansmith.javadpad.controller.listener.StartupPanelListener;
-import net.jonathansmith.javadpad.controller.listener.UserPanelListener;
 import net.jonathansmith.javadpad.database.batch.Batch;
 import net.jonathansmith.javadpad.database.experiment.Experiment;
 import net.jonathansmith.javadpad.database.user.User;
@@ -36,8 +31,6 @@ import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.host.DPADHostEngine;
 import net.jonathansmith.javadpad.gui.DPADGui;
 import net.jonathansmith.javadpad.util.FileSystem;
-import net.jonathansmith.javadpad.util.RuntimeType;
-import net.jonathansmith.javadpad.util.ThreadType;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
@@ -66,7 +59,6 @@ public class DPADController extends Thread {
         EventQueue.invokeLater(this.gui);
         
         this.buildLocalFileSystem();
-        this.gui.addRuntimeListener(RuntimeType.RUNTIME_SELECT, new StartupPanelListener(this));
         this.initialised = true;
     }
     
@@ -100,7 +92,6 @@ public class DPADController extends Thread {
             return;
         }
         
-        this.addListeners(eng.getThreadType());
         this.engine = eng;
         this.gui.setEngine(eng);
         this.engine.init();
@@ -152,22 +143,6 @@ public class DPADController extends Thread {
         if (!(this.engine instanceof DPADHostEngine)) {
             DPADClientEngine client = (DPADClientEngine) this.engine;
             client.setBatch(batch);
-        }
-    }
-    
-    private void addListeners(ThreadType type) {
-        switch (type) {
-            case LOCAL:             this.gui.addRuntimeListener(RuntimeType.IDLE_CLIENT, new ClientMainPanelListener(this));
-                                    this.gui.addRuntimeListener(RuntimeType.USER_SELECT, new UserPanelListener(this));
-                                    this.gui.addRuntimeListener(RuntimeType.EXPERIMENT_SELECT, new ExperimentPanelListener(this));
-                                    break;
-                
-            case CLIENT:            this.gui.addRuntimeListener(RuntimeType.IDLE_CLIENT, new ClientMainPanelListener(this));
-                                    this.gui.addRuntimeListener(RuntimeType.USER_SELECT, new UserPanelListener(this));
-                                    this.gui.addRuntimeListener(RuntimeType.EXPERIMENT_SELECT, new ExperimentPanelListener(this));
-                                    break;
-                
-            case HOST:              break;
         }
     }
     

@@ -16,17 +16,7 @@
  */
 package net.jonathansmith.javadpad.database.experiment;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.NonUniqueResultException;
-
-import org.hibernate.HibernateException;
-
-import net.jonathansmith.javadpad.database.DatabaseConnection;
 import net.jonathansmith.javadpad.database.GenericManager;
-import net.jonathansmith.javadpad.database.user.User;
-import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *

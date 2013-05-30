@@ -26,7 +26,7 @@ import net.jonathansmith.javadpad.controller.DPADController;
  *
  * @author jonathansmith
  */
-public abstract class DisplayOption {
+public abstract class DisplayOption implements ActionListener {
     
     public JPanel currentPanel;
     public JPanel currentToolbar;
@@ -55,6 +55,4 @@ public abstract class DisplayOption {
     }
     
     public abstract void validateState(DPADController controlller);
-    
-    public abstract void addDisplayListener(ActionListener listener);
 }

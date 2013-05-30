@@ -46,7 +46,7 @@ public class ExperimentToolbar extends javax.swing.JPanel {
         setMaximumSize(new java.awt.Dimension(120, 32767));
         setMinimumSize(new java.awt.Dimension(120, 0));
 
-        jLabel1.setText("Experiment Panel:");
+        jLabel1.setText("Experiment Toolbar:");
 
         newEntry.setText("New");
 
@@ -71,7 +71,7 @@ public class ExperimentToolbar extends javax.swing.JPanel {
                     .add(layout.createSequentialGroup()
                         .addContainerGap()
                         .add(back)))
-                .addContainerGap(4, Short.MAX_VALUE))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         layout.linkSize(new java.awt.Component[] {back, loadEntry, newEntry}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
