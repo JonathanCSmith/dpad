@@ -75,16 +75,15 @@ public class ClientDisplayOption extends DisplayOption {
         }
         
         DPADLocalEngine local = (DPADLocalEngine) engine;
-        ClientDisplayOption display = (ClientDisplayOption) RuntimeType.IDLE_CLIENT.getDisplay();
-        if (evt.getSource() == display.mainToolbar.setUser) {
+        if (evt.getSource() == this.mainToolbar.setUser) {
             local.setRuntime(RuntimeType.USER_SELECT);
         }
         
-        else if (evt.getSource() == display.mainToolbar.setExperiment) {
+        else if (evt.getSource() == this.mainToolbar.setExperiment) {
             local.setRuntime(RuntimeType.EXPERIMENT_SELECT);
         }
         
-        else if (evt.getSource() == display.mainToolbar.setBatch) {
+        else if (evt.getSource() == this.mainToolbar.setBatch) {
             local.setRuntime(RuntimeType.BATCH_SELECT);
         }
     }
