@@ -22,8 +22,11 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -42,6 +45,8 @@ import net.jonathansmith.javadpad.database.equipment.Equipment;
 public class Batch implements Serializable {
     
     private String uuid;
+    private String name;
+    private String description;
     private Equipment equipment;
     private Set<DataSet> dataGroup;
     
@@ -59,7 +64,26 @@ public class Batch implements Serializable {
         this.uuid = uuid;
     }
     
-    @Column(name = "Equipment")
+    @Column(name = "Name")
+    public String getName() {
+        return this.name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    @Column(name = "Description")
+    public String getDescription() {
+        return this.description;
+    }
+    
+    public void setDescription(String desc) {
+        this.description = desc;
+    }
+    
+    @JoinColumn(name = "Equipment")
+    @ManyToOne
     public Equipment getEquipment() {
         return this.equipment;
     }
@@ -69,12 +93,26 @@ public class Batch implements Serializable {
     }
     
     @Column(name = "DataGroup")
-    @OneToMany(orphanRemoval = true)
-    public Set<DataSet> getDataGroup() {
+    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
+    public Set<DataSet> getDataSets() {
         return this.dataGroup;
     }
     
-    public void setDataGroup(Set<DataSet> dataGroup) {
+    public void setDataSets(Set<DataSet> dataGroup) {
         this.dataGroup = dataGroup;
+    }
+    
+    public void addDataSet(DataSet id) {
+        if (this.dataGroup.contains(id)) {
+            return;
+        }
+        
+        this.dataGroup.add(id);
+    }
+    
+    public void removeDataSet(DataSet id) {
+        if (this.dataGroup.contains(id)) {
+            this.dataGroup.remove(id);
+        }
     }
 }

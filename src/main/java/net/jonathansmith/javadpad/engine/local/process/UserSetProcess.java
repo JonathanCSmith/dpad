@@ -17,6 +17,7 @@
 
 package net.jonathansmith.javadpad.engine.local.process;
 
+import net.jonathansmith.javadpad.engine.common.process.RuntimeProcess;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 

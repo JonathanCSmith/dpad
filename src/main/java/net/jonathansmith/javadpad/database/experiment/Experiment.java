@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -77,13 +78,27 @@ public class Experiment implements Serializable {
         this.description = description;
     }
     
-    @Column(name = "Batch")
-    @OneToMany(orphanRemoval = true)
+    @Column(name = "BatchIDs")
+    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     public Set<Batch> getBatches() {
         return this.batches;
     }
     
     public void setBatches(Set<Batch> batches) {
         this.batches = batches;
+    }
+    
+    public void addBatch(Batch id) {
+        if (this.batches.contains(id)) {
+            return;
+        }
+        
+        this.batches.add(id);
+    }
+    
+    public void removeBatch(Batch id) {
+        if (this.batches.contains(id)) {
+            this.batches.remove(id);
+        }
     }
 }

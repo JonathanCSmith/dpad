@@ -20,15 +20,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.database.batch.Batch;
+import net.jonathansmith.javadpad.database.batch.BatchManager;
 import net.jonathansmith.javadpad.database.experiment.Experiment;
 import net.jonathansmith.javadpad.database.experiment.ExperimentManager;
 import net.jonathansmith.javadpad.database.user.User;
-import net.jonathansmith.javadpad.database.user.UserManager;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
-import net.jonathansmith.javadpad.gui.client.experiment.ExperimentDisplayOption;
-import net.jonathansmith.javadpad.gui.client.experiment.panel.ExistingExperimentPane;
-import net.jonathansmith.javadpad.gui.client.experiment.panel.NewExperimentPane;
+import net.jonathansmith.javadpad.gui.client.batch.BatchDisplayOption;
+import net.jonathansmith.javadpad.gui.client.batch.panel.ExistingBatchPane;
+import net.jonathansmith.javadpad.gui.client.batch.panel.NewBatchPane;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
@@ -36,79 +37,73 @@ import net.jonathansmith.javadpad.util.logging.DPADLogger;
  *
  * @author jonathansmith
  */
-public class ExperimentPanelListener implements ActionListener {
+public class BatchPanelListener implements ActionListener {
     
     public DPADController controller;
     
-    public ExperimentPanelListener(DPADController controller) {
+    public BatchPanelListener(DPADController controller) {
         this.controller = controller;
     }
-
+    
     public void actionPerformed(ActionEvent evt) {
         DPADEngine engine = this.controller.getEngine();
         if (engine == null || !(engine instanceof DPADLocalEngine)) {
             return;
         }
         
-        ExperimentDisplayOption display = (ExperimentDisplayOption) RuntimeType.EXPERIMENT_SELECT.getDisplay();
-        User user = this.controller.getSessionUser();
+        BatchDisplayOption display = (BatchDisplayOption) RuntimeType.BATCH_SELECT.getDisplay();
+        Experiment experiment = this.controller.getSessionExperiment();
         
-        // User wants to create a new experiment, do nothing to the database
-        if (evt.getSource() == display.experimentToolbar.newEntry) {
-            if (!(display.getCurrentView() instanceof NewExperimentPane)) {
-                display.setCurrentView(display.newExperimentPane);
+        if (evt.getSource() == display.batchToolbar.newEntry) {
+            if (!(display.getCurrentView() instanceof NewBatchPane)) {
+                display.setCurrentView(display.newBatchPane);
                 this.controller.getGui().validateState();
             }
         }
         
-        // User wants to load an experiment, load all valid experiments
-        else if (evt.getSource() == display.experimentToolbar.loadEntry) {
-            if (!(display.getCurrentView() instanceof ExistingExperimentPane)) {
-                if (user != null) {
-                    display.setCurrentView(display.existingExperimentPane);
-                    display.existingExperimentPane.insertData(user.getExperiments());
+        else if (evt.getSource() == display.batchToolbar.loadEntry) {
+            if (!(display.getCurrentView() instanceof ExistingBatchPane)) {
+                if (experiment != null) {
+                    display.setCurrentView(display.existingBatchPane);
+                    display.existingBatchPane.insertData(experiment.getBatches());
                     this.controller.getGui().validateState();
                 }
             }
         }
         
-        // User wants to return
-        else if (evt.getSource() == display.experimentToolbar.back) {
-            if (display.getCurrentView() instanceof NewExperimentPane || display.currentPanel instanceof ExistingExperimentPane) {
+        else if (evt.getSource() == display.batchToolbar.back) {
+            if (display.getCurrentView() instanceof NewBatchPane || display.getCurrentView() instanceof ExistingBatchPane) {
                 display.setCurrentView(display.displayPanel);
                 this.controller.getGui().validateState();
             }
-                
+            
             else {
                 this.controller.getEngine().sendQuitToRuntime();
             }
-            
         }
         
-        // User has created a new experiment and now wants to save it, create
-        // the experiment, add experiment id to user and save all
-        else if (evt.getSource() == display.newExperimentPane.submit) {
-            if (user == null) {
+        else if (evt.getSource() == display.newBatchPane.submit) {
+            if (experiment == null) {
                 return;
             }
             
-            String name = display.newExperimentPane.name.getText();
-            display.newExperimentPane.name.setText("");
+            String name = display.newBatchPane.name.getText();
+            display.newBatchPane.name.setText("");
             
-            String description = display.newExperimentPane.description.getText();
-            display.newExperimentPane.description.setText("");
+            String description = display.newBatchPane.description.getText();
+            display.newBatchPane.description.setText("");
             
             if (!name.contentEquals("") && !description.contentEquals("")) {
-                Experiment experiment = new Experiment();
-                experiment.setName(name);
-                experiment.setDescription(description);
+                Batch batch = new Batch();
+                batch.setName(name);
+                batch.setDescription(description);
                 
-                ExperimentManager.getInstance().saveNew(experiment);
+                BatchManager.getInstance().saveNew(batch);
                 
-                user.addExperiment(experiment);
-                UserManager.getInstance().save(user);
+                experiment.addBatch(batch);
+                ExperimentManager.getInstance().save(experiment);
                 
-                this.controller.setSessionExperiment(experiment);
+                this.controller.setSessionBatch(batch);
             } 
             
             else {
@@ -119,16 +114,15 @@ public class ExperimentPanelListener implements ActionListener {
             this.controller.getGui().validateState();
         }
         
-        // User wants to load the existing experiment, set the experiment to the session
-        else if (evt.getSource() == display.existingExperimentPane.submit) {
-            Experiment experiment = display.existingExperimentPane.getSelectedExperiment();
+        else if (evt.getSource() == display.existingBatchPane.submit) {
+            Batch batch = display.existingBatchPane.getSelectedBatch();
             
-            if (experiment == null) {
+            if (batch == null) {
                 DPADLogger.warning("No experiment selected, returning to main user screen.");
-            } 
+            }
             
             else {
-                this.controller.setSessionExperiment(experiment);
+                this.controller.setSessionBatch(batch);
             }
             
             display.setCurrentView(display.displayPanel);

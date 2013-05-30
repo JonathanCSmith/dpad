@@ -17,6 +17,7 @@
 package net.jonathansmith.javadpad.gui.client.experiment;
 
 import java.awt.event.ActionListener;
+
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.controller.DPADController;
@@ -62,9 +63,9 @@ public class ExperimentDisplayOption extends DisplayOption {
 
     @Override
     public void addDisplayListener(ActionListener listener) {
-        this.experimentToolbar.newExperiment.addActionListener(listener);
-        this.experimentToolbar.loadExperiment.addActionListener(listener);
-        this.experimentToolbar.experimentBack.addActionListener(listener);
+        this.experimentToolbar.newEntry.addActionListener(listener);
+        this.experimentToolbar.loadEntry.addActionListener(listener);
+        this.experimentToolbar.back.addActionListener(listener);
         this.newExperimentPane.submit.addActionListener(listener);
         this.existingExperimentPane.submit.addActionListener(listener);
     }

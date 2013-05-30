@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.gui.client.experiment.panel;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -40,7 +40,7 @@ public class ExistingExperimentPane extends javax.swing.JPanel {
         this.jList1.getSelectionModel().addListSelectionListener(new ListSelection());
     }
     
-    public void insertData(List<Experiment> experiments) {
+    public void insertData(Set<Experiment> experiments) {
         ((ExperimentListModel) this.jList1.getModel()).setData(experiments);
     }
     

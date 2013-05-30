@@ -18,10 +18,11 @@
 package net.jonathansmith.javadpad.util;
 
 import net.jonathansmith.javadpad.gui.client.DisplayOption;
+import net.jonathansmith.javadpad.gui.client.batch.BatchDisplayOption;
 import net.jonathansmith.javadpad.gui.client.experiment.ExperimentDisplayOption;
 import net.jonathansmith.javadpad.gui.client.main.ClientDisplayOption;
 import net.jonathansmith.javadpad.gui.client.user.UserDisplayOption;
-import net.jonathansmith.javadpad.gui.startup.StartupDisplayOption;
+import net.jonathansmith.javadpad.gui.common.startup.StartupDisplayOption;
 
 /**
  * Runtime
@@ -35,6 +36,8 @@ public enum RuntimeType {
     
     USER_SELECT(false, true, new UserDisplayOption()),
     EXPERIMENT_SELECT(false, true, new ExperimentDisplayOption()),
+    BATCH_SELECT(false, true, new BatchDisplayOption()),
+    
     LOAD_AND_PROCESS(true, false, null),
     ANALYSE_AND_DISPLAY(true, false, null);
     

@@ -23,7 +23,7 @@ package net.jonathansmith.javadpad.gui.client.batch.toolbar;
 public class BatchToolbar extends javax.swing.JPanel {
 
     /**
-     * Creates new form BatchToolbar
+     * Creates new form ExperimentToolbar
      */
     public BatchToolbar() {
         initComponents();
@@ -38,17 +38,64 @@ public class BatchToolbar extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        newEntry = new javax.swing.JButton();
+        loadEntry = new javax.swing.JButton();
+        back = new javax.swing.JButton();
+
+        setMaximumSize(new java.awt.Dimension(120, 32767));
+        setMinimumSize(new java.awt.Dimension(120, 0));
+
+        jLabel1.setText("Experiment Panel:");
+
+        newEntry.setText("New");
+
+        loadEntry.setText("Existing");
+
+        back.setText("Back");
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 400, Short.MAX_VALUE)
+            .add(layout.createSequentialGroup()
+                .add(jLabel1)
+                .add(0, 0, Short.MAX_VALUE))
+            .add(layout.createSequentialGroup()
+                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(layout.createSequentialGroup()
+                        .add(5, 5, 5)
+                        .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(newEntry, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 110, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(loadEntry)))
+                    .add(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .add(back)))
+                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        layout.linkSize(new java.awt.Component[] {back, loadEntry, newEntry}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 300, Short.MAX_VALUE)
+            .add(layout.createSequentialGroup()
+                .add(jLabel1)
+                .add(5, 5, 5)
+                .add(newEntry)
+                .add(5, 5, 5)
+                .add(loadEntry)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(back)
+                .add(0, 178, Short.MAX_VALUE))
         );
+
+        layout.linkSize(new java.awt.Component[] {back, loadEntry, newEntry}, org.jdesktop.layout.GroupLayout.VERTICAL);
+
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public javax.swing.JButton back;
+    private javax.swing.JLabel jLabel1;
+    public javax.swing.JButton loadEntry;
+    public javax.swing.JButton newEntry;
     // End of variables declaration//GEN-END:variables
 }

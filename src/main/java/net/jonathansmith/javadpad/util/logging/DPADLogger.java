@@ -50,8 +50,8 @@ public class DPADLogger {
         DPADLogger.dpadLogger.log(Level.SEVERE, "{0}", msg);
     }
     
-    public static void logStackTrace(Object ex) {
-        DPADLogger.dpadLogger.log(Level.SEVERE, "", ex);
+    public static void logStackTrace(Throwable ex) {
+        DPADLogger.dpadLogger.log(Level.SEVERE, ex.getMessage(), ex);
     }
     
     public static Logger getLogger() {
