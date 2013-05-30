@@ -46,7 +46,7 @@ public class BatchToolbar extends javax.swing.JPanel {
         setMaximumSize(new java.awt.Dimension(120, 32767));
         setMinimumSize(new java.awt.Dimension(120, 0));
 
-        jLabel1.setText("Experiment Panel:");
+        jLabel1.setText("Batch Toolbar:");
 
         newEntry.setText("New");
 

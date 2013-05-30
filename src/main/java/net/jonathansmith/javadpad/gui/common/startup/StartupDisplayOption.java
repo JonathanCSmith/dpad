@@ -16,12 +16,19 @@
  */
 package net.jonathansmith.javadpad.gui.common.startup;
 
-import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+import java.io.File;
 
 import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.engine.connect.DPADConnectEngine;
+import net.jonathansmith.javadpad.engine.host.DPADHostEngine;
+import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
+import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess;
 import net.jonathansmith.javadpad.gui.client.DisplayOption;
 import net.jonathansmith.javadpad.gui.common.startup.panel.StartupPane;
 import net.jonathansmith.javadpad.gui.common.startup.toolbar.StartupToolbar;
+import net.jonathansmith.javadpad.util.RuntimeType;
 
 /**
  *
@@ -38,15 +45,51 @@ public class StartupDisplayOption extends DisplayOption {
         this.startupToolbar = new StartupToolbar();
         this.currentPanel = this.startupPane;
         this.currentToolbar = this.startupToolbar;
+        
+        this.startupPane.localRuntime.addActionListener(this);
+        this.startupPane.hostRuntime.addActionListener(this);
+        this.startupPane.connectRuntime.addActionListener(this);
     }
 
     @Override
     public void validateState(DPADController controlller) {}
 
-    @Override
-    public void addDisplayListener(ActionListener listener) {
-        this.startupPane.localRuntime.addActionListener(listener);
-        this.startupPane.hostRuntime.addActionListener(listener);
-        this.startupPane.connectRuntime.addActionListener(listener);
+    public void actionPerformed(ActionEvent evt) {
+        StartupDisplayOption display = (StartupDisplayOption) RuntimeType.RUNTIME_SELECT.getDisplay();
+        if (evt.getSource() == display.startupPane.localRuntime) {
+            String outcome = this.controller.getGui().getDirectory();
+            if (outcome.equals("")) {
+                return;    
+            }
+            
+            File file = new File(outcome);
+            if (!file.exists()) {
+                return;
+            }
+            
+            DPADLocalEngine local = new DPADLocalEngine(this.controller.fileSystem);
+            this.controller.setEngine(local);
+            ((Startup_LocalProcess) local.getRuntime()).setAttemptConnection(outcome);
+        }
+        
+        else if (evt.getSource() == display.startupPane.hostRuntime) {
+            String outcome = this.controller.getGui().getDirectory();
+            if (outcome.equals("")) {
+                return;    
+            }
+            
+            File file = new File(outcome);
+            if (!file.exists()) {
+                return;
+            }
+            
+            DPADHostEngine host = new DPADHostEngine(this.controller.fileSystem);
+            this.controller.setEngine(host);
+            //((DPADHostEngine) host.getRuntime()).createOrManageDatabase(outcome);
+        }
+        
+        else if (evt.getSource() == display.startupPane.connectRuntime) {
+            this.controller.setEngine(new DPADConnectEngine(this.controller.fileSystem));
+        }
     }
 }

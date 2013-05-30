@@ -16,10 +16,8 @@
  */
 package net.jonathansmith.javadpad.gui;
 
-
-import java.awt.event.ActionListener;
-
 import java.io.PrintStream;
+
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -34,12 +32,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.gui.client.DisplayOption;
-import net.jonathansmith.javadpad.gui.client.main.panel.ClientMainPane;
-import net.jonathansmith.javadpad.gui.client.main.toolbar.ClientMainToolbar;
-import net.jonathansmith.javadpad.gui.client.experiment.ExperimentDisplayOption;
-import net.jonathansmith.javadpad.gui.common.startup.panel.StartupPane;
-import net.jonathansmith.javadpad.gui.common.startup.toolbar.StartupToolbar;
-import net.jonathansmith.javadpad.gui.client.user.UserDisplayOption;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.logging.LogHandler;
@@ -261,11 +253,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.displaySplitPane.setLeftComponent(panel);
         this.toolbarSplitPane.setLeftComponent(toolbar);
         this.getContentPane().validate();
-    }
-    
-    public void addRuntimeListener(RuntimeType type, ActionListener listener) {
-        DisplayOption option = type.getDisplay();
-        option.addDisplayListener(listener);
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

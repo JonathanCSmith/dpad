@@ -16,12 +16,15 @@
  */
 package net.jonathansmith.javadpad.gui.client.main;
 
-import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.gui.client.DisplayOption;
 import net.jonathansmith.javadpad.gui.client.main.panel.ClientMainPane;
 import net.jonathansmith.javadpad.gui.client.main.toolbar.ClientMainToolbar;
+import net.jonathansmith.javadpad.util.RuntimeType;
 
 /**
  *
@@ -38,6 +41,10 @@ public class ClientDisplayOption extends DisplayOption {
         this.mainToolbar = new ClientMainToolbar();
         this.currentPanel = this.mainPane;
         this.currentToolbar = this.mainToolbar;
+        
+        this.mainToolbar.setUser.addActionListener(this);
+        this.mainToolbar.setExperiment.addActionListener(this);
+        this.mainToolbar.setBatch.addActionListener(this);
     }
     
     @Override
@@ -61,10 +68,24 @@ public class ClientDisplayOption extends DisplayOption {
         }
     }
 
-    @Override
-    public void addDisplayListener(ActionListener listener) {
-        this.mainToolbar.setUser.addActionListener(listener);
-        this.mainToolbar.setExperiment.addActionListener(listener);
-        this.mainToolbar.setBatch.addActionListener(listener);
+    public void actionPerformed(ActionEvent evt) {
+        DPADEngine engine = this.controller.getEngine();
+        if (engine == null || !(engine instanceof DPADLocalEngine)) {
+            return;
+        }
+        
+        DPADLocalEngine local = (DPADLocalEngine) engine;
+        ClientDisplayOption display = (ClientDisplayOption) RuntimeType.IDLE_CLIENT.getDisplay();
+        if (evt.getSource() == display.mainToolbar.setUser) {
+            local.setRuntime(RuntimeType.USER_SELECT);
+        }
+        
+        else if (evt.getSource() == display.mainToolbar.setExperiment) {
+            local.setRuntime(RuntimeType.EXPERIMENT_SELECT);
+        }
+        
+        else if (evt.getSource() == display.mainToolbar.setBatch) {
+            local.setRuntime(RuntimeType.BATCH_SELECT);
+        }
     }
 }

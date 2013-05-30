@@ -46,7 +46,7 @@ public class NewBatchPane extends javax.swing.JPanel {
         description = new javax.swing.JTextArea();
         submit = new javax.swing.JButton();
 
-        jLabel1.setText("New Experiment:");
+        jLabel1.setText("New Batch:");
 
         jLabel2.setText("Name:");
 

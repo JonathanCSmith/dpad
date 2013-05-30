@@ -71,7 +71,7 @@
   <SubComponents>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
-        <Property name="text" type="java.lang.String" value="New Experiment:"/>
+        <Property name="text" type="java.lang.String" value="New Batch:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">

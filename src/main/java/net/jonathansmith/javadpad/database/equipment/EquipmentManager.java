@@ -16,9 +16,6 @@
  */
 package net.jonathansmith.javadpad.database.equipment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.NonUniqueResultException;
 
 import org.hibernate.HibernateException;
