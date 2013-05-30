@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.database.experiment;
+package net.jonathansmith.javadpad.database.batch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,30 +26,30 @@ import javax.swing.AbstractListModel;
  *
  * @author jonathansmith
  */
-public class ExperimentListModel extends AbstractListModel {
+public class BatchListModel extends AbstractListModel {
     
-    public List<Experiment> experiments = new ArrayList<Experiment> () ;
+    public List<Batch> batches = new ArrayList<Batch> () ;
 
     public int getSize() {
-        return this.experiments.size();
+        return this.batches.size();
     }
 
     public Object getElementAt(int i) {
-        Experiment experiment = this.experiments.get(i);
+        Batch experiment = this.batches.get(i);
         return experiment.getName();
     }
     
     public String getCurrentDescription(int i) {
-        Experiment experiment = this.experiments.get(i);
+        Batch experiment = this.batches.get(i);
         return experiment.getDescription();
     }
     
-    public Experiment getData(int i) {
-        return this.experiments.get(i);
+    public Batch getData(int i) {
+        return this.batches.get(i);
     }
     
-    public void setData(Set<Experiment> list) {
-        this.experiments.clear();
-        this.experiments.addAll(list);
+    public void setData(Set<Batch> list) {
+        this.batches.clear();
+        this.batches.addAll(list);
     }
 }

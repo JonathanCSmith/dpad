@@ -65,5 +65,6 @@ public class ClientDisplayOption extends DisplayOption {
     public void addDisplayListener(ActionListener listener) {
         this.mainToolbar.setUser.addActionListener(listener);
         this.mainToolbar.setExperiment.addActionListener(listener);
+        this.mainToolbar.setBatch.addActionListener(listener);
     }
 }

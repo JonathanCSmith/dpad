@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.gui.startup;
+package net.jonathansmith.javadpad.gui.common.startup;
 
 import java.awt.event.ActionListener;
 
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.gui.client.DisplayOption;
-import net.jonathansmith.javadpad.gui.startup.panel.StartupPane;
-import net.jonathansmith.javadpad.gui.startup.toolbar.StartupToolbar;
+import net.jonathansmith.javadpad.gui.common.startup.panel.StartupPane;
+import net.jonathansmith.javadpad.gui.common.startup.toolbar.StartupToolbar;
 
 /**
  *

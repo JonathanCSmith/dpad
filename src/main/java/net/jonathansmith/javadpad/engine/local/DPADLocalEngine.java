@@ -19,9 +19,9 @@ package net.jonathansmith.javadpad.engine.local;
 
 import net.jonathansmith.javadpad.database.DatabaseConnection;
 import net.jonathansmith.javadpad.engine.DPADClientEngine;
+import net.jonathansmith.javadpad.engine.common.process.RuntimeProcess;
 import net.jonathansmith.javadpad.engine.local.process.AnalyseDisplayProcess;
 import net.jonathansmith.javadpad.engine.local.process.LoadProcessProcess;
-import net.jonathansmith.javadpad.engine.local.process.RuntimeProcess;
 import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess;
 import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess.State;
 import net.jonathansmith.javadpad.plugin.DPADPluginManager;

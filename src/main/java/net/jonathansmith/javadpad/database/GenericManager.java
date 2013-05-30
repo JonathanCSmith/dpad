@@ -52,6 +52,22 @@ public abstract class GenericManager<T> {
         return all;
     }
     
+    public boolean save(T input) {
+        boolean success = false;
+        try {
+            DatabaseConnection.beginTransaction();
+            this.dao.save(input);
+            DatabaseConnection.commitTransaction();
+            success = true;
+            
+        } catch (HibernateException ex) {
+            DPADLogger.severe("Database query error");
+            DPADLogger.logStackTrace(ex);
+        }
+        
+        return success;
+    }
+    
     public boolean saveNew(T input) {
         boolean success = false;
         try {

@@ -39,20 +39,20 @@ public class ExperimentToolbar extends javax.swing.JPanel {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        newExperiment = new javax.swing.JButton();
-        loadExperiment = new javax.swing.JButton();
-        experimentBack = new javax.swing.JButton();
+        newEntry = new javax.swing.JButton();
+        loadEntry = new javax.swing.JButton();
+        back = new javax.swing.JButton();
 
         setMaximumSize(new java.awt.Dimension(120, 32767));
         setMinimumSize(new java.awt.Dimension(120, 0));
 
         jLabel1.setText("Experiment Panel:");
 
-        newExperiment.setText("New");
+        newEntry.setText("New");
 
-        loadExperiment.setText("Existing");
+        loadEntry.setText("Existing");
 
-        experimentBack.setText("Back");
+        back.setText("Back");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
@@ -66,36 +66,36 @@ public class ExperimentToolbar extends javax.swing.JPanel {
                     .add(layout.createSequentialGroup()
                         .add(5, 5, 5)
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                            .add(newExperiment, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 110, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                            .add(loadExperiment)))
+                            .add(newEntry, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 110, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                            .add(loadEntry)))
                     .add(layout.createSequentialGroup()
                         .addContainerGap()
-                        .add(experimentBack)))
+                        .add(back)))
                 .addContainerGap(4, Short.MAX_VALUE))
         );
 
-        layout.linkSize(new java.awt.Component[] {experimentBack, loadExperiment, newExperiment}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
+        layout.linkSize(new java.awt.Component[] {back, loadEntry, newEntry}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
 
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(jLabel1)
                 .add(5, 5, 5)
-                .add(newExperiment)
+                .add(newEntry)
                 .add(5, 5, 5)
-                .add(loadExperiment)
+                .add(loadEntry)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(experimentBack)
+                .add(back)
                 .add(0, 178, Short.MAX_VALUE))
         );
 
-        layout.linkSize(new java.awt.Component[] {experimentBack, loadExperiment, newExperiment}, org.jdesktop.layout.GroupLayout.VERTICAL);
+        layout.linkSize(new java.awt.Component[] {back, loadEntry, newEntry}, org.jdesktop.layout.GroupLayout.VERTICAL);
 
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JButton experimentBack;
+    public javax.swing.JButton back;
     private javax.swing.JLabel jLabel1;
-    public javax.swing.JButton loadExperiment;
-    public javax.swing.JButton newExperiment;
+    public javax.swing.JButton loadEntry;
+    public javax.swing.JButton newEntry;
     // End of variables declaration//GEN-END:variables
 }

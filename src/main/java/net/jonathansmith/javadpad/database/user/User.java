@@ -22,6 +22,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -104,13 +105,27 @@ public class User implements Serializable {
         this.password = password;
     }
     
-    @Column(name = "Experiment")
-    @OneToMany(orphanRemoval = true)
+    @Column(name = "ExperimentIDs")
+    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     public Set<Experiment> getExperiments() {
         return this.experiments;
     }
     
     public void setExperiments(Set<Experiment> experiments) {
         this.experiments = experiments;
+    }
+    
+    public void addExperiment(Experiment experiment) {
+        if (this.experiments.contains(experiment)) {
+            return;
+        }
+        
+        this.experiments.add(experiment);
+    }
+    
+    public void removeExperiment(Experiment experiment) {
+        if (this.experiments.contains(experiment)) {
+            this.experiments.remove(experiment);
+        }
     }
 }

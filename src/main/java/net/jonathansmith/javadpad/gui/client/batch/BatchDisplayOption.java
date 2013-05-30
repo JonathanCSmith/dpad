@@ -18,7 +18,9 @@ package net.jonathansmith.javadpad.gui.client.batch;
 
 import java.awt.event.ActionListener;
 
+import javax.swing.JPanel;
 import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.database.batch.Batch;
 import net.jonathansmith.javadpad.gui.client.DisplayOption;
 import net.jonathansmith.javadpad.gui.client.batch.panel.DisplayBatchPane;
 import net.jonathansmith.javadpad.gui.client.batch.panel.ExistingBatchPane;
@@ -44,14 +46,25 @@ public class BatchDisplayOption extends DisplayOption {
         this.currentPanel = this.displayPanel;
         this.currentToolbar = this.batchToolbar;
     }
-
+    
     @Override
-    public void validateState(DPADController controlller) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setCurrentView(JPanel panel) {
+        super.setCurrentView(panel);
+        if (panel instanceof DisplayBatchPane) {
+            Batch batch = this.controller.getSessionBatch();
+            this.displayPanel.setCurrentBatch(batch);
+        }
     }
 
     @Override
+    public void validateState(DPADController controlller) {}
+
+    @Override
     public void addDisplayListener(ActionListener listener) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.batchToolbar.newEntry.addActionListener(listener);
+        this.batchToolbar.loadEntry.addActionListener(listener);
+        this.batchToolbar.back.addActionListener(listener);
+        this.newBatchPane.submit.addActionListener(listener);
+        this.existingBatchPane.submit.addActionListener(listener);
     }
 }

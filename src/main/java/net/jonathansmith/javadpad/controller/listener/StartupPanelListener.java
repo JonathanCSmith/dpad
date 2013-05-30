@@ -26,7 +26,7 @@ import net.jonathansmith.javadpad.engine.connect.DPADConnectEngine;
 import net.jonathansmith.javadpad.engine.host.DPADHostEngine;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess;
-import net.jonathansmith.javadpad.gui.startup.StartupDisplayOption;
+import net.jonathansmith.javadpad.gui.common.startup.StartupDisplayOption;
 import net.jonathansmith.javadpad.util.RuntimeType;
 
 /**
