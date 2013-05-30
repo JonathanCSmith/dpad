@@ -38,6 +38,8 @@ import net.jonathansmith.javadpad.database.datatype.DataType;
 public class DataSet implements Serializable {
     
     private String uuid;
+    private int[] rawTimes;
+    private int[] rawData;
     private int[] times;
     private int[] data;
     private DataType dataType;
@@ -56,13 +58,31 @@ public class DataSet implements Serializable {
         this.uuid = uuid;
     }
     
-    @Column(name = "Times")
-    public int[] getTimes() {
-        return this.times;
+    @Column(name = "RawTimes")
+    public int[] getRawTimes() {
+        return this.rawTimes;
     }
     
-    public void setTimes(int[] times) {
-        this.times = times;
+    public void setRawTimes(int[] times) {
+        this.rawTimes = times;
+    }
+    
+    @Column(name = "RawData")
+    public int[] getRawData() {
+        return this.rawData;
+    }
+    
+    public void setRawData(int[] data) {
+        this.rawData = data;
+    }
+    
+    @Column(name = "DataType")
+    public DataType getDataType() {
+        return this.dataType;
+    }
+    
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
     }
     
     @Column(name = "Data")
@@ -74,12 +94,12 @@ public class DataSet implements Serializable {
         this.data = data;
     }
     
-    @Column(name = "DataType")
-    public DataType getDataType() {
-        return this.dataType;
+    @Column(name = "Times")
+    public int[] getTimes() {
+        return this.times;
     }
     
-    public void setDataType(DataType dataType) {
-        this.dataType = dataType;
+    public void setTimes(int[] times) {
+        this.times = times;
     }
 }

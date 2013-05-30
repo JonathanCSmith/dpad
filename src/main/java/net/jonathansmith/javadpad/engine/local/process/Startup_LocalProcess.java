@@ -31,7 +31,7 @@ import net.jonathansmith.javadpad.util.logging.DPADLogger;
  */
 public class Startup_LocalProcess extends RuntimeProcess {
     
-    public enum State {
+    private enum State {
         DISCONNECTED,
         CONNECTING,
         CONNECTION_FAILURE,
@@ -108,8 +108,8 @@ public class Startup_LocalProcess extends RuntimeProcess {
         super.end(error);
     }
     
-    public State getProgressState() {
-        return this.state;
+    public boolean isConnected() {
+        return this.state == State.CONNECTED;
     }
     
     public void setAttemptConnection(String path) {

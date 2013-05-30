@@ -20,6 +20,7 @@ package net.jonathansmith.javadpad.util;
 import net.jonathansmith.javadpad.gui.client.DisplayOption;
 import net.jonathansmith.javadpad.gui.client.batch.BatchDisplayOption;
 import net.jonathansmith.javadpad.gui.client.experiment.ExperimentDisplayOption;
+import net.jonathansmith.javadpad.gui.client.loadandprocess.LoadProcessDisplayOption;
 import net.jonathansmith.javadpad.gui.client.main.ClientDisplayOption;
 import net.jonathansmith.javadpad.gui.client.user.UserDisplayOption;
 import net.jonathansmith.javadpad.gui.common.startup.StartupDisplayOption;
@@ -38,7 +39,7 @@ public enum RuntimeType {
     EXPERIMENT_SELECT(false, true, new ExperimentDisplayOption()),
     BATCH_SELECT(false, true, new BatchDisplayOption()),
     
-    LOAD_AND_PROCESS(true, false, null),
+    LOAD_AND_PROCESS(true, true, new LoadProcessDisplayOption()),
     ANALYSE_AND_DISPLAY(true, false, null);
     
     private final boolean runnable;

@@ -124,5 +124,9 @@ public class ClientDisplayOption extends DisplayOption {
         else if (evt.getSource() == this.mainToolbar.setBatch) {
             local.setRuntime(RuntimeType.BATCH_SELECT);
         }
+        
+        else if (evt.getSource() == this.mainToolbar.addData) {
+            local.setRuntime(RuntimeType.LOAD_AND_PROCESS);
+        }
     }
 }

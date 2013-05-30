@@ -23,7 +23,6 @@ import net.jonathansmith.javadpad.engine.common.process.RuntimeProcess;
 import net.jonathansmith.javadpad.engine.local.process.AnalyseDisplayProcess;
 import net.jonathansmith.javadpad.engine.local.process.LoadProcessProcess;
 import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess;
-import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess.State;
 import net.jonathansmith.javadpad.plugin.DPADPluginManager;
 import net.jonathansmith.javadpad.util.FileSystem;
 import net.jonathansmith.javadpad.util.RuntimeType;
@@ -99,7 +98,7 @@ public class DPADLocalEngine extends DPADClientEngine {
     public void setupEngine() {
         if (this.currentRuntime != RuntimeType.SETUP_CLIENT 
             || !(this.runtime instanceof Startup_LocalProcess)
-            || ((Startup_LocalProcess) this.runtime).getProgressState() != State.CONNECTED) {
+            || ((Startup_LocalProcess) this.runtime).isConnected()) {
             return;
         }
         

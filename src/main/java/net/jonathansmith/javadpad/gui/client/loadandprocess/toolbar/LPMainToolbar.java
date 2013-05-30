@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.gui.client.main.toolbar;
+package net.jonathansmith.javadpad.gui.client.loadandprocess.toolbar;
 
 /**
  *
  * @author Jon
  */
-public class ClientMainToolbar extends javax.swing.JPanel {
+public class LPMainToolbar extends javax.swing.JPanel {
 
     /**
      * Creates new form ClientMainToolbar
      */
-    public ClientMainToolbar() {
+    public LPMainToolbar() {
         initComponents();
     }
 
