@@ -17,6 +17,8 @@
 package net.jonathansmith.javadpad.gui.client.experiment;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
@@ -32,14 +34,13 @@ import net.jonathansmith.javadpad.gui.client.experiment.panel.DisplayExperimentP
 import net.jonathansmith.javadpad.gui.client.experiment.panel.ExistingExperimentPane;
 import net.jonathansmith.javadpad.gui.client.experiment.panel.NewExperimentPane;
 import net.jonathansmith.javadpad.gui.client.experiment.toolbar.ExperimentToolbar;
-import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *
  * @author jonathansmith
  */
-public class ExperimentDisplayOption extends DisplayOption {
+public class ExperimentDisplayOption extends DisplayOption implements MouseListener {
     
     public DisplayExperimentPane displayPanel;
     public NewExperimentPane newExperimentPane;
@@ -60,6 +61,7 @@ public class ExperimentDisplayOption extends DisplayOption {
         this.experimentToolbar.back.addActionListener(this);
         this.newExperimentPane.submit.addActionListener(this);
         this.existingExperimentPane.submit.addActionListener(this);
+        this.existingExperimentPane.jList1.addMouseListener(this);
     }
     
     @Override
@@ -79,32 +81,31 @@ public class ExperimentDisplayOption extends DisplayOption {
             return;
         }
         
-        ExperimentDisplayOption display = (ExperimentDisplayOption) RuntimeType.EXPERIMENT_SELECT.getDisplay();
         User user = this.controller.getSessionUser();
         
         // User wants to create a new experiment, do nothing to the database
-        if (evt.getSource() == display.experimentToolbar.newEntry) {
-            if (!(display.getCurrentView() instanceof NewExperimentPane)) {
-                display.setCurrentView(display.newExperimentPane);
+        if (evt.getSource() == this.experimentToolbar.newEntry) {
+            if (!(this.getCurrentView() instanceof NewExperimentPane)) {
+                this.setCurrentView(this.newExperimentPane);
                 this.controller.getGui().validateState();
             }
         }
         
         // User wants to load an experiment, load all valid experiments
-        else if (evt.getSource() == display.experimentToolbar.loadEntry) {
-            if (!(display.getCurrentView() instanceof ExistingExperimentPane)) {
+        else if (evt.getSource() == this.experimentToolbar.loadEntry) {
+            if (!(this.getCurrentView() instanceof ExistingExperimentPane)) {
                 if (user != null) {
-                    display.setCurrentView(display.existingExperimentPane);
-                    display.existingExperimentPane.insertData(user.getExperiments());
+                    this.setCurrentView(this.existingExperimentPane);
+                    this.existingExperimentPane.insertData(user.getExperiments());
                     this.controller.getGui().validateState();
                 }
             }
         }
         
         // User wants to return
-        else if (evt.getSource() == display.experimentToolbar.back) {
-            if (display.getCurrentView() instanceof NewExperimentPane || display.currentPanel instanceof ExistingExperimentPane) {
-                display.setCurrentView(display.displayPanel);
+        else if (evt.getSource() == this.experimentToolbar.back) {
+            if (this.getCurrentView() instanceof NewExperimentPane || this.currentPanel instanceof ExistingExperimentPane) {
+                this.setCurrentView(this.displayPanel);
                 this.controller.getGui().validateState();
             }
                 
@@ -116,16 +117,16 @@ public class ExperimentDisplayOption extends DisplayOption {
         
         // User has created a new experiment and now wants to save it, create
         // the experiment, add experiment id to user and save all
-        else if (evt.getSource() == display.newExperimentPane.submit) {
+        else if (evt.getSource() == this.newExperimentPane.submit) {
             if (user == null) {
                 return;
             }
             
-            String name = display.newExperimentPane.name.getText();
-            display.newExperimentPane.name.setText("");
+            String name = this.newExperimentPane.name.getText();
+            this.newExperimentPane.name.setText("");
             
-            String description = display.newExperimentPane.description.getText();
-            display.newExperimentPane.description.setText("");
+            String description = this.newExperimentPane.description.getText();
+            this.newExperimentPane.description.setText("");
             
             if (!name.contentEquals("") && !description.contentEquals("")) {
                 Experiment experiment = new Experiment();
@@ -144,13 +145,13 @@ public class ExperimentDisplayOption extends DisplayOption {
                 DPADLogger.warning("Some fields were incomplete, returning. Your entry was not saved");
             }
             
-            display.setCurrentView(display.displayPanel);
+            this.setCurrentView(this.displayPanel);
             this.controller.getGui().validateState();
         }
         
         // User wants to load the existing experiment, set the experiment to the session
-        else if (evt.getSource() == display.existingExperimentPane.submit) {
-            Experiment experiment = display.existingExperimentPane.getSelectedExperiment();
+        else if (evt.getSource() == this.existingExperimentPane.submit) {
+            Experiment experiment = this.existingExperimentPane.getSelectedExperiment();
             
             if (experiment == null) {
                 DPADLogger.warning("No experiment selected, returning to main user screen.");
@@ -160,8 +161,29 @@ public class ExperimentDisplayOption extends DisplayOption {
                 this.controller.setSessionExperiment(experiment);
             }
             
-            display.setCurrentView(display.displayPanel);
+            this.setCurrentView(this.displayPanel);
             this.controller.getGui().validateState();
         }
     }
+
+    public void mouseClicked(MouseEvent me) {
+        if (me.getClickCount() == 2) {
+            Experiment experiment = this.existingExperimentPane.getSelectedExperiment();
+            
+            if (experiment != null) {
+                this.controller.setSessionExperiment(experiment);
+            }
+            
+            this.setCurrentView(this.displayPanel);
+            this.controller.getGui().validateState();
+        }
+    }
+
+    public void mousePressed(MouseEvent me) {}
+
+    public void mouseReleased(MouseEvent me) {}
+
+    public void mouseEntered(MouseEvent me) {}
+
+    public void mouseExited(MouseEvent me) {}
 }

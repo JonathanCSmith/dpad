@@ -17,6 +17,8 @@
 package net.jonathansmith.javadpad.gui.client.batch;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
@@ -31,14 +33,13 @@ import net.jonathansmith.javadpad.gui.client.batch.panel.DisplayBatchPane;
 import net.jonathansmith.javadpad.gui.client.batch.panel.ExistingBatchPane;
 import net.jonathansmith.javadpad.gui.client.batch.panel.NewBatchPane;
 import net.jonathansmith.javadpad.gui.client.batch.toolbar.BatchToolbar;
-import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *
  * @author jonathansmith
  */
-public class BatchDisplayOption extends DisplayOption {
+public class BatchDisplayOption extends DisplayOption implements MouseListener {
     
     public DisplayBatchPane displayPanel;
     public NewBatchPane newBatchPane;
@@ -59,6 +60,7 @@ public class BatchDisplayOption extends DisplayOption {
         this.batchToolbar.back.addActionListener(this);
         this.newBatchPane.submit.addActionListener(this);
         this.existingBatchPane.submit.addActionListener(this);
+        this.existingBatchPane.jList1.addMouseListener(this);
     }
     
     @Override
@@ -78,29 +80,28 @@ public class BatchDisplayOption extends DisplayOption {
             return;
         }
         
-        BatchDisplayOption display = (BatchDisplayOption) RuntimeType.BATCH_SELECT.getDisplay();
         Experiment experiment = this.controller.getSessionExperiment();
         
-        if (evt.getSource() == display.batchToolbar.newEntry) {
-            if (!(display.getCurrentView() instanceof NewBatchPane)) {
-                display.setCurrentView(display.newBatchPane);
+        if (evt.getSource() == this.batchToolbar.newEntry) {
+            if (!(this.getCurrentView() instanceof NewBatchPane)) {
+                this.setCurrentView(this.newBatchPane);
                 this.controller.getGui().validateState();
             }
         }
         
-        else if (evt.getSource() == display.batchToolbar.loadEntry) {
-            if (!(display.getCurrentView() instanceof ExistingBatchPane)) {
+        else if (evt.getSource() == this.batchToolbar.loadEntry) {
+            if (!(this.getCurrentView() instanceof ExistingBatchPane)) {
                 if (experiment != null) {
-                    display.setCurrentView(display.existingBatchPane);
-                    display.existingBatchPane.insertData(experiment.getBatches());
+                    this.setCurrentView(this.existingBatchPane);
+                    this.existingBatchPane.insertData(experiment.getBatches());
                     this.controller.getGui().validateState();
                 }
             }
         }
         
-        else if (evt.getSource() == display.batchToolbar.back) {
-            if (display.getCurrentView() instanceof NewBatchPane || display.getCurrentView() instanceof ExistingBatchPane) {
-                display.setCurrentView(display.displayPanel);
+        else if (evt.getSource() == this.batchToolbar.back) {
+            if (this.getCurrentView() instanceof NewBatchPane || this.getCurrentView() instanceof ExistingBatchPane) {
+                this.setCurrentView(this.displayPanel);
                 this.controller.getGui().validateState();
             }
             
@@ -109,16 +110,16 @@ public class BatchDisplayOption extends DisplayOption {
             }
         }
         
-        else if (evt.getSource() == display.newBatchPane.submit) {
+        else if (evt.getSource() == this.newBatchPane.submit) {
             if (experiment == null) {
                 return;
             }
             
-            String name = display.newBatchPane.name.getText();
-            display.newBatchPane.name.setText("");
+            String name = this.newBatchPane.name.getText();
+            this.newBatchPane.name.setText("");
             
-            String description = display.newBatchPane.description.getText();
-            display.newBatchPane.description.setText("");
+            String description = this.newBatchPane.description.getText();
+            this.newBatchPane.description.setText("");
             
             if (!name.contentEquals("") && !description.contentEquals("")) {
                 Batch batch = new Batch();
@@ -137,12 +138,12 @@ public class BatchDisplayOption extends DisplayOption {
                 DPADLogger.warning("Some fields were incomplete, returning. Your entry was not saved");
             }
             
-            display.setCurrentView(display.displayPanel);
+            this.setCurrentView(this.displayPanel);
             this.controller.getGui().validateState();
         }
         
-        else if (evt.getSource() == display.existingBatchPane.submit) {
-            Batch batch = display.existingBatchPane.getSelectedBatch();
+        else if (evt.getSource() == this.existingBatchPane.submit) {
+            Batch batch = this.existingBatchPane.getSelectedBatch();
             
             if (batch == null) {
                 DPADLogger.warning("No experiment selected, returning to main user screen.");
@@ -152,8 +153,29 @@ public class BatchDisplayOption extends DisplayOption {
                 this.controller.setSessionBatch(batch);
             }
             
-            display.setCurrentView(display.displayPanel);
+            this.setCurrentView(this.displayPanel);
             this.controller.getGui().validateState();
         }
     }
+
+    public void mouseClicked(MouseEvent me) {
+        if (me.getClickCount() == 2) {
+            Batch batch = this.existingBatchPane.getSelectedBatch();
+            
+            if (batch != null) {
+                this.controller.setSessionBatch(batch);
+            }
+            
+            this.setCurrentView(this.displayPanel);
+            this.controller.getGui().validateState();
+        }
+    }
+
+    public void mousePressed(MouseEvent me) {}
+
+    public void mouseReleased(MouseEvent me) {}
+
+    public void mouseEntered(MouseEvent me) {}
+
+    public void mouseExited(MouseEvent me) {}
 }

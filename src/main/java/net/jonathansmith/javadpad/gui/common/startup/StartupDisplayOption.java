@@ -55,8 +55,7 @@ public class StartupDisplayOption extends DisplayOption {
     public void validateState(DPADController controlller) {}
 
     public void actionPerformed(ActionEvent evt) {
-        StartupDisplayOption display = (StartupDisplayOption) RuntimeType.RUNTIME_SELECT.getDisplay();
-        if (evt.getSource() == display.startupPane.localRuntime) {
+        if (evt.getSource() == this.startupPane.localRuntime) {
             String outcome = this.controller.getGui().getDirectory();
             if (outcome.equals("")) {
                 return;    
@@ -72,7 +71,7 @@ public class StartupDisplayOption extends DisplayOption {
             ((Startup_LocalProcess) local.getRuntime()).setAttemptConnection(outcome);
         }
         
-        else if (evt.getSource() == display.startupPane.hostRuntime) {
+        else if (evt.getSource() == this.startupPane.hostRuntime) {
             String outcome = this.controller.getGui().getDirectory();
             if (outcome.equals("")) {
                 return;    
@@ -88,7 +87,7 @@ public class StartupDisplayOption extends DisplayOption {
             //((DPADHostEngine) host.getRuntime()).createOrManageDatabase(outcome);
         }
         
-        else if (evt.getSource() == display.startupPane.connectRuntime) {
+        else if (evt.getSource() == this.startupPane.connectRuntime) {
             this.controller.setEngine(new DPADConnectEngine(this.controller.fileSystem));
         }
     }

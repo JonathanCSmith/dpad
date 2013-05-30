@@ -17,6 +17,8 @@
 package net.jonathansmith.javadpad.gui.client.user;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
@@ -30,14 +32,13 @@ import net.jonathansmith.javadpad.gui.client.user.panel.DisplayUserPane;
 import net.jonathansmith.javadpad.gui.client.user.panel.ExistingUserPane;
 import net.jonathansmith.javadpad.gui.client.user.panel.NewUserPane;
 import net.jonathansmith.javadpad.gui.client.user.toolbar.UserToolbar;
-import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *
  * @author Jon
  */
-public class UserDisplayOption extends DisplayOption {
+public class UserDisplayOption extends DisplayOption implements MouseListener {
     
     public DisplayUserPane displayPanel;
     public NewUserPane newUserPane;
@@ -58,6 +59,7 @@ public class UserDisplayOption extends DisplayOption {
         this.userToolbar.userBack.addActionListener(this);
         this.newUserPane.submit.addActionListener(this);
         this.existingUserPane.submit.addActionListener(this);
+        this.existingUserPane.jTable1.addMouseListener(this);
     }
     
     @Override
@@ -78,30 +80,29 @@ public class UserDisplayOption extends DisplayOption {
             return;
         }
         
-        UserDisplayOption display = (UserDisplayOption) RuntimeType.USER_SELECT.getDisplay();
-        if (evt.getSource() == display.userToolbar.newUser) {
-            if (!(display.getCurrentView() instanceof NewUserPane)) {
-                display.setCurrentView(display.newUserPane);
+        if (evt.getSource() == this.userToolbar.newUser) {
+            if (!(this.getCurrentView() instanceof NewUserPane)) {
+                this.setCurrentView(this.newUserPane);
                 this.controller.getGui().validateState();
             }
         }
         
-        else if (evt.getSource() == display.userToolbar.loadUser) {
-            if (!(display.getCurrentView() instanceof ExistingUserPane)) {
-                display.setCurrentView(display.existingUserPane);
-                display.existingUserPane.insertData(UserManager.getInstance().loadAll());
+        else if (evt.getSource() == this.userToolbar.loadUser) {
+            if (!(this.getCurrentView() instanceof ExistingUserPane)) {
+                this.setCurrentView(this.existingUserPane);
+                this.existingUserPane.insertData(UserManager.getInstance().loadAll());
                 this.controller.getGui().validateState();
             }
         }
         
-        else if (evt.getSource() == display.userToolbar.userBack) {
-            if (display.getCurrentView() instanceof NewUserPane) {
-                display.setCurrentView(display.displayPanel);
+        else if (evt.getSource() == this.userToolbar.userBack) {
+            if (this.getCurrentView() instanceof NewUserPane) {
+                this.setCurrentView(this.displayPanel);
                 this.controller.getGui().validateState();
             }
             
-            else if (display.getCurrentView() instanceof ExistingUserPane) {
-                display.setCurrentView(display.displayPanel);
+            else if (this.getCurrentView() instanceof ExistingUserPane) {
+                this.setCurrentView(this.displayPanel);
                 this.controller.getGui().validateState();
                 
             } else {
@@ -109,18 +110,18 @@ public class UserDisplayOption extends DisplayOption {
             }
         }
         
-        else if (evt.getSource() == display.newUserPane.submit) {
-            String username = display.newUserPane.username.getText();
-            display.newUserPane.username.setText("");
+        else if (evt.getSource() == this.newUserPane.submit) {
+            String username = this.newUserPane.username.getText();
+            this.newUserPane.username.setText("");
             
-            String firstName = display.newUserPane.firstName.getText();
-            display.newUserPane.firstName.setText("");
+            String firstName = this.newUserPane.firstName.getText();
+            this.newUserPane.firstName.setText("");
             
-            String lastName = display.newUserPane.lastName.getText();
-            display.newUserPane.lastName.setText("");
+            String lastName = this.newUserPane.lastName.getText();
+            this.newUserPane.lastName.setText("");
             
-            char[] password = display.newUserPane.password.getPassword();
-            display.newUserPane.password.setText("");
+            char[] password = this.newUserPane.password.getPassword();
+            this.newUserPane.password.setText("");
             
             if (!username.contentEquals("") 
                 && !firstName.contentEquals("") 
@@ -140,12 +141,12 @@ public class UserDisplayOption extends DisplayOption {
                 DPADLogger.warning("Some fields were incomplete, returning. Your entry was not saved.");
             }
             
-            display.setCurrentView(display.displayPanel);
+            this.setCurrentView(this.displayPanel);
             this.controller.getGui().validateState();
         }
         
-        else if (evt.getSource() == display.existingUserPane.submit) {
-            User user = display.existingUserPane.getSelectedUser();
+        else if (evt.getSource() == this.existingUserPane.submit) {
+            User user = this.existingUserPane.getSelectedUser();
             
             if (user == null) {
                 DPADLogger.warning("No user selected, returning to main user screen.");
@@ -154,8 +155,29 @@ public class UserDisplayOption extends DisplayOption {
                 this.controller.setSessionUser(user);
             }
             
-            display.setCurrentView(display.displayPanel);
+            this.setCurrentView(this.displayPanel);
             this.controller.getGui().validateState();
         }
     }
+
+    public void mouseClicked(MouseEvent me) {
+        if (me.getClickCount() == 2) {
+            User user = this.existingUserPane.getSelectedUser();
+            
+            if (user != null) {
+                this.controller.setSessionUser(user);
+            }
+            
+            this.setCurrentView(this.displayPanel);
+            this.controller.getGui().validateState();
+        }
+    }
+
+    public void mousePressed(MouseEvent me) {}
+
+    public void mouseReleased(MouseEvent me) {}
+
+    public void mouseEntered(MouseEvent me) {}
+
+    public void mouseExited(MouseEvent me) {}
 }
