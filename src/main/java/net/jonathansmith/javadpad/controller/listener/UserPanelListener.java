@@ -23,8 +23,12 @@ import java.awt.event.ActionListener;
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.database.user.User;
 import net.jonathansmith.javadpad.database.user.UserManager;
-import net.jonathansmith.javadpad.gui.user.panel.ExistingUserPane;
-import net.jonathansmith.javadpad.gui.user.panel.NewUserPane;
+import net.jonathansmith.javadpad.engine.DPADEngine;
+import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
+import net.jonathansmith.javadpad.gui.client.user.UserDisplayOption;
+import net.jonathansmith.javadpad.gui.client.user.panel.ExistingUserPane;
+import net.jonathansmith.javadpad.gui.client.user.panel.NewUserPane;
+import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
@@ -42,29 +46,35 @@ public class UserPanelListener implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (evt.getSource() == this.controller.getGui().userSelect.userToolbar.newUser) {
-            if (!(this.controller.getGui().userSelect.getCurrentView() instanceof NewUserPane)) {
-                this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.newUserPane);
+        DPADEngine engine = this.controller.getEngine();
+        if (engine == null || !(engine instanceof DPADLocalEngine)) {
+            return;
+        }
+        
+        UserDisplayOption display = (UserDisplayOption) RuntimeType.USER_SELECT.getDisplay();
+        if (evt.getSource() == display.userToolbar.newUser) {
+            if (!(display.getCurrentView() instanceof NewUserPane)) {
+                display.setCurrentView(display.newUserPane);
                 this.controller.getGui().validateState();
             }
         }
         
-        else if (evt.getSource() == this.controller.getGui().userSelect.userToolbar.loadUser) {
-            if (!(this.controller.getGui().userSelect.getCurrentView() instanceof ExistingUserPane)) {
-                this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.existingUserPane);
-                this.controller.getGui().userSelect.existingUserPane.insertData(UserManager.getInstance().loadAll());
+        else if (evt.getSource() == display.userToolbar.loadUser) {
+            if (!(display.getCurrentView() instanceof ExistingUserPane)) {
+                display.setCurrentView(display.existingUserPane);
+                display.existingUserPane.insertData(UserManager.getInstance().loadAll());
                 this.controller.getGui().validateState();
             }
         }
         
-        else if (evt.getSource() == this.controller.getGui().userSelect.userToolbar.userBack) {
-            if (this.controller.getGui().userSelect.getCurrentView() instanceof NewUserPane) {
-                this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.displayPanel);
+        else if (evt.getSource() == display.userToolbar.userBack) {
+            if (display.getCurrentView() instanceof NewUserPane) {
+                display.setCurrentView(display.displayPanel);
                 this.controller.getGui().validateState();
             }
             
-            else if (this.controller.getGui().userSelect.getCurrentView() instanceof ExistingUserPane) {
-                this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.displayPanel);
+            else if (display.getCurrentView() instanceof ExistingUserPane) {
+                display.setCurrentView(display.displayPanel);
                 this.controller.getGui().validateState();
                 
             } else {
@@ -72,18 +82,18 @@ public class UserPanelListener implements ActionListener {
             }
         }
         
-        else if (evt.getSource() == this.controller.getGui().userSelect.newUserPane.submit) {
-            String username = this.controller.getGui().userSelect.newUserPane.username.getText();
-            this.controller.getGui().userSelect.newUserPane.username.setText("");
+        else if (evt.getSource() == display.newUserPane.submit) {
+            String username = display.newUserPane.username.getText();
+            display.newUserPane.username.setText("");
             
-            String firstName = this.controller.getGui().userSelect.newUserPane.firstName.getText();
-            this.controller.getGui().userSelect.newUserPane.firstName.setText("");
+            String firstName = display.newUserPane.firstName.getText();
+            display.newUserPane.firstName.setText("");
             
-            String lastName = this.controller.getGui().userSelect.newUserPane.lastName.getText();
-            this.controller.getGui().userSelect.newUserPane.lastName.setText("");
+            String lastName = display.newUserPane.lastName.getText();
+            display.newUserPane.lastName.setText("");
             
-            char[] password = this.controller.getGui().userSelect.newUserPane.password.getPassword();
-            this.controller.getGui().userSelect.newUserPane.password.setText("");
+            char[] password = display.newUserPane.password.getPassword();
+            display.newUserPane.password.setText("");
             
             if (!username.contentEquals("") 
                 && !firstName.contentEquals("") 
@@ -103,12 +113,12 @@ public class UserPanelListener implements ActionListener {
                 DPADLogger.warning("Some fields were incomplete, returning. Your entry was not saved.");
             }
             
-            this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.displayPanel);
+            display.setCurrentView(display.displayPanel);
             this.controller.getGui().validateState();
         }
         
-        else if (evt.getSource() == this.controller.getGui().userSelect.existingUserPane.submit) {
-            User user = this.controller.getGui().userSelect.existingUserPane.getSelectedUser();
+        else if (evt.getSource() == display.existingUserPane.submit) {
+            User user = display.existingUserPane.getSelectedUser();
             
             if (user == null) {
                 DPADLogger.warning("No user selected, returning to main user screen.");
@@ -117,7 +127,7 @@ public class UserPanelListener implements ActionListener {
                 this.controller.setSessionUser(user);
             }
             
-            this.controller.getGui().userSelect.setCurrentView(this.controller.getGui().userSelect.displayPanel);
+            display.setCurrentView(display.displayPanel);
             this.controller.getGui().validateState();
         }
     }

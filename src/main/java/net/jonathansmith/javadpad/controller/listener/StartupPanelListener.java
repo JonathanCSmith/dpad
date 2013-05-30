@@ -16,16 +16,18 @@
  */
 package net.jonathansmith.javadpad.controller.listener;
 
-import java.io.File;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import java.io.File;
 
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.engine.connect.DPADConnectEngine;
 import net.jonathansmith.javadpad.engine.host.DPADHostEngine;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.engine.local.process.Startup_LocalProcess;
+import net.jonathansmith.javadpad.gui.startup.StartupDisplayOption;
+import net.jonathansmith.javadpad.util.RuntimeType;
 
 /**
  *
@@ -41,7 +43,8 @@ public class StartupPanelListener implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (evt.getSource() == this.parent.getGui().startupPane.localRuntime) {
+        StartupDisplayOption display = (StartupDisplayOption) RuntimeType.RUNTIME_SELECT.getDisplay();
+        if (evt.getSource() == display.startupPane.localRuntime) {
             String outcome = this.parent.getGui().getDirectory();
             if (outcome.equals("")) {
                 return;    
@@ -57,7 +60,7 @@ public class StartupPanelListener implements ActionListener {
             ((Startup_LocalProcess) local.getRuntime()).setAttemptConnection(outcome);
         }
         
-        else if (evt.getSource() == this.parent.getGui().startupPane.hostRuntime) {
+        else if (evt.getSource() == display.startupPane.hostRuntime) {
             String outcome = this.parent.getGui().getDirectory();
             if (outcome.equals("")) {
                 return;    
@@ -73,7 +76,7 @@ public class StartupPanelListener implements ActionListener {
             //((DPADHostEngine) host.getRuntime()).createOrManageDatabase(outcome);
         }
         
-        else if (evt.getSource() == this.parent.getGui().startupPane.connectRuntime) {
+        else if (evt.getSource() == display.startupPane.connectRuntime) {
             this.parent.setEngine(new DPADConnectEngine(this.parent.fileSystem));
         }
     }

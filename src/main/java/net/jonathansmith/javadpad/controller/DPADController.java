@@ -20,16 +20,15 @@ package net.jonathansmith.javadpad.controller;
 import java.awt.EventQueue;
 
 import java.io.File;
-import java.io.PrintStream;
 
 import java.net.URISyntaxException;
 
-import java.util.logging.Level;
 
 import net.jonathansmith.javadpad.controller.listener.ClientMainPanelListener;
 import net.jonathansmith.javadpad.controller.listener.ExperimentPanelListener;
 import net.jonathansmith.javadpad.controller.listener.StartupPanelListener;
 import net.jonathansmith.javadpad.controller.listener.UserPanelListener;
+import net.jonathansmith.javadpad.database.batch.Batch;
 import net.jonathansmith.javadpad.database.experiment.Experiment;
 import net.jonathansmith.javadpad.database.user.User;
 import net.jonathansmith.javadpad.engine.DPADClientEngine;
@@ -37,9 +36,9 @@ import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.host.DPADHostEngine;
 import net.jonathansmith.javadpad.gui.DPADGui;
 import net.jonathansmith.javadpad.util.FileSystem;
+import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.ThreadType;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
-import net.jonathansmith.javadpad.util.logging.LoggerOutputStream;
 
 /**
  * DPADController
@@ -63,14 +62,11 @@ public class DPADController extends Thread {
     }
     
     public void init() {
-        System.setOut(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
-        System.setErr(new PrintStream(new LoggerOutputStream(this.logger, Level.OFF), true));
-        
         this.gui.init();
         EventQueue.invokeLater(this.gui);
         
         this.buildLocalFileSystem();
-        this.gui.addStartupSelectListener(new StartupPanelListener(this));
+        this.gui.addRuntimeListener(RuntimeType.RUNTIME_SELECT, new StartupPanelListener(this));
         this.initialised = true;
     }
     
@@ -143,16 +139,32 @@ public class DPADController extends Thread {
         }
     }
     
+    public Batch getSessionBatch() {
+        if (this.engine instanceof DPADHostEngine) {
+            return null;
+        }
+        
+        DPADClientEngine client = (DPADClientEngine) this.engine;
+        return client.getBatch();
+    }
+    
+    public void setSessionBatch(Batch batch) {
+        if (!(this.engine instanceof DPADHostEngine)) {
+            DPADClientEngine client = (DPADClientEngine) this.engine;
+            client.setBatch(batch);
+        }
+    }
+    
     private void addListeners(ThreadType type) {
         switch (type) {
-            case LOCAL:             this.gui.addMainMenuListener(new ClientMainPanelListener(this));
-                                    this.gui.addUserRuntimeListener(new UserPanelListener(this));
-                                    this.gui.addExperimentRuntimeListener(new ExperimentPanelListener(this));
+            case LOCAL:             this.gui.addRuntimeListener(RuntimeType.IDLE_CLIENT, new ClientMainPanelListener(this));
+                                    this.gui.addRuntimeListener(RuntimeType.USER_SELECT, new UserPanelListener(this));
+                                    this.gui.addRuntimeListener(RuntimeType.EXPERIMENT_SELECT, new ExperimentPanelListener(this));
                                     break;
                 
-            case CLIENT:            this.gui.addMainMenuListener(new ClientMainPanelListener(this));
-                                    this.gui.addUserRuntimeListener(new UserPanelListener(this));
-                                    this.gui.addExperimentRuntimeListener(new ExperimentPanelListener(this));
+            case CLIENT:            this.gui.addRuntimeListener(RuntimeType.IDLE_CLIENT, new ClientMainPanelListener(this));
+                                    this.gui.addRuntimeListener(RuntimeType.USER_SELECT, new UserPanelListener(this));
+                                    this.gui.addRuntimeListener(RuntimeType.EXPERIMENT_SELECT, new ExperimentPanelListener(this));
                                     break;
                 
             case HOST:              break;

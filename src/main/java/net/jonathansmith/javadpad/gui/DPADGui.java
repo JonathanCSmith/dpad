@@ -19,28 +19,31 @@ package net.jonathansmith.javadpad.gui;
 
 import java.awt.event.ActionListener;
 
+import java.io.PrintStream;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollBar;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.engine.DPADEngine;
-import net.jonathansmith.javadpad.gui.clientmain.ClientMainPane;
-import net.jonathansmith.javadpad.gui.clientmain.ClientMainToolbar;
-import net.jonathansmith.javadpad.gui.experiment.ExperimentSelect;
-import net.jonathansmith.javadpad.gui.startup.StartupPane;
-import net.jonathansmith.javadpad.gui.startup.StartupToolbar;
-import net.jonathansmith.javadpad.gui.user.UserSelect;
+import net.jonathansmith.javadpad.gui.client.DisplayOption;
+import net.jonathansmith.javadpad.gui.client.main.panel.ClientMainPane;
+import net.jonathansmith.javadpad.gui.client.main.toolbar.ClientMainToolbar;
+import net.jonathansmith.javadpad.gui.client.experiment.ExperimentDisplayOption;
+import net.jonathansmith.javadpad.gui.startup.panel.StartupPane;
+import net.jonathansmith.javadpad.gui.startup.toolbar.StartupToolbar;
+import net.jonathansmith.javadpad.gui.client.user.UserDisplayOption;
 import net.jonathansmith.javadpad.util.RuntimeType;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import net.jonathansmith.javadpad.util.logging.LogHandler;
+import net.jonathansmith.javadpad.util.logging.LoggerOutputStream;
 
 /**
  *
@@ -52,15 +55,6 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     public DPADController controller;
     public RuntimeType type;
     public boolean errored = false;
-    
-    public StartupPane startupPane;
-    public StartupToolbar startupToolbar;
-    
-    public ClientMainPane clientMainPane;
-    public ClientMainToolbar clientMainToolbar;
-    
-    public UserSelect userSelect;
-    public ExperimentSelect experimentSelect;
     
     private int[] textFieldLength = new int[1024];
     private int currentTextLength = 0;
@@ -180,17 +174,19 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         
         this.initComponents();
         
-        this.startupPane = new StartupPane();
-        this.startupToolbar = new StartupToolbar();
-        
-        this.clientMainPane = new ClientMainPane();
-        this.clientMainToolbar = new ClientMainToolbar();
-        
-        this.userSelect = new UserSelect(this.controller);
-        this.experimentSelect = new ExperimentSelect(this.controller);
+        DisplayOption option;
+        for (RuntimeType runtime : RuntimeType.values()) {
+            if (runtime.isDisplayable()) {
+                option = runtime.getDisplay();
+                option.setController(this.controller);
+            }
+        }
         
         LogHandler handler = new LogHandler(this);
         DPADLogger.addLogHandler(handler);
+        
+        System.setOut(new PrintStream(new LoggerOutputStream(this.controller.logger, Level.OFF), true));
+        System.setErr(new PrintStream(new LoggerOutputStream(this.controller.logger, Level.OFF), true));    
     }
     
     @Override
@@ -254,39 +250,10 @@ public class DPADGui extends JFrame implements Runnable, Observer {
     }
     
     public void validateState() {
-        switch (this.type) {
-            case RUNTIME_SELECT:        
-                                    this.setCorePanels(this.startupPane, this.startupToolbar);
-                                    break;
-            
-            case IDLE_LOCAL:        
-                                    this.setCorePanels(this.clientMainPane, this.clientMainToolbar);
-                                    if (this.controller.getSessionUser() == null) {
-                                        this.clientMainToolbar.setExperiment.setEnabled(false);
-                                        this.clientMainToolbar.setBatch.setEnabled(false);
-                                        
-                                    } else {
-                                        this.clientMainToolbar.setExperiment.setEnabled(true);
-                                        
-                                        if (this.controller.getSessionExperiment() == null) {
-                                            this.clientMainToolbar.setBatch.setEnabled(false);
-                                            
-                                        } else {
-                                            this.clientMainToolbar.setBatch.setEnabled(true);
-                                        }
-                                    }
-
-                                    break;
-            
-            case USER_SELECT:       
-                                    this.setCorePanels(this.userSelect.getCurrentView(), this.userSelect.userToolbar);
-                                    break;
-                
-            case EXPERIMENT_SELECT: 
-                                    this.setCorePanels(this.experimentSelect.getCurrentView(), this.experimentSelect.experimentToolbar);
-                                    break;
-                
-            default:                break;
+        if (this.type.isDisplayable()) {
+            DisplayOption option = this.type.getDisplay();
+            option.validateState(this.controller);
+            this.setCorePanels(option.getCurrentView(), option.getCurrentToolbar());
         }
     }
     
@@ -296,31 +263,9 @@ public class DPADGui extends JFrame implements Runnable, Observer {
         this.getContentPane().validate();
     }
     
-    public void addStartupSelectListener(ActionListener listener) {
-        this.startupPane.localRuntime.addActionListener(listener);
-        this.startupPane.hostRuntime.addActionListener(listener);
-        this.startupPane.connectRuntime.addActionListener(listener);
-    }
-    
-    public void addMainMenuListener(ActionListener listener) {
-        this.clientMainToolbar.setUser.addActionListener(listener);
-        this.clientMainToolbar.setExperiment.addActionListener(listener);
-    }
-    
-    public void addUserRuntimeListener(ActionListener listener) {
-        this.userSelect.userToolbar.newUser.addActionListener(listener);
-        this.userSelect.userToolbar.loadUser.addActionListener(listener);
-        this.userSelect.userToolbar.userBack.addActionListener(listener);
-        this.userSelect.newUserPane.submit.addActionListener(listener);
-        this.userSelect.existingUserPane.submit.addActionListener(listener);
-    }
-    
-    public void addExperimentRuntimeListener(ActionListener listener) {
-        this.experimentSelect.experimentToolbar.newExperiment.addActionListener(listener);
-        this.experimentSelect.experimentToolbar.loadExperiment.addActionListener(listener);
-        this.experimentSelect.experimentToolbar.experimentBack.addActionListener(listener);
-        this.experimentSelect.newExperimentPane.submit.addActionListener(listener);
-        this.experimentSelect.existingExperimentPane.submit.addActionListener(listener);
+    public void addRuntimeListener(RuntimeType type, ActionListener listener) {
+        DisplayOption option = type.getDisplay();
+        option.addDisplayListener(listener);
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

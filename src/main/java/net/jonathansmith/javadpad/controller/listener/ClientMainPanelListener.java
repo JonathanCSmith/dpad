@@ -23,6 +23,8 @@ import java.awt.event.ActionListener;
 import net.jonathansmith.javadpad.controller.DPADController;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
+import net.jonathansmith.javadpad.gui.client.DisplayOption;
+import net.jonathansmith.javadpad.gui.client.main.ClientDisplayOption;
 import net.jonathansmith.javadpad.util.RuntimeType;
 
 /**
@@ -46,11 +48,12 @@ public class ClientMainPanelListener implements ActionListener {
         }
         
         DPADLocalEngine local = (DPADLocalEngine) engine;
-        if (evt.getSource() == this.controller.getGui().clientMainToolbar.setUser) {
+        ClientDisplayOption display = (ClientDisplayOption) RuntimeType.IDLE_CLIENT.getDisplay();
+        if (evt.getSource() == display.mainToolbar.setUser) {
             local.setRuntime(RuntimeType.USER_SELECT);
         }
         
-        else if (evt.getSource() == this.controller.getGui().clientMainToolbar.setExperiment) {
+        else if (evt.getSource() == display.mainToolbar.setExperiment) {
             local.setRuntime(RuntimeType.EXPERIMENT_SELECT);
         }
     }
