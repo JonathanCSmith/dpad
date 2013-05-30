@@ -56,7 +56,7 @@ public class DPADLocalEngine extends DPADClientEngine {
     
     public void init() {
         this.status = true;
-        this.setRuntime(RuntimeType.SETUP_LOCAL);
+        this.setRuntime(RuntimeType.SETUP_CLIENT);
     }
     
     @SuppressWarnings({"CallToThreadDumpStack", "SleepWhileInLoop"})
@@ -97,7 +97,7 @@ public class DPADLocalEngine extends DPADClientEngine {
     }
     
     public void setupEngine() {
-        if (this.currentRuntime != RuntimeType.SETUP_LOCAL 
+        if (this.currentRuntime != RuntimeType.SETUP_CLIENT 
             || !(this.runtime instanceof Startup_LocalProcess)
             || ((Startup_LocalProcess) this.runtime).getProgressState() != State.CONNECTED) {
             return;
@@ -136,7 +136,7 @@ public class DPADLocalEngine extends DPADClientEngine {
         }
         
         switch (runtime) {
-            case SETUP_LOCAL:           this.runtime = new Startup_LocalProcess(this);
+            case SETUP_CLIENT:           this.runtime = new Startup_LocalProcess(this);
                                         break;
             
             case LOAD_AND_PROCESS:      this.runtime = new LoadProcessProcess(this);
@@ -166,18 +166,18 @@ public class DPADLocalEngine extends DPADClientEngine {
     @Override
     public void sendQuitToRuntime() {
         DPADLogger.info("Forcing runtime shutdown of current thread, assumed reason: back was called");
-        if (this.currentRuntime != RuntimeType.IDLE_LOCAL && this.currentRuntime.isRunnable()) {
+        if (this.currentRuntime != RuntimeType.IDLE_CLIENT && this.currentRuntime.isRunnable()) {
             this.runtime.forceShutdown(false);
         }
         
-        else if (this.currentRuntime != RuntimeType.IDLE_LOCAL && !this.currentRuntime.isRunnable()) {
+        else if (this.currentRuntime != RuntimeType.IDLE_CLIENT && !this.currentRuntime.isRunnable()) {
             this.runtimeFinished(false);
         }
     }
     
     public void runtimeFinished(boolean status) {
         this.runtime = null;
-        this.currentRuntime = RuntimeType.IDLE_LOCAL;
+        this.currentRuntime = RuntimeType.IDLE_CLIENT;
         this.errored = status;
         this.running = false;
         

@@ -14,7 +14,7 @@ import org.hibernate.service.ServiceRegistryBuilder;
 
 import net.jonathansmith.javadpad.database.DatabaseConnection;
 import net.jonathansmith.javadpad.database.batch.Batch;
-import net.jonathansmith.javadpad.database.datagroup.DataGroup;
+import net.jonathansmith.javadpad.database.dataset.DataSet;
 import net.jonathansmith.javadpad.database.datatype.DataType;
 import net.jonathansmith.javadpad.database.equipment.Equipment;
 import net.jonathansmith.javadpad.database.experiment.Experiment;
@@ -141,7 +141,7 @@ public class Startup_LocalProcess extends RuntimeProcess {
         config.addAnnotatedClass(User.class);
         config.addAnnotatedClass(Experiment.class);
         config.addAnnotatedClass(Batch.class);
-        config.addAnnotatedClass(DataGroup.class);
+        config.addAnnotatedClass(DataSet.class);
         config.addAnnotatedClass(DataType.class);
         config.addAnnotatedClass(Equipment.class);
         return config;

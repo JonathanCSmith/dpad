@@ -30,7 +30,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import net.jonathansmith.javadpad.database.datagroup.DataGroup;
+import net.jonathansmith.javadpad.database.dataset.DataSet;
 import net.jonathansmith.javadpad.database.equipment.Equipment;
 
 /**
@@ -43,7 +43,7 @@ public class Batch implements Serializable {
     
     private String uuid;
     private Equipment equipment;
-    private Set<DataGroup> dataGroup;
+    private Set<DataSet> dataGroup;
     
     public Batch() {}
     
@@ -70,11 +70,11 @@ public class Batch implements Serializable {
     
     @Column(name = "DataGroup")
     @OneToMany(orphanRemoval = true)
-    public Set<DataGroup> getDataGroup() {
+    public Set<DataSet> getDataGroup() {
         return this.dataGroup;
     }
     
-    public void setDataGroup(Set<DataGroup> dataGroup) {
+    public void setDataGroup(Set<DataSet> dataGroup) {
         this.dataGroup = dataGroup;
     }
 }

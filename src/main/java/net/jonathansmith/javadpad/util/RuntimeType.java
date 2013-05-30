@@ -17,27 +17,35 @@
 
 package net.jonathansmith.javadpad.util;
 
+import net.jonathansmith.javadpad.gui.client.DisplayOption;
+import net.jonathansmith.javadpad.gui.client.experiment.ExperimentDisplayOption;
+import net.jonathansmith.javadpad.gui.client.main.ClientDisplayOption;
+import net.jonathansmith.javadpad.gui.client.user.UserDisplayOption;
+import net.jonathansmith.javadpad.gui.startup.StartupDisplayOption;
+
 /**
  * Runtime
  *
  * @author Jonathan Smith
  */
 public enum RuntimeType {
-    RUNTIME_SELECT(false, true),
-    SETUP_LOCAL(true, true),
-    IDLE_LOCAL(false, true),
+    RUNTIME_SELECT(false, true, new StartupDisplayOption()),
+    SETUP_CLIENT(true, false, null),
+    IDLE_CLIENT(false, true, new ClientDisplayOption()),
     
-    USER_SELECT(false, true),
-    EXPERIMENT_SELECT(false, true),
-    LOAD_AND_PROCESS(true, true),
-    ANALYSE_AND_DISPLAY(true, true);
+    USER_SELECT(false, true, new UserDisplayOption()),
+    EXPERIMENT_SELECT(false, true, new ExperimentDisplayOption()),
+    LOAD_AND_PROCESS(true, false, null),
+    ANALYSE_AND_DISPLAY(true, false, null);
     
     private final boolean runnable;
     private final boolean displayable;
+    private final DisplayOption display;
     
-    private RuntimeType(boolean runnable, boolean displayable) {
+    private RuntimeType(boolean runnable, boolean displayable, DisplayOption display) {
         this.runnable = runnable;
         this.displayable = displayable;
+        this.display = display;
     }
     
     public boolean isRunnable() {
@@ -46,5 +54,9 @@ public enum RuntimeType {
     
     public boolean isDisplayable() {
         return this.displayable;
+    }
+    
+    public DisplayOption getDisplay() {
+        return this.display;
     }
 }
