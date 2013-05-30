@@ -19,6 +19,9 @@ package net.jonathansmith.javadpad.gui.client.main;
 import java.awt.event.ActionEvent;
 
 import net.jonathansmith.javadpad.controller.DPADController;
+import net.jonathansmith.javadpad.database.batch.Batch;
+import net.jonathansmith.javadpad.database.experiment.Experiment;
+import net.jonathansmith.javadpad.database.user.User;
 import net.jonathansmith.javadpad.engine.DPADEngine;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
 import net.jonathansmith.javadpad.gui.client.DisplayOption;
@@ -65,6 +68,41 @@ public class ClientDisplayOption extends DisplayOption {
             this.mainToolbar.setUser.setEnabled(true);
             this.mainToolbar.setExperiment.setEnabled(true);
             this.mainToolbar.setBatch.setEnabled(true);
+        }
+        
+        if (this.currentPanel == this.mainPane) {
+            User user = this.controller.getSessionUser();
+            
+            if (user != null) {
+                this.mainPane.jTextField1.setText(user.getUsername());
+                
+                Experiment experiment = this.controller.getSessionExperiment();
+                
+                if (experiment != null) {
+                    this.mainPane.jTextField2.setText(experiment.getName());
+                    
+                    Batch batch = this.controller.getSessionBatch();
+                    
+                    if (batch != null) {
+                        this.mainPane.jTextField3.setText(batch.getName());
+                    }
+                    
+                    else {
+                        this.mainPane.jTextField3.setText("");
+                    }
+                }
+                
+                else {
+                    this.mainPane.jTextField2.setText("");
+                    this.mainPane.jTextField3.setText("");
+                }
+            }
+            
+            else {
+                this.mainPane.jTextField1.setText("");
+                this.mainPane.jTextField2.setText("");
+                this.mainPane.jTextField3.setText("");
+            }
         }
     }
 
