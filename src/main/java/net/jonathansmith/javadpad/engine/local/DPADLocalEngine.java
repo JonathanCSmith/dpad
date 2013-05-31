@@ -47,7 +47,6 @@ public class DPADLocalEngine extends DPADClientEngine {
     private RuntimeProcess runtime;
     
     private DatabaseConnection session = null;
-    private DPADPluginManager pluginManager = null;
     
     public DPADLocalEngine(FileSystem fileSystem) {
         super(fileSystem);
@@ -104,7 +103,7 @@ public class DPADLocalEngine extends DPADClientEngine {
         
         Startup_LocalProcess setup = (Startup_LocalProcess) this.runtime;
         this.session = setup.getDatabaseConnection();
-        this.pluginManager = setup.getPluginManager();
+        this.setLocalPluginManager(setup.getPluginManager());
         this.sendQuitToRuntime();
     }
     

@@ -73,6 +73,11 @@
       <artifactId>swing-layout</artifactId>
       <version>1.0.3</version>
     </dependency>
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>3.6.6.Final</version>
+    </dependency>
   </dependencies>
   
 </project>
