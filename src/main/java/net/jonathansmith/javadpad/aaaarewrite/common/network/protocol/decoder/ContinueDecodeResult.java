@@ -14,32 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.aaaarewrite.common.network.protocol;
+package net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.decoder;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.decoder.DecodeResult.Type;
 
 /**
  *
  * @author jonathansmith
  */
-public class CommonDecoder<T extends Enum<T>> extends ReplayingDecoder<T> {
+public class ContinueDecodeResult<T extends Enum<T>> implements DecodeResult<T> {
     
-    private final T state;
+    private final T nextState;
     
-    public CommonDecoder(T initialState) {
-        this(initialState, false);
+    public ContinueDecodeResult(T nextState) {
+        this.nextState = nextState;
     }
     
-    public CommonDecoder(T initialState, boolean unfold) {
-        super(initialState, unfold);
-        this.state = initialState;
-    }
-
     @Override
-    protected Object decode(ChannelHandlerContext chc, Channel chnl, ChannelBuffer cb, T t) throws Exception {
-        
+    public Type getType() {
+        return Type.CONTINUE;
+    }
+    
+    public T getNextState() {
+        return this.nextState;
     }
 }
