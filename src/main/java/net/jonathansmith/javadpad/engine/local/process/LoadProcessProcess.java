@@ -19,9 +19,12 @@ package net.jonathansmith.javadpad.engine.local.process;
 
 import java.util.LinkedList;
 import java.util.List;
+
 import net.jonathansmith.javadpad.database.batch.Batch;
+import net.jonathansmith.javadpad.database.dataset.DataSet;
 import net.jonathansmith.javadpad.engine.common.process.RuntimeProcess;
 import net.jonathansmith.javadpad.engine.local.DPADLocalEngine;
+import net.jonathansmith.javadpad.plugin.ILoadPlugin;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
@@ -31,20 +34,23 @@ import net.jonathansmith.javadpad.util.logging.DPADLogger;
  */
 public class LoadProcessProcess extends RuntimeProcess {
     
+    public boolean running = false;
+    public String path = null;
+    public List<String> pendingProcess = new LinkedList<String> ();
+    public List<String> pendingLoad = new LinkedList<String> ();
+    
     private enum State {
         INCOMPLETE_INFORMATION,
-        ADDING_INFORMATION,
+        ADDING_DATA_TYPE,
         IDLE,
         LOADING_DATASET,
         PROCESSING_DATASET,
         ERRORED;
     }
     
-    public boolean running = false;
-    public String path = null;
-    public State state = State.IDLE;
-    public List<String> pendingLoad = new LinkedList<String> ();
-    public List<String> pendingProcess = new LinkedList<String> ();
+    private State state = State.IDLE;
+    private ILoadPlugin loadingPlugin = null;
+    private DataSet data = new DataSet();
     
     public LoadProcessProcess(DPADLocalEngine engine) {
         super(engine);
@@ -73,25 +79,21 @@ public class LoadProcessProcess extends RuntimeProcess {
     public void run() {
         while (this.running) {
             switch (this.state) {
-                case INCOMPLETE_INFORMATION:
-                    while (this.engine.getBatch().getEquipment() == null) {
-                        try {
-                            Thread.sleep(100);
-                            
-                        } catch (InterruptedException ex) {
-                            DPADLogger.severe("Load and Process thread interrupted");
-                            DPADLogger.logStackTrace(ex);
-                            this.running = false;
-                            this.forceShutdown(true);
-                            return;
-                        }
-                    }
-                    break;
-                
                 case IDLE:
-                    // Check for plugin presence, ensure it corresponds to local, if not ADDING_INFORMATION
-                    // Check for pending loads, if no datatype do nothing if yes LOADING_DATA
-                    // Check for pending processes, if yes PROCESSING_DATA
+                    if (this.data.getDataType() == null) {
+                        this.state = State.ADDING_DATA_TYPE;
+                        continue;
+                    }
+                    
+                    else if (!this.pendingLoad.isEmpty()) {
+                        this.state = State.LOADING_DATASET;
+                        continue;
+                    }
+                    
+                    else if (!this.pendingProcess.isEmpty()) {
+                        this.state = State.PROCESSING_DATASET;
+                        continue;
+                    }
                     
                     try {
                         Thread.sleep(100);
@@ -105,8 +107,12 @@ public class LoadProcessProcess extends RuntimeProcess {
                     }
                     break;
                     
-                case ADDING_INFORMATION:
-                    // TODO: Use equipment to load the appropriate plugin
+                case INCOMPLETE_INFORMATION:
+                    // Need to inform the gui to change panels
+                    break;
+                    
+                case ADDING_DATA_TYPE:
+                    // Need to inform the gui to change panels
                     break;
                     
                 case LOADING_DATASET:
@@ -116,14 +122,16 @@ public class LoadProcessProcess extends RuntimeProcess {
                     // Make progress available for possible widget?
                     // On complete add to process pending
                     // DB write
-                    // Check for new 
+                    // Check for new
+                    break;
                     
                 case PROCESSING_DATASET:
                     // Check-out an unprocessed packet
                     // Call plugin on the packet
                     // Make progress available for possible widget?
                     // DB write
-                    // Check for new 
+                    // Check for new
+                    break;
             }
         }
     }

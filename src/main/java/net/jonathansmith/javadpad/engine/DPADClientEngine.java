@@ -19,6 +19,7 @@ package net.jonathansmith.javadpad.engine;
 import net.jonathansmith.javadpad.database.batch.Batch;
 import net.jonathansmith.javadpad.database.experiment.Experiment;
 import net.jonathansmith.javadpad.database.user.User;
+import net.jonathansmith.javadpad.plugin.DPADPluginManager;
 import net.jonathansmith.javadpad.util.FileSystem;
 
 /**
@@ -30,6 +31,8 @@ public abstract class DPADClientEngine extends DPADEngine {
     public User user = null;
     public Experiment experiment = null;
     public Batch batch = null;
+    
+    private DPADPluginManager pluginManager = null;
     
     public DPADClientEngine(FileSystem fileSystem) {
         super(fileSystem);
@@ -57,5 +60,13 @@ public abstract class DPADClientEngine extends DPADEngine {
     
     public void setBatch(Batch batch) {
         this.batch = batch;
+    }
+    
+    public DPADPluginManager getLocalPluginManager() {
+        return this.pluginManager;
+    }
+    
+    public void setLocalPluginManager(DPADPluginManager pluginManager) {
+        this.pluginManager = pluginManager;
     }
 }
