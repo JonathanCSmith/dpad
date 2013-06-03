@@ -25,15 +25,15 @@ import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
  *
  * @author jonathansmith
  */
-public abstract class CommonDecoder<T extends Enum<T>> extends ReplayingDecoder<T> {
+public abstract class RollingDecoder<T extends Enum<T>> extends ReplayingDecoder<T> {
     
     private final T state;
     
-    public CommonDecoder(T initialState) {
+    public RollingDecoder(T initialState) {
         this(initialState, false);
     }
     
-    public CommonDecoder(T initialState, boolean unfold) {
+    public RollingDecoder(T initialState, boolean unfold) {
         super(initialState, unfold);
         this.state = initialState;
     }
@@ -61,7 +61,7 @@ public abstract class CommonDecoder<T extends Enum<T>> extends ReplayingDecoder<
                     break;
                     
                 default:
-                    throw new IllegalArgumentException("Unsupported Result! " + result.getType())
+                    throw new IllegalArgumentException("Unsupported Result! " + result.getType());
             }
         }
     }

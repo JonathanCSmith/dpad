@@ -16,6 +16,9 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.common.network.packet;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
@@ -24,7 +27,25 @@ import org.jboss.netty.buffer.ChannelBuffer;
  */
 public abstract class Packet {
     
-    public abstract ChannelBuffer writeHeader();
+    public static final Map<Integer, Packet> packetMap = new HashMap<Integer, Packet> ();
     
-    public abstract ChannelBuffer writePayload(ChannelBuffer header);
+    private int id;
+    
+    public final void setID(int id) {
+        this.id = id;
+    }
+    
+    public abstract ChannelBuffer writeHeader(boolean upstream);
+    
+    public abstract ChannelBuffer writePayload(boolean upstream, ChannelBuffer header);
+    
+    public static Packet getPacket(int id) {
+        return packetMap.get(id);
+    }
+    
+    public static void addPacket(Packet packet) {
+        int packetID = packetMap.size();
+        packet.setID(packetID);
+        packetMap.put(packetID, packet);
+    }
 }
