@@ -16,25 +16,32 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.common.network.protocol;
 
-import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
+
 /**
  *
  * @author jonathansmith
  */
 public class CommonEncoder extends OneToOneEncoder {
+    
+    private boolean upstream;
+    
+    public CommonEncoder(boolean upstream) {
+        this.upstream = upstream;
+    }
 
     @Override
     protected Object encode(ChannelHandlerContext chc, Channel chnl, Object o) throws Exception {
         if (o instanceof Packet) {
             Packet p = (Packet) o;
-            ChannelBuffer header = p.writeHeader();
-            ChannelBuffer msg = p.writePayload(header);
+            ChannelBuffer header = p.writeHeader(this.upstream);
+            ChannelBuffer msg = p.writePayload(this.upstream, header);
             return ChannelBuffers.wrappedBuffer(header, msg);
         }
         
