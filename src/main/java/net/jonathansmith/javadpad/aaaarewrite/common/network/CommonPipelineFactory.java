@@ -16,12 +16,14 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.common.network;
 
+import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
 
 import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonEncoder;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.MonitoredThread;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonDecoder;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonHandler;
 
 /**
  *
@@ -42,5 +44,6 @@ public class CommonPipelineFactory implements ChannelPipelineFactory {
         CommonEncoder encoder = new CommonEncoder();
         CommonDecoder decoder = new CommonDecoder();
         CommonHandler handler = new CommonHandler(this.upstream, this.engine, encoder, decoder);
+        return Channels.pipeline(encoder, decoder, handler);
     }
 }

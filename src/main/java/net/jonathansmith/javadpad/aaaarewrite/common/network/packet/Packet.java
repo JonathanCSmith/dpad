@@ -18,7 +18,10 @@ package net.jonathansmith.javadpad.aaaarewrite.common.network.packet;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
@@ -27,7 +30,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
  */
 public abstract class Packet {
     
-    public static final Map<Integer, Packet> packetMap = new HashMap<Integer, Packet> ();
+    public static final Map<Integer, Class<? extends Packet>> packetMap = new HashMap<Integer, Class<? extends Packet>> ();
     
     private int id;
     
@@ -39,17 +42,30 @@ public abstract class Packet {
         this.id = id;
     }
     
-    public abstract int getPacketLength();
+    public abstract int getNumberOfPayloads();
     
-    public abstract ChannelBuffer writePayload(ChannelBuffer header);
+    public abstract int[] getPayloadSizes();
     
-    public static Packet getPacket(int id) {
+    public abstract ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header);
+    
+    public abstract void parsePayload(int payloadNumber, byte[] bytes);
+    
+    public static Class<? extends Packet> getPacket(int id) {
         return packetMap.get(id);
     }
     
-    public static void addPacket(Packet packet) {
+    public static void addPacket(Class<? extends Packet> packet) {
         int packetID = packetMap.size();
-        packet.setID(packetID);
+        try {
+            packet.newInstance().setID(packetID);
+            
+        } catch (InstantiationException ex) {
+            DPADLogger.severe("Failed to assign packet id");
+            DPADLogger.logStackTrace(ex);
+        } catch (IllegalAccessException ex) {
+            DPADLogger.severe("Failed to assign packet id");
+            DPADLogger.logStackTrace(ex);
+        }
         packetMap.put(packetID, packet);
     }
 }
