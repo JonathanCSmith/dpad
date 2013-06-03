@@ -74,8 +74,8 @@ public abstract class StateDrivenDecoder<t extends Enum<t>> extends ReplayingDec
         return new ContinueDecodeResult<t>(nextState);
     }
  
-    protected DecodeResult<t> finishedDecoding(Object result) {
-        return new FinishedDecodeResult<t> ();
+    protected DecodeResult<t> finishedDecoding(Packet p) {
+        return new FinishedDecodeResult<t> (p);
     }
  
     protected void reset() {
@@ -116,11 +116,19 @@ public abstract class StateDrivenDecoder<t extends Enum<t>> extends ReplayingDec
     
     public class FinishedDecodeResult<T extends Enum<T>> implements DecodeResult<T> {
         
-        public FinishedDecodeResult() {}
+        private final Packet packet;
+        
+        public FinishedDecodeResult(Packet p) {
+            this.packet = p;
+        }
         
         @Override
         public Type getType() {
             return Type.FINISHED;
+        }
+        
+        public Packet getPacket() {
+            return this.packet;
         }
     }
 }

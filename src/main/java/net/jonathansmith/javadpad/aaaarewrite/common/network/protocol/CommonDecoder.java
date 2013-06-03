@@ -18,17 +18,20 @@ package net.jonathansmith.javadpad.aaaarewrite.common.network.protocol;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
+
 /**
  *
  * @author jonathansmith
  */
-public class CommonDecoder extends StateDrivenDecoder {
+public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingState> {
     
     private int type;
-    private byte[] id;
-    private int nParams;
-    private List<string> params;
-    private byte[] param;
+    private int paramCount;
+    private int[] paramSizes;
+    private int frameRead = 0;
+    private byte[] currentPayload;
+    private Packet packet;
  
     // constructors ----------------------------------------------------------
  
@@ -38,67 +41,55 @@ public class CommonDecoder extends StateDrivenDecoder {
  
     @Override
     protected void cleanup() {
-        // cleanup pending resources allocated for decoding
-        this.id = null;
-        this.nParams = 0;
         this.type = -1;
-        this.param = null;
-        this.params = null;
+        this.paramCount = 0;
+        this.paramSizes = null;
+        this.frameRead = -1;
+        this.currentPayload = null;
+        this.packet = null;
     }
 
     @Override
-    protected DecodeResult decode(ChannelBuffer buffer, Enum currentState) throws Exception {
+    protected DecodeResult decode(ChannelBuffer buffer, DecodingState currentState) throws Exception {
         switch (currentState) {
             case TYPE:
                 this.type = buffer.readInt();
-                return this.continueDecoding(DecodingState.ID_SIZE);
- 
-            case ID_SIZE:
-                // Should be protected for 0 or negative sizes.
-                this.id = new byte[buffer.readByte()];
-                return this.continueDecoding(DecodingState.ID);
- 
-            case ID:
-                buffer.readBytes(this.id);
-                if (this.type == 1) {
-                    // Lets assume type 1 messages only need id.
-                    Message m = new Type1Message(new String(this.id));
-                    return this.finishedDecoding(m);
-                } else {
-                    // Otherwise continue decoding.
-                    return this.continueDecoding(DecodingState.PARAM_COUNT);
-                }
+                return this.continueDecoding(DecodingState.PARAM_COUNT);
  
             case PARAM_COUNT:
-                this.nParams = buffer.readByte();
+                this.paramCount = buffer.readByte();
+                this.packet = Packet.getPacket(this.type).newInstance();
+                
                 // If there are parameters continue decoding, otherwise bail.
-                if (this.nParams > 0) {
-                    this.params = new ArrayList<string>(this.nParams);
+                if (this.paramCount > 0) {
+                    this.paramSizes = new int[this.paramCount];
+                    this.frameRead = 0;
                     return this.continueDecoding(DecodingState.PARAM_SIZE);
-                } else {
-                    Message m = new OtherMessage(new String(this.id));
-                    return this.finishedDecoding(m);
+                }
+                
+                else {
+                    return this.finishedDecoding(this.packet);
                 }
  
             case PARAM_SIZE:
-                this.param = new byte[buffer.readByte()];
+                this.paramSizes[this.frameRead] = buffer.readInt();
                 return this.continueDecoding(DecodingState.PARAM_VALUE);
  
             case PARAM_VALUE:
-                buffer.readBytes(this.param);
-                this.params.add(new String(this.param));
-                if (this.params.size() >= this.nParams) {
-                    // This was the last parameter, exit.
-                    Message m = new OtherMessage(new String(this.id));
-                    m.setParams(this.params);
-                    return this.finishedDecoding(m);
-                } else {
-                    // Continue reading parameters.
+                this.currentPayload = new byte[this.paramSizes[this.frameRead]];
+                buffer.readBytes(this.currentPayload);
+                this.packet.parsePayload(this.frameRead, this.currentPayload);
+                
+                if (this.frameRead >= this.paramCount) {
+                    return this.finishedDecoding(this.packet);
+                }
+                
+                else {
                     return this.continueDecoding(DecodingState.PARAM_SIZE);
                 }
  
             default:
-                throw new IllegalStateException("Unknown state: " + state);
+                throw new IllegalStateException("Unknown state: " + currentState);
         }
     }
  
@@ -106,8 +97,6 @@ public class CommonDecoder extends StateDrivenDecoder {
  
     public static enum DecodingState {
         TYPE,
-        ID_SIZE,
-        ID,
         PARAM_COUNT,
         PARAM_SIZE,
         PARAM_VALUE

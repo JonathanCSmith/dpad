@@ -34,11 +34,24 @@ public class CommonEncoder extends OneToOneEncoder {
     protected Object encode(ChannelHandlerContext chc, Channel chnl, Object o) throws Exception {
         if (o instanceof Packet) {
             Packet p = (Packet) o;
-            int size = p.getPacketLength();
-            ChannelBuffer header = ChannelBuffers.buffer(8 + size);
-            header.writeInt(p.getID());
-            header = p.writePayload(header);
-            return ChannelBuffers.wrappedBuffer(header);
+            
+            int[] packetPayloadSizes = p.getPayloadSizes();
+            int size = 0;
+            int numberOfPayloads = p.getNumberOfPayloads();
+            for (Integer i : packetPayloadSizes) {
+                size += 8 + i;
+            }
+            
+            ChannelBuffer buff = ChannelBuffers.buffer(8 + 8 + size);
+            buff.writeInt(p.getID());
+            buff.writeInt(p.getNumberOfPayloads());
+            
+            for (int i = 0; i < p.getNumberOfPayloads(); i++) {
+                buff.writeInt(packetPayloadSizes[i]);
+                buff = p.writePayload(i, buff);
+            }
+            
+            return ChannelBuffers.wrappedBuffer(buff);
         }
         
         return o;
