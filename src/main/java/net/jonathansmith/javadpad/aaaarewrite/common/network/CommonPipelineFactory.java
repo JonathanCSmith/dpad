@@ -20,6 +20,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 
+import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonEncoder;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.MonitoredThread;
 
 /**
@@ -38,11 +39,8 @@ public class CommonPipelineFactory implements ChannelPipelineFactory {
     
     @Override
     public ChannelPipeline getPipeline() throws Exception {
-        CommonEncoder encoder = new CommonEncoder(this.upstream);
-        CommonDecoder decoder = new CommonDecoder(this.upstream);
-        CommonHandler handler = new CommonHandler(this.engine, encoder, decoder, this.upstream);
-        DynamicMessageEncoder dynamicEncoder = new DynamicMessageEncoder();
-        DynamicMessageDecoder dynamicDecoder = new DynamicMessageDecoder();
-        return Channels.pipeline(decoder, encoder, dynamicDecoder, dynamicEncoder, handler);
+        CommonEncoder encoder = new CommonEncoder();
+        CommonDecoder decoder = new CommonDecoder();
+        CommonHandler handler = new CommonHandler(this.upstream, this.engine, encoder, decoder);
     }
 }

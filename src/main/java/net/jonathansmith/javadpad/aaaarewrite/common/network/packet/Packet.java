@@ -31,13 +31,17 @@ public abstract class Packet {
     
     private int id;
     
+    public int getID() {
+        return this.id;
+    }
+    
     public final void setID(int id) {
         this.id = id;
     }
     
-    public abstract ChannelBuffer writeHeader(boolean upstream);
+    public abstract int getPacketLength();
     
-    public abstract ChannelBuffer writePayload(boolean upstream, ChannelBuffer header);
+    public abstract ChannelBuffer writePayload(ChannelBuffer header);
     
     public static Packet getPacket(int id) {
         return packetMap.get(id);

@@ -29,20 +29,16 @@ import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
  * @author jonathansmith
  */
 public class CommonEncoder extends OneToOneEncoder {
-    
-    private boolean upstream;
-    
-    public CommonEncoder(boolean upstream) {
-        this.upstream = upstream;
-    }
 
     @Override
     protected Object encode(ChannelHandlerContext chc, Channel chnl, Object o) throws Exception {
         if (o instanceof Packet) {
             Packet p = (Packet) o;
-            ChannelBuffer header = p.writeHeader(this.upstream);
-            ChannelBuffer msg = p.writePayload(this.upstream, header);
-            return ChannelBuffers.wrappedBuffer(header, msg);
+            int size = p.getPacketLength();
+            ChannelBuffer header = ChannelBuffers.buffer(8 + size);
+            header.writeInt(p.getID());
+            header = p.writePayload(header);
+            return ChannelBuffers.wrappedBuffer(header);
         }
         
         return o;
