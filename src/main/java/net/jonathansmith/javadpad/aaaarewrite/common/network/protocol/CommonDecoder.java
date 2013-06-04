@@ -54,13 +54,12 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
         switch (currentState) {
             case TYPE:
                 this.type = buffer.readInt();
+                this.packet = Packet.getPacket(this.type).newInstance();
                 return this.continueDecoding(DecodingState.PARAM_COUNT);
  
             case PARAM_COUNT:
                 this.paramCount = buffer.readByte();
-                this.packet = Packet.getPacket(this.type).newInstance();
                 
-                // If there are parameters continue decoding, otherwise bail.
                 if (this.paramCount > 0) {
                     this.paramSizes = new int[this.paramCount];
                     this.frameRead = 0;
