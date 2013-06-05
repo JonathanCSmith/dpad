@@ -16,14 +16,16 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.common.network;
 
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.Channels;
 
-import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonEncoder;
-import net.jonathansmith.javadpad.aaaarewrite.common.thread.MonitoredThread;
+import net.jonathansmith.javadpad.aaaarewrite.client.ClientMainThread;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonDecoder;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonEncoder;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonHandler;
+import net.jonathansmith.javadpad.aaaarewrite.common.thread.MonitoredThread;
+import net.jonathansmith.javadpad.aaaarewrite.server.ServerMainThread;
 
 /**
  *
@@ -35,15 +37,27 @@ public class CommonPipelineFactory implements ChannelPipelineFactory {
     private final boolean upstream;
 
     public CommonPipelineFactory(MonitoredThread engine, boolean upstream) {
+        if (upstream) {
+            if (!(engine instanceof ClientMainThread)) {
+                throw new IllegalArgumentException("Only clients can establish upstream connections");
+            }
+        }
+        
+        else {
+            if (!(engine instanceof ServerMainThread)) {
+                throw new IllegalArgumentException("Only servers can establish downstream connections");
+            }
+        }
+        
         this.engine = engine;
         this.upstream = upstream;
     }
     
     @Override
     public ChannelPipeline getPipeline() throws Exception {
-        CommonEncoder encoder = new CommonEncoder();
         CommonDecoder decoder = new CommonDecoder();
+        CommonEncoder encoder = new CommonEncoder();
         CommonHandler handler = new CommonHandler(this.upstream, this.engine, encoder, decoder);
-        return Channels.pipeline(encoder, decoder, handler);
+        return Channels.pipeline(decoder, encoder, handler);
     }
 }
