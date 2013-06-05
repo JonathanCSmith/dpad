@@ -44,9 +44,9 @@ public class CommonEncoder extends OneToOneEncoder {
             
             ChannelBuffer buff = ChannelBuffers.buffer(8 + 8 + size);
             buff.writeInt(p.getID());
-            buff.writeInt(p.getNumberOfPayloads());
+            buff.writeInt(numberOfPayloads);
             
-            for (int i = 0; i < p.getNumberOfPayloads(); i++) {
+            for (int i = 0; i < numberOfPayloads; i++) {
                 buff.writeInt(packetPayloadSizes[i]);
                 buff = p.writePayload(i, buff);
             }

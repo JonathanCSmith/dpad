@@ -24,9 +24,7 @@ import java.util.concurrent.Executors;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
@@ -34,7 +32,6 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.CommonPipelineFactory;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.MonitoredThread;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.NamedThreadFactory;
-import net.jonathansmith.javadpad.aaaarewrite.server.channelhandlers.EchoServerHandler;
 
 /**
  *
