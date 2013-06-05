@@ -50,6 +50,10 @@ public abstract class Packet {
     
     public abstract void parsePayload(int payloadNumber, byte[] bytes);
     
+    public abstract void handleClientSide();
+    
+    public abstract void handleServerSide();
+    
     public static Class<? extends Packet> getPacket(int id) {
         return packetMap.get(id);
     }

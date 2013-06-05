@@ -16,11 +16,15 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.common.network.protocol;
 
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.MonitoredThread;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
+
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 
 /**
  *
@@ -41,7 +45,17 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
     }
     
     @Override
-    public void messageReceived(ChannelHandlerContext ctx, MessageEvent evt) {
-        Packet packet = this.decoder.d
+    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        Packet p = (Packet) e.getMessage();
+        
+        if (this.upstream) {
+            p.handleClientSide();
+        }
+        
+        else {
+            p.handleServerSide();
+        }
+        
+        super.messageReceived(ctx, e);
     }
 }
