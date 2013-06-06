@@ -20,21 +20,23 @@ package net.jonathansmith.javadpad.aaaarewrite.common.thread;
  *
  * @author jonathansmith
  */
-public abstract class MonitoredThread implements Runnable {
+public abstract class Engine implements Runnable {
     
     public String hostName;
     public int portNumber;
     
-    public MonitoredThread(String hostName, int portNumber) {
+    public Engine(String hostName, int portNumber) {
         this.hostName = hostName;
         this.portNumber = portNumber;
     }
     
     public abstract void init();
     
-    public abstract boolean isViable();
-    
     public abstract boolean isRunning();
     
+    public abstract boolean isViable();
+    
     public abstract void saveAndShutdown();
+    
+    public abstract void forceShutdown();
 }

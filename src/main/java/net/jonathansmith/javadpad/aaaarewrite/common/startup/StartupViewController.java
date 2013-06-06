@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.aaaarewrite.startup;
+package net.jonathansmith.javadpad.aaaarewrite.common.startup;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,7 +22,8 @@ import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import net.jonathansmith.javadpad.DPAD;
+import net.jonathansmith.javadpad.aaaarewrite.DPADNew;
+import net.jonathansmith.javadpad.aaaarewrite.DPADNew.Platform;
 
 /**
  *
@@ -30,10 +31,10 @@ import net.jonathansmith.javadpad.DPAD;
  */
 public class StartupViewController implements ActionListener {
     
-    private DPAD main;
+    private DPADNew main;
     private StartupGUI gui;
     
-    public StartupViewController(StartupGUI gui, DPAD dpad) {
+    public StartupViewController(StartupGUI gui, DPADNew dpad) {
         this.main = dpad;
         this.gui = gui;
         this.addListeners();
@@ -47,7 +48,7 @@ public class StartupViewController implements ActionListener {
 
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == this.gui.localRuntime) {
-            this.main.setRuntimeSelected(0);
+            this.main.setRuntimeSelected(Platform.LOCAL);
         }
         
         else if (ae.getSource() == this.gui.hostRuntime) {String url = this.gui.databaseHostURL.getText();
@@ -64,10 +65,11 @@ public class StartupViewController implements ActionListener {
                 }
                 
             } catch (URISyntaxException ex) {
+                this.main.interrupt();
                 return;
             }
             
-            this.main.setRuntimeSelected(1);
+            this.main.setRuntimeSelected(Platform.SERVER);
             this.main.setURI(host, port);
         }
         
@@ -86,10 +88,11 @@ public class StartupViewController implements ActionListener {
                 }
                 
             } catch (URISyntaxException ex) {
+                this.main.interrupt();
                 return;
             }
             
-            this.main.setRuntimeSelected(2);
+            this.main.setRuntimeSelected(Platform.CLIENT);
             this.main.setURI(host, port);
         }
     }

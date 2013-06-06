@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.aaaarewrite.startup;
+package net.jonathansmith.javadpad.aaaarewrite.common.startup;
+
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-
-import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *
@@ -93,11 +93,6 @@ public class StartupGUI extends javax.swing.JFrame implements Runnable {
         jScrollPane1.setViewportView(jTextArea1);
 
         databaseClientURL.setText("Enter database address!");
-        databaseClientURL.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                databaseClientURLActionPerformed(evt);
-            }
-        });
 
         connectRuntime.setText("Connect");
 
@@ -110,11 +105,6 @@ public class StartupGUI extends javax.swing.JFrame implements Runnable {
         jLabel8.setText("Database Connection:");
 
         databaseHostURL.setText("Enter database address!");
-        databaseHostURL.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                databaseHostURLActionPerformed(evt);
-            }
-        });
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -174,14 +164,6 @@ public class StartupGUI extends javax.swing.JFrame implements Runnable {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void databaseClientURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_databaseClientURLActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_databaseClientURLActionPerformed
-
-    private void databaseHostURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_databaseHostURLActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_databaseHostURLActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton connectRuntime;

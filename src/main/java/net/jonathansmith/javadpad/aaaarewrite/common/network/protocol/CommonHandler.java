@@ -17,14 +17,13 @@
 package net.jonathansmith.javadpad.aaaarewrite.common.network.protocol;
 
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-
-import net.jonathansmith.javadpad.aaaarewrite.common.thread.MonitoredThread;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
+import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 
 /**
  *
@@ -34,14 +33,28 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
     
     private final CommonEncoder encoder;
     private final CommonDecoder decoder;
-    private final MonitoredThread engine;
+    private final Engine engine;
     private final boolean upstream;
+    private Session session;
     
-    public CommonHandler(boolean up, MonitoredThread eng, CommonEncoder enc, CommonDecoder dec) {
+    public CommonHandler(boolean up, Engine eng, CommonEncoder enc, CommonDecoder dec) {
         this.encoder = enc;
         this.decoder = dec;
         this.engine = eng;
         this.upstream = up;
+    }
+    
+    @Override
+    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
+        Channel c = e.getChannel();
+        
+        if (!this.upstream) {
+            try {
+                this.engine.getChannelGroup().add(c);
+                this.session = engine.getSessionRegistry().getAndAddNewSession(c);
+                ctx.setAttachment(session);
+            }
+        }
     }
     
     @Override

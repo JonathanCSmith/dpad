@@ -26,14 +26,14 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import net.jonathansmith.javadpad.aaaarewrite.common.network.CommonPipelineFactory;
-import net.jonathansmith.javadpad.aaaarewrite.common.thread.MonitoredThread;
+import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.NamedThreadFactory;
 
 /**
  *
  * @author jonathansmith
  */
-public class ClientMainThread extends MonitoredThread {
+public class Client extends Engine {
     
     private boolean isAlive = false;
     private boolean errored = false;
@@ -41,7 +41,7 @@ public class ClientMainThread extends MonitoredThread {
     private ClientBootstrap bootstrap;
     private Channel channel;
     
-    public ClientMainThread(String host, int port) {
+    public Client(String host, int port) {
         super(host, port);
     }
     
@@ -62,19 +62,24 @@ public class ClientMainThread extends MonitoredThread {
         ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
         this.bootstrap.setPipelineFactory(pipelineFactory);
     }
-    
-    @Override
-    public boolean isViable() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     @Override
     public boolean isRunning() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.isAlive;
+    }
+    
+    @Override
+    public boolean isViable() {
+        return !this.errored;
     }
 
     @Override
     public void saveAndShutdown() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
+    }
+
+    @Override
+    public void forceShutdown() {
+        
     }
 }
