@@ -78,6 +78,11 @@
       <artifactId>netty</artifactId>
       <version>3.6.6.Final</version>
     </dependency>
+    <dependency>
+      <groupId>com.beust</groupId>
+      <artifactId>jcommander</artifactId>
+      <version>1.30</version>
+    </dependency>
   </dependencies>
   
 </project>

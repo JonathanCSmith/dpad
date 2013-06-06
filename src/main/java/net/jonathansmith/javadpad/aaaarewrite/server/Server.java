@@ -30,14 +30,14 @@ import org.jboss.netty.channel.group.DefaultChannelGroup;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 import net.jonathansmith.javadpad.aaaarewrite.common.network.CommonPipelineFactory;
-import net.jonathansmith.javadpad.aaaarewrite.common.thread.MonitoredThread;
+import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.NamedThreadFactory;
 
 /**
  *
  * @author jonathansmith
  */
-public class ServerMainThread extends MonitoredThread {
+public class Server extends Engine {
     
     private boolean isAlive = false;
     private boolean errored = false;
@@ -45,20 +45,24 @@ public class ServerMainThread extends MonitoredThread {
     private ServerBootstrap bootstrap;
     private ChannelGroup channelGroup;
     
-    public ServerMainThread(String host, int port) {
+    public Server(String host, int port) {
         super(host, port);
+        
+        this.bootstrap = new ServerBootstrap();
+        this.channelGroup = new DefaultChannelGroup();
+        
+        // TODO: FileSystem
     }
 
     @Override
     public void init() {
-        this.bootstrap = new ServerBootstrap();
-        this.channelGroup = new DefaultChannelGroup();
-        // Create server gui
-    }
-
-    @Override
-    public void run() {
-        // Display server gui
+        // TODO: Initialise FileSystem
+        // TODO: Config?
+        // TODO: Console!
+        // TODO: Gui, build + display (partial only?)
+        // TODO: Connection pool
+        // TODO: Default properties
+        
         ExecutorService boss = Executors.newCachedThreadPool(new NamedThreadFactory("DPAD - Server - Boss", true));
         ExecutorService worker = Executors.newCachedThreadPool(new NamedThreadFactory("DPAD - Server - Worker", true));
         ChannelFactory factory = new NioServerSocketChannelFactory(boss, worker);
@@ -69,6 +73,9 @@ public class ServerMainThread extends MonitoredThread {
         ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, false);
         this.bootstrap.setPipelineFactory(pipelineFactory);
         
+        // TODO: 1) Create session registry
+        
+        // TODO: Check where this goes! - Seems to be fine I think
         Channel acceptor = this.bootstrap.bind(new InetSocketAddress(this.hostName, this.portNumber));
         
         if (acceptor.isBound()) {
@@ -81,9 +88,13 @@ public class ServerMainThread extends MonitoredThread {
             // TODO: Fail notice
             return;
         }
-        
+    }
+
+    @Override
+    public void run() {
         while (this.isAlive) {
             try {
+                // TODO: Pulse session registry
                 Thread.sleep(100);
                 
             } catch (InterruptedException ex) {
@@ -104,6 +115,11 @@ public class ServerMainThread extends MonitoredThread {
 
     @Override
     public void saveAndShutdown() {
+        
+    }
+
+    @Override
+    public void forceShutdown() {
         
     }
 }

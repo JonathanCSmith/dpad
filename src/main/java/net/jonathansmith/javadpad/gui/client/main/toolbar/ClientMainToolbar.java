@@ -78,11 +78,6 @@ public class ClientMainToolbar extends javax.swing.JPanel {
         jLabel8.setText("Batch Data");
 
         addData.setText("Add Data");
-        addData.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addDataActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -131,10 +126,6 @@ public class ClientMainToolbar extends javax.swing.JPanel {
         layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {setBatch, setExperiment, setUser});
 
     }// </editor-fold>//GEN-END:initComponents
-
-    private void addDataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addDataActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_addDataActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton addData;

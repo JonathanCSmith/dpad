@@ -20,12 +20,12 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 
-import net.jonathansmith.javadpad.aaaarewrite.client.ClientMainThread;
+import net.jonathansmith.javadpad.aaaarewrite.client.Client;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonDecoder;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonEncoder;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonHandler;
-import net.jonathansmith.javadpad.aaaarewrite.common.thread.MonitoredThread;
-import net.jonathansmith.javadpad.aaaarewrite.server.ServerMainThread;
+import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
+import net.jonathansmith.javadpad.aaaarewrite.server.Server;
 
 /**
  *
@@ -33,18 +33,18 @@ import net.jonathansmith.javadpad.aaaarewrite.server.ServerMainThread;
  */
 public class CommonPipelineFactory implements ChannelPipelineFactory {
     
-    private final MonitoredThread engine;
+    private final Engine engine;
     private final boolean upstream;
 
-    public CommonPipelineFactory(MonitoredThread engine, boolean upstream) {
+    public CommonPipelineFactory(Engine engine, boolean upstream) {
         if (upstream) {
-            if (!(engine instanceof ClientMainThread)) {
+            if (!(engine instanceof Client)) {
                 throw new IllegalArgumentException("Only clients can establish upstream connections");
             }
         }
         
         else {
-            if (!(engine instanceof ServerMainThread)) {
+            if (!(engine instanceof Server)) {
                 throw new IllegalArgumentException("Only servers can establish downstream connections");
             }
         }
