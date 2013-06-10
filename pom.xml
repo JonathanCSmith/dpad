@@ -89,6 +89,12 @@
       <version>12.0</version>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.47</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
   
 </project>

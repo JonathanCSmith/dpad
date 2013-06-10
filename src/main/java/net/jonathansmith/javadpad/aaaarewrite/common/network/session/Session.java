@@ -20,6 +20,7 @@ import java.util.Random;
 
 import org.jboss.netty.channel.Channel;
 
+import net.jonathansmith.javadpad.aaaarewrite.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
@@ -30,11 +31,19 @@ import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
  */
 public abstract class Session {
     
+    public enum State {
+        EXCHANGING_HANDSHAKE,
+        EXCHANGING_AUTHENTICATION,
+        RUNNING;
+    }
+    
     public final Channel channel;
     public final Engine engine;
     
     private final Random random = new Random();
     private final String id = Long.toString(random.nextLong(), 16).trim();
+    
+    private State state = State.EXCHANGING_HANDSHAKE;
     
     public Session(Engine eng, Channel channel) {
         this.engine = eng;
@@ -44,13 +53,22 @@ public abstract class Session {
     public String getSessionID() {
         return this.id;
     }
+    
+    public State getState() {
+        return this.state;
+    }
+    
+    public void incrementState() {
+        int currentState = this.state.ordinal();
+        this.state = State.values()[currentState + 1];
+    }
 
     public abstract void addPacketToSend(PacketPriority priority, Packet p);
     
     public abstract void addPacketToReceive(PacketPriority priority, Packet p);
     
-    public void sendPacket(Packet p) {
-        this.channel.write(p);
+    public void sendPacketMessage(PacketMessage pm) {
+        this.channel.write(pm);
     }
 
     public abstract void disconnect();

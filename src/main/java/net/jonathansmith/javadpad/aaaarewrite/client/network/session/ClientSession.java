@@ -35,21 +35,21 @@ public class ClientSession extends Session {
 
     @Override
     public void addPacketToSend(PacketPriority priority, Packet p) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); // TODO
     }
 
     @Override
     public void addPacketToReceive(PacketPriority priority, Packet p) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); // TODO
     }
 
     @Override
     public void disconnect() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); // TODO
     }
 
     @Override
     public void dispose() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); // TODO
     }
 }

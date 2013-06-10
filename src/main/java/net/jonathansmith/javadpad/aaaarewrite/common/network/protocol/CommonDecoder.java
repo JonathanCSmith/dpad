@@ -59,6 +59,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
             case TYPE:
                 this.type = buffer.readInt();
                 this.packet = Packet.getPacket(this.type).newInstance();
+                
                 return this.continueDecoding(DecodingState.PRIORITY);
                 
             case PRIORITY:
