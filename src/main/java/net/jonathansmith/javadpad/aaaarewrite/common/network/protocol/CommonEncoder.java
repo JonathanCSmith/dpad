@@ -22,6 +22,8 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
+import org.bouncycastle.crypto.modes.CFBBlockCipher;
+
 import net.jonathansmith.javadpad.aaaarewrite.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
@@ -31,6 +33,8 @@ import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriori
  * @author jonathansmith
  */
 public class CommonEncoder extends OneToOneEncoder {
+    
+    private CFBBlockCipher encrypter = null;
 
     @Override
     protected Object encode(ChannelHandlerContext chc, Channel chnl, Object o) throws Exception {
@@ -52,12 +56,16 @@ public class CommonEncoder extends OneToOneEncoder {
             
             for (int i = 0; i < numberOfPayloads; i++) {
                 buff.writeInt(packetPayloadSizes[i]);
-                buff = p.writePayload(i, buff);
+                buff = p.writePayload(i, buff, encrypter);
             }
             
             return ChannelBuffers.wrappedBuffer(buff);
         }
         
         return o;
+    }
+    
+    public void setEncryption(CFBBlockCipher cipher) {
+        this.encrypter = cipher;
     }
 }
