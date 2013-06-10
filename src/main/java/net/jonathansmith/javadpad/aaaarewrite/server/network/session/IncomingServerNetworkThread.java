@@ -24,6 +24,7 @@ import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.session.NetworkThread;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session.State;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 
 /**
@@ -54,6 +55,10 @@ class IncomingServerNetworkThread extends NetworkThread {
                 Packet packet;
                 
                 for (PacketPriority priority : PacketPriority.values()) {
+                    if (this.session.getState() != State.RUNNING && priority == PacketPriority.HIGH) {
+                        break;
+                    }
+                    
                     pending = this.packets.get(priority);
                     if (pending.isEmpty()) {
                         continue;

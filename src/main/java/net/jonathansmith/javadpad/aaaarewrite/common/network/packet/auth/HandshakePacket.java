@@ -18,13 +18,19 @@ package net.jonathansmith.javadpad.aaaarewrite.common.network.packet.auth;
 
 import java.util.Arrays;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-
 import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session.State;
+import net.jonathansmith.javadpad.aaaarewrite.common.security.SecurityHandler;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
+import net.jonathansmith.javadpad.aaaarewrite.server.network.session.ServerSession;
+
+import java.security.SecureRandom;
 
 /**
  *
@@ -33,6 +39,8 @@ import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 public class HandshakePacket extends Packet {
     
     public String version = "";
+    
+    private static final SecureRandom random = new SecureRandom();
     
     public HandshakePacket(Engine engine, Session session) {
         super(engine, session);
@@ -51,18 +59,20 @@ public class HandshakePacket extends Packet {
     @Override
     public ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header) {
         if (payloadNumber != 0) {
-            throw new RuntimeException("Encoder failure, invalid payload number");
+            System.out.println("Encode failure, payloads are being read wrong");
+            return header;
         }
         
         else {
-            return ChannelBuffers.wrappedBuffer(this.engine.getVersion().getBytes());
+            header.writeBytes(this.engine.getVersion().getBytes());
+            return header;
         }
     }
 
     @Override
     public void parsePayload(int payloadNumber, byte[] bytes) {
         if (payloadNumber != 0) {
-            throw new RuntimeException("Decoder failure, invalid payload number");
+            System.out.println("Decode failure, payloads are being read wrong");
         }
         
         else {
@@ -77,12 +87,29 @@ public class HandshakePacket extends Packet {
 
     @Override
     public void handleServerSide() {
+        if (this.session.getState() != State.EXCHANGING_HANDSHAKE) {
+            System.out.println("Invalid handshake packet received");
+        }
+        
         if (!this.engine.getVersion().contentEquals(this.version)) {
             this.session.disconnect(); // TODO: Reason?
         }
         
         // TODO Encryption
-        Packet p = new EncryptionKeyRequestPacket(this.engine, this.session);
+        byte[] randomByte = new byte[4];
+        random.nextBytes(randomByte);
+        ((ServerSession) this.session).setVerifyToken(randomByte);
+        
+        AsymmetricCipherKeyPair keys = SecurityHandler.getInstance().getKeyPair();
+        byte[] secret = SecurityHandler.getInstance().encodeKey(keys.getPublic());
+        
+        Packet p = new EncryptionKeyRequestPacket(this.engine, this.session, secret, randomByte);
         this.session.addPacketToSend(PacketPriority.CRITICAL, p);
+    }
+    
+    static {
+        synchronized(random) {
+            random.nextBytes(new byte[1]);
+        }
     }
 }

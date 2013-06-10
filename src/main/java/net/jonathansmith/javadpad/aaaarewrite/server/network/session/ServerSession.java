@@ -33,10 +33,29 @@ public class ServerSession extends Session {
     private final NetworkThread incoming;
     private final NetworkThread outgoing;
     
+    private byte[] token;
+    private String hash;
+    
     public ServerSession(Engine eng, Channel channel) {
         super(eng, channel);
         this.incoming = new IncomingServerNetworkThread(eng, this);
         this.outgoing = new OutgoingServerNetworkThread(eng, this);
+    }
+    
+    public byte[] getVerifyToken() {
+        return this.token;
+    }
+    
+    public void setVerifyToken(byte[] token) {
+        this.token = token;
+    }
+
+    public void setSha1Hash(String sha1Hash) {
+        this.hash = sha1Hash;
+    }
+    
+    public String getSha1Hash() {
+        return this.hash;
     }
 
     @Override
@@ -52,11 +71,11 @@ public class ServerSession extends Session {
     @Override
     public void disconnect() {
         // TODO: Save session information
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); // TODO
     }
 
     @Override
     public void dispose() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); // TODO
     }
 }

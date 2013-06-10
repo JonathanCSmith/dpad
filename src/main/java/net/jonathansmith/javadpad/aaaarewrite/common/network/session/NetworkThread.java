@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 
+import net.jonathansmith.javadpad.aaaarewrite.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
@@ -56,8 +57,8 @@ public abstract class NetworkThread {
         this.packets.put(priority, packet);
     }
     
-    public void sendPacket(Packet packet) {
-        this.session.sendPacket(packet);
+    public void sendPacket(PacketMessage pm) {
+        this.session.sendPacketMessage(pm);
     }
     
     public abstract void run();

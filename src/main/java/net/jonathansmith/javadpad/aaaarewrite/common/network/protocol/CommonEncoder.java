@@ -22,7 +22,9 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
+import net.jonathansmith.javadpad.aaaarewrite.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
 
 /**
  *
@@ -32,8 +34,9 @@ public class CommonEncoder extends OneToOneEncoder {
 
     @Override
     protected Object encode(ChannelHandlerContext chc, Channel chnl, Object o) throws Exception {
-        if (o instanceof Packet) {
-            Packet p = (Packet) o;
+        if (o instanceof PacketMessage) {
+            Packet p = ((PacketMessage) o).getPacket();
+            PacketPriority priority = ((PacketMessage) o).getPriority();
             
             int[] packetPayloadSizes = p.getPayloadSizes();
             int size = 0;
@@ -42,8 +45,9 @@ public class CommonEncoder extends OneToOneEncoder {
                 size += 8 + i;
             }
             
-            ChannelBuffer buff = ChannelBuffers.buffer(8 + size);
+            ChannelBuffer buff = ChannelBuffers.buffer(8 + 1 + 8 + size);
             buff.writeInt(p.getID());
+            buff.writeByte(priority.ordinal());
             buff.writeInt(numberOfPayloads);
             
             for (int i = 0; i < numberOfPayloads; i++) {
