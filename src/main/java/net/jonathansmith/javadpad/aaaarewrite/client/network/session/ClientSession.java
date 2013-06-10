@@ -14,43 +14,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.aaaarewrite.common.network.packet;
+package net.jonathansmith.javadpad.aaaarewrite.client.network.session;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.Channel;
+
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
+import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 
 /**
  *
  * @author Jon
  */
-public class HandshakeRequestPacket extends Packet {
+public class ClientSession extends Session {
+    
+    public ClientSession(Engine eng, Channel c) {
+        super(eng, c);
+    }
 
     @Override
-    public int getNumberOfPayloads() {
+    public void addPacketToSend(PacketPriority priority, Packet p) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public int[] getPayloadSizes() {
+    public void addPacketToReceive(PacketPriority priority, Packet p) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header) {
+    public void disconnect() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void handleClientSide() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public void handleServerSide() {
+    public void dispose() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }

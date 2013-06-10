@@ -31,6 +31,7 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import net.jonathansmith.javadpad.aaaarewrite.DPADNew;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.CommonPipelineFactory;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.NamedThreadFactory;
 
@@ -42,12 +43,17 @@ public class Client extends Engine {
     
     private ClientBootstrap bootstrap;
     private Channel channel;
+    private Session session;
     
     public Client(DPADNew main, String host, int port) {
         super(main, host, port);
         this.bootstrap = new ClientBootstrap();
         
         // TODO: FileSystem
+    }
+    
+    public void setSession(Session sess) {
+        this.session = sess;
     }
     
     @Override

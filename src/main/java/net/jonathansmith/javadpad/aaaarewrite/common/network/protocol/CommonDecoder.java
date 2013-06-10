@@ -17,8 +17,11 @@
 package net.jonathansmith.javadpad.aaaarewrite.common.network.protocol;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.ChannelHandlerContext;
 
+import net.jonathansmith.javadpad.aaaarewrite.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
 
 /**
  *
@@ -27,6 +30,7 @@ import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingState> {
     
     private int type;
+    private PacketPriority priority;
     private int paramCount;
     private int[] paramSizes;
     private int frameRead = 0;
@@ -50,11 +54,15 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
     }
 
     @Override
-    protected DecodeResult decode(ChannelBuffer buffer, DecodingState currentState) throws Exception {
+    protected DecodeResult decode(ChannelHandlerContext ctx, ChannelBuffer buffer, DecodingState currentState) throws Exception {
         switch (currentState) {
             case TYPE:
                 this.type = buffer.readInt();
                 this.packet = Packet.getPacket(this.type).newInstance();
+                return this.continueDecoding(DecodingState.PRIORITY);
+                
+            case PRIORITY:
+                this.priority = PacketPriority.getPriority(buffer.readByte());
                 return this.continueDecoding(DecodingState.PARAM_COUNT);
  
             case PARAM_COUNT:
@@ -67,7 +75,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 }
                 
                 else {
-                    return this.finishedDecoding(this.packet);
+                    return this.finishedDecoding(new PacketMessage(this.packet, this.priority));
                 }
  
             case PARAM_SIZE:
@@ -80,7 +88,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 this.packet.parsePayload(this.frameRead, this.currentPayload);
                 
                 if (this.frameRead >= this.paramCount) {
-                    return this.finishedDecoding(this.packet);
+                    return this.finishedDecoding(new PacketMessage(this.packet, this.priority));
                 }
                 
                 else {
@@ -96,6 +104,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
  
     public static enum DecodingState {
         TYPE,
+        PRIORITY,
         PARAM_COUNT,
         PARAM_SIZE,
         PARAM_VALUE

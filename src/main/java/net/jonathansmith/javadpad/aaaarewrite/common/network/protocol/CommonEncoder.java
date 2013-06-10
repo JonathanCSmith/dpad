@@ -42,7 +42,7 @@ public class CommonEncoder extends OneToOneEncoder {
                 size += 8 + i;
             }
             
-            ChannelBuffer buff = ChannelBuffers.buffer(8 + 8 + size);
+            ChannelBuffer buff = ChannelBuffers.buffer(8 + size);
             buff.writeInt(p.getID());
             buff.writeInt(numberOfPayloads);
             

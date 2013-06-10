@@ -22,12 +22,12 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
-import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.HandshakeReplyPacket;
-import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.HandshakeRequestPacket;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 import net.jonathansmith.javadpad.aaaarewrite.server.Server;
+import net.jonathansmith.javadpad.aaaarewrite.server.network.session.ServerSession;
 
 /**
  *
@@ -54,7 +54,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
         
         if (!this.upstream) {
             ((Server) this.engine).getChannelGroup().add(c);
-            this.session = ((Server) this.engine).getSessionRegistry().addAndGetNewSession(c);
+            this.setSession(((Server) this.engine).getSessionRegistry().addAndGetNewSession(c));
             System.out.println("Client connected with session id: " + this.session.getSessionID());
         }
         
@@ -69,7 +69,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
         
         if (!this.upstream) {
             ((Server) this.engine).getChannelGroup().remove(c);
-            ((Server) this.engine).getSessionRegistry().remove(this.session);
+            ((Server) this.engine).getSessionRegistry().remove((ServerSession) this.session);
             System.out.println("Client disconnected with session id: " + this.session.getSessionID());
         }
         
@@ -82,20 +82,25 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
     
     @Override
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-        Packet p = (Packet) e.getMessage();
+        PacketMessage p = (PacketMessage) e.getMessage();
+        Packet packet = p.getPacket();
         
         // Packet exceptions...
-        
-        if (this.session == null || !(p instanceof HandshakeRequestPacket) || !(p instanceof HandshakeReplyPacket)) {
+        if (this.session == null) {
             return;
         }
         
-        this.session.addPacket(p);
-        
+        this.session.addPacketToReceive(p.getPriority(), packet);
         super.messageReceived(ctx, e);
     }
     
     public void setSession(Session session) {
-        this.session = session;
+        if (this.session == null) {
+            this.session = session;
+        }
+        
+        else {
+            throw new RuntimeException("Cannot have multiple sessions");
+        }
     }
 }

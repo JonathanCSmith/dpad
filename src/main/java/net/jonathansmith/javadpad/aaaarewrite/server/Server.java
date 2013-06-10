@@ -50,7 +50,7 @@ public class Server extends Engine {
     public Server(DPADNew main, String host, int port) {
         super(main, host, port);
         this.channelGroup = new DefaultChannelGroup();
-        this.sessionRegistry = new SessionRegistry();
+        this.sessionRegistry = new SessionRegistry(this);
         this.bootstrap = new ServerBootstrap();
         
         // TODO: FileSystem

@@ -16,23 +16,44 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.common.network.session;
 
+import java.util.Random;
+
+import org.jboss.netty.channel.Channel;
+
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 
 /**
  *
  * @author Jon
  */
 public abstract class Session {
+    
+    public final Channel channel;
+    public final Engine engine;
+    
+    private final Random random = new Random();
+    private final String id = Long.toString(random.nextLong(), 16).trim();
+    
+    public Session(Engine eng, Channel channel) {
+        this.engine = eng;
+        this.channel = channel;
+    }
 
     public String getSessionID() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return this.id;
     }
 
-    public void addPacket(Packet p) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public abstract void addPacketToSend(PacketPriority priority, Packet p);
+    
+    public abstract void addPacketToReceive(PacketPriority priority, Packet p);
+    
+    public void sendPacket(Packet p) {
+        this.channel.write(p);
     }
 
-    public void dispose() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+    public abstract void disconnect();
+    
+    public abstract void dispose();
 }

@@ -14,15 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.aaaarewrite.common.network.packet;
+package net.jonathansmith.javadpad.aaaarewrite.common.network.packet.auth;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
+import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 
 /**
  *
  * @author Jon
  */
-public class HandshakeReplyPacket extends Packet {
+class EncryptionKeyRequestPacket extends Packet {
+
+    public EncryptionKeyRequestPacket(Engine engine, Session session) {
+    }
 
     @Override
     public int getNumberOfPayloads() {

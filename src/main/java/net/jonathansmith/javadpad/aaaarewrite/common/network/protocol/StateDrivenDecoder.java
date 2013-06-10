@@ -21,6 +21,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 
+import net.jonathansmith.javadpad.aaaarewrite.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 
 /**
@@ -45,7 +46,7 @@ public abstract class StateDrivenDecoder<t extends Enum<t>> extends ReplayingDec
     @Override
     protected Object decode(ChannelHandlerContext chc, Channel chnl, ChannelBuffer cb, Enum t) throws Exception {
         for (;;) {
-            DecodeResult<t> outcome = this.decode(cb, this.getState());
+            DecodeResult<t> outcome = this.decode(chc, cb, this.getState());
             if (outcome == null) {
                 throw new IllegalArgumentException("Decode() returned null");
             }
@@ -74,7 +75,7 @@ public abstract class StateDrivenDecoder<t extends Enum<t>> extends ReplayingDec
         return new ContinueDecodeResult<t>(nextState);
     }
  
-    protected DecodeResult<t> finishedDecoding(Packet p) {
+    protected DecodeResult<t> finishedDecoding(PacketMessage p) {
         return new FinishedDecodeResult<t> (p);
     }
  
@@ -83,7 +84,7 @@ public abstract class StateDrivenDecoder<t extends Enum<t>> extends ReplayingDec
         this.setState(this.initialState);
     }
  
-    protected abstract DecodeResult<t> decode(ChannelBuffer buffer, t currentState) throws Exception;
+    protected abstract DecodeResult<t> decode(ChannelHandlerContext ctx, ChannelBuffer buffer, t currentState) throws Exception;
  
     protected abstract void cleanup();
     
@@ -116,10 +117,10 @@ public abstract class StateDrivenDecoder<t extends Enum<t>> extends ReplayingDec
     
     public class FinishedDecodeResult<T extends Enum<T>> implements DecodeResult<T> {
         
-        private final Packet packet;
+        private final PacketMessage packetMessage;
         
-        public FinishedDecodeResult(Packet p) {
-            this.packet = p;
+        public FinishedDecodeResult(PacketMessage p) {
+            this.packetMessage = p;
         }
         
         @Override
@@ -127,8 +128,8 @@ public abstract class StateDrivenDecoder<t extends Enum<t>> extends ReplayingDec
             return Type.FINISHED;
         }
         
-        public Packet getPacket() {
-            return this.packet;
+        public PacketMessage getPacketMessage() {
+            return this.packetMessage;
         }
     }
 }
