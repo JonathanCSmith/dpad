@@ -104,7 +104,12 @@ public class StartupGUI extends javax.swing.JFrame implements Runnable {
 
         jLabel8.setText("Database Connection:");
 
-        databaseHostURL.setText("Enter database address!");
+        databaseHostURL.setText("Enter database port!");
+        databaseHostURL.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                databaseHostURLActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -164,6 +169,10 @@ public class StartupGUI extends javax.swing.JFrame implements Runnable {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void databaseHostURLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_databaseHostURLActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_databaseHostURLActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton connectRuntime;

@@ -27,11 +27,14 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.channel.local.DefaultLocalServerChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
+import net.jonathansmith.javadpad.aaaarewrite.DPADNew;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.CommonPipelineFactory;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.NamedThreadFactory;
+import net.jonathansmith.javadpad.aaaarewrite.server.network.session.SessionRegistry;
 
 /**
  *
@@ -39,17 +42,16 @@ import net.jonathansmith.javadpad.aaaarewrite.common.thread.NamedThreadFactory;
  */
 public class Server extends Engine {
     
-    private boolean isAlive = false;
-    private boolean errored = false;
+    private final ChannelGroup channelGroup;
+    private final SessionRegistry sessionRegistry;
     
     private ServerBootstrap bootstrap;
-    private ChannelGroup channelGroup;
     
-    public Server(String host, int port) {
-        super(host, port);
-        
-        this.bootstrap = new ServerBootstrap();
+    public Server(DPADNew main, String host, int port) {
+        super(main, host, port);
         this.channelGroup = new DefaultChannelGroup();
+        this.sessionRegistry = new SessionRegistry();
+        this.bootstrap = new ServerBootstrap();
         
         // TODO: FileSystem
     }
@@ -63,9 +65,17 @@ public class Server extends Engine {
         // TODO: Connection pool
         // TODO: Default properties
         
-        ExecutorService boss = Executors.newCachedThreadPool(new NamedThreadFactory("DPAD - Server - Boss", true));
-        ExecutorService worker = Executors.newCachedThreadPool(new NamedThreadFactory("DPAD - Server - Worker", true));
-        ChannelFactory factory = new NioServerSocketChannelFactory(boss, worker);
+        ChannelFactory factory;
+        if (!this.hostName.contentEquals("local")) {
+            ExecutorService boss = Executors.newCachedThreadPool(new NamedThreadFactory("DPAD - Server - Boss", true));
+            ExecutorService worker = Executors.newCachedThreadPool(new NamedThreadFactory("DPAD - Server - Worker", true));
+            factory = new NioServerSocketChannelFactory(boss, worker);
+        }
+        
+        else {
+            factory = new DefaultLocalServerChannelFactory();
+        }
+        
         this.bootstrap.setFactory(factory);
         this.bootstrap.setOption("child.tcpNoDelay", true);
         this.bootstrap.setOption("child.keepAlive", true);
@@ -73,34 +83,47 @@ public class Server extends Engine {
         ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, false);
         this.bootstrap.setPipelineFactory(pipelineFactory);
         
-        // TODO: 1) Create session registry
-        
-        // TODO: Check where this goes! - Seems to be fine I think
-        Channel acceptor = this.bootstrap.bind(new InetSocketAddress(this.hostName, this.portNumber));
-        
-        if (acceptor.isBound()) {
-            this.channelGroup.add(acceptor);
-            this.isAlive = true;
-        }
-        
-        else {
+        Channel acceptor = this.bootstrap.bind(new InetSocketAddress(this.portNumber));
+        if (!acceptor.isBound()) {
             this.bootstrap.releaseExternalResources();
-            // TODO: Fail notice
+            System.out.println("Server failed to bind port: " + this.portNumber + " is there already a server running?");
+            this.isAlive = false;
+            this.errored = true;
             return;
         }
+        
+        System.out.println("Server bound to port: " + this.portNumber);
+        this.channelGroup.add(acceptor);
+        this.isAlive = true;
     }
 
     @Override
     public void run() {
-        while (this.isAlive) {
+        // TODO: Startup
+        
+        while (this.isAlive && !this.errored) {
             try {
-                // TODO: Pulse session registry
+                // TODO: Pulse threads incl session registry
                 Thread.sleep(100);
-                
-            } catch (InterruptedException ex) {
+            } 
+            
+            catch (InterruptedException ex) {
                 // TODO: Fail notice
             }
         }
+        
+        if (this.errored) {
+            this.main.setErrored("Error in server main thread", null);
+            // TODO: Handle existing ex
+        }
+        
+        this.stop();
+    }
+    
+    public void stop() {
+        this.channelGroup.close().awaitUninterruptibly();
+        this.bootstrap.releaseExternalResources();
+        System.out.println("Server stopped!");
     }
 
     @Override
@@ -115,11 +138,22 @@ public class Server extends Engine {
 
     @Override
     public void saveAndShutdown() {
-        
+        // TODO: handle saving
+        this.isAlive = false;
     }
 
     @Override
     public void forceShutdown() {
-        
+        // TODO: handle force shutdown, work out what data can be trusted
+        this.isAlive = false;
+        this.errored = true;
+    }
+    
+    public ChannelGroup getChannelGroup() {
+        return this.channelGroup;
+    }
+    
+    public SessionRegistry getSessionRegistry() {
+        return this.sessionRegistry;
     }
 }

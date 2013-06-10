@@ -162,8 +162,11 @@
     </Component>
     <Component class="javax.swing.JTextField" name="databaseHostURL">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Enter database address!"/>
+        <Property name="text" type="java.lang.String" value="Enter database port!"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="databaseHostURLActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>

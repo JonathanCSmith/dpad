@@ -35,6 +35,11 @@ import com.beust.jcommander.Parameter;
  */
 public class DPADNew extends Thread {
     
+    // TODO: Board work
+    // TODO: Test
+    // TODO: Logging
+    // TODO: Reintroduce old work
+    
     public enum Platform {
         CLIENT,
         SERVER,
@@ -53,6 +58,8 @@ public class DPADNew extends Thread {
     private List<Engine> runningEngines = new LinkedList<Engine> ();
     private boolean running;
     private boolean hasError;
+    private String cause;
+    private Exception error;
     
     public DPADNew() {}
     
@@ -69,13 +76,19 @@ public class DPADNew extends Thread {
         this.port = port;
     }
     
+    public void setErrored(String cause, Exception ex) {
+        this.hasError = true;
+        this.cause = cause;
+        this.error = ex;
+    }
+    
     public void init() {
         if (this.platform == Platform.SERVER || this.platform == Platform.LOCAL) {
-            this.runningEngines.add(new Server(this.host, this.port));
+            this.runningEngines.add(new Server(this, this.host, this.port));
         }
         
         if (this.platform == Platform.CLIENT || this.platform == Platform.LOCAL) {
-            this.runningEngines.add(new Client(this.host, this.port));
+            this.runningEngines.add(new Client(this, this.host, this.port));
         }
     }
     
@@ -103,7 +116,13 @@ public class DPADNew extends Thread {
         if (this.hasError) {
             System.out.println("An error has forced all threads to shutdown");
             System.out.println("Data integrity cannot currently be guaranteed");
-            System.out.println("Attempting to salvage");
+            
+            System.out.println("=============================================");
+            System.out.println(this.cause);
+            
+            if (this.error != null) {
+                this.error.printStackTrace();
+            }
         }
         
         for (Engine engine : this.runningEngines) {

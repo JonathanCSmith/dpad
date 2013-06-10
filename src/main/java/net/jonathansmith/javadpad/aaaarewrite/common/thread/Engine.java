@@ -16,16 +16,24 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.common.thread;
 
+import net.jonathansmith.javadpad.aaaarewrite.DPADNew;
+
 /**
  *
  * @author jonathansmith
  */
 public abstract class Engine implements Runnable {
     
+    public final DPADNew main;
+    
+    public boolean isAlive = false;
+    public boolean errored = false;
+    
     public String hostName;
     public int portNumber;
     
-    public Engine(String hostName, int portNumber) {
+    public Engine(DPADNew main, String hostName, int portNumber) {
+        this.main = main;
         this.hostName = hostName;
         this.portNumber = portNumber;
     }
