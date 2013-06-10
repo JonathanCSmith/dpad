@@ -30,6 +30,7 @@ import org.bouncycastle.crypto.util.PublicKeyFactory;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.protocol.CommonEncoder;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
 import net.jonathansmith.javadpad.aaaarewrite.common.security.SecurityHandler;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
@@ -60,7 +61,11 @@ class EncryptionKeyRequestPacket extends Packet {
     }
 
     @Override
-    public ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header) {
+    public ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header, CFBBlockCipher encrypter) {
+        if (encrypter != null) {
+            System.out.println("Encoder has an encrypter but should have none!");
+        }
+        
         switch (payloadNumber) {
             case 0:
                 return ChannelBuffers.wrappedBuffer(this.keys);
@@ -75,7 +80,11 @@ class EncryptionKeyRequestPacket extends Packet {
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes) {
+    public void parsePayload(int payloadNumber, byte[] bytes, CFBBlockCipher decrypter) {
+        if (decrypter != null) {
+            System.out.println("Decoder has a decrypter but should have none!");
+        }
+        
         switch (payloadNumber) {
             case 0:
                 this.keys = bytes;
@@ -108,7 +117,8 @@ class EncryptionKeyRequestPacket extends Packet {
             CFBBlockCipher toServerCipher = SecurityHandler.getInstance().getSymmetricCipher();
             toServerCipher.init(SecurityHandler.ENCRYPT_MODE, symmetricKey);
             
-            // TODO: Save key and implement packet encryption flash events (CLIENT SIDE)
+            CommonEncoder encoder = this.session.channel.getPipeline().get(CommonEncoder.class);
+            encoder.setEncryption(toServerCipher);
             
             byte[] outputSecret = new byte[16];
             toServerCipher.encryptBlock(encodedSecret, 0, outputSecret, 0);

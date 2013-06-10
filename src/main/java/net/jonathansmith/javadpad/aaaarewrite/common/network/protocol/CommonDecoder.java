@@ -19,6 +19,8 @@ package net.jonathansmith.javadpad.aaaarewrite.common.network.protocol;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 
+import org.bouncycastle.crypto.modes.CFBBlockCipher;
+
 import net.jonathansmith.javadpad.aaaarewrite.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
@@ -36,8 +38,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
     private int frameRead = 0;
     private byte[] currentPayload;
     private Packet packet;
- 
-    // constructors ----------------------------------------------------------
+    private CFBBlockCipher decrypter = null;
  
     public CommonDecoder() {
         super(DecodingState.TYPE);
@@ -86,7 +87,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
             case PARAM_VALUE:
                 this.currentPayload = new byte[this.paramSizes[this.frameRead]];
                 buffer.readBytes(this.currentPayload);
-                this.packet.parsePayload(this.frameRead, this.currentPayload);
+                this.packet.parsePayload(this.frameRead, this.currentPayload, this.decrypter);
                 
                 if (this.frameRead >= this.paramCount) {
                     return this.finishedDecoding(new PacketMessage(this.packet, this.priority));
@@ -99,6 +100,10 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
             default:
                 throw new IllegalStateException("Unknown state: " + currentState);
         }
+    }
+    
+    public void setDecryption(CFBBlockCipher decryption) {
+        this.decrypter = decryption;
     }
  
     // public classes --------------------------------------------------------

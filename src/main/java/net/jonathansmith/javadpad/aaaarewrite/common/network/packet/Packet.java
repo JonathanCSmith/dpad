@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+import org.bouncycastle.crypto.modes.CFBBlockCipher;
+
 import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
@@ -67,9 +69,9 @@ public abstract class Packet {
     
     public abstract int[] getPayloadSizes();
     
-    public abstract ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header);
+    public abstract ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header, CFBBlockCipher encrypter);
     
-    public abstract void parsePayload(int payloadNumber, byte[] bytes);
+    public abstract void parsePayload(int payloadNumber, byte[] bytes, CFBBlockCipher decrypter);
     
     public abstract void handleClientSide();
     
