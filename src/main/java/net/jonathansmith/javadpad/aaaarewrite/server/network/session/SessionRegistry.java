@@ -16,9 +16,13 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.server.network.session;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
+import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 
 /**
  *
@@ -26,11 +30,23 @@ import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
  */
 public class SessionRegistry {
 
+    public final ConcurrentMap<ServerSession, Boolean> sessions = new ConcurrentHashMap<ServerSession, Boolean> ();
+    public final Engine engine;
+    
+    public SessionRegistry(Engine eng) {
+        this.engine = eng;
+    }
+    
     public Session addAndGetNewSession(Channel c) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        int id = this.sessions.size();
+        ServerSession session = new ServerSession(this.engine, c);
+        this.sessions.put(session, true);
+        return session;
     }
 
-    public void remove(Session session) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void remove(ServerSession session) {
+        if (this.sessions.containsKey(session)) {
+            this.sessions.remove(session);
+        }
     }
 }

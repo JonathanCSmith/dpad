@@ -20,6 +20,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.jonathansmith.javadpad.aaaarewrite.client.Client;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.auth.HandshakePacket;
+import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import net.jonathansmith.javadpad.aaaarewrite.common.startup.StartupGUI;
 import net.jonathansmith.javadpad.aaaarewrite.common.startup.StartupViewController;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
@@ -83,6 +85,8 @@ public class DPADNew extends Thread {
     }
     
     public void init() {
+        this.addPackets();
+        
         if (this.platform == Platform.SERVER || this.platform == Platform.LOCAL) {
             this.runningEngines.add(new Server(this, this.host, this.port));
         }
@@ -90,6 +94,10 @@ public class DPADNew extends Thread {
         if (this.platform == Platform.CLIENT || this.platform == Platform.LOCAL) {
             this.runningEngines.add(new Client(this, this.host, this.port));
         }
+    }
+    
+    private void addPackets() {
+        Packet.addPacket(HandshakePacket.class);
     }
     
     @Override

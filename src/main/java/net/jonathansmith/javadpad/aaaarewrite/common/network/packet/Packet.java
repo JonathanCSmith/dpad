@@ -18,11 +18,12 @@ package net.jonathansmith.javadpad.aaaarewrite.common.network.packet;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import net.jonathansmith.javadpad.util.logging.DPADLogger;
 import org.jboss.netty.buffer.ChannelBuffer;
+
+import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
+import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
+import net.jonathansmith.javadpad.util.logging.DPADLogger;
 
 /**
  *
@@ -32,7 +33,27 @@ public abstract class Packet {
     
     public static final Map<Integer, Class<? extends Packet>> packetMap = new HashMap<Integer, Class<? extends Packet>> ();
     
+    public Engine engine;
+    public Session session;
+    
     private int id;
+    
+    public Packet() {
+        this(null, null);
+    }
+    
+    public Packet(Engine engine, Session session) {
+        this.engine = engine;
+        this.session = session;
+    }
+    
+    public void setEngine(Engine engine) {
+        this.engine = engine;
+    }
+    
+    public void setSession(Session session) {
+        this.session = session;
+    }
     
     public int getID() {
         return this.id;
@@ -64,6 +85,7 @@ public abstract class Packet {
             packet.newInstance().setID(packetID);
             
         } catch (InstantiationException ex) {
+            // TODO: Fix these
             DPADLogger.severe("Failed to assign packet id");
             DPADLogger.logStackTrace(ex);
         } catch (IllegalAccessException ex) {

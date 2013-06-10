@@ -32,10 +32,16 @@ public abstract class Engine implements Runnable {
     public String hostName;
     public int portNumber;
     
+    private final String version = "0.0.1";
+    
     public Engine(DPADNew main, String hostName, int portNumber) {
         this.main = main;
         this.hostName = hostName;
         this.portNumber = portNumber;
+    }
+    
+    public String getVersion() {
+        return this.version;
     }
     
     public abstract void init();
