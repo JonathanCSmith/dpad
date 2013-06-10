@@ -19,10 +19,6 @@ package net.jonathansmith.javadpad.aaaarewrite.common.network.packet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-
-import org.bouncycastle.crypto.modes.CFBBlockCipher;
-
 import net.jonathansmith.javadpad.aaaarewrite.common.network.session.Session;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 import net.jonathansmith.javadpad.util.logging.DPADLogger;
@@ -38,6 +34,7 @@ public abstract class Packet {
     public Engine engine;
     public Session session;
     
+    private boolean forceUnencrypted = false;
     private int id;
     
     public Packet() {
@@ -57,6 +54,14 @@ public abstract class Packet {
         this.session = session;
     }
     
+    public boolean getIsUnencrypted() {
+        return this.forceUnencrypted;
+    }
+    
+    public void forceUnencrypted() {
+        this.forceUnencrypted = true;
+    }
+    
     public int getID() {
         return this.id;
     }
@@ -69,9 +74,9 @@ public abstract class Packet {
     
     public abstract int[] getPayloadSizes();
     
-    public abstract ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header, CFBBlockCipher encrypter);
+    public abstract byte[] writePayload(int payloadNumber);
     
-    public abstract void parsePayload(int payloadNumber, byte[] bytes, CFBBlockCipher decrypter);
+    public abstract void parsePayload(int payloadNumber, byte[] bytes);
     
     public abstract void handleClientSide();
     

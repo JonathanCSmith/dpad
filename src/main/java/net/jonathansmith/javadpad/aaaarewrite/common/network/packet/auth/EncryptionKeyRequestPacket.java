@@ -16,8 +16,6 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.common.network.packet.auth;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 
 import org.bouncycastle.crypto.AsymmetricBlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
@@ -48,6 +46,7 @@ class EncryptionKeyRequestPacket extends Packet {
         super(engine, session);
         this.keys = keys;
         this.token = token;
+        this.forceUnencrypted(); // Asymmetric only for this packet as we havent established everything
     }
 
     @Override
@@ -61,30 +60,22 @@ class EncryptionKeyRequestPacket extends Packet {
     }
 
     @Override
-    public ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header, CFBBlockCipher encrypter) {
-        if (encrypter != null) {
-            System.out.println("Encoder has an encrypter but should have none!");
-        }
-        
+    public byte[] writePayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-                return ChannelBuffers.wrappedBuffer(this.keys);
+                return this.keys;
                 
             case 1:
-                return ChannelBuffers.wrappedBuffer(this.token);
+                return this.token;
                 
             default:
                 System.out.println("Encode failure, payloads are being read wrong");
-                return header;
+                return null;
         }
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes, CFBBlockCipher decrypter) {
-        if (decrypter != null) {
-            System.out.println("Decoder has a decrypter but should have none!");
-        }
-        
+    public void parsePayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
                 this.keys = bytes;
@@ -120,13 +111,7 @@ class EncryptionKeyRequestPacket extends Packet {
             CommonEncoder encoder = this.session.channel.getPipeline().get(CommonEncoder.class);
             encoder.setEncryption(toServerCipher);
             
-            byte[] outputSecret = new byte[16];
-            toServerCipher.encryptBlock(encodedSecret, 0, outputSecret, 0);
-            
-            byte[] outputToken = new byte[4];
-            toServerCipher.encryptBlock(encodedToken, 0, outputToken, 0);
-            
-            Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, outputSecret, outputToken);
+            Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, encodedSecret, encodedToken);
             this.session.sendPacketMessage(new PacketMessage(p, PacketPriority.CRITICAL));
             
         } catch (Exception ex) {

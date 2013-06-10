@@ -56,7 +56,17 @@ public class CommonEncoder extends OneToOneEncoder {
             
             for (int i = 0; i < numberOfPayloads; i++) {
                 buff.writeInt(packetPayloadSizes[i]);
-                buff = p.writePayload(i, buff, encrypter);
+                byte[] currentPayload = p.writePayload(i);
+                
+                if (this.encrypter != null && !p.getIsUnencrypted()) {
+                    byte[] outputPayload = new byte[packetPayloadSizes[i]];
+                    this.encrypter.encryptBlock(currentPayload, 0, outputPayload, 0);
+                    buff.writeBytes(outputPayload);
+                }
+                
+                else {
+                    buff.writeBytes(currentPayload);
+                }
             }
             
             return ChannelBuffers.wrappedBuffer(buff);
