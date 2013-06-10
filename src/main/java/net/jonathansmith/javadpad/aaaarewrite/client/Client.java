@@ -16,15 +16,20 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.client;
 
+import java.net.InetSocketAddress;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
+import net.jonathansmith.javadpad.aaaarewrite.DPADNew;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.CommonPipelineFactory;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.Engine;
 import net.jonathansmith.javadpad.aaaarewrite.common.thread.NamedThreadFactory;
@@ -35,32 +40,84 @@ import net.jonathansmith.javadpad.aaaarewrite.common.thread.NamedThreadFactory;
  */
 public class Client extends Engine {
     
-    private boolean isAlive = false;
-    private boolean errored = false;
-    
     private ClientBootstrap bootstrap;
     private Channel channel;
     
-    public Client(String host, int port) {
-        super(host, port);
+    public Client(DPADNew main, String host, int port) {
+        super(main, host, port);
+        this.bootstrap = new ClientBootstrap();
+        
+        // TODO: FileSystem
     }
     
     @Override
     public void init() {
-        this.bootstrap = new ClientBootstrap();
-        // Create gui
+        // TODO: Initialise FileSystem
+        // TODO: Config?
+        // TODO: Console!
+        // TODO: Gui, build + display (partial only?)
+        // TODO: Connection pool
+        // TODO: Default properties
+        
+        ChannelFactory factory;
+        if (!this.hostName.contentEquals("local")) {
+            ExecutorService boss = Executors.newCachedThreadPool(new NamedThreadFactory("DPAD - Client - Boss", true));
+            ExecutorService worker = Executors.newCachedThreadPool(new NamedThreadFactory("DPAD - Client - Worker", true));
+            factory = new NioClientSocketChannelFactory(boss, worker);
+        }
+        
+        else {
+            factory = new DefaultLocalClientChannelFactory();
+        }
+        
+        this.bootstrap.setFactory(factory);
+        ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
+        this.bootstrap.setPipelineFactory(pipelineFactory);
+        
+        ChannelFuture future = this.bootstrap.connect(new InetSocketAddress(this.hostName, this.portNumber));
+        if (!future.awaitUninterruptibly().isSuccess()) {
+            System.out.println("Client failed to connect to server: " + this.hostName + ": " + this.portNumber);
+            this.bootstrap.releaseExternalResources();
+            this.isAlive = false;
+            this.errored = true;
+            return;
+        }
+        
+        System.out.println("Client connected to server: " + this.hostName + ": " + this.portNumber);
+        this.channel = future.getChannel();
+        this.isAlive = true;
     }
 
     @Override
     public void run() {
-        // Display gui
-        ExecutorService boss = Executors.newCachedThreadPool(new NamedThreadFactory("DPAD - Client - Boss", true));
-        ExecutorService worker = Executors.newCachedThreadPool(new NamedThreadFactory("DPAD - Client - Worker", true));
-        ChannelFactory factory = new NioClientSocketChannelFactory(boss, worker);
-        this.bootstrap.setFactory(factory);
+        // TODO: Startup
         
-        ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
-        this.bootstrap.setPipelineFactory(pipelineFactory);
+        while (this.isAlive && !this.errored) {
+            try {
+                // TODO: Pulse client threads
+                Thread.sleep(100);
+            }
+            
+            catch (InterruptedException ex) {
+                // TODO: Fail Notice
+            }
+        }
+        
+        if (this.errored) {
+            this.main.setErrored("Error in client main thread", null);
+            // TODO: Handle existing ex
+        }
+        
+        this.stop();
+    }
+    
+    public void stop() {
+        if (this.channel != null) {
+            this.channel.close().awaitUninterruptibly();
+        }
+        
+        this.bootstrap.releaseExternalResources();
+        System.out.println("Client Stopped!");
     }
 
     @Override
@@ -75,11 +132,14 @@ public class Client extends Engine {
 
     @Override
     public void saveAndShutdown() {
-        
+        // TODO: handle saving
+        this.isAlive = false;
     }
 
     @Override
     public void forceShutdown() {
-        
+        // TODO: handle force shutdown, work out what data can be trusted
+        this.isAlive = false;
+        this.errored = true;
     }
 }

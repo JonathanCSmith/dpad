@@ -49,28 +49,21 @@ public class StartupViewController implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == this.gui.localRuntime) {
             this.main.setRuntimeSelected(Platform.LOCAL);
+            this.main.setURI("local", 6568);
         }
         
-        else if (ae.getSource() == this.gui.hostRuntime) {String url = this.gui.databaseHostURL.getText();
-            String host;
-            int port;
+        else if (ae.getSource() == this.gui.hostRuntime) {
+            String url = this.gui.databaseHostURL.getText();
+            int port = Integer.parseInt(url);
             
-            try {
-                URI uri = new URI("my://" + url);
-                host = uri.getHost();
-                port = uri.getPort();
-                
-                if (host == null || port == -1) {
-                    throw new URISyntaxException(uri.toString(), "URI invalid");
-                }
-                
-            } catch (URISyntaxException ex) {
+            if (port < 0 || port > 65536) {
+                this.main.setErrored("Invalid port number", new URISyntaxException(url, "Port Invalid"));
                 this.main.interrupt();
                 return;
             }
             
             this.main.setRuntimeSelected(Platform.SERVER);
-            this.main.setURI(host, port);
+            this.main.setURI("127.0.0.1", port);
         }
         
         else if (ae.getSource() == this.gui.connectRuntime) {
