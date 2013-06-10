@@ -18,10 +18,8 @@ package net.jonathansmith.javadpad.aaaarewrite.common.network.packet.auth;
 
 import java.util.Arrays;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.modes.CFBBlockCipher;
 
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.Packet;
 import net.jonathansmith.javadpad.aaaarewrite.common.network.packet.PacketPriority;
@@ -58,28 +56,19 @@ public class HandshakePacket extends Packet {
     }
 
     @Override
-    public ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header, CFBBlockCipher encrypter) {
-        if (encrypter != null) {
-            System.out.println("Encoder has a encrypter but none should exist!");
-        }
-        
+    public byte[] writePayload(int payloadNumber) {
         if (payloadNumber != 0) {
             System.out.println("Encode failure, payloads are being read wrong");
-            return header;
+            return null;
         }
         
         else {
-            header.writeBytes(this.engine.getVersion().getBytes());
-            return header;
+            return this.engine.getVersion().getBytes();
         }
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes, CFBBlockCipher decrypter) {
-        if (decrypter != null) {
-            System.out.println("Decoder has a decrypter but none should exist!");
-        }
-        
+    public void parsePayload(int payloadNumber, byte[] bytes) {
         if (payloadNumber != 0) {
             System.out.println("Decode failure, payloads are being read wrong");
         }

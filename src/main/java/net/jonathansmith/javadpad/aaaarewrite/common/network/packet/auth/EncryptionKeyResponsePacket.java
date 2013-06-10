@@ -16,7 +16,6 @@
  */
 package net.jonathansmith.javadpad.aaaarewrite.common.network.packet.auth;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 
 import org.bouncycastle.crypto.AsymmetricBlockCipher;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
@@ -64,32 +63,22 @@ public class EncryptionKeyResponsePacket extends Packet {
     }
 
     @Override
-    public ChannelBuffer writePayload(int payloadNumber, ChannelBuffer header, CFBBlockCipher encrypter) {
-        if (encrypter != null) {
-            System.out.println("Encrypter ignored for deffered encryption");
-        }
-        
+    public byte[] writePayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-                header.writeBytes(this.keys);
-                return header;
+                return this.keys;
                 
             case 1:
-                header.writeBytes(this.token);
-                return header;
+                return this.token;
                 
             default:
                 System.out.println("Encoding error, invalid payload number!");
-                return header;
+                return null;
         }
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes, CFBBlockCipher decrypter) {
-        if (decrypter != null) {
-            System.out.println("Decrypter ignored for deffered decryption");
-        }
-        
+    public void parsePayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
                 this.keys = bytes;
@@ -111,7 +100,6 @@ public class EncryptionKeyResponsePacket extends Packet {
         CipherParameters symmetricKey = new ParametersWithIV(new KeyParameter(sharedSecret), sharedSecret);
         CFBBlockCipher fromServerCipher = SecurityHandler.getInstance().getSymmetricCipher();
         fromServerCipher.init(SecurityHandler.DECRYPT_MODE, symmetricKey);
-        
         CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
         decoder.setDecryption(fromServerCipher);
     }
@@ -140,32 +128,22 @@ public class EncryptionKeyResponsePacket extends Packet {
         }
         
         byte[] publicKeyEncoded = SecurityHandler.getInstance().encodeKey(pair.getPublic());
-        String sha1Hash = this.sha1Hash(new Object[] {this.session.getSessionID(), initialVector, publicKeyEncoded});
+        String sha1Hash = sha1Hash(new Object[] {this.session.getSessionID(), initialVector, publicKeyEncoded});
         ((ServerSession) this.session).setSha1Hash(sha1Hash);
         
         CipherParameters symmetricKey = new ParametersWithIV(new KeyParameter(initialVector), initialVector);
         
         CFBBlockCipher toClientCipher = SecurityHandler.getInstance().getSymmetricCipher();
         toClientCipher.init(SecurityHandler.ENCRYPT_MODE, symmetricKey);
-        
         CommonEncoder encoder = this.session.channel.getPipeline().get(CommonEncoder.class);
         encoder.setEncryption(toClientCipher);
         
         CFBBlockCipher fromClientCipher = SecurityHandler.getInstance().getSymmetricCipher();
         fromClientCipher.init(SecurityHandler.DECRYPT_MODE, symmetricKey);
-        
         CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
         decoder.setDecryption(fromClientCipher);
         
-        final byte[] inputKeys = new byte[0];
-        final byte[] outputKeys = new byte[0];
-        toClientCipher.encryptBlock(inputKeys, 0, outputKeys, 0);
-        
-        final byte[] inputToken = new byte[0];
-        final byte[] outputToken = new byte[0];
-        toClientCipher.encryptBlock(inputToken, 0, outputToken, 0);
-        
-        Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, outputKeys, outputToken);
+        Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, new byte[0], new byte[0]);
         this.session.sendPacketMessage(new PacketMessage(p, PacketPriority.CRITICAL));
     }
     
