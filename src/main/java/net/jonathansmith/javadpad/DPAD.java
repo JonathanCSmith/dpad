@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Jonathan Smith
+ * Copyright (C) 2013 Jon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,49 +16,189 @@
  */
 package net.jonathansmith.javadpad;
 
-import net.jonathansmith.javadpad.aaaarewrite.DPADNew;
-import net.jonathansmith.javadpad.controller.DPADController;
-import net.jonathansmith.javadpad.util.logging.DPADLogger;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.jboss.netty.logging.InternalLoggerFactory;
+import org.jboss.netty.logging.Slf4JLoggerFactory;
+
+import net.jonathansmith.javadpad.client.Client;
+import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
+import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
+import net.jonathansmith.javadpad.common.startup.StartupGUI;
+import net.jonathansmith.javadpad.common.startup.StartupViewController;
+import net.jonathansmith.javadpad.common.util.PlatformConverter;
+import net.jonathansmith.javadpad.server.Server;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
 
 /**
  *
- * @author Jonathan Smith
+ * @author Jon
  */
 public class DPAD extends Thread {
     
-    public static boolean runtimeType = true;
+    // TODO: Logging
+    // TODO: Test
+    // TODO: Reintroduce old work
     
-    /**
-     * @param args the command line arguments
-     */
-    @SuppressWarnings({"CallToThreadDumpStack", "SleepWhileInLoop"})
-    public static void main(String[] args) {
-        if (runtimeType) {
-            DPADNew.start(args);
+    public enum Platform {
+        CLIENT,
+        SERVER,
+        LOCAL;
+    }
+    
+    @Parameter(names = {"-platform"}, converter = PlatformConverter.class, description = "Runtime type")
+    public Platform platform = null;
+    
+    @Parameter(names = {"-ip"}, description = "Address to host or connect")
+    public String host = "127.0.0.1";
+    
+    @Parameter(names = {"-port"}, description = "Port to host or connect")
+    public Integer port = 6889;
+    
+    @Parameter(names ={"-debug"}, description = "Verbosity of console logging")
+    public boolean debug = true;
+    
+    private List<Engine> runningEngines = new LinkedList<Engine> ();
+    private boolean running;
+    private boolean hasError;
+    private String cause;
+    private Throwable error;
+    
+    public DPAD() {}
+    
+    public Platform getRuntimeSelected() {
+        return this.platform;
+    }
+    
+    public void setRuntimeSelected(Platform platform) {
+        this.platform = platform;
+    }
+    
+    public void setURI(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+    
+    public void setErrored(String cause, Throwable ex) {
+        this.hasError = true;
+        this.cause = cause;
+        this.error = ex;
+    }
+    
+    public void init() {
+        this.addPackets();
+        InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
+        
+        if (this.platform == Platform.SERVER || this.platform == Platform.LOCAL) {
+            this.runningEngines.add(new Server(this, this.host, this.port));
         }
         
-        else {
-            DPADController controller = new DPADController();
-            controller.init();
-
-            if (!controller.errored && controller.initialised) {
-                controller.start();
-
-                try {
-                    controller.join();
-                } catch (InterruptedException ex) {
-                    DPADLogger.severe("Runtime interruption, DPAD shutting down");
-                }
-
-                if (controller.errored) {
-                    DPADLogger.severe("Runtime failure, DPAD shutting down");
-                }
-
-            } else {
-                DPADLogger.severe("Failed to setup runtime environment");
-            }
-
-            Runtime.getRuntime().halt(1);
+        if (this.platform == Platform.CLIENT || this.platform == Platform.LOCAL) {
+            this.runningEngines.add(new Client(this, this.host, this.port));
         }
+        
+        for (Engine engine : this.runningEngines) {
+            engine.init();
+        }
+    }
+    
+    private void addPackets() {
+        Packet.addPacket(HandshakePacket.class);
+        Packet.addPacket(EncryptionKeyRequestPacket.class);
+        Packet.addPacket(EncryptionKeyResponsePacket.class);
+    }
+    
+    @Override
+    public void run() {
+        this.running = true;
+        this.hasError = false;
+        
+        for (Engine engine : this.runningEngines) {
+            engine.run();
+        }
+        
+        while (!this.hasError && this.running) {
+            try {
+                Thread.sleep(100);
+                
+            } catch (InterruptedException ex) {
+                System.out.println("Background thread interrupted, critical failure");
+                ex.printStackTrace();
+                this.hasError = true;
+                this.running = false;
+            }
+        }
+        
+        if (this.hasError) {
+            System.out.println("An error has forced all threads to shutdown");
+            System.out.println("Data integrity cannot currently be guaranteed");
+            
+            System.out.println("=============================================");
+            System.out.println(this.cause);
+            
+            if (this.error != null) {
+                this.error.printStackTrace();
+            }
+        }
+        
+        for (Engine engine : this.runningEngines) {
+            if (engine.isViable()) {
+                engine.saveAndShutdown();
+            }
+            
+            else {
+                if (!engine.isRunning()) {
+                    engine.forceShutdown("Shutdown by main", null);
+                }
+            }
+        }
+    }
+    
+    public static void main(String[] args) {
+        DPAD dpad = new DPAD();
+        JCommander commands = new JCommander(dpad);
+        commands.parse(args);
+        
+        if (dpad.getRuntimeSelected() == null) {
+            StartupGUI gui = new StartupGUI();
+            gui.init();
+            StartupViewController controller = new StartupViewController(gui, dpad);
+            gui.run();
+            
+            while (dpad.getRuntimeSelected() == null) {
+                try {
+                    Thread.sleep(100);
+                }
+                
+                catch (InterruptedException ex) {
+                    System.out.println("Failure to launch!");
+                    ex.printStackTrace();
+                    Runtime.getRuntime().halt(1);
+                    return;
+                }
+            }
+            
+            gui.dispose();
+        }
+        
+        dpad.init();
+        dpad.run();
+        
+        try {
+            dpad.join();
+        }
+        
+        catch (InterruptedException ex) {
+            System.out.println("Failure to launch!");
+            ex.printStackTrace();
+        }
+        
+        Runtime.getRuntime().halt(1);
     }
 }
