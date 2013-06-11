@@ -35,6 +35,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.network.CommonPipelineFactory;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
@@ -57,7 +58,7 @@ public class Server extends Engine {
     public Server(DPAD main, String host, int port) {
         super(main, Platform.SERVER, host, port);
         
-        this.setGUI(new ServerGUI(this));
+        this.setGUI((TabbedGUI) new ServerGUI(this));
         this.setFileSystem(new FileSystem(this));
         
         // Netty setup

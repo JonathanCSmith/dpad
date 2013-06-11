@@ -16,22 +16,29 @@
  */
 package net.jonathansmith.javadpad.client.gui;
 
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 
-import javax.swing.JFrame;
+import javax.swing.GroupLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import net.jonathansmith.javadpad.client.Client;
-import net.jonathansmith.javadpad.common.gui.GUI;
+import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 
 /**
  *
  * @author Jonathan Smith
  */
-public class ClientGUI extends JFrame implements GUI {
+public class ClientGUI extends TabbedGUI {
 
     public Client engine;
     
@@ -134,35 +141,33 @@ public class ClientGUI extends JFrame implements GUI {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        headerSplitPane = new javax.swing.JSplitPane();
-        headerPanel = new javax.swing.JPanel();
-        title = new javax.swing.JLabel();
-        toolbarSplitPane = new javax.swing.JSplitPane();
-        displaySplitPane = new javax.swing.JSplitPane();
-        textScroll = new javax.swing.JScrollPane();
-        textArea = new javax.swing.JTextArea();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        headerSplitPane = new JSplitPane();
+        headerPanel = new JPanel();
+        title = new JLabel();
+        toolbarSplitPane = new JSplitPane();
+        displaySplitPane = new JSplitPane();
+        textScroll = new JScrollPane();
+        textArea = new JTextArea();
 
         headerSplitPane.setDividerLocation(70);
-        headerSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        headerSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 
-        headerPanel.setMaximumSize(new java.awt.Dimension(32767, 70));
-        headerPanel.setMinimumSize(new java.awt.Dimension(0, 70));
+        headerPanel.setMaximumSize(new Dimension(32767, 70));
+        headerPanel.setMinimumSize(new Dimension(0, 70));
 
-        title.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        title.setFont(new Font("Tahoma", 1, 14)); // NOI18N
         title.setText("Data Processing Analysis and Display :");
 
-        javax.swing.GroupLayout headerPanelLayout = new javax.swing.GroupLayout(headerPanel);
+        GroupLayout headerPanelLayout = new GroupLayout(headerPanel);
         headerPanel.setLayout(headerPanelLayout);
         headerPanelLayout.setHorizontalGroup(
-            headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            headerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(headerPanelLayout.createSequentialGroup()
                 .addComponent(title)
                 .addGap(0, 394, Short.MAX_VALUE))
         );
         headerPanelLayout.setVerticalGroup(
-            headerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            headerPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(headerPanelLayout.createSequentialGroup()
                 .addComponent(title)
                 .addGap(0, 53, Short.MAX_VALUE))
@@ -173,14 +178,14 @@ public class ClientGUI extends JFrame implements GUI {
         toolbarSplitPane.setDividerLocation(115);
 
         displaySplitPane.setDividerLocation(240);
-        displaySplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        displaySplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
         displaySplitPane.setResizeWeight(0.5);
         displaySplitPane.setAutoscrolls(true);
-        displaySplitPane.setPreferredSize(new java.awt.Dimension(522, 228));
+        displaySplitPane.setPreferredSize(new Dimension(522, 228));
 
-        textScroll.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        textScroll.setMinimumSize(new java.awt.Dimension(140, 23));
-        textScroll.setPreferredSize(new java.awt.Dimension(140, 22));
+        textScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        textScroll.setMinimumSize(new Dimension(140, 23));
+        textScroll.setPreferredSize(new Dimension(140, 22));
 
         textArea.setEditable(false);
         textArea.setColumns(20);
@@ -197,27 +202,25 @@ public class ClientGUI extends JFrame implements GUI {
 
         headerSplitPane.setRightComponent(toolbarSplitPane);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        GroupLayout layout = new GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addComponent(headerSplitPane)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(headerSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addComponent(headerSplitPane, GroupLayout.DEFAULT_SIZE, 467, Short.MAX_VALUE)
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public javax.swing.JSplitPane displaySplitPane;
-    public javax.swing.JPanel headerPanel;
-    public javax.swing.JSplitPane headerSplitPane;
-    public javax.swing.JTextArea textArea;
-    public javax.swing.JScrollPane textScroll;
-    public javax.swing.JLabel title;
-    public javax.swing.JSplitPane toolbarSplitPane;
+    public JSplitPane displaySplitPane;
+    public JPanel headerPanel;
+    public JSplitPane headerSplitPane;
+    public JTextArea textArea;
+    public JScrollPane textScroll;
+    public JLabel title;
+    public JSplitPane toolbarSplitPane;
     // End of variables declaration//GEN-END:variables
 }

@@ -19,17 +19,19 @@ package net.jonathansmith.javadpad;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JPanel;
+
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.gui.MainGUI;
+import net.jonathansmith.javadpad.common.gui.StartupViewController;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
-import net.jonathansmith.javadpad.common.startup.StartupGUI;
-import net.jonathansmith.javadpad.common.startup.StartupViewController;
 import net.jonathansmith.javadpad.common.util.PlatformConverter;
 import net.jonathansmith.javadpad.server.Server;
 
@@ -64,6 +66,7 @@ public class DPAD extends Thread {
     @Parameter(names ={"-debug"}, description = "Verbosity of console logging")
     public boolean debug = true;
     
+    private MainGUI gui;
     private List<Engine> runningEngines = new LinkedList<Engine> ();
     private boolean running;
     private boolean hasError;
@@ -91,7 +94,12 @@ public class DPAD extends Thread {
         this.error = ex;
     }
     
-    public void init() {
+    public void acquireTab(Platform platform, JPanel panel) {
+        this.gui.addTab(platform.toString().toLowerCase(), panel);
+    }
+    
+    public void init(MainGUI gui) {
+        this.gui = gui;
         this.addPackets();
         InternalLoggerFactory.setDefaultFactory(new Slf4JLoggerFactory());
         
@@ -160,13 +168,17 @@ public class DPAD extends Thread {
         }
     }
     
+    public void shutdown() {
+        this.running = false;
+    }
+    
     public static void main(String[] args) {
         DPAD dpad = new DPAD();
+        MainGUI gui = new MainGUI(dpad);
         JCommander commands = new JCommander(dpad);
         commands.parse(args);
         
         if (dpad.getRuntimeSelected() == null) {
-            StartupGUI gui = new StartupGUI();
             gui.init();
             StartupViewController controller = new StartupViewController(gui, dpad);
             gui.run();
@@ -184,11 +196,11 @@ public class DPAD extends Thread {
                 }
             }
             
-            gui.dispose();
+            gui.disposeOfStartupPane();
         }
         
-        dpad.init();
-        dpad.run();
+        dpad.init(gui);
+        dpad.start();
         
         try {
             dpad.join();

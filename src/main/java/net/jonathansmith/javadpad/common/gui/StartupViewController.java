@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.startup;
+package net.jonathansmith.javadpad.common.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,9 +32,9 @@ import net.jonathansmith.javadpad.DPAD.Platform;
 public class StartupViewController implements ActionListener {
     
     private DPAD main;
-    private StartupGUI gui;
+    private MainGUI gui;
     
-    public StartupViewController(StartupGUI gui, DPAD dpad) {
+    public StartupViewController(MainGUI gui, DPAD dpad) {
         this.main = dpad;
         this.gui = gui;
         this.addListeners();
