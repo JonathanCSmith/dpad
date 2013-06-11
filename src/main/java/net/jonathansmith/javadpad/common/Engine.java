@@ -28,7 +28,7 @@ import net.jonathansmith.javadpad.common.util.threads.RuntimeThread;
  *
  * @author jonathansmith
  */
-public abstract class Engine implements Runnable {
+public abstract class Engine extends Thread {
     
     public final DPAD main;
     public final Platform platform;

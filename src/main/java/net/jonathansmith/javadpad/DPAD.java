@@ -128,7 +128,7 @@ public class DPAD extends Thread {
         this.hasError = false;
         
         for (Engine engine : this.runningEngines) {
-            engine.run();
+            engine.start();
         }
         
         while (!this.hasError && this.running) {

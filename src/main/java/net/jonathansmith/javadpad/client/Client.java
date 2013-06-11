@@ -149,10 +149,10 @@ public class Client extends Engine {
             this.main.setErrored("Error in client main thread", null);
         }
         
-        this.stop();
+        this.finish();
     }
     
-    public void stop() {
+    public void finish() {
         if (this.session.channel != null) {
             this.session.channel.close().awaitUninterruptibly();
         }

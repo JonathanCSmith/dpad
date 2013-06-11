@@ -21,6 +21,7 @@ import java.io.File;
 
 import java.net.URISyntaxException;
 
+import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.common.Engine;
 
 /**
@@ -81,6 +82,10 @@ public class FileSystem {
             successful &= this.getLogDirectory().mkdir();
         }
         
+        if (successful && this.engine.platform == Platform.SERVER && !this.getDatabaseDirectory().exists()) {
+            successful &= this.getDatabaseDirectory().mkdir();
+        }
+        
         if (successful && !this.getLoaderPluginDirectory().exists()) {
             successful &= this.getLoaderPluginDirectory().mkdir();
         }
@@ -96,6 +101,14 @@ public class FileSystem {
     
     public File getLogDirectory() {
         return new File(this.parentDir, "Logs");
+    }
+    
+    public File getDatabaseDirectory() {
+        if (this.engine.platform != Platform.SERVER) {
+            return null;
+        }
+        
+        return new File(this.parentDir, "Database");
     }
     
     public File getLoaderPluginDirectory() {
