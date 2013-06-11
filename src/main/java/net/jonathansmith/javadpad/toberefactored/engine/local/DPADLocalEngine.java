@@ -17,16 +17,14 @@
 
 package net.jonathansmith.javadpad.toberefactored.engine.local;
 
+import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
+import net.jonathansmith.javadpad.common.util.threads.RuntimeThread;
+import net.jonathansmith.javadpad.common.util.threads.ThreadType;
 import net.jonathansmith.javadpad.server.database.DatabaseConnection;
 import net.jonathansmith.javadpad.toberefactored.engine.DPADClientEngine;
 import net.jonathansmith.javadpad.toberefactored.engine.common.process.RuntimeProcess;
 import net.jonathansmith.javadpad.toberefactored.engine.local.process.AnalyseDisplayProcess;
 import net.jonathansmith.javadpad.toberefactored.engine.local.process.LoadProcessProcess;
-import net.jonathansmith.javadpad.toberefactored.engine.local.process.Startup_LocalProcess;
-import net.jonathansmith.javadpad.toberefactored.plugin.DPADPluginManager;
-import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
-import net.jonathansmith.javadpad.common.util.threads.RuntimeThread;
-import net.jonathansmith.javadpad.common.util.threads.ThreadType;
 import net.jonathansmith.javadpad.toberefactored.util.logging.DPADLogger;
 
 /**
@@ -94,19 +92,6 @@ public class DPADLocalEngine extends DPADClientEngine {
         }
     }
     
-    public void setupEngine() {
-        if (this.currentRuntime != RuntimeThread.SETUP_CLIENT 
-            || !(this.runtime instanceof Startup_LocalProcess)
-            || ((Startup_LocalProcess) this.runtime).isConnected()) {
-            return;
-        }
-        
-        Startup_LocalProcess setup = (Startup_LocalProcess) this.runtime;
-        this.session = setup.getDatabaseConnection();
-        this.setLocalPluginManager(setup.getPluginManager());
-        this.sendQuitToRuntime();
-    }
-    
     public synchronized RuntimeThread getCurrentRuntime() {
         DPADLogger.info("Retrieving current runtime");
         return this.currentRuntime;
@@ -134,9 +119,6 @@ public class DPADLocalEngine extends DPADClientEngine {
         }
         
         switch (runtime) {
-            case SETUP_CLIENT:           this.runtime = new Startup_LocalProcess(this);
-                                        break;
-            
             case LOAD_AND_PROCESS:      this.runtime = new LoadProcessProcess(this);
                                         break;
                 

@@ -40,7 +40,7 @@ public class DPADLoggerFactory {
     
     public static DPADLoggerFactory instance;
     
-    private final Map<Class, Logger> storedLoggers = new HashMap<Class, Logger> (); 
+    private final Map<String, Logger> storedLoggers = new HashMap<String, Logger> (); 
     
     public static DPADLoggerFactory getInstance() {
         if (instance == null) {
@@ -51,19 +51,29 @@ public class DPADLoggerFactory {
     }
     
     public Logger getLogger(Engine engine) {
-        if (this.storedLoggers.containsKey(engine.getClass())) {
-            return this.storedLoggers.get(engine.getClass());
+        return this.getLogger(engine, engine.getClass().toString());
+    }
+    
+    public Logger getLogger(Engine engine, String name) {
+        return this.getLogger(engine, name, Level.ALL);
+    }
+    
+    // If the logger does not exist, it will create one and force it to adopt our
+    // logging strategy
+    public Logger getLogger(Engine engine, String name, Level level) {
+        if (this.storedLoggers.containsKey(name)) {
+            return this.storedLoggers.get(name);
         }
         
-        final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(engine.getClass());
-        logger.setLevel(Level.ALL);
+        final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(name);
+        logger.setLevel(level);
         
         PatternLayout pattern = new PatternLayout("%d [%p|%c|%C{1}] %m%n");
         
         SwingAppender console = new SwingAppender(pattern, (LogDisplay) engine.getGUI());
         LevelRangeFilter consoleFilter = new LevelRangeFilter();
         if (engine.isDebug()) {
-            consoleFilter.setLevelMin(Level.ALL);
+            consoleFilter.setLevelMin(level);
             consoleFilter.setLevelMax(Level.FATAL);
         }
         
@@ -91,8 +101,8 @@ public class DPADLoggerFactory {
         }
         
         // Hopefully this is the same logger!
-        Logger universalLogger = LoggerFactory.getLogger(engine.getClass());
-        this.storedLoggers.put(engine.getClass(), universalLogger);
+        Logger universalLogger = LoggerFactory.getLogger(name);
+        this.storedLoggers.put(name, universalLogger);
         return universalLogger;
     }
 }

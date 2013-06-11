@@ -16,7 +16,6 @@
  */
 package net.jonathansmith.javadpad.server.gui;
 
-import java.awt.EventQueue;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -76,7 +75,6 @@ public class ServerGUI extends TabbedGUI {
     @Override
     public void run() {
         this.setVisible(true);
-        EventQueue.invokeLater(this);
     }
     
     @Override
