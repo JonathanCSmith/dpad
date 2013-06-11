@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 
 import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.DPAD.Platform;
-import net.jonathansmith.javadpad.common.gui.GUI;
+import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.threads.RuntimeThread;
 
@@ -38,7 +38,7 @@ public abstract class Engine implements Runnable {
     
     public String hostName;
     public int portNumber;
-    public GUI gui = null;
+    public TabbedGUI gui = null;
     
     protected boolean isAlive = false;
     protected boolean errored = false;
@@ -64,17 +64,18 @@ public abstract class Engine implements Runnable {
         return this.main.debug;
     }
     
-    public GUI getGUI() {
+    public TabbedGUI getGUI() {
         return this.gui;
     }
     
-    public void setGUI(GUI gui) {
+    public void setGUI(TabbedGUI gui) {
         if (this.gui != null) {
             this.warn("Cannot set gui once it has been established");
             return;
         }
         
         this.gui = gui;
+        this.main.acquireTab(this.platform, this.gui);
     }
     
     public FileSystem getFileSystem() {

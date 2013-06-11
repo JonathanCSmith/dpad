@@ -60,7 +60,7 @@ public class DPADLoggerFactory {
         
         PatternLayout pattern = new PatternLayout("%d [%p|%c|%C{1}] %m%n");
         
-        SwingAppender console = new SwingAppender(pattern, engine.getGUI());
+        SwingAppender console = new SwingAppender(pattern, (LogDisplay) engine.getGUI());
         LevelRangeFilter consoleFilter = new LevelRangeFilter();
         if (engine.isDebug()) {
             consoleFilter.setLevelMin(Level.ALL);

@@ -35,6 +35,7 @@ import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.client.gui.ClientGUI;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.network.CommonPipelineFactory;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
@@ -53,7 +54,7 @@ public class Client extends Engine {
     public Client(DPAD main, String host, int port) {
         super(main, Platform.CLIENT, host, port);
         
-        this.setGUI(new ClientGUI(this));
+        this.setGUI((TabbedGUI) new ClientGUI(this));
         this.setFileSystem(new FileSystem(this));
         
         // Netty setup

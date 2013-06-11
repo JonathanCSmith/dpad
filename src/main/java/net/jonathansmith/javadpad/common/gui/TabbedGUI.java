@@ -16,13 +16,15 @@
  */
 package net.jonathansmith.javadpad.common.gui;
 
+import javax.swing.JPanel;
+
 import net.jonathansmith.javadpad.common.util.logging.LogDisplay;
 
 /**
  *
  * @author Jon
  */
-public interface GUI extends LogDisplay, Runnable {
+public abstract class TabbedGUI extends JPanel implements LogDisplay, Runnable {
 
     public abstract void init();
 }
