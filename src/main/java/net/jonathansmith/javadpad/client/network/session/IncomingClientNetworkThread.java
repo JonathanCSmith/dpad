@@ -17,8 +17,7 @@
 package net.jonathansmith.javadpad.client.network.session;
 
 import java.util.Collection;
-
-import com.google.common.collect.Iterables;
+import java.util.Iterator;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
@@ -64,7 +63,10 @@ public class IncomingClientNetworkThread extends NetworkThread {
                         continue;
                     }
                     
-                    packet = Iterables.get(pending, 0);
+                    Iterator iter = pending.iterator();
+                    packet = (Packet) iter.next();
+                    iter.remove();
+                    
                     packet.setEngine(this.engine);
                     packet.setSession(this.session);
                     packet.handleClientSide();

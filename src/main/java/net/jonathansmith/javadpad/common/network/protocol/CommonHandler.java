@@ -19,6 +19,7 @@ package net.jonathansmith.javadpad.common.network.protocol;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
@@ -86,6 +87,11 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
         
         this.session.addPacketToReceive(p.getPriority(), packet);
         super.messageReceived(ctx, e);
+    }
+    
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+        this.engine.error("Exception caught in: " + this.engine.platform.toString().toLowerCase() + " CommonHandler", e.getCause());
     }
     
     public void setSession(Session session) {

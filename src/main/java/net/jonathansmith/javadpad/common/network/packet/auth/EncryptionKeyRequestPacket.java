@@ -17,6 +17,8 @@
 package net.jonathansmith.javadpad.common.network.packet.auth;
 
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.bouncycastle.crypto.AsymmetricBlockCipher;
 import org.bouncycastle.crypto.CipherParameters;
 import org.bouncycastle.crypto.modes.CFBBlockCipher;
@@ -39,7 +41,11 @@ import net.jonathansmith.javadpad.common.security.SecurityHandler;
  * @author Jon
  */
 public class EncryptionKeyRequestPacket extends Packet {
+    
+    private static final AtomicBoolean lock = new AtomicBoolean(false);
 
+    private static int id;
+    
     private byte[] keys;
     private byte[] token;
     
@@ -52,6 +58,18 @@ public class EncryptionKeyRequestPacket extends Packet {
         this.keys = keys;
         this.token = token;
         this.forceUnencrypted(); // Asymmetric only for this packet as we havent established everything
+    }
+
+    @Override
+    public int getID() {
+        return id;
+    }
+
+    @Override
+    public void setID(int newID) {
+        if (lock.compareAndSet(false, true)) {
+            id = newID;
+        }
     }
 
     @Override

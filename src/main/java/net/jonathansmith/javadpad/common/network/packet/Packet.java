@@ -34,7 +34,6 @@ public abstract class Packet {
     public Session session;
     
     private boolean forceUnencrypted = false;
-    private int id;
     
     public Packet() {
         this(null, null);
@@ -61,13 +60,9 @@ public abstract class Packet {
         this.forceUnencrypted = true;
     }
     
-    public int getID() {
-        return this.id;
-    }
+    public abstract int getID();
     
-    public final void setID(int id) {
-        this.id = id;
-    }
+    public abstract void setID(int id);
     
     public abstract int getNumberOfPayloads();
     

@@ -1,0 +1,21 @@
+06-12 13:45:25 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "BATCH" not found; SQL statement:
+alter table Batch drop constraint FK3CFE71A8EAAFEA4 [42102-171]
+06-12 13:45:25 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "BATCH_DATAGROUP" not found; SQL statement:
+alter table Batch_DataGroup drop constraint FK514CB9F098B1285F [42102-171]
+06-12 13:45:25 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "BATCH_DATAGROUP" not found; SQL statement:
+alter table Batch_DataGroup drop constraint FK514CB9F0AE6B5862 [42102-171]
+06-12 13:45:25 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "EXPERIMENT_BATCH" not found; SQL statement:
+alter table Experiment_Batch drop constraint FK1812B878FECADEF4 [42102-171]
+06-12 13:45:25 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "EXPERIMENT_BATCH" not found; SQL statement:
+alter table Experiment_Batch drop constraint FK1812B8789127E032 [42102-171]
+06-12 13:45:25 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "USER_EXPERIMENT" not found; SQL statement:
+alter table User_Experiment drop constraint FK85E31CF126063FB9 [42102-171]
+06-12 13:45:25 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "USER_EXPERIMENT" not found; SQL statement:
+alter table User_Experiment drop constraint FK85E31CF154390AF2 [42102-171]

@@ -22,15 +22,12 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
 
 /**
  *
  * @author jonathansmith
  */
 public abstract class StateDrivenDecoder<t extends Enum<t>> extends ReplayingDecoder<t> {
-    
-    protected Packet result;
     
     private final t initialState;
     
@@ -54,7 +51,7 @@ public abstract class StateDrivenDecoder<t extends Enum<t>> extends ReplayingDec
             switch (outcome.getType()) {
                 case FINISHED:
                     try {
-                        return this.result;
+                        return ((FinishedDecodeResult) outcome).getPacketMessage();
                     }
                     
                     finally {

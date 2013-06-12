@@ -66,7 +66,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 return this.continueDecoding(DecodingState.PARAM_COUNT);
  
             case PARAM_COUNT:
-                this.paramCount = buffer.readByte();
+                this.paramCount = buffer.readInt();
                 
                 if (this.paramCount > 0) {
                     this.paramSizes = new int[this.paramCount];
@@ -95,7 +95,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 else {
                     this.packet.parsePayload(this.frameRead, currentPayload);
                 }
-                
+                this.frameRead++;
                 
                 if (this.frameRead >= this.paramCount) {
                     return this.finishedDecoding(new PacketMessage(this.packet, this.priority));
