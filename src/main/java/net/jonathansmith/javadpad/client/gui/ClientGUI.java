@@ -21,6 +21,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 
 import java.util.EventObject;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
@@ -36,6 +37,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.gui.ContentChangedEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 
@@ -45,7 +47,9 @@ import net.jonathansmith.javadpad.common.gui.TabbedGUI;
  */
 public class ClientGUI extends TabbedGUI implements ChangeListener {
 
-    public Client engine;
+    public final Client engine;
+    
+    private final CopyOnWriteArrayList<ChangeListener> listeners;
     
     private ClientRuntimeThread currentRuntime;
     private int[] textFieldLength = new int[1024];
@@ -56,6 +60,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
      */
     public ClientGUI(Client client) {
         this.engine = client;
+        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
     }
     
     public void validateState() {
@@ -63,6 +68,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
             DisplayOption option = this.currentRuntime.getDisplay();
             option.validateState();
             this.setCorePanels(option.getCurrentView(), option.getCurrentToolbar());
+            this.fireChange(new ContentChangedEvent(this));
         }
     }
     
@@ -134,6 +140,18 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
                 this.currentRuntime = thread;
                 this.validateState();
             }
+        }
+    }    
+    
+    public void addListener(ChangeListener listener) {
+        if (!this.listeners.contains(listener)) {
+            this.listeners.add(listener);
+        }
+    }
+
+    public void fireChange(EventObject event) {
+        for (ChangeListener listener : this.listeners) {
+            listener.changeEventReceived(event);
         }
     }
 

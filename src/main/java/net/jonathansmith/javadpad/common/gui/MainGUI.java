@@ -22,6 +22,8 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import java.util.EventObject;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,6 +35,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import net.jonathansmith.javadpad.DPAD;
+import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.gui.ContentChangedEvent;
 
 import org.jdesktop.layout.GroupLayout;
 import org.jdesktop.layout.LayoutStyle;
@@ -41,7 +45,7 @@ import org.jdesktop.layout.LayoutStyle;
  *
  * @author jonathansmith
  */
-public class MainGUI extends javax.swing.JFrame implements Runnable {
+public class MainGUI extends javax.swing.JFrame implements Runnable, ChangeListener {
 
     private final DPAD main;
     
@@ -83,8 +87,15 @@ public class MainGUI extends javax.swing.JFrame implements Runnable {
         this.revalidate();
     }
     
-    public void addTab(String tabName, JPanel tabContents) {
+    public void addTab(String tabName, TabbedGUI tabContents) {
         this.mainDisplay.addTab(tabName, tabContents);
+    }
+    
+    @Override
+    public void changeEventReceived(EventObject event) {
+        if (event instanceof ContentChangedEvent) {
+            this.revalidate();
+        }
     }
 
     /**
@@ -239,5 +250,4 @@ public class MainGUI extends javax.swing.JFrame implements Runnable {
     private JTabbedPane mainDisplay;
     private JPanel startupPanel;
     // End of variables declaration//GEN-END:variables
-
 }

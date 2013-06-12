@@ -61,6 +61,7 @@ public class EncryptionKeyResponsePacket extends Packet {
         super(engine, session);
         this.keys = keys;
         this.token = token;
+        this.forceUnencrypted();
     }
 
     @Override
@@ -82,7 +83,7 @@ public class EncryptionKeyResponsePacket extends Packet {
 
     @Override
     public int[] getPayloadSizes() {
-        return new int[] {64, this.keys.length, this.token.length};
+        return new int[] {this.keys.length, this.token.length};
     }
 
     @Override
@@ -132,6 +133,7 @@ public class EncryptionKeyResponsePacket extends Packet {
         fromServerCipher.init(SecurityHandler.DECRYPT_MODE, symmetricKey);
         CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
         decoder.setDecryption(fromServerCipher);
+        this.session.incrementState();
     }
 
     @Override
