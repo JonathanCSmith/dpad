@@ -152,12 +152,14 @@ public class EncryptionKeyResponsePacket extends Packet {
         final byte[] savedToken = ((ServerSession) this.session).getVerifyToken();
         
         if (validateToken.length != 4) {
+            this.engine.warn("Invalid token from session: " + this.session.getSessionID());
             this.session.disconnect();
             return;
         }
         
         for (int i = 0; i < validateToken.length; i++) {
             if (validateToken[i] != savedToken[i]) {
+                this.engine.warn("Invalid token from session: " + this.session.getSessionID());
                 this.session.disconnect();
                 return;
             }

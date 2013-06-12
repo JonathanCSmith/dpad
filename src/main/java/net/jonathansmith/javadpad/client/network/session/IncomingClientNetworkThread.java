@@ -22,6 +22,9 @@ import java.util.Iterator;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
+import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.session.NetworkThread;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
@@ -69,6 +72,13 @@ public class IncomingClientNetworkThread extends NetworkThread {
                     
                     packet.setEngine(this.engine);
                     packet.setSession(this.session);
+                    
+                    if (this.session.getState() != NetworkThreadState.RUNNING) {
+                        if (!(packet instanceof HandshakePacket) && !(packet instanceof EncryptionKeyRequestPacket) && !(packet instanceof EncryptionKeyResponsePacket)) {
+                            return;
+                        }
+                    }
+                    
                     packet.handleClientSide();
                     break;
                 }

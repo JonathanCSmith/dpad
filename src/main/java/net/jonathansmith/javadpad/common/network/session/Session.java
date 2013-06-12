@@ -68,8 +68,16 @@ public abstract class Session {
     }
     
     public void incrementState() {
+        if (this.state == NetworkThreadState.RUNNING) {
+            return;
+        }
+        
         int currentState = this.state.ordinal();
         this.state = NetworkThreadState.values()[currentState + 1];
+        
+        if (this.state == NetworkThreadState.RUNNING) {
+            this.engine.info("Session: " + this.getSessionID() + " has been authenticated for full interaction");
+        }
     }
     
     public User getUser() {

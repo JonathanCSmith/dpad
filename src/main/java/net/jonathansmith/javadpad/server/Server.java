@@ -50,7 +50,6 @@ import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
 import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
-import net.jonathansmith.javadpad.common.util.threads.RuntimeThread;
 import net.jonathansmith.javadpad.server.database.DatabaseConnection;
 import net.jonathansmith.javadpad.server.gui.ServerGUI;
 import net.jonathansmith.javadpad.server.network.session.SessionRegistry;
@@ -166,16 +165,6 @@ public class Server extends Engine {
         this.info("Server bound to port: " + this.portNumber);
         this.channelGroup.add(acceptor);
         this.isAlive = true;
-    }
-
-    @Override
-    public void setRuntime(RuntimeThread thread) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
-    }
-
-    @Override
-    public void sendQuitToRuntimeThread(String message, boolean error) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
     }
 
     @Override

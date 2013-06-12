@@ -20,6 +20,8 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 
+import java.util.EventObject;
+
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -32,16 +34,20 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import net.jonathansmith.javadpad.client.Client;
+import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
+import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 
 /**
  *
  * @author Jonathan Smith
  */
-public class ClientGUI extends TabbedGUI {
+public class ClientGUI extends TabbedGUI implements ChangeListener {
 
     public Client engine;
     
+    private ClientRuntimeThread currentRuntime;
     private int[] textFieldLength = new int[1024];
     private int currentTextLength = 0;
     
@@ -53,17 +59,16 @@ public class ClientGUI extends TabbedGUI {
     }
     
     public void validateState() {
-//        if (this.type.isDisplayable()) {
-//            DisplayOption option = this.type.getDisplay();
-//            option.validateState(this.controller);
-//            this.setCorePanels(option.getCurrentView(), option.getCurrentToolbar());
-//        }
+        if (this.currentRuntime.isDisplayable()) {
+            DisplayOption option = this.currentRuntime.getDisplay();
+            option.validateState();
+            this.setCorePanels(option.getCurrentView(), option.getCurrentToolbar());
+        }
     }
     
     private void setCorePanels(JPanel panel, JPanel toolbar) {
-//        this.displaySplitPane.setLeftComponent(panel);
-//        this.toolbarSplitPane.setLeftComponent(toolbar);
-//        this.getContentPane().validate();
+        this.displaySplitPane.setLeftComponent(panel);
+        this.toolbarSplitPane.setLeftComponent(toolbar);
     }
     
     @Override
@@ -88,13 +93,13 @@ public class ClientGUI extends TabbedGUI {
         
         this.initComponents();
         
-//        DisplayOption option;
-//        for (RuntimeType runtime : RuntimeType.values()) {
-//            if (runtime.isDisplayable()) {
-//                option = runtime.getDisplay();
-//                option.setController(this.controller);
-//            }
-//        }
+        DisplayOption option;
+        for (ClientRuntimeThread runtime : ClientRuntimeThread.values()) {
+            if (runtime.isDisplayable()) {
+                option = runtime.getDisplay();
+                option.setController(this.engine);
+            }
+        }
     }
     
     @Override
@@ -121,16 +126,16 @@ public class ClientGUI extends TabbedGUI {
         this.currentTextLength = (this.currentTextLength + 1) % 1024;
     }
     
-//    @Override
-//    public void update(Observable obs, Object obj) {
-//        if (obs == this.engine) {
-//            RuntimeType currentRuntime = this.engine.getCurrentRuntime();
-//            if (currentRuntime != this.type && currentRuntime.isDisplayable()) {
-//                this.type = this.engine.getCurrentRuntime();
-//                this.validateState();
-//            }
-//        }
-//    }
+    @Override
+    public void changeEventReceived(EventObject event) {
+        if (event instanceof ThreadChangeEvent) {
+            ClientRuntimeThread thread = (ClientRuntimeThread) event.getSource();
+            if (this.currentRuntime != thread && thread.isDisplayable()) {
+                this.currentRuntime = thread;
+                this.validateState();
+            }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

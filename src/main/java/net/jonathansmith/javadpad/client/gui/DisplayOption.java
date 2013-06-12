@@ -21,7 +21,6 @@ import java.awt.event.ActionListener;
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.toberefactored.controller.DPADController;
 
 /**
  *
@@ -55,5 +54,5 @@ public abstract class DisplayOption implements ActionListener {
         this.currentToolbar = panel;
     }
     
-    public abstract void validateState(DPADController controlller);
+    public abstract void validateState();
 }

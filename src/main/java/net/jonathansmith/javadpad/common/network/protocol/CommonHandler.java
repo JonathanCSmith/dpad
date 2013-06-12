@@ -24,6 +24,7 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
 import net.jonathansmith.javadpad.DPAD.Platform;
+import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
@@ -70,6 +71,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
         
         else {
             this.engine.info("Disconnected from server!");
+            ((Client) this.engine).channelDisconnect();
         }
         
         this.session.dispose();
