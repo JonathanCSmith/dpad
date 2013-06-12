@@ -87,7 +87,7 @@ public class EncryptionKeyResponsePacket extends Packet {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber) {
+    public byte[] writePayload(int payloadNumber, int providedSize) {
         switch (payloadNumber) {
             case 0:
                 return this.keys;

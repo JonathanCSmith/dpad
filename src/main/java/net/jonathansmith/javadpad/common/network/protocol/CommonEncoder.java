@@ -56,7 +56,7 @@ public class CommonEncoder extends OneToOneEncoder {
             
             for (int i = 0; i < numberOfPayloads; i++) {
                 buff.writeInt(packetPayloadSizes[i]);
-                byte[] currentPayload = p.writePayload(i);
+                byte[] currentPayload = p.writePayload(i, packetPayloadSizes[i]);
                 
                 if (this.encrypter != null && !p.getIsUnencrypted()) {
                     byte[] outputPayload = new byte[packetPayloadSizes[i]];

@@ -16,6 +16,9 @@
  */
 package net.jonathansmith.javadpad.common.network.session;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.jboss.netty.channel.Channel;
@@ -48,6 +51,7 @@ public abstract class Session {
     
     public NetworkThread incoming;
     public NetworkThread outgoing;
+    public Map<String, List> arrivedSessionData = new HashMap<String, List> ();
     
     private NetworkThreadState state = NetworkThreadState.EXCHANGING_HANDSHAKE;
     private User user;
@@ -114,6 +118,14 @@ public abstract class Session {
     
     public void sendPacketMessage(PacketMessage pm) {
         this.channel.write(pm);
+    }
+    
+    public void addArrivedDataset(String handle, List data) {
+        if (this.arrivedSessionData.containsKey(handle)) {
+            this.arrivedSessionData.remove(handle);
+        }
+        
+        this.arrivedSessionData.put(handle, data);
     }
     
     public void start() {

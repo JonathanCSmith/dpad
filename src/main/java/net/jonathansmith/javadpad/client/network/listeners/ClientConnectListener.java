@@ -48,7 +48,7 @@ public class ClientConnectListener implements ChannelFutureListener {
             handler.setSession(session);
             client.setSession(session);
             
-            Packet p = new HandshakePacket(this.client, session);
+            Packet p = new HandshakePacket(this.client, session, this.client.getVersion());
             session.addPacketToSend(PacketPriority.CRITICAL, p);
             session.incrementState();
         }

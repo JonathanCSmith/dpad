@@ -47,8 +47,9 @@ public class HandshakePacket extends Packet {
         super();
     }
     
-    public HandshakePacket(Engine engine, Session session) {
+    public HandshakePacket(Engine engine, Session session, String version) {
         super(engine, session);
+        this.version = version;
     }
     
     @Override
@@ -74,14 +75,14 @@ public class HandshakePacket extends Packet {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber) {
+    public byte[] writePayload(int payloadNumber, int providedSize) {
         if (payloadNumber != 0) {
             this.engine.warn("Encode failure, payloads are being read wrong");
             return null;
         }
         
         else {
-            return this.engine.getVersion().getBytes();
+            return this.version.getBytes();
         }
     }
 
