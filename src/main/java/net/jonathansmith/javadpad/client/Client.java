@@ -182,7 +182,7 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
         while (this.isAlive && !this.errored) {
             try {
                 // 1) Await authentication and handle disconnect
-                if (this.session.getState() != NetworkThreadState.RUNNING) {
+                if (this.session == null || this.session.getState() != NetworkThreadState.RUNNING) {
                     Thread.sleep(100);
                     continue;
                 }
