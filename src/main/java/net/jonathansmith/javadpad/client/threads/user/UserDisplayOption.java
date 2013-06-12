@@ -14,22 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.gui.user;
+package net.jonathansmith.javadpad.client.threads.user;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.util.List;
+
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.DisplayOption;
-import net.jonathansmith.javadpad.client.gui.user.panel.DisplayUserPane;
-import net.jonathansmith.javadpad.client.gui.user.panel.ExistingUserPane;
-import net.jonathansmith.javadpad.client.gui.user.panel.NewUserPane;
-import net.jonathansmith.javadpad.client.gui.user.toolbar.UserToolbar;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
+import net.jonathansmith.javadpad.client.threads.user.panel.DisplayUserPane;
+import net.jonathansmith.javadpad.client.threads.user.panel.ExistingUserPane;
+import net.jonathansmith.javadpad.client.threads.user.panel.NewUserPane;
+import net.jonathansmith.javadpad.client.threads.user.toolbar.UserToolbar;
 import net.jonathansmith.javadpad.common.database.User;
+import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.user.UsersRequestPacket;
 import net.jonathansmith.javadpad.server.database.user.UserManager;
 
 /**
@@ -86,8 +91,27 @@ public class UserDisplayOption extends DisplayOption implements MouseListener {
         
         else if (evt.getSource() == this.userToolbar.loadUser) {
             if (!(this.getCurrentView() instanceof ExistingUserPane)) {
+                Packet p = new UsersRequestPacket(client, session);
+                session.addPacketToSend(PacketPriority.HIGH, p);
+                
+                while (!session.arrivedSessionData.containsKey("Users")) {
+                    try {
+                        Thread.sleep(100);
+                    }
+                    
+                    catch (InterruptedException ex) {
+                        this.engine.error("Interrupted while waiting for data!");
+                    }
+                }
+                
+                List<User> users = session.arrivedSessionData.get("Users");
+                
+                if (users.isEmpty()) {
+                    return;
+                }
+                
                 this.setCurrentView(this.existingUserPane);
-                this.existingUserPane.insertData(UserManager.getInstance().loadAll());
+                this.existingUserPane.insertData(users);
                 client.getGUI().validateState();
             }
         }

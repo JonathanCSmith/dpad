@@ -68,7 +68,7 @@ public abstract class Packet {
     
     public abstract int[] getPayloadSizes();
     
-    public abstract byte[] writePayload(int payloadNumber);
+    public abstract byte[] writePayload(int payloadNumber, int providedSize);
     
     public abstract void parsePayload(int payloadNumber, byte[] bytes);
     

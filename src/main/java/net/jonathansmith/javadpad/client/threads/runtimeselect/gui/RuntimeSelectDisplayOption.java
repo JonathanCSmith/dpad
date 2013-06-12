@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
+import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.panel.RuntimeSelectPane;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.toolbar.RuntimeSelectToolbar;
 import net.jonathansmith.javadpad.common.database.Batch;
@@ -111,10 +112,10 @@ public class RuntimeSelectDisplayOption extends DisplayOption {
         Client client = (Client) this.engine;
         ClientSession session = client.getSession();
         
-//        if (evt.getSource() == this.runtimeSelectToolbar.setUser) {
-//            client.setRuntime(ClientRuntimeThread.USER_SELECT);
-//        }
-//        
+        if (evt.getSource() == this.runtimeSelectToolbar.setUser) {
+            client.setRuntime(ClientRuntimeThread.USER);
+        }
+        
 //        else if (evt.getSource() == this.runtimeSelectToolbar.setExperiment) {
 //            client.setRuntime(ClientRuntimeThread.EXPERIMENT_SELECT);
 //        }

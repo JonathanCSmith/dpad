@@ -14,12 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.gui.user.panel;
+package net.jonathansmith.javadpad.client.threads.user.panel;
 
 import java.util.List;
 
 import net.jonathansmith.javadpad.common.database.User;
-import net.jonathansmith.javadpad.server.database.user.UserTableModel;
 
 /**
  *

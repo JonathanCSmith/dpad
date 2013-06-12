@@ -43,8 +43,6 @@ import com.beust.jcommander.Parameter;
  */
 public class DPAD extends Thread {
     
-    // TODO: Logging
-    // TODO: Test
     // TODO: Reintroduce old work
     
     public enum Platform {
