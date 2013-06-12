@@ -22,10 +22,11 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
+import net.jonathansmith.javadpad.DPAD.Platform;
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.session.Session;
-import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.server.Server;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
@@ -34,32 +35,25 @@ import net.jonathansmith.javadpad.server.network.session.ServerSession;
  * @author Jon
  */
 public class CommonHandler extends SimpleChannelUpstreamHandler {
-    
-    private final CommonEncoder encoder;
-    private final CommonDecoder decoder;
     private final Engine engine;
-    private final boolean upstream;
     private Session session = null;
     
-    public CommonHandler(boolean up, Engine eng, CommonEncoder enc, CommonDecoder dec) {
-        this.encoder = enc;
-        this.decoder = dec;
+    public CommonHandler(Engine eng) {
         this.engine = eng;
-        this.upstream = up;
     }
     
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
         Channel c = e.getChannel();
         
-        if (!this.upstream) {
+        if (this.engine.platform == Platform.SERVER) {
             ((Server) this.engine).getChannelGroup().add(c);
             this.setSession(((Server) this.engine).getSessionRegistry().addAndGetNewSession(c));
-            System.out.println("Client connected with session id: " + this.session.getSessionID());
+            this.engine.info("Client connected with session id: " + this.session.getSessionID());
         }
         
         else {
-            System.out.println("Connected to server");
+            this.engine.info("Connected to server");
         }
     }
     
@@ -67,14 +61,14 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
     public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
         Channel c = e.getChannel();
         
-        if (!this.upstream) {
+        if (this.engine.platform == Platform.SERVER) {
             ((Server) this.engine).getChannelGroup().remove(c);
             ((Server) this.engine).getSessionRegistry().remove((ServerSession) this.session);
-            System.out.println("Client disconnected with session id: " + this.session.getSessionID());
+            this.engine.info("Client disconnected with session id: " + this.session.getSessionID());
         }
         
         else {
-            System.out.println("Disconnected from server!");
+            this.engine.info("Disconnected from server!");
         }
         
         this.session.dispose();
@@ -100,7 +94,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
         }
         
         else {
-            throw new RuntimeException("Cannot have multiple sessions");
+            this.engine.error("Cannot have multiple sessions, session: " + session.getSessionID() + " attempted to override: " + this.session.getSessionID());
         }
     }
 }

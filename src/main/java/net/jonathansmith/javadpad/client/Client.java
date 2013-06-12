@@ -25,6 +25,7 @@ import java.util.concurrent.Executors;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.local.DefaultLocalClientChannelFactory;
 import org.jboss.netty.channel.local.LocalAddress;
@@ -33,6 +34,7 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.client.gui.ClientGUI;
+import net.jonathansmith.javadpad.client.network.listeners.ClientConnectListener;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
@@ -104,10 +106,11 @@ public class Client extends Engine {
         }
         
         this.bootstrap.setFactory(factory);
-        ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, true);
+        ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
         this.bootstrap.setPipelineFactory(pipelineFactory);
         
         ChannelFuture future = this.bootstrap.connect(address);
+        future.addListener((ChannelFutureListener) new ClientConnectListener(this));
         if (!future.awaitUninterruptibly().isSuccess()) {
             this.error("Client failed to connect to server: " + this.hostName + ": " + this.portNumber);
             this.bootstrap.releaseExternalResources();
@@ -158,7 +161,7 @@ public class Client extends Engine {
         }
         
         this.bootstrap.releaseExternalResources();
-        System.out.println("Client Stopped!");
+        this.info("Client Stopped!");
     }
 
     @Override

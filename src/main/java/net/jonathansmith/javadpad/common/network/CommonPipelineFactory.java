@@ -20,12 +20,12 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 
-import net.jonathansmith.javadpad.client.Client;
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.protocol.CommonDecoder;
+import net.jonathansmith.javadpad.common.network.protocol.CommonDownstreamLogger;
 import net.jonathansmith.javadpad.common.network.protocol.CommonEncoder;
 import net.jonathansmith.javadpad.common.network.protocol.CommonHandler;
-import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.server.Server;
+import net.jonathansmith.javadpad.common.network.protocol.CommonUpstreamLogger;
 
 /**
  *
@@ -34,30 +34,20 @@ import net.jonathansmith.javadpad.server.Server;
 public class CommonPipelineFactory implements ChannelPipelineFactory {
     
     private final Engine engine;
-    private final boolean upstream;
 
-    public CommonPipelineFactory(Engine engine, boolean upstream) {
-        if (upstream) {
-            if (!(engine instanceof Client)) {
-                throw new IllegalArgumentException("Only clients can establish upstream connections");
-            }
-        }
-        
-        else {
-            if (!(engine instanceof Server)) {
-                throw new IllegalArgumentException("Only servers can establish downstream connections");
-            }
-        }
-        
+    public CommonPipelineFactory(Engine engine) {
         this.engine = engine;
-        this.upstream = upstream;
     }
     
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         CommonDecoder decoder = new CommonDecoder();
         CommonEncoder encoder = new CommonEncoder();
-        CommonHandler handler = new CommonHandler(this.upstream, this.engine, encoder, decoder);
-        return Channels.pipeline(decoder, encoder, handler);
+        CommonHandler handler = new CommonHandler(this.engine);
+        
+        CommonDownstreamLogger outLogger = new CommonDownstreamLogger(this.engine);
+        CommonUpstreamLogger inLogger = new CommonUpstreamLogger(this.engine); // After Decoding
+        
+        return Channels.pipeline(outLogger, encoder, decoder, inLogger, handler);
     }
 }

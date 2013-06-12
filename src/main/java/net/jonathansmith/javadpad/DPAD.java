@@ -136,22 +136,20 @@ public class DPAD extends Thread {
                 Thread.sleep(100);
                 
             } catch (InterruptedException ex) {
-                System.out.println("Background thread interrupted, critical failure");
-                ex.printStackTrace();
+                for (Engine engine : this.runningEngines) {
+                    engine.error("Background thread interrupted, critical failure", ex);
+                }
                 this.hasError = true;
                 this.running = false;
             }
         }
         
         if (this.hasError) {
-            System.out.println("An error has forced all threads to shutdown");
-            System.out.println("Data integrity cannot currently be guaranteed");
-            
-            System.out.println("=============================================");
-            System.out.println(this.cause);
-            
-            if (this.error != null) {
-                this.error.printStackTrace();
+            for (Engine engine : this.runningEngines) {
+                engine.error("An error has forced all threads to shutdown");
+                engine.error("Data integrity cannot currently be guaranteed");
+                engine.error("===============================================");
+                engine.error(cause, this.error);
             }
         }
         

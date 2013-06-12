@@ -150,7 +150,7 @@ public class Server extends Engine {
         this.bootstrap.setOption("child.tcpNoDelay", true);
         this.bootstrap.setOption("child.keepAlive", true);
         
-        ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this, false);
+        ChannelPipelineFactory pipelineFactory = new CommonPipelineFactory(this);
         this.bootstrap.setPipelineFactory(pipelineFactory);
         
         Channel acceptor = this.bootstrap.bind(address);
@@ -210,6 +210,7 @@ public class Server extends Engine {
         this.isAlive = false;
         
         // TODO: handle saving
+        this.sessionRegistry.shutdownSessions(false);
         
         this.info("Shuttdown called on: " + this.platform.toString());
     }
@@ -220,6 +221,7 @@ public class Server extends Engine {
         this.errored = true;
         
         // TODO: handle force shutdown, work out what data can be trusted
+        this.sessionRegistry.shutdownSessions(true);
         
         this.error(cause, ex);
     }

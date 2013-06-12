@@ -25,16 +25,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.Engine;
 
 /**
  *
  * @author Jon
  */
-public abstract class NetworkThread {
+public abstract class NetworkThread extends Thread {
     
     public final ListMultimap<PacketPriority, Packet> packets = Multimaps.synchronizedListMultimap(Multimaps.newListMultimap(Maps.<PacketPriority, Collection<Packet>> newEnumMap(PacketPriority.class), new Supplier<List<Packet>> () {
         @Override
@@ -61,6 +61,7 @@ public abstract class NetworkThread {
         this.session.sendPacketMessage(pm);
     }
     
+    @Override
     public abstract void run();
     
     public boolean isRunning() {

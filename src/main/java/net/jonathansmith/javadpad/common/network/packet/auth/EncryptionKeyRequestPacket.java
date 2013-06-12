@@ -31,6 +31,7 @@ import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.protocol.CommonEncoder;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 import net.jonathansmith.javadpad.common.security.SecurityHandler;
 
 /**
@@ -73,7 +74,7 @@ public class EncryptionKeyRequestPacket extends Packet {
                 return this.token;
                 
             default:
-                System.out.println("Encode failure, payloads are being read wrong");
+                this.engine.warn("Encode failure, payloads are being read wrong");
                 return null;
         }
     }
@@ -90,13 +91,20 @@ public class EncryptionKeyRequestPacket extends Packet {
                 return;
                 
             default:
-                System.out.println("Decode failure, payloads are being read wrong");
+                this.engine.warn("Decode failure, payloads are being read wrong");
                 return;
         }
     }
 
     @Override
     public void handleClientSide() {
+        if (this.session.getState() != NetworkThreadState.EXCHANGING_AUTHENTICATION) {
+            this.engine.error("Cannot respond to an authentication challenge, as either the handshake is not complete or we have not received the token");
+            this.session.disconnect();
+            this.session.dispose();
+            return;
+        }
+        
         final byte[] sharedKey = SecurityHandler.getInstance().getSymetricKey();
         
         AsymmetricBlockCipher cipher = SecurityHandler.getInstance().getAsymmetricCipher();
@@ -119,11 +127,18 @@ public class EncryptionKeyRequestPacket extends Packet {
             this.session.sendPacketMessage(new PacketMessage(p, PacketPriority.CRITICAL));
             
         } catch (Exception ex) {
-            System.out.println("Error when responding to encryption key request");
-            ex.printStackTrace();
+            this.engine.error("Error when responding to encryption key request", ex);
+            this.session.disconnect();
+            this.session.dispose();
+            return;
         }
     }
 
     @Override
     public void handleServerSide() {}
+    
+    @Override
+    public String toString() {
+        return "Encryption key request packet";
+    }
 }

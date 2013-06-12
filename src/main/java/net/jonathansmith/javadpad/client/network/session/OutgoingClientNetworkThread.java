@@ -14,13 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.network.session;
+package net.jonathansmith.javadpad.client.network.session;
 
 import java.util.Collection;
 
 import com.google.common.collect.Iterables;
 
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.session.NetworkThread;
@@ -31,12 +32,12 @@ import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadSt
  *
  * @author Jon
  */
-class IncomingServerNetworkThread extends NetworkThread {
-
-    public IncomingServerNetworkThread(Engine eng, Session sess) {
+public class OutgoingClientNetworkThread extends NetworkThread {
+    
+    public OutgoingClientNetworkThread(Engine eng, Session sess) {
         super(eng, sess);
     }
-    
+
     @Override
     public void run() {
         while (this.isRunning()) {
@@ -65,9 +66,7 @@ class IncomingServerNetworkThread extends NetworkThread {
                     }
                     
                     packet = Iterables.get(pending, 0);
-                    packet.setEngine(this.engine);
-                    packet.setSession(this.session);
-                    packet.handleServerSide();
+                    this.sendPacket(new PacketMessage(packet, priority));
                     break;
                 }
             }

@@ -22,9 +22,9 @@ import org.jboss.netty.channel.ChannelFutureListener;
 
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
-import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.protocol.CommonHandler;
 
 /**
@@ -41,6 +41,7 @@ public class ClientConnectListener implements ChannelFutureListener {
     
     public void operationComplete(ChannelFuture cf) throws Exception {
         Channel channel = cf.getChannel();
+        
         if (cf.isSuccess()) {
             CommonHandler handler = channel.getPipeline().get(CommonHandler.class);
             ClientSession session = new ClientSession(this.client, channel);
@@ -49,6 +50,7 @@ public class ClientConnectListener implements ChannelFutureListener {
             
             Packet p = new HandshakePacket(this.client, session);
             session.addPacketToSend(PacketPriority.CRITICAL, p);
+            session.incrementState();
         }
     }
 }

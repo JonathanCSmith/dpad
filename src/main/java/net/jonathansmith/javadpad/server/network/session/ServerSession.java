@@ -18,20 +18,14 @@ package net.jonathansmith.javadpad.server.network.session;
 
 import org.jboss.netty.channel.Channel;
 
-import net.jonathansmith.javadpad.common.network.packet.Packet;
-import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.session.NetworkThread;
-import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.network.session.Session;
 
 /**
  *
  * @author Jon
  */
 public class ServerSession extends Session {
-    
-    private final NetworkThread incoming;
-    private final NetworkThread outgoing;
     
     private byte[] token;
     private String hash;
@@ -40,6 +34,7 @@ public class ServerSession extends Session {
         super(eng, channel);
         this.incoming = new IncomingServerNetworkThread(eng, this);
         this.outgoing = new OutgoingServerNetworkThread(eng, this);
+        this.start();
     }
     
     public byte[] getVerifyToken() {
@@ -59,13 +54,8 @@ public class ServerSession extends Session {
     }
 
     @Override
-    public void addPacketToSend(PacketPriority priority, Packet p) {
-        this.outgoing.addPacket(priority, p);
-    }
-
-    @Override
-    public void addPacketToReceive(PacketPriority priority, Packet p) {
-        this.incoming.addPacket(priority, p);
+    public void shutdown(boolean force) {
+        throw new UnsupportedOperationException("Not supported yet."); // TODO:
     }
 
     @Override

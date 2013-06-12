@@ -18,10 +18,8 @@ package net.jonathansmith.javadpad.client.network.session;
 
 import org.jboss.netty.channel.Channel;
 
-import net.jonathansmith.javadpad.common.network.packet.Packet;
-import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.network.session.Session;
 
 /**
  *
@@ -31,16 +29,14 @@ public class ClientSession extends Session {
     
     public ClientSession(Engine eng, Channel c) {
         super(eng, c);
+        this.incoming = new IncomingClientNetworkThread(eng, this);
+        this.outgoing = new OutgoingClientNetworkThread(eng, this);
+        this.start();
     }
 
     @Override
-    public void addPacketToSend(PacketPriority priority, Packet p) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO
-    }
-
-    @Override
-    public void addPacketToReceive(PacketPriority priority, Packet p) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO
+    public void shutdown(boolean force) {
+        throw new UnsupportedOperationException("Not supported yet."); // TODO:
     }
 
     @Override
