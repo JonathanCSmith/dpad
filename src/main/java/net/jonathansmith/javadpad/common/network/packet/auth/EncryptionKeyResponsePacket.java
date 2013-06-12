@@ -31,6 +31,7 @@ import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.protocol.CommonDecoder;
 import net.jonathansmith.javadpad.common.network.protocol.CommonEncoder;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 import net.jonathansmith.javadpad.common.security.SecurityHandler;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
@@ -76,7 +77,7 @@ public class EncryptionKeyResponsePacket extends Packet {
                 return this.token;
                 
             default:
-                System.out.println("Encoding error, invalid payload number!");
+                this.engine.warn("Encoding error, invalid payload number!");
                 return null;
         }
     }
@@ -93,13 +94,20 @@ public class EncryptionKeyResponsePacket extends Packet {
                 return;
                 
             default:
-                System.out.println("Decoding error, invalid payload number!");
+                this.engine.warn("Decoding error, invalid payload number!");
                 return;
         }
     }
 
     @Override
     public void handleClientSide() {
+        if (this.session.getState() != NetworkThreadState.EXCHANGING_AUTHENTICATION) {
+            this.engine.error("Cannot respond to an authentication challenge, as either the handshake is not complete or we have not received the token");
+            this.session.disconnect();
+            this.session.dispose();
+            return;
+        }
+        
         final byte[] sharedSecret = SecurityHandler.getInstance().getSymetricKey();
         CipherParameters symmetricKey = new ParametersWithIV(new KeyParameter(sharedSecret), sharedSecret);
         CFBBlockCipher fromServerCipher = SecurityHandler.getInstance().getSymmetricCipher();
@@ -110,7 +118,13 @@ public class EncryptionKeyResponsePacket extends Packet {
 
     @Override
     public void handleServerSide() {
-        // TODO: State request
+        if (this.session.getState() != NetworkThreadState.EXCHANGING_AUTHENTICATION) {
+            this.engine.warn("Cannot respond to an authentication challenge, as either the handshake is not complete or we have not sent the token");
+            this.session.disconnect();
+            this.session.dispose();
+            return;
+        }
+        
         AsymmetricCipherKeyPair pair = SecurityHandler.getInstance().getKeyPair();
         AsymmetricBlockCipher cipher = SecurityHandler.getInstance().getAsymmetricCipher();
         cipher.init(SecurityHandler.DECRYPT_MODE, pair.getPrivate());
@@ -132,7 +146,7 @@ public class EncryptionKeyResponsePacket extends Packet {
         }
         
         byte[] publicKeyEncoded = SecurityHandler.getInstance().encodeKey(pair.getPublic());
-        String sha1Hash = sha1Hash(new Object[] {this.session.getSessionID(), initialVector, publicKeyEncoded});
+        String sha1Hash = this.sha1Hash(new Object[] {this.session.getSessionID(), initialVector, publicKeyEncoded});
         ((ServerSession) this.session).setSha1Hash(sha1Hash);
         
         CipherParameters symmetricKey = new ParametersWithIV(new KeyParameter(initialVector), initialVector);
@@ -149,9 +163,15 @@ public class EncryptionKeyResponsePacket extends Packet {
         
         Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, new byte[0], new byte[0]);
         this.session.sendPacketMessage(new PacketMessage(p, PacketPriority.CRITICAL));
+        this.session.incrementState();
     }
     
-    private static String sha1Hash(Object[] input) {
+    @Override
+    public String toString() {
+        return "Encryption key response packet";
+    }
+    
+    private String sha1Hash(Object[] input) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             md.reset();
@@ -183,8 +203,7 @@ public class EncryptionKeyResponsePacket extends Packet {
         }
         
         catch (Exception ex) {
-            System.out.println("Error in sha1 digest");
-            ex.printStackTrace();
+            this.engine.error("Error in sha1 digest", ex);
             return null;
         }
     }

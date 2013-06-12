@@ -20,13 +20,13 @@ import java.util.Random;
 
 import org.jboss.netty.channel.Channel;
 
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Batch;
 import net.jonathansmith.javadpad.common.database.Experiment;
 import net.jonathansmith.javadpad.common.database.User;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.Engine;
 
 /**
  *
@@ -34,7 +34,7 @@ import net.jonathansmith.javadpad.common.Engine;
  */
 public abstract class Session {
     
-    public enum State {
+    public enum NetworkThreadState {
         EXCHANGING_HANDSHAKE,
         EXCHANGING_AUTHENTICATION,
         RUNNING;
@@ -46,7 +46,10 @@ public abstract class Session {
     private final Random random = new Random();
     private final String id = Long.toString(random.nextLong(), 16).trim();
     
-    private State state = State.EXCHANGING_HANDSHAKE;
+    public NetworkThread incoming;
+    public NetworkThread outgoing;
+    
+    private NetworkThreadState state = NetworkThreadState.EXCHANGING_HANDSHAKE;
     private User user;
     private Experiment experiment;
     private Batch batch;
@@ -60,13 +63,13 @@ public abstract class Session {
         return this.id;
     }
     
-    public State getState() {
+    public NetworkThreadState getState() {
         return this.state;
     }
     
     public void incrementState() {
         int currentState = this.state.ordinal();
-        this.state = State.values()[currentState + 1];
+        this.state = NetworkThreadState.values()[currentState + 1];
     }
     
     public User getUser() {
@@ -93,13 +96,24 @@ public abstract class Session {
         this.batch = batch;
     }
 
-    public abstract void addPacketToSend(PacketPriority priority, Packet p);
-    
-    public abstract void addPacketToReceive(PacketPriority priority, Packet p);
+    public void addPacketToSend(PacketPriority priority, Packet p) {
+        this.outgoing.addPacket(priority, p);
+    }
+
+    public void addPacketToReceive(PacketPriority priority, Packet p) {
+        this.incoming.addPacket(priority, p);
+    }
     
     public void sendPacketMessage(PacketMessage pm) {
         this.channel.write(pm);
     }
+    
+    public void start() {
+        this.incoming.start();
+        this.outgoing.start();
+    }
+    
+    public abstract void shutdown(boolean force);
 
     public abstract void disconnect();
     

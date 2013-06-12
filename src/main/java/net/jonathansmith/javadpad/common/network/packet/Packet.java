@@ -81,6 +81,9 @@ public abstract class Packet {
     
     public abstract void handleServerSide();
     
+    @Override
+    public abstract String toString();
+    
     public static Class<? extends Packet> getPacket(int id) {
         return packetMap.get(id);
     }

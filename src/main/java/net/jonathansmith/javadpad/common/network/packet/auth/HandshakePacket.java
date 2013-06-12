@@ -24,7 +24,7 @@ import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.session.Session;
-import net.jonathansmith.javadpad.common.network.session.Session.State;
+import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 import net.jonathansmith.javadpad.common.security.SecurityHandler;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
@@ -61,7 +61,7 @@ public class HandshakePacket extends Packet {
     @Override
     public byte[] writePayload(int payloadNumber) {
         if (payloadNumber != 0) {
-            System.out.println("Encode failure, payloads are being read wrong");
+            this.engine.warn("Encode failure, payloads are being read wrong");
             return null;
         }
         
@@ -73,7 +73,7 @@ public class HandshakePacket extends Packet {
     @Override
     public void parsePayload(int payloadNumber, byte[] bytes) {
         if (payloadNumber != 0) {
-            System.out.println("Decode failure, payloads are being read wrong");
+            this.engine.warn("Decode failure, payloads are being read wrong");
         }
         
         else {
@@ -82,21 +82,24 @@ public class HandshakePacket extends Packet {
     }
 
     @Override
-    public void handleClientSide() {
-        throw new RuntimeException("Packet does not have client side action");
-    }
+    public void handleClientSide() {}
 
     @Override
     public void handleServerSide() {
-        if (this.session.getState() != State.EXCHANGING_HANDSHAKE) {
-            System.out.println("Invalid handshake packet received");
+        if (this.session.getState() != NetworkThreadState.EXCHANGING_HANDSHAKE) {
+            this.engine.warn("Invalid handshake packet received. Discarding.");
+            this.session.disconnect();
+            this.session.dispose();
+            return;
         }
         
         if (!this.engine.getVersion().contentEquals(this.version)) {
-            this.session.disconnect(); // TODO: Reason?
+            this.engine.warn("Incompatible client/server versions. Client has: " + this.version + ", Server has: " + this.engine.getVersion());
+            this.session.disconnect();
+            this.session.dispose();
+            return;
         }
         
-        // TODO Encryption
         byte[] randomByte = new byte[4];
         random.nextBytes(randomByte);
         ((ServerSession) this.session).setVerifyToken(randomByte);
@@ -106,6 +109,12 @@ public class HandshakePacket extends Packet {
         
         Packet p = new EncryptionKeyRequestPacket(this.engine, this.session, secret, randomByte);
         this.session.addPacketToSend(PacketPriority.CRITICAL, p);
+        this.session.incrementState();
+    }
+    
+    @Override
+    public String toString() {
+        return "Handshake Packet";
     }
     
     static {

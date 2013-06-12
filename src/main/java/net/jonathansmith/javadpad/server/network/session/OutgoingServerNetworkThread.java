@@ -20,13 +20,13 @@ import java.util.Collection;
 
 import com.google.common.collect.Iterables;
 
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.session.NetworkThread;
 import net.jonathansmith.javadpad.common.network.session.Session;
-import net.jonathansmith.javadpad.common.network.session.Session.State;
-import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 
 /**
  *
@@ -56,7 +56,7 @@ class OutgoingServerNetworkThread extends NetworkThread {
                 Packet packet;
                 
                 for (PacketPriority priority : PacketPriority.values()) {
-                    if (this.session.getState() != State.RUNNING && priority == PacketPriority.HIGH) {
+                    if (this.session.getState() != NetworkThreadState.RUNNING && priority == PacketPriority.HIGH) {
                         break;
                     }
                     

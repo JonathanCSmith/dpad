@@ -21,8 +21,10 @@ import java.util.concurrent.ConcurrentMap;
 
 import org.jboss.netty.channel.Channel;
 
-import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.session.Session;
 
 /**
  *
@@ -41,12 +43,27 @@ public class SessionRegistry {
         int id = this.sessions.size();
         ServerSession session = new ServerSession(this.engine, c);
         this.sessions.put(session, true);
+        session.incrementState();
         return session;
     }
 
     public void remove(ServerSession session) {
         if (this.sessions.containsKey(session)) {
             this.sessions.remove(session);
+        }
+    }
+    
+    public void shutdownSessions(boolean force) {
+        for (ServerSession session : this.sessions.keySet()) {
+            session.shutdown(force);
+            session.disconnect();
+            session.dispose();
+        }
+    }
+    
+    public void sendPacketToAllSessions(PacketPriority priority, Packet packet) {
+        for (ServerSession session : this.sessions.keySet()) {
+            session.addPacketToSend(priority, packet);
         }
     }
 }
