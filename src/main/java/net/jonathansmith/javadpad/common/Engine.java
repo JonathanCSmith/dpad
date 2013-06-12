@@ -22,7 +22,6 @@ import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
-import net.jonathansmith.javadpad.common.util.threads.RuntimeThread;
 
 /**
  *
@@ -118,10 +117,6 @@ public abstract class Engine extends Thread {
     public boolean isViable() {
         return !this.errored;
     }
-    
-    public abstract void setRuntime(RuntimeThread thread);
-    
-    public abstract void sendQuitToRuntimeThread(String message, boolean error);
     
     public abstract void saveAndShutdown();
     

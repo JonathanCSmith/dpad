@@ -31,7 +31,6 @@ import net.jonathansmith.javadpad.client.gui.experiment.toolbar.ExperimentToolba
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.database.Experiment;
 import net.jonathansmith.javadpad.common.database.User;
-import net.jonathansmith.javadpad.toberefactored.controller.DPADController;
 import net.jonathansmith.javadpad.server.database.experiment.ExperimentManager;
 import net.jonathansmith.javadpad.server.database.user.UserManager;
 
@@ -76,7 +75,7 @@ public class ExperimentDisplayOption extends DisplayOption implements MouseListe
     }
 
     @Override
-    public void validateState(DPADController controlller) {}
+    public void validateState() {}
 
     public void actionPerformed(ActionEvent evt) {
         Client client = (Client) this.engine;

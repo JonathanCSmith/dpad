@@ -31,7 +31,6 @@ import net.jonathansmith.javadpad.client.gui.batch.toolbar.BatchToolbar;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.database.Batch;
 import net.jonathansmith.javadpad.common.database.Experiment;
-import net.jonathansmith.javadpad.toberefactored.controller.DPADController;
 import net.jonathansmith.javadpad.server.database.batch.BatchManager;
 import net.jonathansmith.javadpad.server.database.experiment.ExperimentManager;
 
@@ -76,7 +75,7 @@ public class BatchDisplayOption extends DisplayOption implements MouseListener {
     }
 
     @Override
-    public void validateState(DPADController controlller) {}
+    public void validateState() {}
 
     public void actionPerformed(ActionEvent evt) {
         Client client = (Client) this.engine;

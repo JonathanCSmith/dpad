@@ -30,7 +30,6 @@ import net.jonathansmith.javadpad.client.gui.user.panel.NewUserPane;
 import net.jonathansmith.javadpad.client.gui.user.toolbar.UserToolbar;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.database.User;
-import net.jonathansmith.javadpad.toberefactored.controller.DPADController;
 import net.jonathansmith.javadpad.server.database.user.UserManager;
 
 /**
@@ -72,7 +71,7 @@ public class UserDisplayOption extends DisplayOption implements MouseListener {
     }
 
     @Override
-    public void validateState(DPADController controlller) {}
+    public void validateState() {}
 
     public void actionPerformed(ActionEvent evt) {
         Client client = (Client) this.engine;

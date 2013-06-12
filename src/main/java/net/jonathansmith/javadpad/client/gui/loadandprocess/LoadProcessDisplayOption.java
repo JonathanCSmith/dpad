@@ -18,7 +18,6 @@ package net.jonathansmith.javadpad.client.gui.loadandprocess;
 
 import java.awt.event.ActionEvent;
 
-import net.jonathansmith.javadpad.toberefactored.controller.DPADController;
 import net.jonathansmith.javadpad.client.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.gui.loadandprocess.panel.LPMainPanel;
 import net.jonathansmith.javadpad.client.gui.loadandprocess.toolbar.LPMainToolbar;
@@ -41,7 +40,7 @@ public class LoadProcessDisplayOption extends DisplayOption {
     }
     
     @Override
-    public void validateState(DPADController controlller) {
+    public void validateState() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

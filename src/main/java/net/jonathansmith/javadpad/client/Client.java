@@ -19,6 +19,8 @@ package net.jonathansmith.javadpad.client;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import java.util.EventObject;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,25 +40,36 @@ import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.client.gui.ClientGUI;
 import net.jonathansmith.javadpad.client.network.listeners.ClientConnectListener;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
+import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.ChangeSender;
+import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
+import net.jonathansmith.javadpad.common.events.thread.ThreadShutdownEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
+import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
+import net.jonathansmith.javadpad.common.threads.RunnableThread;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
 import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
-import net.jonathansmith.javadpad.common.util.threads.RuntimeThread;
 
 /**
  *
  * @author jonathansmith
  */
-public class Client extends Engine {
+public class Client extends Engine implements ChangeSender, ChangeListener {
+    
+    private final CopyOnWriteArrayList<ChangeListener> listeners;
     
     private ClientBootstrap bootstrap;
     private ClientSession session;
+    private ClientRuntimeThread currentThread;
     
     public Client(DPAD main, String host, int port) {
         super(main, Platform.CLIENT, host, port);
+        
+        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
         
         this.setGUI((TabbedGUI) new ClientGUI(this));
         this.setFileSystem(new FileSystem(this));
@@ -73,6 +86,40 @@ public class Client extends Engine {
         this.session = sess;
     }
     
+    public ClientRuntimeThread getRuntime() {
+        return this.currentThread;
+    }
+
+    public void setRuntime(ClientRuntimeThread thread) {
+        ThreadChangeEvent evt = new ThreadChangeEvent(thread);
+        this.currentThread = thread;
+        this.fireChange(evt);
+    }
+
+    public void sendQuitToRuntimeThread(String message, boolean error) {
+        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+    }
+    
+    @Override
+    public void addListener(ChangeListener listener) {
+        if (!listeners.contains(listener)) {
+            this.listeners.add(listener);
+        }
+    }
+    
+    @Override
+    public void fireChange(EventObject evt) {
+        for(ChangeListener listener : this.listeners) {
+            listener.changeEventReceived(evt);
+        }
+    }
+
+    public void changeEventReceived(EventObject event) {
+        if (event instanceof ThreadShutdownEvent && event.getSource() == this.currentThread) {
+            this.setRuntime(ClientRuntimeThread.RUNTIME_SELECT);
+        }
+    }
+    
     @Override
     public ClientGUI getGUI() {
         return (ClientGUI) super.getGUI();
@@ -86,6 +133,8 @@ public class Client extends Engine {
         }
         
         this.setCompleteLogger(DPADLoggerFactory.getInstance().getLogger(this));
+        this.listeners.add(this.getGUI());
+        this.setRuntime(ClientRuntimeThread.STARTUP);
         
         // TODO: Config?
         // TODO: Connection pool
@@ -129,23 +178,32 @@ public class Client extends Engine {
     }
 
     @Override
-    public void setRuntime(RuntimeThread thread) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
-    }
-
-    @Override
-    public void sendQuitToRuntimeThread(String message, boolean error) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
-    }
-
-    @Override
     public void run() {
-        // TODO: Startup
-        
         while (this.isAlive && !this.errored) {
             try {
-                // TODO: Pulse client threads
-                Thread.sleep(100);
+                // 1) Await authentication and handle disconnect
+                if (this.session.getState() != NetworkThreadState.RUNNING) {
+                    Thread.sleep(100);
+                    continue;
+                }
+                
+                // 1) Start runtime selection thread
+                if (this.getRuntime() == ClientRuntimeThread.STARTUP) {
+                    this.setRuntime(ClientRuntimeThread.RUNTIME_SELECT);
+                }
+                
+                ClientRuntimeThread currentRuntime = this.getRuntime();
+                if (currentRuntime.isRunnable()) {
+                    RunnableThread thread = currentRuntime.getThread();
+                    thread.init();
+                    thread.addListener(this);
+                    thread.start();
+                    thread.join();
+                } 
+                
+                else {
+                    Thread.sleep(100);
+                }
             }
             
             catch (InterruptedException ex) {
@@ -157,6 +215,8 @@ public class Client extends Engine {
             this.main.setErrored("Error in client main thread", null);
         }
         
+        // No leaks
+        this.listeners.clear();
         this.finish();
     }
     
@@ -167,6 +227,11 @@ public class Client extends Engine {
         
         this.bootstrap.releaseExternalResources();
         this.info("Client Stopped!");
+    }
+    
+    public void channelDisconnect() {
+        // TODO: decide whether we should automatically reconnect
+        this.saveAndShutdown();
     }
 
     @Override
