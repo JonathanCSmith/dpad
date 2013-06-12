@@ -14,18 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.gui;
+package net.jonathansmith.javadpad.common.events.gui;
 
-import javax.swing.JPanel;
+import java.util.EventObject;
 
-import net.jonathansmith.javadpad.common.events.ChangeSender;
-import net.jonathansmith.javadpad.common.util.logging.LogDisplay;
+import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 
 /**
  *
  * @author Jon
  */
-public abstract class TabbedGUI extends JPanel implements LogDisplay, Runnable, ChangeSender {
-
-    public abstract void init();
+public class ContentChangedEvent extends EventObject {
+    
+    public ContentChangedEvent(TabbedGUI source) {
+        super(source);
+    }
 }

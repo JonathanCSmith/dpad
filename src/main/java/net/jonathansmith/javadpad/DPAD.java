@@ -19,8 +19,6 @@ package net.jonathansmith.javadpad;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JPanel;
-
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 
@@ -28,6 +26,7 @@ import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.gui.MainGUI;
 import net.jonathansmith.javadpad.common.gui.StartupViewController;
+import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
@@ -94,7 +93,7 @@ public class DPAD extends Thread {
         this.error = ex;
     }
     
-    public void acquireTab(Platform platform, JPanel panel) {
+    public void acquireTab(Platform platform, TabbedGUI panel) {
         this.gui.addTab(platform.toString().toLowerCase(), panel);
     }
     

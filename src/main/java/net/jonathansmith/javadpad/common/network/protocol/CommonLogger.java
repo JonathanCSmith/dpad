@@ -51,10 +51,14 @@ public class CommonLogger extends SimpleChannelHandler {
         
         PacketMessage message = (PacketMessage) msg.getMessage();
         
+        this.engine.info("");
+        this.engine.info("====================================================");
         this.engine.info("Pactet received on: " + this.engine.platform.toString().toLowerCase());
         this.engine.info("Packet has priority: " + message.getPriority().toString().toLowerCase());
         this.engine.info("Packet has id: " + message.getPacket().getID());
         this.engine.info("Packet descriptor is: " + message.getPacket().toString());
+        this.engine.info("====================================================");
+        this.engine.info("");
         
         ctx.sendUpstream(e);
     }
@@ -74,10 +78,14 @@ public class CommonLogger extends SimpleChannelHandler {
         
         PacketMessage message = (PacketMessage) msg.getMessage();
         
+        this.engine.info("");
+        this.engine.info("====================================================");
         this.engine.info("Packet being sent from: " + this.engine.platform.toString().toLowerCase());
         this.engine.info("Packet has priority: " + message.getPriority().toString().toLowerCase());
         this.engine.info("Packet has id: " + message.getPacket().getID());
         this.engine.info("Packet descriptor is: " + message.getPacket().toString());
+        this.engine.info("====================================================");
+        this.engine.info("");
         
         ctx.sendDownstream(e);
     }

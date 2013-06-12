@@ -179,6 +179,7 @@ public class SecurityHandler {
             
             outputSize += result.length;
             outputBlocks.add(result);
+            pos += length;
         }
             
         byte[] output = new byte[outputSize];

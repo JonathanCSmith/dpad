@@ -17,6 +17,9 @@
 package net.jonathansmith.javadpad.server.gui;
 
 
+import java.util.EventObject;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -28,6 +31,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.server.Server;
 
@@ -39,6 +43,8 @@ public class ServerGUI extends TabbedGUI {
 
     public final Server engine;
     
+    private final CopyOnWriteArrayList<ChangeListener> listeners;
+    
     private int[] textFieldLength = new int[1024];
     private int currentTextLength = 0;
     
@@ -47,6 +53,7 @@ public class ServerGUI extends TabbedGUI {
      */
     public ServerGUI(Server server) {
         this.engine = server;
+        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
     }
     
     @Override
@@ -91,6 +98,20 @@ public class ServerGUI extends TabbedGUI {
         
         this.textFieldLength[this.currentTextLength] = addedSize;
         this.currentTextLength = (this.currentTextLength + 1) % 1024;
+    }
+    
+    @Override
+    public void addListener(ChangeListener listener) {
+        if (!this.listeners.contains(listener)) {
+            this.listeners.add(listener);
+        }
+    }
+
+    @Override
+    public void fireChange(EventObject event) {
+        for (ChangeListener listener : this.listeners) {
+            listener.changeEventReceived(event);
+        }
     }
 
     /**

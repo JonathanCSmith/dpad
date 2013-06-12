@@ -34,7 +34,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
     private int type;
     private PacketPriority priority;
     private int paramCount;
-    private int[] paramSizes;
+    private int paramSize;
     private int frameRead = 0;
     private Packet packet;
     private CFBBlockCipher decrypter = null;
@@ -47,7 +47,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
     protected void cleanup() {
         this.type = -1;
         this.paramCount = 0;
-        this.paramSizes = null;
+        this.paramSize = 0;
         this.frameRead = -1;
         this.packet = null;
     }
@@ -69,7 +69,6 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 this.paramCount = buffer.readInt();
                 
                 if (this.paramCount > 0) {
-                    this.paramSizes = new int[this.paramCount];
                     this.frameRead = 0;
                     return this.continueDecoding(DecodingState.PARAM_SIZE);
                 }
@@ -79,12 +78,12 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 }
  
             case PARAM_SIZE:
-                this.paramSizes[this.frameRead] = buffer.readInt();
+                this.paramSize = buffer.readInt();
                 return this.continueDecoding(DecodingState.PARAM_VALUE);
  
             case PARAM_VALUE:
-                byte[] currentPayload = new byte[this.paramSizes[this.frameRead]];
-                byte[] outputPayload = new byte[this.paramSizes[this.frameRead]];
+                byte[] currentPayload = new byte[this.paramSize];
+                byte[] outputPayload = new byte[this.paramSize];
                 buffer.readBytes(currentPayload);
                 
                 if (this.decrypter != null && !this.packet.getIsUnencrypted()) {
