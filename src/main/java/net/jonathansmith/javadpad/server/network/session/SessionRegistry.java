@@ -43,7 +43,6 @@ public class SessionRegistry {
         int id = this.sessions.size();
         ServerSession session = new ServerSession(this.engine, c);
         this.sessions.put(session, true);
-        session.incrementState();
         return session;
     }
 

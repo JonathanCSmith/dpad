@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.common.network.packet.auth;
 
-import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 
@@ -36,9 +36,12 @@ import java.security.SecureRandom;
  */
 public class HandshakePacket extends Packet {
     
-    public String version = "";
-    
     private static final SecureRandom random = new SecureRandom();
+    private static final AtomicBoolean lock = new AtomicBoolean(false);
+    
+    private static int id;
+    
+    public String version = "";
     
     public HandshakePacket() {
         super();
@@ -46,6 +49,18 @@ public class HandshakePacket extends Packet {
     
     public HandshakePacket(Engine engine, Session session) {
         super(engine, session);
+    }
+    
+    @Override
+    public int getID() {
+        return id;
+    }
+
+    @Override
+    public void setID(int newID) {
+        if (lock.compareAndSet(false, true)) {
+            id = newID;
+        }
     }
 
     @Override
@@ -77,7 +92,7 @@ public class HandshakePacket extends Packet {
         }
         
         else {
-            this.version = Arrays.toString(bytes);
+            this.version = new String(bytes);
         }
     }
 

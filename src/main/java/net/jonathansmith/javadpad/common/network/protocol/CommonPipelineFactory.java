@@ -14,25 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.network;
+package net.jonathansmith.javadpad.common.network.protocol;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.network.protocol.CommonDecoder;
-import net.jonathansmith.javadpad.common.network.protocol.CommonDownstreamLogger;
-import net.jonathansmith.javadpad.common.network.protocol.CommonEncoder;
-import net.jonathansmith.javadpad.common.network.protocol.CommonHandler;
-import net.jonathansmith.javadpad.common.network.protocol.CommonUpstreamLogger;
 
 /**
  *
  * @author jonathansmith
  */
 public class CommonPipelineFactory implements ChannelPipelineFactory {
-    
     private final Engine engine;
 
     public CommonPipelineFactory(Engine engine) {
@@ -41,13 +35,11 @@ public class CommonPipelineFactory implements ChannelPipelineFactory {
     
     @Override
     public ChannelPipeline getPipeline() throws Exception {
+        CommonLogger logger = new CommonLogger(this.engine);
         CommonDecoder decoder = new CommonDecoder();
         CommonEncoder encoder = new CommonEncoder();
         CommonHandler handler = new CommonHandler(this.engine);
         
-        CommonDownstreamLogger outLogger = new CommonDownstreamLogger(this.engine);
-        CommonUpstreamLogger inLogger = new CommonUpstreamLogger(this.engine); // After Decoding
-        
-        return Channels.pipeline(outLogger, encoder, decoder, inLogger, handler);
+        return Channels.pipeline(encoder, decoder, logger, handler);
     }
 }

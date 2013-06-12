@@ -46,7 +46,7 @@ import net.jonathansmith.javadpad.common.database.Equipment;
 import net.jonathansmith.javadpad.common.database.Experiment;
 import net.jonathansmith.javadpad.common.database.User;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
-import net.jonathansmith.javadpad.common.network.CommonPipelineFactory;
+import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
 import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
@@ -111,6 +111,7 @@ public class Server extends Engine {
         
         // Add our appenders to existing loggers
         DPADLoggerFactory.getInstance().getLogger(this, "org.jboss.logging", Level.WARN);
+        DPADLoggerFactory.getInstance().getLogger(this, "org.jboss.netty", Level.INFO);
         DPADLoggerFactory.getInstance().getLogger(this, "org.hibernate", Level.WARN);
         
         Configuration config = this.buildSessionConfiguration();

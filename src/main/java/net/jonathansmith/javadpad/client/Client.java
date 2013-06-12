@@ -22,6 +22,8 @@ import java.net.SocketAddress;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.log4j.Level;
+
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.ChannelFuture;
@@ -38,7 +40,7 @@ import net.jonathansmith.javadpad.client.network.listeners.ClientConnectListener
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
-import net.jonathansmith.javadpad.common.network.CommonPipelineFactory;
+import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
 import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
@@ -90,6 +92,9 @@ public class Client extends Engine {
         // TODO: Default properties
         
         this.info("Beginning network initialisation");
+        
+        // Add our appenders to existing loggers
+        DPADLoggerFactory.getInstance().getLogger(this, "org.jboss.netty", Level.INFO);
         
         ChannelFactory factory;
         SocketAddress address;
