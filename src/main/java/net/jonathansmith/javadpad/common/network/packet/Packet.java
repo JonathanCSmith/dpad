@@ -66,7 +66,7 @@ public abstract class Packet {
     
     public abstract int getNumberOfPayloads();
     
-    public abstract int[] getPayloadSizes();
+    public abstract int getPayloadSize(int payloadNumber);
     
     public abstract byte[] writePayload(int payloadNumber, int providedSize);
     
@@ -80,18 +80,28 @@ public abstract class Packet {
     public abstract String toString();
     
     public static Class<? extends Packet> getPacket(int id) {
+        if (!packetMap.containsKey(id)) {
+            return packetMap.get(0);
+        }
+        
         return packetMap.get(id);
     }
     
     public static void addPacket(Class<? extends Packet> packet) {
         int packetID = packetMap.size();
         try {
-            packet.newInstance().setID(packetID);
+            if (!packetMap.containsValue(packet)) {
+                packet.newInstance().setID(packetID);
+                packetMap.put(packetID, packet);
+            }
+            
+            else {
+                throw new RuntimeException("Packet registration failure!");
+            }
             
         } catch (Exception ex) {
             System.out.println("Failed to add packet");
             ex.printStackTrace();
         }
-        packetMap.put(packetID, packet);
     }
 }

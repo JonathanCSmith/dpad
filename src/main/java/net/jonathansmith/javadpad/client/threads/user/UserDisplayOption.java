@@ -20,18 +20,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.util.EventObject;
 import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.client.Client;
+import net.jonathansmith.javadpad.client.events.UsersDataArrivedEvent;
 import net.jonathansmith.javadpad.client.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
+import net.jonathansmith.javadpad.client.threads.user.dialog.UserWaitDialog;
 import net.jonathansmith.javadpad.client.threads.user.panel.DisplayUserPane;
 import net.jonathansmith.javadpad.client.threads.user.panel.ExistingUserPane;
 import net.jonathansmith.javadpad.client.threads.user.panel.NewUserPane;
 import net.jonathansmith.javadpad.client.threads.user.toolbar.UserToolbar;
 import net.jonathansmith.javadpad.common.database.User;
+import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.gui.ModalClosedEvent;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.user.UsersRequestPacket;
@@ -41,12 +47,14 @@ import net.jonathansmith.javadpad.server.database.user.UserManager;
  *
  * @author Jon
  */
-public class UserDisplayOption extends DisplayOption implements MouseListener {
+public class UserDisplayOption extends DisplayOption implements MouseListener, ChangeListener {
     
     public DisplayUserPane displayPanel;
     public NewUserPane newUserPane;
     public ExistingUserPane existingUserPane;
     public UserToolbar userToolbar;
+    
+    private boolean queuedAction = false;
     
     public UserDisplayOption() {
         super();
@@ -82,6 +90,10 @@ public class UserDisplayOption extends DisplayOption implements MouseListener {
         Client client = (Client) this.engine;
         ClientSession session = client.getSession();
         
+        if (this.queuedAction) {
+            return;
+        }
+        
         if (evt.getSource() == this.userToolbar.newUser) {
             if (!(this.getCurrentView() instanceof NewUserPane)) {
                 this.setCurrentView(this.newUserPane);
@@ -93,26 +105,13 @@ public class UserDisplayOption extends DisplayOption implements MouseListener {
             if (!(this.getCurrentView() instanceof ExistingUserPane)) {
                 Packet p = new UsersRequestPacket(client, session);
                 session.addPacketToSend(PacketPriority.HIGH, p);
+                this.queuedAction = true;
                 
-                while (!session.arrivedSessionData.containsKey("Users")) {
-                    try {
-                        Thread.sleep(100);
-                    }
-                    
-                    catch (InterruptedException ex) {
-                        this.engine.error("Interrupted while waiting for data!");
-                    }
-                }
+                UserWaitDialog dialog = new UserWaitDialog(new JFrame(), true, session);
+                dialog.addListener(this);
+                Thread waitThread = new Thread(dialog);
                 
-                List<User> users = session.arrivedSessionData.get("Users");
-                
-                if (users.isEmpty()) {
-                    return;
-                }
-                
-                this.setCurrentView(this.existingUserPane);
-                this.existingUserPane.insertData(users);
-                client.getGUI().validateState();
+                waitThread.start();
             }
         }
         
@@ -185,6 +184,10 @@ public class UserDisplayOption extends DisplayOption implements MouseListener {
         Client client = (Client) this.engine;
         ClientSession session = client.getSession();
         
+        if (this.queuedAction) {
+            return;
+        }
+        
         if (me.getClickCount() == 2) {
             User user = this.existingUserPane.getSelectedUser();
             
@@ -204,4 +207,21 @@ public class UserDisplayOption extends DisplayOption implements MouseListener {
     public void mouseEntered(MouseEvent me) {}
 
     public void mouseExited(MouseEvent me) {}
+
+    public void changeEventReceived(EventObject event) {
+        Client client = (Client) this.engine;
+        ClientSession session = client.getSession();
+            
+        if (event instanceof UsersDataArrivedEvent) {
+            List<User> users = session.arrivedSessionData.get("Users");
+            this.queuedAction = false;
+            this.setCurrentView(this.existingUserPane);
+            this.existingUserPane.insertData(users);
+            client.getGUI().validateState();
+        }
+        
+        else if (event instanceof ModalClosedEvent) {
+            client.forceShutdown("Early exit forced by user closing modal", null);
+        }
+    }
 }

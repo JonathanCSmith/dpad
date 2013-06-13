@@ -70,8 +70,14 @@ public class HandshakePacket extends Packet {
     }
 
     @Override
-    public int[] getPayloadSizes() {
-        return new int[] {this.engine.getVersion().getBytes().length};
+    public int getPayloadSize(int payloadNumber) {
+        switch (payloadNumber) {
+            case 0:
+                return this.version.getBytes().length;
+                
+            default:
+                return 0;
+        }
     }
 
     @Override

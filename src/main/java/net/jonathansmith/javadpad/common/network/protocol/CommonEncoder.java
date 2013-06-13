@@ -42,11 +42,15 @@ public class CommonEncoder extends OneToOneEncoder {
             Packet p = ((PacketMessage) o).getPacket();
             PacketPriority priority = ((PacketMessage) o).getPriority();
             
-            int[] packetPayloadSizes = p.getPayloadSizes();
-            int size = 0;
             int numberOfPayloads = p.getNumberOfPayloads();
-            for (Integer i : packetPayloadSizes) {
-                size += 8 + i;
+            int[] packetPayloadSizes = new int[numberOfPayloads];
+            int size = 0;
+            
+            if (numberOfPayloads != 0) {
+                for (int i = 0; i < numberOfPayloads; i++) {
+                    packetPayloadSizes[i] = p.getPayloadSize(i);
+                    size += 8 + packetPayloadSizes[i];
+                }
             }
             
             ChannelBuffer buff = ChannelBuffers.buffer(8 + 1 + 8 + size);
@@ -54,18 +58,20 @@ public class CommonEncoder extends OneToOneEncoder {
             buff.writeByte(priority.ordinal());
             buff.writeInt(numberOfPayloads);
             
-            for (int i = 0; i < numberOfPayloads; i++) {
-                buff.writeInt(packetPayloadSizes[i]);
-                byte[] currentPayload = p.writePayload(i, packetPayloadSizes[i]);
-                
-                if (this.encrypter != null && !p.getIsUnencrypted()) {
-                    byte[] outputPayload = new byte[packetPayloadSizes[i]];
-                    this.encrypter.encryptBlock(currentPayload, 0, outputPayload, 0);
-                    buff.writeBytes(outputPayload);
-                }
-                
-                else {
-                    buff.writeBytes(currentPayload);
+            if (numberOfPayloads != 0) {
+                for (int i = 0; i < numberOfPayloads; i++) {
+                    buff.writeInt(packetPayloadSizes[i]);
+                    byte[] currentPayload = p.writePayload(i, packetPayloadSizes[i]);
+
+                    if (this.encrypter != null && !p.getIsUnencrypted()) {
+                        byte[] outputPayload = new byte[packetPayloadSizes[i]];
+                        this.encrypter.encryptBlock(currentPayload, 0, outputPayload, 0);
+                        buff.writeBytes(outputPayload);
+                    }
+
+                    else {
+                        buff.writeBytes(currentPayload);
+                    }
                 }
             }
             

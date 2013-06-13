@@ -16,6 +16,7 @@
  */
 package net.jonathansmith.javadpad.common.network.packet.user;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -52,6 +53,10 @@ public class UsersResponsePacket extends Packet {
     }
     
     private void serializeUsers() {
+        if (this.users.isEmpty()) {
+            return;
+        }
+        
         User user;
         byte[][] temps = new byte[this.users.size()][];
         for (int i = 0; i < this.users.size(); i++) {
@@ -77,22 +82,28 @@ public class UsersResponsePacket extends Packet {
 
     @Override
     public int getNumberOfPayloads() {
+        if(this.users.isEmpty()) {
+            return 0;
+        }
+        
         return this.users.size();
     }
 
     @Override
-    public int[] getPayloadSizes() {
-        int[] sizes = new int[this.users.size()];
-        
-        for (int i = 0; i < this.serializedUsers.length; i++) {
-            sizes[i] = this.serializedUsers[i].length;
+    public int getPayloadSize(int payloadNumber) {
+        if (this.users.isEmpty()) {
+            return 0;
         }
         
-        return sizes;
+        return this.serializedUsers[payloadNumber].length;
     }
 
     @Override
     public byte[] writePayload(int payloadNumber, int providedSize) {
+        if (this.users.isEmpty()) {
+            return null;
+        }
+        
         return this.serializedUsers[payloadNumber];
     }
 
@@ -104,6 +115,10 @@ public class UsersResponsePacket extends Packet {
 
     @Override
     public void handleClientSide() {
+        if (this.users == null) {
+            this.users = new ArrayList<User> ();
+        }
+        
         this.session.addArrivedDataset("Users", this.users);
     }
 
@@ -112,6 +127,15 @@ public class UsersResponsePacket extends Packet {
 
     @Override
     public String toString() {
-        return this.users.size() + " users packaged in User response packet";
+        int size;
+        if (this.users == null) {
+            size = 0;
+        }
+        
+        else {
+            size = this.users.size();
+        }
+        
+        return size + " users packaged in User response packet";
     }
 }

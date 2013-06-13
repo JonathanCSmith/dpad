@@ -14,36 +14,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.network.packet.user;
-
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+package net.jonathansmith.javadpad.common.network.packet;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.User;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
-import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.session.Session;
-import net.jonathansmith.javadpad.server.database.user.UserManager;
 
 /**
  *
  * @author Jon
  */
-public class UsersRequestPacket extends Packet {
-
-    private static final AtomicBoolean lock = new AtomicBoolean(false);
+public class DefaultPacket extends Packet {
     
     private static int id;
     
-    public UsersRequestPacket() {
+    public DefaultPacket() {
         super();
     }
     
-    public UsersRequestPacket(Engine engine, Session session) {
+    public DefaultPacket(Engine engine, Session session) {
         super(engine, session);
     }
-    
+
     @Override
     public int getID() {
         return id;
@@ -51,21 +42,23 @@ public class UsersRequestPacket extends Packet {
 
     @Override
     public void setID(int newID) {
-        if (lock.compareAndSet(false, true)) {
-            id = newID;
+        if (newID != 0) {
+            throw new RuntimeException("Default packet must have id 0, as it is the packet fallback");
         }
+        
+        id = newID;
     }
 
     @Override
     public int getNumberOfPayloads() {
         return 0;
     }
-
+    
     @Override
     public int getPayloadSize(int payloadNumber) {
         return 0;
     }
-
+    
     @Override
     public byte[] writePayload(int payloadNumber, int providedSize) {
         return null;
@@ -78,14 +71,11 @@ public class UsersRequestPacket extends Packet {
     public void handleClientSide() {}
 
     @Override
-    public void handleServerSide() {
-        List<User> users = UserManager.getInstance().loadAll();
-        Packet p = new UsersResponsePacket(this.engine, this.session, users);
-        this.session.addPacketToSend(PacketPriority.HIGH, p);
-    }
+    public void handleServerSide() {}
 
     @Override
     public String toString() {
-        return "User request packet";
+        return "Blank packet: this is the packet fallback, if you are seeing this, it is likely that you forgot to register one of your packets!";
     }
+    
 }
