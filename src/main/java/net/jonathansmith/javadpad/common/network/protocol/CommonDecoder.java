@@ -82,6 +82,17 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 return this.continueDecoding(DecodingState.PARAM_VALUE);
  
             case PARAM_VALUE:
+                if (this.paramSize == 0) {
+                    this.frameRead++;
+                    if (this.frameRead >= this.paramCount) {
+                        return this.finishedDecoding(new PacketMessage(this.packet, this.priority));
+                    }
+                    
+                    else {
+                        return this.continueDecoding(DecodingState.PARAM_SIZE);
+                    }
+                }
+                
                 byte[] currentPayload = new byte[this.paramSize];
                 byte[] outputPayload = new byte[this.paramSize];
                 buffer.readBytes(currentPayload);

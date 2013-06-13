@@ -66,9 +66,17 @@ public class DataUpdatePacket extends Packet {
     }
     
     private void serializeData() {
-        this.serializedChanges = SerializationUtils.serialize(this.changes);
-        this.serializedDeletions = SerializationUtils.serialize(this.deletions);
-        this.serializedAdditions = SerializationUtils.serialize(this.additions);
+        if (this.changes != null || this.changes.size() != 0) {
+            this.serializedChanges = SerializationUtils.serialize(this.changes);
+        }
+        
+        if (this.deletions != null || this.deletions.size() != 0) {
+            this.serializedDeletions = SerializationUtils.serialize(this.deletions);
+        }
+        
+        if (this.additions != null || this.additions.size() != 0) {
+            this.serializedAdditions = SerializationUtils.serialize(this.additions);
+        }
     }
 
     @Override
@@ -98,12 +106,24 @@ public class DataUpdatePacket extends Packet {
                 return 1;
                 
             case 2:
+                if (this.serializedChanges == null) {
+                    return 0;
+                }
+                
                 return this.serializedChanges.length;
                 
             case 3:
+                if (this.serializedDeletions == null) {
+                    return 0;
+                }
+                
                 return this.serializedDeletions.length;
                 
             case 4:
+                if (this.serializedAdditions == null) {
+                    return 0;
+                }
+                
                 return this.serializedAdditions.length;
                 
             default:
@@ -184,6 +204,33 @@ public class DataUpdatePacket extends Packet {
 
     @Override
     public String toString() {
-        return "Data update packet with: " + this.changes.size() + " changes, " + this.deletions.size() + " deletions and " + this.additions.size() + " additions.";
+        int changesSize;
+        if (this.changes == null) {
+            changesSize = 0;
+        }
+        
+        else {
+            changesSize = this.changes.size();
+        }
+        
+        int deletionsSize;
+        if (this.deletions == null) {
+            deletionsSize = 0;
+        }
+        
+        else {
+            deletionsSize = this.deletions.size();
+        }
+        
+        int additionsSize;
+        if (this.additions == null) {
+            additionsSize = 0;
+        }
+        
+        else {
+            additionsSize = this.additions.size();
+        }
+        
+        return "Data update packet with: " + changesSize + " changes, " + deletionsSize + " deletions and " + additionsSize + " additions.";
     }
 }

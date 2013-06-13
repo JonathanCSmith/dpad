@@ -24,6 +24,7 @@ import java.util.EventObject;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.DisplayOption;
@@ -106,11 +107,17 @@ public class UserDisplayOption extends DisplayOption implements MouseListener, C
                 if (data == null) {
                     this.queuedAction = true;
                     
-                    UserWaitDialog dialog = new UserWaitDialog(new JFrame(), true, session);
+                    final UserWaitDialog dialog = new UserWaitDialog(new JFrame(), true, session);
                     dialog.addListener(this);
                     Thread waitThread = new Thread(dialog);
-
                     waitThread.start();
+                    
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialog.setVisible(true);
+                        }
+                    });
                 }
                 
                 else {
