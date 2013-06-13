@@ -58,6 +58,7 @@ public final class ClientSession extends Session {
         if (key.contentEquals(this.lockKey)) {
             this.fireChange(new DataArriveEvent(dataType));
             this.sessionData.put(dataType, data);
+            this.sessionDataTimestamp.put(dataType, System.currentTimeMillis());
         }
     }
 

@@ -101,5 +101,4 @@ public class EncryptedSessionKeyPacket extends Packet {
     public String toString() {
         return "Encrypted session key packet";
     }
-    
 }

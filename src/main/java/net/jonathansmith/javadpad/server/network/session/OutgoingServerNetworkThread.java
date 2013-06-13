@@ -23,6 +23,7 @@ import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKeyPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
@@ -73,7 +74,7 @@ class OutgoingServerNetworkThread extends NetworkThread {
                     iter.remove();
                     
                     if (this.session.getState() != NetworkThreadState.RUNNING) {
-                        if (!(packet instanceof HandshakePacket) && !(packet instanceof EncryptionKeyRequestPacket) && !(packet instanceof EncryptionKeyResponsePacket)) {
+                        if (!(packet instanceof HandshakePacket) && !(packet instanceof EncryptionKeyRequestPacket) && !(packet instanceof EncryptionKeyResponsePacket)&& !(packet instanceof EncryptedSessionKeyPacket)) {
                             return;
                         }
                     }

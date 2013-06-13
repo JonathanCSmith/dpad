@@ -18,6 +18,7 @@ package net.jonathansmith.javadpad.server.database;
 
 import java.io.Serializable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.jonathansmith.javadpad.common.database.Record;
@@ -70,7 +71,13 @@ public class GenericDAO<T extends Record, ID extends Serializable> {
     public RecordsList<T> findAll(Class clazz) {
         Session sess = this.getSession();
         Query query = sess.createQuery("from " + clazz.getName());
-        RecordsList<T> T = (RecordsList) query.list();
+        ArrayList<T> array = (ArrayList<T>) query.list();
+        RecordsList<T> T = new RecordsList<T> ();
+        
+        for (int i = 0; i < array.size(); i++) {
+            T.add(array.get(i));
+        }
+        
         return T;
     }
 }

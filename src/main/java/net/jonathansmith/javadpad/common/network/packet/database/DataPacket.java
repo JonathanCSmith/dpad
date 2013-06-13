@@ -55,6 +55,10 @@ public class DataPacket extends Packet {
     }
     
     private void serializeData() {
+        if (this.data == null || this.data.size() == 0) {
+            return;
+        }
+        
         this.serializedData = SerializationUtils.serialize(this.data);
     }
     
@@ -72,6 +76,10 @@ public class DataPacket extends Packet {
 
     @Override
     public int getNumberOfPayloads() {
+        if (this.data == null || this.data.size() == 0) {
+            return 2;
+        }
+        
         return 3;
     }
 
@@ -142,6 +150,15 @@ public class DataPacket extends Packet {
 
     @Override
     public String toString() {
-        return "Data packet containing: " + this.dataType.toString().toLowerCase() + " with " + this.data.size() + " entries";
+        int size;
+        if (this.data == null) {
+            size = 0;
+        }
+        
+        else {
+            size = this.data.size();
+        }
+        
+        return "Data packet containing: " + this.dataType.toString().toLowerCase() + " with " + size + " entries";
     }
 }
