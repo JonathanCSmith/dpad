@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.server.database.batch;
 
-import net.jonathansmith.javadpad.common.database.Batch;
+import net.jonathansmith.javadpad.common.database.records.Batch;
 import net.jonathansmith.javadpad.server.database.GenericDAO;
 import net.jonathansmith.javadpad.server.database.GenericManager;
 

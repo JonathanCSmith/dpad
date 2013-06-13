@@ -22,7 +22,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.jonathansmith.javadpad.common.database.Experiment;
+import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.server.database.experiment.ExperimentListModel;
 
 /**

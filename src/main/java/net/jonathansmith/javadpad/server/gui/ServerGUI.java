@@ -106,6 +106,13 @@ public class ServerGUI extends TabbedGUI {
             this.listeners.add(listener);
         }
     }
+    
+    @Override
+    public void removeListener(ChangeListener listener) {
+        if (this.listeners.contains(listener)) {
+            this.listeners.remove(listener);
+        }
+    }
 
     @Override
     public void fireChange(EventObject event) {

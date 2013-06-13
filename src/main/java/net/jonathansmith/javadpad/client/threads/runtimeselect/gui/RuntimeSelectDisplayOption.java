@@ -24,9 +24,9 @@ import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.panel.RuntimeSelectPane;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.toolbar.RuntimeSelectToolbar;
-import net.jonathansmith.javadpad.common.database.Batch;
-import net.jonathansmith.javadpad.common.database.Experiment;
-import net.jonathansmith.javadpad.common.database.User;
+import net.jonathansmith.javadpad.common.database.records.Batch;
+import net.jonathansmith.javadpad.common.database.records.Experiment;
+import net.jonathansmith.javadpad.common.database.records.User;
 
 /**
  *

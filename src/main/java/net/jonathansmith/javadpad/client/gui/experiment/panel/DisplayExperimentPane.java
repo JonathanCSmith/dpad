@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.client.gui.experiment.panel;
 
-import net.jonathansmith.javadpad.common.database.Experiment;
+import net.jonathansmith.javadpad.common.database.records.Experiment;
 
 /**
  *

@@ -27,7 +27,6 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.protocol.CommonDecoder;
@@ -142,7 +141,6 @@ public class EncryptionKeyResponsePacket extends Packet {
         fromServerCipher.init(SecurityHandler.DECRYPT_MODE, symmetricKey);
         CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
         decoder.setDecryption(fromServerCipher);
-        this.session.incrementState();
     }
 
     @Override
@@ -193,8 +191,11 @@ public class EncryptionKeyResponsePacket extends Packet {
         decoder.setDecryption(fromClientCipher);
         
         Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, new byte[0], new byte[0]);
-        this.session.sendPacketMessage(new PacketMessage(p, PacketPriority.CRITICAL));
+        this.session.addPacketToSend(PacketPriority.CRITICAL, p);
         this.session.incrementState();
+        
+        // TODO: Delay or not delay
+        ((ServerSession) this.session).buildAndSendEncryptedSessionKeyPacket();
     }
     
     @Override

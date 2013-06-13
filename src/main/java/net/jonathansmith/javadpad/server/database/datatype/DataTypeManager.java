@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.server.database.datatype;
 
-import net.jonathansmith.javadpad.common.database.DataType;
+import net.jonathansmith.javadpad.common.database.records.DataType;
 import net.jonathansmith.javadpad.server.database.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.GenericManager;
 

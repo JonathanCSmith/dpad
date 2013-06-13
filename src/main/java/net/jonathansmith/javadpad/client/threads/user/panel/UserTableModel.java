@@ -16,11 +16,14 @@
  */
 package net.jonathansmith.javadpad.client.threads.user.panel;
 
-import net.jonathansmith.javadpad.common.database.User;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
+
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
  *
@@ -74,7 +77,13 @@ public class UserTableModel extends AbstractTableModel {
         return this.users.get(rowNum);
     }
     
-    public void setData(List<User> users) {
-        this.users = users;
+    public void setData(RecordsList<Record> users) {
+        this.users.clear();
+        
+        for (Record data : users) {
+            if (data instanceof User) {
+                this.users.add((User) data);
+            }
+        }
     }
 }

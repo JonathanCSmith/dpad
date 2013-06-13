@@ -29,8 +29,8 @@ import net.jonathansmith.javadpad.client.gui.batch.panel.ExistingBatchPane;
 import net.jonathansmith.javadpad.client.gui.batch.panel.NewBatchPane;
 import net.jonathansmith.javadpad.client.gui.batch.toolbar.BatchToolbar;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
-import net.jonathansmith.javadpad.common.database.Batch;
-import net.jonathansmith.javadpad.common.database.Experiment;
+import net.jonathansmith.javadpad.common.database.records.Batch;
+import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.server.database.batch.BatchManager;
 import net.jonathansmith.javadpad.server.database.experiment.ExperimentManager;
 

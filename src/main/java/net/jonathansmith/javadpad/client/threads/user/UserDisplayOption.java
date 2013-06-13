@@ -21,13 +21,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import java.util.EventObject;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.client.Client;
-import net.jonathansmith.javadpad.client.events.UsersDataArrivedEvent;
 import net.jonathansmith.javadpad.client.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.user.dialog.UserWaitDialog;
@@ -35,12 +33,12 @@ import net.jonathansmith.javadpad.client.threads.user.panel.DisplayUserPane;
 import net.jonathansmith.javadpad.client.threads.user.panel.ExistingUserPane;
 import net.jonathansmith.javadpad.client.threads.user.panel.NewUserPane;
 import net.jonathansmith.javadpad.client.threads.user.toolbar.UserToolbar;
-import net.jonathansmith.javadpad.common.database.User;
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalClosedEvent;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
-import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.packet.user.UsersRequestPacket;
+import net.jonathansmith.javadpad.common.network.RequestType;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.database.user.UserManager;
 
 /**
@@ -103,15 +101,23 @@ public class UserDisplayOption extends DisplayOption implements MouseListener, C
         
         else if (evt.getSource() == this.userToolbar.loadUser) {
             if (!(this.getCurrentView() instanceof ExistingUserPane)) {
-                Packet p = new UsersRequestPacket(client, session);
-                session.addPacketToSend(PacketPriority.HIGH, p);
-                this.queuedAction = true;
+                RecordsList<Record> data = session.checkoutData(RequestType.ALL_USERS);
                 
-                UserWaitDialog dialog = new UserWaitDialog(new JFrame(), true, session);
-                dialog.addListener(this);
-                Thread waitThread = new Thread(dialog);
+                if (data == null) {
+                    this.queuedAction = true;
+                    
+                    UserWaitDialog dialog = new UserWaitDialog(new JFrame(), true, session);
+                    dialog.addListener(this);
+                    Thread waitThread = new Thread(dialog);
+
+                    waitThread.start();
+                }
                 
-                waitThread.start();
+                else {
+                    this.setCurrentView(this.existingUserPane);
+                    this.existingUserPane.insertData(data);
+                    client.getGUI().validateState();
+                }
             }
         }
         
@@ -212,16 +218,23 @@ public class UserDisplayOption extends DisplayOption implements MouseListener, C
         Client client = (Client) this.engine;
         ClientSession session = client.getSession();
             
-        if (event instanceof UsersDataArrivedEvent) {
-            List<User> users = session.arrivedSessionData.get("Users");
-            this.queuedAction = false;
-            this.setCurrentView(this.existingUserPane);
-            this.existingUserPane.insertData(users);
-            client.getGUI().validateState();
-        }
-        
-        else if (event instanceof ModalClosedEvent) {
-            client.forceShutdown("Early exit forced by user closing modal", null);
+        if (event instanceof ModalClosedEvent) {
+            ModalClosedEvent evt = (ModalClosedEvent) event;
+            if (evt.getWasForcedClosed()) {
+                client.forceShutdown("Early exit forced by user closing modal", null);
+            }
+            
+            else {
+                RecordsList<Record> users = session.checkoutData(RequestType.ALL_USERS);
+                if (users == null) {
+                    return; // No better way to handle I think, let the user refire an update request
+                }
+                
+                this.queuedAction = false;
+                this.setCurrentView(this.existingUserPane);
+                this.existingUserPane.insertData(users);
+                client.getGUI().validateState();
+            }
         }
     }
 }

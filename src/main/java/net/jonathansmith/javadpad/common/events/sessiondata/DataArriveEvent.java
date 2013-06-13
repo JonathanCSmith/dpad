@@ -14,15 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.experiment;
+package net.jonathansmith.javadpad.common.events.sessiondata;
 
-import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.server.database.GenericDAO;
+import java.util.EventObject;
+
+import net.jonathansmith.javadpad.common.network.RequestType;
 
 /**
  *
  * @author Jon
  */
-public class ExperimentDAO extends GenericDAO<Experiment, String> {
+public class DataArriveEvent extends EventObject {
     
+    public DataArriveEvent(RequestType tag) {
+        super(tag);
+    }
 }

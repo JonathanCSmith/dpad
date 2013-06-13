@@ -29,11 +29,13 @@ import net.jonathansmith.javadpad.common.gui.StartupViewController;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.network.packet.DefaultPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKeyPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
-import net.jonathansmith.javadpad.common.network.packet.user.UsersRequestPacket;
-import net.jonathansmith.javadpad.common.network.packet.user.UsersResponsePacket;
+import net.jonathansmith.javadpad.common.network.packet.database.DataPacket;
+import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
 import net.jonathansmith.javadpad.common.util.PlatformConverter;
 import net.jonathansmith.javadpad.server.Server;
 
@@ -121,8 +123,10 @@ public class DPAD extends Thread {
         Packet.addPacket(HandshakePacket.class);
         Packet.addPacket(EncryptionKeyRequestPacket.class);
         Packet.addPacket(EncryptionKeyResponsePacket.class);
-        Packet.addPacket(UsersRequestPacket.class);
-        Packet.addPacket(UsersResponsePacket.class);
+        Packet.addPacket(EncryptedSessionKeyPacket.class);
+        Packet.addPacket(DataPacket.class);
+        Packet.addPacket(DataRequestPacket.class);
+        Packet.addPacket(DataUpdatePacket.class);
     }
     
     @Override

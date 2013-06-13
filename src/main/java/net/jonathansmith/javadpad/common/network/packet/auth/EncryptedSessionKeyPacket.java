@@ -14,36 +14,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.network.packet.user;
+package net.jonathansmith.javadpad.common.network.packet.auth;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.User;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
-import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.session.Session;
-import net.jonathansmith.javadpad.server.database.user.UserManager;
 
 /**
  *
  * @author Jon
  */
-public class UsersRequestPacket extends Packet {
-
-    private static final AtomicBoolean lock = new AtomicBoolean(false);
+public class EncryptedSessionKeyPacket extends Packet {
     
     private static int id;
     
-    public UsersRequestPacket() {
+    private final AtomicBoolean lock = new AtomicBoolean(false);
+    
+    private String sessionID;
+    
+    public EncryptedSessionKeyPacket() {
         super();
     }
     
-    public UsersRequestPacket(Engine engine, Session session) {
+    public EncryptedSessionKeyPacket(Engine engine, Session session, String id) {
         super(engine, session);
+        this.sessionID = id;
     }
-    
+
     @Override
     public int getID() {
         return id;
@@ -51,41 +51,55 @@ public class UsersRequestPacket extends Packet {
 
     @Override
     public void setID(int newID) {
-        if (lock.compareAndSet(false, true)) {
+        if (this.lock.compareAndSet(false, true)) {
             id = newID;
         }
     }
 
     @Override
     public int getNumberOfPayloads() {
-        return 0;
+        return 1;
     }
 
     @Override
     public int getPayloadSize(int payloadNumber) {
-        return 0;
+        if (payloadNumber != 0) {
+            return 0;
+        }
+        
+        return this.sessionID.getBytes().length;
     }
 
     @Override
     public byte[] writePayload(int payloadNumber, int providedSize) {
-        return null;
+        if (payloadNumber != 0) {
+            return null;
+        }
+        
+        return this.sessionID.getBytes();
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes) {}
-
-    @Override
-    public void handleClientSide() {}
-
-    @Override
-    public void handleServerSide() {
-        List<User> users = UserManager.getInstance().loadAll();
-        Packet p = new UsersResponsePacket(this.engine, this.session, users);
-        this.session.addPacketToSend(PacketPriority.HIGH, p);
+    public void parsePayload(int payloadNumber, byte[] bytes) {
+        if (payloadNumber != 0) {
+            return;
+        }
+        
+        this.sessionID = new String(bytes);
     }
+
+    @Override
+    public void handleClientSide() {
+        ((ClientSession) this.session).setKey(this.sessionID);
+        this.session.incrementState();
+    }
+
+    @Override
+    public void handleServerSide() {}
 
     @Override
     public String toString() {
-        return "User request packet";
+        return "Encrypted session key packet";
     }
+    
 }

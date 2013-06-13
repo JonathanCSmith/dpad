@@ -14,18 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.database;
+package net.jonathansmith.javadpad.common.database.records;
 
-import java.io.Serializable;
+import net.jonathansmith.javadpad.common.database.Record;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
-import org.hibernate.annotations.GenericGenerator;
 
 /**
  *
@@ -33,9 +30,8 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "Equipment", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class Equipment implements Serializable {
+public class Equipment extends Record {
     
-    private String uuid;
     private String equipmentUUID;
     private String name;
     private String description;
@@ -45,8 +41,6 @@ public class Equipment implements Serializable {
     public Equipment() {}
     
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "uuid", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
@@ -99,5 +93,24 @@ public class Equipment implements Serializable {
     
     public void setOrganization(String organization) {
         this.organization = organization;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Equipment) {
+            Equipment e = (Equipment) o;
+            if (this.getUUID().contentEquals(e.getUUID()) 
+                && this.getName().contentEquals(e.getName()) 
+                    && this.getDescription().contentEquals(e.getDescription()) 
+                    && this.getAuthor().contentEquals(e.getAuthor()) 
+                    && this.getEquipmentUUID().contentEquals(e.getEquipmentUUID()) 
+                    && this.getOrganization().contentEquals(e.getOrganization())) {
+                return true;
+            }
+            
+            return false;
+        }
+        
+        return false;
     }
 }

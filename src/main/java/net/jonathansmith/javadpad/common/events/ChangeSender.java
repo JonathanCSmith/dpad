@@ -26,5 +26,7 @@ public interface ChangeSender {
     
     public void addListener(ChangeListener listener);
     
+    public void removeListener(ChangeListener listener);
+    
     public void fireChange(EventObject event);
 }

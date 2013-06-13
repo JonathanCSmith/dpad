@@ -16,10 +16,9 @@
  */
 package net.jonathansmith.javadpad.server.database;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.Server;
 
 import org.hibernate.HibernateException;
@@ -28,7 +27,7 @@ import org.hibernate.HibernateException;
  *
  * @author jonathansmith
  */
-public abstract class GenericManager<T> {
+public abstract class GenericManager<T extends Record> {
     
     public final GenericDAO dao;
     protected final Engine engine;
@@ -40,8 +39,8 @@ public abstract class GenericManager<T> {
         this.clazz = clazz;
     }
     
-    public List<T> loadAll() {
-        List<T> all = new ArrayList<T> ();
+    public RecordsList<Record> loadAll() {
+        RecordsList<Record> all = new RecordsList<Record> ();
         try {
             DatabaseConnection.beginTransaction();
             all = this.dao.findAll(this.clazz);

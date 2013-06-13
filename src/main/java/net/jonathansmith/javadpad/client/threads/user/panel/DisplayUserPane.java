@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.client.threads.user.panel;
 
-import net.jonathansmith.javadpad.common.database.User;
+import net.jonathansmith.javadpad.common.database.records.User;
 
 /**
  *

@@ -37,7 +37,14 @@ public abstract class RunnableThread extends Thread implements ChangeSender {
     @Override
     public void addListener(ChangeListener listener) {
         if (!this.listeners.contains(listener)) {
-            listeners.add(listener);
+            this.listeners.add(listener);
+        }
+    }
+    
+    @Override
+    public void removeListener(ChangeListener listener) {
+        if (this.listeners.contains(listener)) {
+            this.listeners.remove(listener);
         }
     }
     

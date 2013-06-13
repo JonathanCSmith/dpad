@@ -108,6 +108,13 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
     }
     
     @Override
+    public void removeListener(ChangeListener listener) {
+        if (listeners.contains(listener)) {
+            this.listeners.remove(listener);
+        }
+    }
+    
+    @Override
     public void fireChange(EventObject evt) {
         for(ChangeListener listener : this.listeners) {
             listener.changeEventReceived(evt);
