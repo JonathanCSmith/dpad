@@ -16,6 +16,8 @@
  */
 package net.jonathansmith.javadpad.server.network.session;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
@@ -32,19 +34,24 @@ import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.database.user.UserManager;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+
 /**
  *
  * @author Jon
  */
 public final class ServerSession extends Session {
     
+    private final AtomicBoolean shaLock = new AtomicBoolean(false);
+    
     private byte[] token;
     private String hash;
     
     public ServerSession(Engine eng, Channel channel) {
         super(eng, channel);
-        this.incoming = new IncomingServerNetworkThread(eng, this);
-        this.outgoing = new OutgoingServerNetworkThread(eng, this);
+        this.incoming = new IncomingServerNetworkThread(eng, this, this.getSessionID());
+        this.outgoing = new OutgoingServerNetworkThread(eng, this, this.getSessionID());
         this.start();
     }
     
@@ -130,5 +137,49 @@ public final class ServerSession extends Session {
     @Override
     public void dispose() {
         throw new UnsupportedOperationException("Not supported yet."); // TODO
+    }
+    
+    public void sha1Hash(Object[] input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            md.reset();
+            md.update(this.getSessionID().getBytes("ISO_8859_1"));
+            
+            for (Object o : input) {
+                if (o instanceof String) {
+                    md.update(((String) o).getBytes("ISO_8859_1"));
+                }
+                
+                else if (o instanceof byte[]) {
+                    md.update((byte[]) o);
+                }
+                
+                else {
+                    this.setHash(null);
+                }
+            }
+            
+            BigInteger bigInt = new BigInteger(md.digest());
+            
+            if (bigInt.compareTo(BigInteger.ZERO) < 0) {
+                bigInt = bigInt.negate();
+                this.setHash("-" + bigInt.toString(16));
+            }
+            
+            else {
+                this.setHash(bigInt.toString(16));
+            }
+        }
+        
+        catch (Exception ex) {
+            this.engine.error("Error in sha1 digest", ex);
+            this.setHash(null);
+        }
+    }
+    
+    private void setHash(String hash) {
+        if (this.shaLock.compareAndSet(false, true)) {
+            this.hash = hash;
+        }
     }
 }

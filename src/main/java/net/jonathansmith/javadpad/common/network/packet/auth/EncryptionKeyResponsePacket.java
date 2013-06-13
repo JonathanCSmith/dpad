@@ -36,9 +36,6 @@ import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadSt
 import net.jonathansmith.javadpad.common.security.SecurityHandler;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-
 /**
  *
  * @author Jon
@@ -161,22 +158,21 @@ public class EncryptionKeyResponsePacket extends Packet {
         final byte[] savedToken = ((ServerSession) this.session).getVerifyToken();
         
         if (validateToken.length != 4) {
-            this.engine.warn("Invalid token from session: " + this.session.getSessionID());
+            this.engine.warn("Invalid token from session");
             this.session.disconnect();
             return;
         }
         
         for (int i = 0; i < validateToken.length; i++) {
             if (validateToken[i] != savedToken[i]) {
-                this.engine.warn("Invalid token from session: " + this.session.getSessionID());
+                this.engine.warn("Invalid token from session");
                 this.session.disconnect();
                 return;
             }
         }
         
         byte[] publicKeyEncoded = SecurityHandler.getInstance().encodeKey(pair.getPublic());
-        String sha1Hash = this.sha1Hash(new Object[] {this.session.getSessionID(), initialVector, publicKeyEncoded});
-        ((ServerSession) this.session).setSha1Hash(sha1Hash);
+        ((ServerSession) this.session).sha1Hash(new Object[] {initialVector, publicKeyEncoded});
         
         CipherParameters symmetricKey = new ParametersWithIV(new KeyParameter(initialVector), initialVector);
         
@@ -201,42 +197,5 @@ public class EncryptionKeyResponsePacket extends Packet {
     @Override
     public String toString() {
         return "Encryption key response packet";
-    }
-    
-    private String sha1Hash(Object[] input) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            md.reset();
-            
-            for (Object o : input) {
-                if (o instanceof String) {
-                    md.update(((String) o).getBytes("ISO_8859_1"));
-                }
-                
-                else if (o instanceof byte[]) {
-                    md.update((byte[]) o);
-                }
-                
-                else {
-                    return null;
-                }
-            }
-            
-            BigInteger bigInt = new BigInteger(md.digest());
-            
-            if (bigInt.compareTo(BigInteger.ZERO) < 0) {
-                bigInt = bigInt.negate();
-                return "-" + bigInt.toString(16);
-            }
-            
-            else {
-                return bigInt.toString(16);
-            }
-        }
-        
-        catch (Exception ex) {
-            this.engine.error("Error in sha1 digest", ex);
-            return null;
-        }
     }
 }

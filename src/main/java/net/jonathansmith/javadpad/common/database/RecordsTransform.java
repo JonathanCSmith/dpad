@@ -74,6 +74,12 @@ public class RecordsTransform {
     
     // TODO: verify that this works!
     public static RecordsTransform getTransform(RecordsList<Record> oldData, RecordsList<Record> newData) {
+        Record firstOld = oldData.getFirst();
+        Record firstNew = newData.getFirst();
+        if (!firstOld.getClass().equals(firstNew.getClass())) {
+            return null;
+        }
+        
         LinkedHashMap<Integer, Record> changes = new LinkedHashMap<Integer, Record> ();
         LinkedList<Integer> deletions = new LinkedList<Integer> ();
         RecordsList<Record> additions = new RecordsList<Record> ();

@@ -74,7 +74,7 @@ public abstract class Session implements ChangeSender {
     }
 
     // Core properties
-    public final String getSessionID() {
+    protected final String getSessionID() {
         return this.id;
     }
     
@@ -104,7 +104,11 @@ public abstract class Session implements ChangeSender {
         this.incoming.addPacket(priority, p);
     }
     
-    public void sendPacketMessage(PacketMessage pm) {
+    public void sendPacketMessage(String key, PacketMessage pm) {
+        if (!key.contentEquals(this.getSessionID())) {
+            return;
+        }
+        
         this.channel.write(pm);
     }
     

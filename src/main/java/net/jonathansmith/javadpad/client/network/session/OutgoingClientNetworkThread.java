@@ -36,8 +36,8 @@ import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadSt
  */
 public class OutgoingClientNetworkThread extends NetworkThread {
     
-    public OutgoingClientNetworkThread(Engine eng, Session sess) {
-        super(eng, sess);
+    public OutgoingClientNetworkThread(Engine eng, Session sess, String key) {
+        super(eng, sess, key);
     }
 
     @Override
