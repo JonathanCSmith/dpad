@@ -46,11 +46,14 @@ public abstract class NetworkThread extends Thread {
     public final Engine engine;
     public final Session session;
     
+    private final String key;
+    
     private boolean shouldShutdown = false;
     
-    public NetworkThread(Engine engine, Session sess) {
+    public NetworkThread(Engine engine, Session sess, String key) {
         this.engine = engine;
         this.session = sess;
+        this.key = key;
     }
     
     public void addPacket(PacketPriority priority, Packet packet) {
@@ -58,7 +61,7 @@ public abstract class NetworkThread extends Thread {
     }
     
     public void sendPacket(PacketMessage pm) {
-        this.session.sendPacketMessage(pm);
+        this.session.sendPacketMessage(this.key, pm);
     }
     
     @Override

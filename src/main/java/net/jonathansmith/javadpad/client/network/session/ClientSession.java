@@ -44,8 +44,8 @@ public final class ClientSession extends Session {
     
     public ClientSession(Engine eng, Channel c) {
         super(eng, c);
-        this.incoming = new IncomingClientNetworkThread(eng, this);
-        this.outgoing = new OutgoingClientNetworkThread(eng, this);
+        this.incoming = new IncomingClientNetworkThread(eng, this, this.getSessionID());
+        this.outgoing = new OutgoingClientNetworkThread(eng, this, this.getSessionID());
         this.start();
     }    
     

@@ -51,7 +51,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
         if (this.engine.platform == Platform.SERVER) {
             ((Server) this.engine).getChannelGroup().add(c);
             this.setSession(((Server) this.engine).getSessionRegistry().addAndGetNewSession(c));
-            this.engine.info("Client connected with session id: " + this.session.getSessionID());
+            this.engine.info("Client connected");
         }
         
         else {
@@ -66,7 +66,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
         if (this.engine.platform == Platform.SERVER) {
             ((Server) this.engine).getChannelGroup().remove(c);
             ((Server) this.engine).getSessionRegistry().remove((ServerSession) this.session);
-            this.engine.info("Client disconnected with session id: " + this.session.getSessionID());
+            this.engine.info("Client disconnected");
         }
         
         else {
@@ -102,7 +102,7 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
         }
         
         else {
-            this.engine.error("Cannot have multiple sessions, session: " + session.getSessionID() + " attempted to override: " + this.session.getSessionID());
+            this.engine.error("Cannot have multiple sessions, a modification was attempted!");
         }
     }
 }
