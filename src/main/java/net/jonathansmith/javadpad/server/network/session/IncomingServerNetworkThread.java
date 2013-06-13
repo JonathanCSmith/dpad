@@ -57,7 +57,7 @@ class IncomingServerNetworkThread extends NetworkThread {
                 Packet packet;
                 
                 for (PacketPriority priority : PacketPriority.values()) {
-                    if (this.session.getState() != NetworkThreadState.RUNNING && priority == PacketPriority.HIGH) {
+                    if (this.session.getState() != NetworkThreadState.RUNNING && priority != PacketPriority.CRITICAL) {
                         break;
                     }
                     

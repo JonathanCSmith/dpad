@@ -27,10 +27,13 @@ import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.gui.MainGUI;
 import net.jonathansmith.javadpad.common.gui.StartupViewController;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
+import net.jonathansmith.javadpad.common.network.packet.DefaultPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
+import net.jonathansmith.javadpad.common.network.packet.user.UsersRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.user.UsersResponsePacket;
 import net.jonathansmith.javadpad.common.util.PlatformConverter;
 import net.jonathansmith.javadpad.server.Server;
 
@@ -114,9 +117,12 @@ public class DPAD extends Thread {
     }
     
     private void addPackets() {
+        Packet.addPacket(DefaultPacket.class);
         Packet.addPacket(HandshakePacket.class);
         Packet.addPacket(EncryptionKeyRequestPacket.class);
         Packet.addPacket(EncryptionKeyResponsePacket.class);
+        Packet.addPacket(UsersRequestPacket.class);
+        Packet.addPacket(UsersResponsePacket.class);
     }
     
     @Override
@@ -147,6 +153,7 @@ public class DPAD extends Thread {
                 engine.error("Data integrity cannot currently be guaranteed");
                 engine.error("===============================================");
                 engine.error(cause, this.error);
+                engine.error("===============================================");
             }
         }
         
@@ -178,7 +185,7 @@ public class DPAD extends Thread {
             StartupViewController controller = new StartupViewController(gui, dpad);
             gui.run();
             
-            while (dpad.getRuntimeSelected() == null) {
+            while (dpad.getRuntimeSelected() == null && gui.isVisible() && gui.isShowing()) {
                 try {
                     Thread.sleep(100);
                 }

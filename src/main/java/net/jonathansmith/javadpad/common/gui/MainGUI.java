@@ -235,6 +235,8 @@ public class MainGUI extends javax.swing.JFrame implements Runnable, ChangeListe
     }// </editor-fold>//GEN-END:initComponents
 
     private void GuiCloseListener(WindowEvent evt) {//GEN-FIRST:event_GuiCloseListener
+        this.setVisible(false);
+        this.dispose();
         this.main.shutdown();
     }//GEN-LAST:event_GuiCloseListener
 

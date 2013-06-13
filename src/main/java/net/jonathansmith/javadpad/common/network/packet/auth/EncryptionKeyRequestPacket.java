@@ -78,8 +78,17 @@ public class EncryptionKeyRequestPacket extends Packet {
     }
 
     @Override
-    public int[] getPayloadSizes() {
-        return new int[] {keys.length, token.length};
+    public int getPayloadSize(int payloadNumber) {
+        switch (payloadNumber) {
+            case 0:
+                return keys.length;
+                
+            case 1:
+                return token.length;
+                
+            default:
+                return 0;
+        }
     }
 
     @Override
