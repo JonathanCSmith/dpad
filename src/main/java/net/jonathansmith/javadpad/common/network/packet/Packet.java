@@ -62,7 +62,7 @@ public abstract class Packet {
     
     public abstract int getID();
     
-    public abstract void setID(int id);
+    public abstract void setID(int newID);
     
     public abstract int getNumberOfPayloads();
     

@@ -14,22 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.database;
+package net.jonathansmith.javadpad.common.database.records;
 
-import java.io.Serializable;
-
+import java.util.Arrays;
 import java.util.Set;
+
+import net.jonathansmith.javadpad.common.database.Record;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
-import org.hibernate.annotations.GenericGenerator;
 
 
 /**
@@ -38,9 +36,8 @@ import org.hibernate.annotations.GenericGenerator;
  */
 @Entity
 @Table(name = "User", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class User implements Serializable {
+public class User extends Record {
     
-    private String uuid;
     private String username;
     private String firstName;
     private String lastName;
@@ -57,8 +54,6 @@ public class User implements Serializable {
     }
     
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "uuid", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
@@ -126,5 +121,24 @@ public class User implements Serializable {
         if (this.experiments.contains(experiment)) {
             this.experiments.remove(experiment);
         }
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof User) {
+            User u = (User) o;
+            if (this.getExperiments().equals(u.getExperiments())
+                && this.getFirstName().contentEquals(u.getFirstName())
+                    && this.getLastName().contentEquals(u.getLastName())
+                    && Arrays.equals(this.getPassword(), u.getPassword())
+                    && this.getUUID().contentEquals(u.getUUID())
+                    && this.getUsername().contentEquals(u.getUsername())) {
+                return true;
+            }
+            
+            return false;
+        }
+        
+        return false;
     }
 }

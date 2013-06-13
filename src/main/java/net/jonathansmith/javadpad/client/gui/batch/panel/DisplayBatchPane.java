@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.client.gui.batch.panel;
 
-import net.jonathansmith.javadpad.common.database.Batch;
+import net.jonathansmith.javadpad.common.database.records.Batch;
 
 /**
  *

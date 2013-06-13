@@ -22,7 +22,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.jonathansmith.javadpad.common.database.Batch;
+import net.jonathansmith.javadpad.common.database.records.Batch;
 import net.jonathansmith.javadpad.server.database.batch.BatchListModel;
 
 /**

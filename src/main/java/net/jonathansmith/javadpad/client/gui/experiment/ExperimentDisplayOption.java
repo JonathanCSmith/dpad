@@ -29,8 +29,8 @@ import net.jonathansmith.javadpad.client.gui.experiment.panel.ExistingExperiment
 import net.jonathansmith.javadpad.client.gui.experiment.panel.NewExperimentPane;
 import net.jonathansmith.javadpad.client.gui.experiment.toolbar.ExperimentToolbar;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
-import net.jonathansmith.javadpad.common.database.Experiment;
-import net.jonathansmith.javadpad.common.database.User;
+import net.jonathansmith.javadpad.common.database.records.Experiment;
+import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.server.database.experiment.ExperimentManager;
 import net.jonathansmith.javadpad.server.database.user.UserManager;
 

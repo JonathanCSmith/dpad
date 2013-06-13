@@ -19,13 +19,24 @@ package net.jonathansmith.javadpad.server.network.session;
 import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.RecordsTransform;
+import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
+import net.jonathansmith.javadpad.common.network.RequestType;
+import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKeyPacket;
+import net.jonathansmith.javadpad.common.network.packet.database.DataPacket;
+import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.server.database.user.UserManager;
 
 /**
  *
  * @author Jon
  */
-public class ServerSession extends Session {
+public final class ServerSession extends Session {
     
     private byte[] token;
     private String hash;
@@ -52,7 +63,59 @@ public class ServerSession extends Session {
     public String getSha1Hash() {
         return this.hash;
     }
+    
+    public void buildAndSendEncryptedSessionKeyPacket() {
+        Packet p = new EncryptedSessionKeyPacket(this.engine, this, this.getSessionID());
+        this.addPacketToSend(PacketPriority.CRITICAL, p);
+    }
 
+    // Session data
+    @Override
+    public void addData(String key, RequestType dataType, RecordsList<Record> data) {
+        if (key.contentEquals(this.getSessionID())) {
+            this.fireChange(new DataArriveEvent(dataType));
+            this.sessionData.put(dataType, data);
+        }
+    }
+
+    public void checkoutData(RequestType dataType) {
+        RecordsList<Record> data = this.requestData(dataType);
+        
+        if (this.sessionData.containsKey(dataType)) {
+            RecordsTransform transform = RecordsTransform.getTransform(this.sessionData.get(dataType), data);
+            this.sessionData.put(dataType, transform.getData());
+            
+            Packet p = new DataUpdatePacket(this.engine, this, this.getSessionID(), dataType, transform);
+            this.addPacketToSend(PacketPriority.MEDIUM, p);
+            return;
+        }
+        
+        else {
+            Packet p = new DataPacket(this.engine, this, this.getSessionID(), dataType, data);
+            this.addPacketToSend(PacketPriority.MEDIUM, p);
+        }
+    }
+
+    @Override
+    public void updateData(String key, RequestType dataType, RecordsTransform data) {
+        if (key.contentEquals(this.getSessionID())) {
+            RecordsList<Record> dataUpdate = this.requestData(dataType);
+            this.sessionData.put(dataType, dataUpdate);
+        }
+    }
+
+    // Database
+    // TODO: fix this with connection management
+    public RecordsList<Record> requestData(RequestType dataType) {
+        switch (dataType) {
+            case ALL_USERS:
+                return UserManager.getInstance().loadAll();
+            default:
+                return null;
+        }
+    }
+    
+    // Runtime
     @Override
     public void shutdown(boolean force) {
         throw new UnsupportedOperationException("Not supported yet."); // TODO:

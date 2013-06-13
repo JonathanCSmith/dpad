@@ -143,12 +143,21 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
         }
     }    
     
+    @Override
     public void addListener(ChangeListener listener) {
         if (!this.listeners.contains(listener)) {
             this.listeners.add(listener);
         }
     }
+    
+    @Override
+    public void removeListener(ChangeListener listener) {
+        if (this.listeners.contains(listener)) {
+            this.listeners.remove(listener);
+        }
+    }
 
+    @Override
     public void fireChange(EventObject event) {
         for (ChangeListener listener : this.listeners) {
             listener.changeEventReceived(event);

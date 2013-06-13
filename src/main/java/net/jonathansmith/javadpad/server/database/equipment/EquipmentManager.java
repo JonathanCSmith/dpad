@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.server.database.equipment;
 
-import net.jonathansmith.javadpad.common.database.Equipment;
+import net.jonathansmith.javadpad.common.database.records.Equipment;
 import net.jonathansmith.javadpad.server.database.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.GenericManager;
 

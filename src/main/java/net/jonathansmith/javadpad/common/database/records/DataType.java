@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Jon
+ * Copyright (C) 2013 jonathansmith
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,42 +14,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.database;
+package net.jonathansmith.javadpad.common.database.records;
 
-import java.io.Serializable;
-
-import java.util.Set;
+import net.jonathansmith.javadpad.common.database.Record;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.GenericGenerator;
-
-
 /**
  *
- * @author Jon
+ * @author jonathansmith
  */
 @Entity
-@Table(name = "Experiment", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class Experiment implements Serializable {
+@Table(name = "DataType", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+public class DataType extends Record {
     
-    private String uuid;
     private String name;
     private String description;
-    private Set<Batch> batches;
     
-    public Experiment() {}
+    public DataType() {}
     
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "uuid", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
@@ -77,27 +65,19 @@ public class Experiment implements Serializable {
         this.description = description;
     }
     
-    @Column(name = "BatchIDs")
-    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
-    public Set<Batch> getBatches() {
-        return this.batches;
-    }
-    
-    public void setBatches(Set<Batch> batches) {
-        this.batches = batches;
-    }
-    
-    public void addBatch(Batch id) {
-        if (this.batches.contains(id)) {
-            return;
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof DataType) {
+            DataType d = (DataType) o;
+            if (this.getDescription().contentEquals(d.getDescription())
+                && this.getName().contentEquals(d.getName())
+                    && this.getUUID().contentEquals(d.getUUID())) {
+                return true;
+            }
+            
+            return false;
         }
         
-        this.batches.add(id);
-    }
-    
-    public void removeBatch(Batch id) {
-        if (this.batches.contains(id)) {
-            this.batches.remove(id);
-        }
+        return false;
     }
 }

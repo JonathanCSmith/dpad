@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.server.database.user;
 
-import net.jonathansmith.javadpad.common.database.User;
+import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.server.database.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.GenericManager;
 

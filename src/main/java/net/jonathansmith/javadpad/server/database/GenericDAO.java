@@ -20,6 +20,9 @@ import java.io.Serializable;
 
 import java.util.List;
 
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -27,7 +30,7 @@ import org.hibernate.Session;
  *
  * @author Jon
  */
-public class GenericDAO<T, ID extends Serializable> {
+public class GenericDAO<T extends Record, ID extends Serializable> {
     
     protected Session getSession() {
         return DatabaseConnection.getSession();
@@ -64,10 +67,10 @@ public class GenericDAO<T, ID extends Serializable> {
         return t;
     }
     
-    public List findAll(Class clazz) {
+    public RecordsList<T> findAll(Class clazz) {
         Session sess = this.getSession();
         Query query = sess.createQuery("from " + clazz.getName());
-        List T = query.list();
+        RecordsList<T> T = (RecordsList) query.list();
         return T;
     }
 }

@@ -29,21 +29,24 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
-import net.jonathansmith.javadpad.client.events.UsersDataArrivedEvent;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.ChangeSender;
 import net.jonathansmith.javadpad.common.events.gui.ModalClosedEvent;
+import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
+import net.jonathansmith.javadpad.common.network.RequestType;
 import net.jonathansmith.javadpad.common.network.session.Session;
 
 /**
  *
  * @author Jon
  */
-public class UserWaitDialog extends JDialog implements Runnable, ChangeSender {
+public class UserWaitDialog extends JDialog implements Runnable, ChangeSender, ChangeListener {
 
     private final Session session;
     private final CopyOnWriteArrayList<ChangeListener> listeners;
+    
+    private boolean lock = true;
     
     /**
      * Creates new form UserWaitDialog
@@ -51,13 +54,14 @@ public class UserWaitDialog extends JDialog implements Runnable, ChangeSender {
     public UserWaitDialog(java.awt.Frame parent, boolean modal, Session session) {
         super(parent, modal);
         this.session = session;
+        ((ClientSession) this.session).addListener(this);
         this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
         initComponents();
     }
     
     @Override
     public void run() {
-        while (!((ClientSession) this.session).arrivedSessionData.containsKey("Users")) {
+        while (lock) {
             try {
                 Thread.sleep(100);
             }
@@ -67,15 +71,29 @@ public class UserWaitDialog extends JDialog implements Runnable, ChangeSender {
             }
         }
         
-        this.fireChange(new UsersDataArrivedEvent(this));
-        
+        this.fireChange(new ModalClosedEvent(this, false));
+        this.session.removeListener(this);
         this.setVisible(false);
     }
+    
+    public void changeEventReceived(EventObject event) {
+        if (event instanceof DataArriveEvent && (RequestType) event.getSource() == RequestType.ALL_USERS) {
+            this.lock = false;
+        }
+    }
+
     
     @Override
     public void addListener(ChangeListener listener) {
         if (!this.listeners.contains(listener)) {
             this.listeners.add(listener);
+        }
+    }
+    
+    @Override
+    public void removeListener(ChangeListener listener) {
+        if (this.listeners.contains(listener)) {
+            this.listeners.remove(listener);
         }
     }
 
@@ -138,7 +156,7 @@ public class UserWaitDialog extends JDialog implements Runnable, ChangeSender {
     }// </editor-fold>//GEN-END:initComponents
 
     private void WindownCloseHandler(WindowEvent evt) {//GEN-FIRST:event_WindownCloseHandler
-        this.fireChange(new ModalClosedEvent(this));
+        this.fireChange(new ModalClosedEvent(this, true));
     }//GEN-LAST:event_WindownCloseHandler
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

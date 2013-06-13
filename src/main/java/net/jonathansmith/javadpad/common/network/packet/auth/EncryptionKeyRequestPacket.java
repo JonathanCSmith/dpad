@@ -28,7 +28,6 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.protocol.CommonEncoder;
@@ -151,7 +150,7 @@ public class EncryptionKeyRequestPacket extends Packet {
             encoder.setEncryption(toServerCipher);
             
             Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, encodedSecret, encodedToken);
-            this.session.sendPacketMessage(new PacketMessage(p, PacketPriority.CRITICAL));
+            this.session.addPacketToSend(PacketPriority.CRITICAL, p);
             
         } catch (Exception ex) {
             this.engine.error("Error when responding to encryption key request", ex);

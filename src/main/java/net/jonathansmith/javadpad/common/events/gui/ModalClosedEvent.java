@@ -26,7 +26,14 @@ import javax.swing.JDialog;
  */
 public class ModalClosedEvent extends EventObject {
     
-    public ModalClosedEvent(JDialog source) {
+    private final boolean forced;
+    
+    public ModalClosedEvent(JDialog source, boolean forced) {
         super(source);
+        this.forced = forced;
+    }
+    
+    public boolean getWasForcedClosed() {
+        return this.forced;
     }
 }

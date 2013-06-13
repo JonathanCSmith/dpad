@@ -16,9 +16,9 @@
  */
 package net.jonathansmith.javadpad.client.threads.user.panel;
 
-import java.util.List;
-
-import net.jonathansmith.javadpad.common.database.User;
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
  *
@@ -33,7 +33,7 @@ public class ExistingUserPane extends javax.swing.JPanel {
         initComponents();
     }
     
-    public void insertData(List<User> users) {
+    public void insertData(RecordsList<Record> users) {
         ((UserTableModel) this.jTable1.getModel()).setData(users);
         this.jTable1.repaint();
     }

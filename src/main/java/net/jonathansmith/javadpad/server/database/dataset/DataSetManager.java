@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.server.database.dataset;
 
-import net.jonathansmith.javadpad.common.database.DataSet;
+import net.jonathansmith.javadpad.common.database.records.DataSet;
 import net.jonathansmith.javadpad.server.database.GenericDAO;
 import net.jonathansmith.javadpad.server.database.GenericManager;
 

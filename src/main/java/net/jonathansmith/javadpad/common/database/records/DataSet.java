@@ -14,20 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.database;
+package net.jonathansmith.javadpad.common.database.records;
 
-import java.io.Serializable;
+import java.util.Arrays;
+
+import net.jonathansmith.javadpad.common.database.Record;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
-import org.hibernate.annotations.GenericGenerator;
-
-import net.jonathansmith.javadpad.common.database.DataType;
 
 /**
  *
@@ -35,9 +32,8 @@ import net.jonathansmith.javadpad.common.database.DataType;
  */
 @Entity
 @Table(name = "DataGroup", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class DataSet implements Serializable {
+public class DataSet extends Record {
     
-    private String uuid;
     private int[] rawTimes;
     private int[] rawData;
     private int[] times;
@@ -47,8 +43,6 @@ public class DataSet implements Serializable {
     public DataSet() {}
     
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "uuid", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
@@ -101,5 +95,24 @@ public class DataSet implements Serializable {
     
     public void setTimes(int[] times) {
         this.times = times;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof DataSet) {
+            DataSet d = (DataSet) o;
+            if (Arrays.equals(this.getData(), d.getData())
+                && this.getDataType().equals(d.getDataType())
+                    && Arrays.equals(this.getRawData(), d.getRawData())
+                    && Arrays.equals(this.getRawTimes(), d.getRawTimes())
+                    && Arrays.equals(this.getTimes(), d.getRawTimes())
+                    && this.getUUID().contentEquals(d.getUUID())) {
+                return true;
+            }
+            
+            return false;
+        }
+        
+        return false;
     }
 }

@@ -16,26 +16,33 @@
  */
 package net.jonathansmith.javadpad.common.network.session;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.EnumMap;
+import java.util.EventObject;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.Batch;
-import net.jonathansmith.javadpad.common.database.Experiment;
-import net.jonathansmith.javadpad.common.database.User;
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.RecordsTransform;
+import net.jonathansmith.javadpad.common.database.records.Batch;
+import net.jonathansmith.javadpad.common.database.records.Experiment;
+import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.ChangeSender;
+import net.jonathansmith.javadpad.common.network.RequestType;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
  *
  * @author Jon
  */
-public abstract class Session {
+public abstract class Session implements ChangeSender {
     
     public enum NetworkThreadState {
         EXCHANGING_HANDSHAKE,
@@ -46,12 +53,14 @@ public abstract class Session {
     public final Channel channel;
     public final Engine engine;
     
+    protected final Map<RequestType, RecordsList<Record>> sessionData = new EnumMap<RequestType, RecordsList<Record>> (RequestType.class);
+    
     private final Random random = new Random();
     private final String id = Long.toString(random.nextLong(), 16).trim();
+    private final CopyOnWriteArrayList<ChangeListener> listeners;
     
     public NetworkThread incoming;
     public NetworkThread outgoing;
-    public Map<String, List> arrivedSessionData = new HashMap<String, List> ();
     
     private NetworkThreadState state = NetworkThreadState.EXCHANGING_HANDSHAKE;
     private User user;
@@ -61,12 +70,15 @@ public abstract class Session {
     public Session(Engine eng, Channel channel) {
         this.engine = eng;
         this.channel = channel;
+        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
     }
 
-    public String getSessionID() {
+    // Core properties
+    public final String getSessionID() {
         return this.id;
     }
     
+    // Network handlers
     public NetworkThreadState getState() {
         return this.state;
     }
@@ -84,6 +96,24 @@ public abstract class Session {
         }
     }
     
+    public void addPacketToSend(PacketPriority priority, Packet p) {
+        this.outgoing.addPacket(priority, p);
+    }
+
+    public void addPacketToReceive(PacketPriority priority, Packet p) {
+        this.incoming.addPacket(priority, p);
+    }
+    
+    public void sendPacketMessage(PacketMessage pm) {
+        this.channel.write(pm);
+    }
+    
+    // Session Data
+    public abstract void addData(String key, RequestType dataType, RecordsList<Record> data);
+    
+    public abstract void updateData(String key, RequestType dataType, RecordsTransform data);
+    
+    // TODO: Not used yet - Core functionality
     public User getUser() {
         return this.user;
     }
@@ -107,28 +137,9 @@ public abstract class Session {
     public void setBatch(Batch batch) {
         this.batch = batch;
     }
-
-    public void addPacketToSend(PacketPriority priority, Packet p) {
-        this.outgoing.addPacket(priority, p);
-    }
-
-    public void addPacketToReceive(PacketPriority priority, Packet p) {
-        this.incoming.addPacket(priority, p);
-    }
     
-    public void sendPacketMessage(PacketMessage pm) {
-        this.channel.write(pm);
-    }
-    
-    public void addArrivedDataset(String handle, List data) {
-        if (this.arrivedSessionData.containsKey(handle)) {
-            this.arrivedSessionData.remove(handle);
-        }
-        
-        this.arrivedSessionData.put(handle, data);
-    }
-    
-    public void start() {
+    // Functional methods
+    public final void start() {
         this.incoming.start();
         this.outgoing.start();
     }
@@ -138,4 +149,26 @@ public abstract class Session {
     public abstract void disconnect();
     
     public abstract void dispose();
+    
+    // Change senders
+    @Override
+    public void addListener(ChangeListener listener) {
+        if (!this.listeners.contains(listener)) {
+            this.listeners.add(listener);
+        }
+    }
+    
+    @Override
+    public void removeListener(ChangeListener listener) {
+        if (this.listeners.contains(listener)) {
+            this.listeners.remove(listener);
+        }
+    }
+    
+    @Override
+    public void fireChange(EventObject event) {
+        for (ChangeListener listener : this.listeners) {
+            listener.changeEventReceived(event);
+        }
+    }
 }

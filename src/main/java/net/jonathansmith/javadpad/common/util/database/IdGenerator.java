@@ -14,19 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.events;
+package net.jonathansmith.javadpad.common.util.database;
 
-import java.util.EventObject;
-
-import net.jonathansmith.javadpad.common.events.ChangeSender;
+import java.util.UUID;
 
 /**
  *
  * @author Jon
  */
-public class UsersDataArrivedEvent extends EventObject {
+public class IdGenerator {
     
-    public UsersDataArrivedEvent(ChangeSender source) {
-        super(source);
+    public static String createId() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
 }

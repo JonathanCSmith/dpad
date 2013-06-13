@@ -16,24 +16,84 @@
  */
 package net.jonathansmith.javadpad.client.network.session;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.RecordsTransform;
+import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
+import net.jonathansmith.javadpad.common.network.RequestType;
+import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
  *
  * @author Jon
  */
-public class ClientSession extends Session {
+public final class ClientSession extends Session {
+    
+    private final Map<RequestType, Long> sessionDataTimestamp = new EnumMap<RequestType, Long> (RequestType.class);
+    
+    private String lockKey;
     
     public ClientSession(Engine eng, Channel c) {
         super(eng, c);
         this.incoming = new IncomingClientNetworkThread(eng, this);
         this.outgoing = new OutgoingClientNetworkThread(eng, this);
         this.start();
+    }    
+    
+    public void setKey(String key) {
+        this.lockKey = key;
     }
 
+    @Override
+    public void addData(String key, RequestType dataType, RecordsList<Record> data) {
+        if (key.contentEquals(this.lockKey)) {
+            this.fireChange(new DataArriveEvent(dataType));
+            this.sessionData.put(dataType, data);
+        }
+    }
+
+    public RecordsList<Record> checkoutData(RequestType dataType) {
+        if (this.sessionDataTimestamp.containsKey(dataType)) {
+            long entryTime = this.sessionDataTimestamp.get(dataType);
+            
+            if (System.currentTimeMillis() - entryTime > 300000) {
+                Packet p = new DataRequestPacket(this.engine, this, dataType);
+                this.addPacketToSend(PacketPriority.HIGH, p);
+                return null;
+            }
+            
+            return this.sessionData.get(dataType);
+        }
+        
+        Packet p = new DataRequestPacket(this.engine, this, dataType);
+        this.addPacketToSend(PacketPriority.HIGH, p);
+        return null;
+    }
+
+    @Override
+    public void updateData(String key, RequestType dataType, RecordsTransform data) {
+        if (key.contentEquals(this.lockKey)) {
+            if (!this.sessionData.containsKey(dataType)) {
+                Packet p = new DataRequestPacket(this.engine, this, dataType);
+                this.addPacketToSend(PacketPriority.HIGH, p);
+                return;
+            }
+            
+            RecordsList<Record> result = data.transform(this.sessionData.get(dataType));
+            this.sessionData.put(dataType, result);
+            this.sessionDataTimestamp.put(dataType, System.currentTimeMillis());
+        }
+    }
+    
     @Override
     public void shutdown(boolean force) {
         throw new UnsupportedOperationException("Not supported yet."); // TODO:

@@ -14,16 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.database;
-
-import java.io.Serializable;
+package net.jonathansmith.javadpad.common.database.records;
 
 import java.util.Set;
+
+import net.jonathansmith.javadpad.common.database.Record;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -31,20 +30,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.GenericGenerator;
-
-import net.jonathansmith.javadpad.common.database.DataSet;
-import net.jonathansmith.javadpad.common.database.Equipment;
-
 /**
  *
  * @author Jon
  */
 @Entity
 @Table(name = "Batch", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class Batch implements Serializable {
+public class Batch extends Record {
     
-    private String uuid;
     private String name;
     private String description;
     private Equipment equipment;
@@ -53,8 +46,6 @@ public class Batch implements Serializable {
     public Batch() {}
     
     @Id
-    @GeneratedValue(generator = "system-uuid")
-    @GenericGenerator(name = "system-uuid", strategy = "uuid")
     @Column(name = "uuid", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
@@ -114,5 +105,24 @@ public class Batch implements Serializable {
         if (this.dataGroup.contains(id)) {
             this.dataGroup.remove(id);
         }
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Batch) {
+            Batch b = (Batch) o;
+            
+            if (this.getUUID().contentEquals(b.getUUID()) 
+                && this.getName().contentEquals(b.getName()) 
+                    && this.getDescription().contentEquals(b.getDescription()) 
+                    && this.getDataSets().equals(b.getDataSets()) 
+                    && this.getEquipment().equals(b.getEquipment())) {
+                return true;
+            }
+            
+            return false;
+        }
+        
+        return false;
     }
 }

@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.server.database.experiment;
 
-import net.jonathansmith.javadpad.common.database.Experiment;
+import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.server.database.GenericManager;
 
 /**

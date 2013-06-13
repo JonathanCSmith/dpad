@@ -14,15 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.experiment;
+package net.jonathansmith.javadpad.common.database;
 
-import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.server.database.GenericDAO;
+import java.io.Serializable;
+
+import java.util.UUID;
+
+import net.jonathansmith.javadpad.common.util.database.IdGenerator;
 
 /**
  *
  * @author Jon
  */
-public class ExperimentDAO extends GenericDAO<Experiment, String> {
+public abstract class Record implements Serializable {
     
+    public String uuid = IdGenerator.createId();
+    
+    @Override
+    public abstract boolean equals(Object o);
+
+    @Override
+    public int hashCode() {
+        UUID uid = UUID.fromString(this.uuid);
+        return uuid.hashCode();
+    }
 }
