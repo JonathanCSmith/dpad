@@ -14,19 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.events.sessiondata;
+package net.jonathansmith.javadpad.common.events.gui;
 
 import java.util.EventObject;
 
-import net.jonathansmith.javadpad.common.database.SessionData;
+import javax.swing.JDialog;
 
 /**
  *
  * @author Jon
  */
-public class DataArriveEvent extends EventObject {
+public class ModalCloseEvent extends EventObject {
     
-    public DataArriveEvent(SessionData tag) {
-        super(tag);
+    private final boolean forced;
+    
+    public ModalCloseEvent(JDialog source, boolean forced) {
+        super(source);
+        this.forced = forced;
+    }
+    
+    public boolean getWasForcedClosed() {
+        return this.forced;
     }
 }

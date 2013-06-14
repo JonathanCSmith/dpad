@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.RecordPayloadType;
+import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
@@ -37,7 +37,7 @@ public class DataPacket extends LockedPacket {
 
     private static int id;
     
-    private RecordPayloadType dataType;
+    private SessionData dataType;
     private RecordsList<Record> data;
     private byte[] serializedData;
     
@@ -45,7 +45,7 @@ public class DataPacket extends LockedPacket {
         super();
     }
     
-    public DataPacket(Engine engine, Session session, RecordPayloadType dataType, RecordsList<Record> data) {
+    public DataPacket(Engine engine, Session session, SessionData dataType, RecordsList<Record> data) {
         super(engine, session);
         this.dataType = dataType;
         this.data = data;
@@ -126,7 +126,7 @@ public class DataPacket extends LockedPacket {
                 
             case 1:
                 int val = (int) bytes[0];
-                this.dataType = RecordPayloadType.values()[val];
+                this.dataType = SessionData.values()[val];
                 break;
                 
             case 2:

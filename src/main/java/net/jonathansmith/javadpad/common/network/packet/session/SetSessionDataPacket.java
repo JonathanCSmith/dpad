@@ -22,7 +22,7 @@ import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
-import net.jonathansmith.javadpad.common.network.session.SessionData;
+import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -36,7 +36,7 @@ public class SetSessionDataPacket extends LockedPacket {
     
     private static int id;
     
-    private SessionData type;
+    private DatabaseRecord type;
     private Record data;
     private byte[] serializedData;
     
@@ -44,7 +44,7 @@ public class SetSessionDataPacket extends LockedPacket {
         super();
     }
     
-    public SetSessionDataPacket(Engine engine, Session session, SessionData type, Record record) {
+    public SetSessionDataPacket(Engine engine, Session session, DatabaseRecord type, Record record) {
         super(engine, session);
         this.type = type;
         this.data = record;
@@ -117,7 +117,7 @@ public class SetSessionDataPacket extends LockedPacket {
                 return;
                 
             case 1:
-                this.type = SessionData.values()[bytes[0]];
+                this.type = DatabaseRecord.values()[bytes[0]];
                 return;
                 
             case 2:
@@ -127,12 +127,12 @@ public class SetSessionDataPacket extends LockedPacket {
 
     @Override
     public void handleClientSide() {
-        this.session.setSessionData(this.key, this.type, this.data);
+        this.session.setKeySessionData(this.key, this.type, this.data);
     }
 
     @Override
     public void handleServerSide() {
-        this.session.setSessionData(this.key, this.type, this.data);
+        this.session.setKeySessionData(this.key, this.type, this.data);
     }
 
     @Override

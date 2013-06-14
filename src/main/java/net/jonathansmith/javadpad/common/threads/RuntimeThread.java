@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.common.threads;
 
-import net.jonathansmith.javadpad.client.gui.DisplayOption;
+import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 
 /**
  *

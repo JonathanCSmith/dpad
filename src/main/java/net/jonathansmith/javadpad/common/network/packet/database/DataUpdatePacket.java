@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.RecordPayloadType;
+import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
@@ -40,7 +40,7 @@ public class DataUpdatePacket extends LockedPacket {
     
     private static int id;
     
-    private RecordPayloadType dataType;
+    private SessionData dataType;
     private LinkedHashMap<Integer, Record> changes;
     private LinkedList<Integer> deletions;
     private RecordsList<Record> additions;
@@ -53,7 +53,7 @@ public class DataUpdatePacket extends LockedPacket {
         super();
     }
     
-    public DataUpdatePacket(Engine engine, Session session, RecordPayloadType dataType, RecordsTransform transform) {
+    public DataUpdatePacket(Engine engine, Session session, SessionData dataType, RecordsTransform transform) {
         super(engine, session);
         this.dataType = dataType;
         this.changes = transform.getChanges();
@@ -162,7 +162,7 @@ public class DataUpdatePacket extends LockedPacket {
                 break;
                 
             case 1:
-                this.dataType = RecordPayloadType.values()[bytes[0]];
+                this.dataType = SessionData.values()[bytes[0]];
                 break;
                 
             case 2:

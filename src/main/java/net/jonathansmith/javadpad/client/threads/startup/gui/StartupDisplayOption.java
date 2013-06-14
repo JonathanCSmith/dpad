@@ -18,8 +18,8 @@ package net.jonathansmith.javadpad.client.threads.startup.gui;
 
 import java.awt.event.ActionEvent;
 
-import net.jonathansmith.javadpad.client.gui.DisplayOption;
-import net.jonathansmith.javadpad.client.threads.startup.gui.panel.StartupPane;
+import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.client.threads.startup.gui.pane.StartupPane;
 import net.jonathansmith.javadpad.client.threads.startup.gui.toolbar.StartupToolbar;
 
 /**
