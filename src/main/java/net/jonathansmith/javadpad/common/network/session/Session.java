@@ -21,6 +21,7 @@ import java.util.EventObject;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.netty.channel.Channel;
 
@@ -29,6 +30,7 @@ import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
 import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.database.records.Batch;
+import net.jonathansmith.javadpad.common.database.records.DataSet;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
@@ -53,19 +55,22 @@ public abstract class Session implements ChangeSender {
     public final Channel channel;
     public final Engine engine;
     
-    protected final Map<SessionData, RecordsList<Record>> sessionData = new EnumMap<SessionData, RecordsList<Record>> (SessionData.class);
+    private final Map<SessionData, RecordsList<Record>> sessionData = new EnumMap<SessionData, RecordsList<Record>> (SessionData.class);
     
     private final Random random = new Random();
     private final String id = Long.toString(random.nextLong(), 16).trim();
     private final CopyOnWriteArrayList<ChangeListener> listeners;
+    private final AtomicBoolean lock = new AtomicBoolean(false);
     
     public NetworkThread incoming;
     public NetworkThread outgoing;
     
     private NetworkThreadState state = NetworkThreadState.EXCHANGING_HANDSHAKE;
+    private String serverKey;
     private User user;
     private Experiment experiment;
     private Batch batch;
+    private DataSet dataset;
     
     public Session(Engine eng, Channel channel) {
         this.engine = eng;
@@ -113,9 +118,35 @@ public abstract class Session implements ChangeSender {
     }
     
     // Session Data
+    protected final void setServerKey(String key) {
+        if (this.lock.compareAndSet(false, true)) {
+            this.serverKey = key;
+        }
+    }
+    
+    protected final boolean isServerKey(String key) {
+        return key.contentEquals(this.serverKey);
+    }
+    
     public abstract void addData(String key, SessionData dataType, RecordsList<Record> data);
     
     public abstract void updateData(String key, SessionData dataType, RecordsTransform data);
+    
+    public abstract RecordsList<Record> checkoutData(SessionData dataType);
+    
+    // Locked read writers of session data
+    protected final boolean addSessionData(String key, SessionData dataType, RecordsList<Record> data) {
+        if (key.contentEquals(this.serverKey)) {
+            this.sessionData.put(dataType, data);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    protected final RecordsList<Record> checkoutSessionData(SessionData dataType) {
+        return this.sessionData.get(dataType);
+    }
     
     // Core session properties - what the ui will interact with
     public abstract void setKeySessionData(String key, DatabaseRecord type, Record data);
@@ -157,6 +188,14 @@ public abstract class Session implements ChangeSender {
     protected void setBatch(Batch batch) {
         this.batch = batch;
     }
+    
+    public DataSet getDataset() {
+        return this.dataset;
+    }
+    
+    protected void setDataset(DataSet set) {
+        this.dataset = set;
+    } 
     
     // Functional methods
     public final void start() {

@@ -127,12 +127,12 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel6">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Batch"/>
+        <Property name="text" type="java.lang.String" value="Data:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="setBatch">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Set Batch"/>
+        <Property name="text" type="java.lang.String" value="Set Data"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
@@ -140,17 +140,17 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel7">
       <Properties>
-        <Property name="text" type="java.lang.String" value="User"/>
+        <Property name="text" type="java.lang.String" value="User:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel8">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Batch Data"/>
+        <Property name="text" type="java.lang.String" value="Plugin:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JButton" name="addData">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Add Data"/>
+        <Property name="text" type="java.lang.String" value="Upload Plugin"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
