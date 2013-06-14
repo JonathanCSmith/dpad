@@ -97,7 +97,9 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
     }
 
     public void sendQuitToRuntimeThread(String message, boolean error) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+        // TODO: shutdown on threads
+        
+        this.setRuntime(ClientRuntimeThread.RUNTIME_SELECT);
     }
     
     @Override

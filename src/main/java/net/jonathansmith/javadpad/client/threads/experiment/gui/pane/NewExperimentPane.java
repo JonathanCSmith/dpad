@@ -17,6 +17,8 @@
 package net.jonathansmith.javadpad.client.threads.experiment.gui.pane;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
@@ -46,8 +48,20 @@ public class NewExperimentPane extends NewRecordPane {
     }
     
     @Override
-    public void addDisplayOptionMouseListener(MouseListener listener) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+    public void addDisplayOptionListener(ActionListener listener) {
+        this.submit.addActionListener(listener);
+    }
+    
+    @Override
+    public void addDisplayOptionMouseListener(MouseListener listener) {}
+    
+    @Override
+    public boolean isEventSourceSubmitButton(ActionEvent event) {
+        if (event.getSource() == this.submit) {
+            return true;
+        }
+        
+        return false;
     }
 
     @Override
@@ -70,7 +84,8 @@ public class NewExperimentPane extends NewRecordPane {
 
     @Override
     public void clearInfo() {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+        this.name.setText("");
+        this.description.setText("");
     }
 
     /**

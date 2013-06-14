@@ -23,11 +23,11 @@ import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.client.Client;
-import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.gui.batch.panel.DisplayBatchPane;
 import net.jonathansmith.javadpad.client.gui.batch.panel.ExistingBatchPane;
 import net.jonathansmith.javadpad.client.gui.batch.panel.NewBatchPane;
 import net.jonathansmith.javadpad.client.gui.batch.toolbar.BatchToolbar;
+import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.database.records.Batch;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
@@ -54,11 +54,11 @@ public class BatchDisplayOption extends DisplayOption implements MouseListener {
         this.currentPanel = this.displayPanel;
         this.currentToolbar = this.batchToolbar;
         
-        this.batchToolbar.newEntry.addActionListener(this);
-        this.batchToolbar.loadEntry.addActionListener(this);
-        this.batchToolbar.back.addActionListener(this);
-        this.newBatchPane.submit.addActionListener(this);
-        this.existingBatchPane.submit.addActionListener(this);
+//        this.batchToolbar.newEntry.addActionListener(this);
+//        this.batchToolbar.loadEntry.addActionListener(this);
+//        this.batchToolbar.back.addActionListener(this);
+//        this.newBatchPane.submit.addActionListener(this);
+//        this.existingBatchPane.submit.addActionListener(this);
         this.existingBatchPane.jList1.addMouseListener(this);
     }
     
@@ -132,7 +132,7 @@ public class BatchDisplayOption extends DisplayOption implements MouseListener {
                 experiment.addBatch(batch);
                 ExperimentManager.getInstance().save(experiment);
                 
-                session.setBatch(batch);
+//                session.setBatch(batch);
             } 
             
             else {
@@ -151,7 +151,7 @@ public class BatchDisplayOption extends DisplayOption implements MouseListener {
             }
             
             else {
-                session.setBatch(batch);
+//                session.setBatch(batch);
             }
             
             this.setCurrentView(this.displayPanel);
@@ -167,7 +167,7 @@ public class BatchDisplayOption extends DisplayOption implements MouseListener {
             Batch batch = this.existingBatchPane.getSelectedBatch();
             
             if (batch != null) {
-                session.setBatch(batch);
+//                session.setBatch(batch);
             }
             
             this.setCurrentView(this.displayPanel);

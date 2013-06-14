@@ -238,12 +238,12 @@ public class Server extends Engine {
     }
     
     private Configuration addMappings(Configuration config) {
-        config.addAnnotatedClass(User.class);
-        config.addAnnotatedClass(Experiment.class);
-        config.addAnnotatedClass(Batch.class);
+        config.addAnnotatedClass(Equipment.class);
         config.addAnnotatedClass(DataSet.class);
         config.addAnnotatedClass(DataType.class);
-        config.addAnnotatedClass(Equipment.class);
+        config.addAnnotatedClass(Batch.class);
+        config.addAnnotatedClass(Experiment.class);
+        config.addAnnotatedClass(User.class);
         return config;
     }
 }

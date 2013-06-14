@@ -17,6 +17,8 @@
 package net.jonathansmith.javadpad.client.threads.experiment.gui.pane;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 
 import javax.swing.JButton;
@@ -48,10 +50,24 @@ public class ExistingExperimentPane extends ExistingRecordPane {
         initComponents();
         this.jList1.getSelectionModel().addListSelectionListener(new ListSelection());
     }
+    
+    @Override
+    public void addDisplayOptionListener(ActionListener listener) {
+        this.submit.addActionListener(listener);
+    }
 
     @Override
     public void addDisplayOptionMouseListener(MouseListener listener) {
         this.jList1.addMouseListener(listener);
+    }
+    
+    @Override
+    public boolean isEventSourceSubmitButton(ActionEvent event) {
+        if (event.getSource() == this.submit) {
+            return true;
+        }
+        
+        return false;
     }
 
     @Override

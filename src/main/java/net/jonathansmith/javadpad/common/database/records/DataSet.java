@@ -31,7 +31,7 @@ import javax.persistence.UniqueConstraint;
  * @author jonathansmith
  */
 @Entity
-@Table(name = "DataGroup", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+@Table(name = "DataSet", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
 public class DataSet extends Record {
     
     private int[] rawTimes;

@@ -90,13 +90,14 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     }
     
     public void loadRecordButton() {
-        if (this.getCurrentView() == this.existingRecordPane) {
-            RecordsList<Record> data = session.checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL));
+        if (this.getCurrentView() != this.existingRecordPane) {
+            SessionData dataType = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL);
+            RecordsList<Record> data = this.engine.getSession().checkoutData(dataType);
 
             if (data == null) {
                 this.queuedAction = true;
 
-                final WaitForRecordsDialog dialog = new WaitForRecordsDialog(new JFrame(), true, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL));
+                final WaitForRecordsDialog dialog = new WaitForRecordsDialog(new JFrame(), true, this.engine.getSession(), dataType);
                 dialog.addListener(this);
                 Thread waitThread = new Thread(dialog);
                 waitThread.start();
@@ -112,7 +113,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
             else {
                 this.setCurrentView(this.existingRecordPane);
                 this.existingRecordPane.insertRecords(data);
-                this.engine.getGUI().validateState();;
+                this.engine.getGUI().validateState();
             }
         }
     }
@@ -131,8 +132,8 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     public void submitNewRecordButton() {
         Record record = this.newRecordPane.buildNewlySubmittedRecord();
         if (record != null) {
-            Packet p = new NewRecordPacket(this.engine, this.session, this.recordType, record);
-            this.session.addPacketToSend(PacketPriority.HIGH, p);
+            Packet p = new NewRecordPacket(this.engine, this.engine.getSession(), this.recordType, record);
+            this.engine.getSession().addPacketToSend(PacketPriority.HIGH, p);
         }
 
         else {
@@ -151,9 +152,9 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
         }
 
         else {
-            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, this.recordType, record);
+            LockedPacket p = new SetSessionDataPacket(this.engine, this.engine.getSession(), this.recordType, record);
             p.lockPacket("-");
-            this.session.addPacketToSend(PacketPriority.MEDIUM, p);
+            this.engine.getSession().addPacketToSend(PacketPriority.MEDIUM, p);
         }
 
         this.setCurrentView(this.currentRecordPane);
@@ -165,7 +166,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
         super.setCurrentView(panel);
         
         if (panel == this.currentRecordPane) {
-            Record record = this.session.getKeySessionData(this.recordType);
+            Record record = this.engine.getSession().getKeySessionData(this.recordType);
             this.currentRecordPane.setCurrentData(record);
         }
     }
@@ -191,11 +192,11 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
             this.backButton();
         }
 
-        else if (evt.getSource() == this.newRecordPane.submit) {
+        else if (this.newRecordPane.isEventSourceSubmitButton(evt)) {
             this.submitNewRecordButton();
         }
 
-        else if (evt.getSource() == this.existingRecordPane.submit) {
+        else if (this.existingRecordPane.isEventSourceSubmitButton(evt)) {
             this.submitExistingRecordButton();
         }
     }
@@ -232,7 +233,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
             }
             
             else {
-                RecordsList<Record> data = session.checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL));
+                RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL));
                 if (data == null) {
                     return; // TODO: Verify if there is a better way of handling this, don't want packet spam tho
                 }
