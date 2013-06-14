@@ -14,12 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.network;
+package net.jonathansmith.javadpad.common.network.packet;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.network.session.Session;
 
 /**
- * NOTE! Current implementation of db packets limits the data types to 256!
+ *
  * @author Jon
  */
-public enum RequestType {
-    ALL_USERS;
+public abstract class LockedPacket extends Packet{
+    
+    private final AtomicBoolean lock = new AtomicBoolean(false);
+    
+    protected String key;
+    
+    public LockedPacket() {
+        super();
+    }
+    
+    public LockedPacket(Engine engine, Session session) {
+        super(engine, session);
+    }
+    
+    public void lockPacket(String key) {
+        if (this.lock.compareAndSet(false, true)) {
+            this.key = key;
+        }
+    }
 }

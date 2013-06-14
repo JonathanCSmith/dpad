@@ -34,7 +34,7 @@ import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.ChangeSender;
 import net.jonathansmith.javadpad.common.events.gui.ModalClosedEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
-import net.jonathansmith.javadpad.common.network.RequestType;
+import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.network.session.Session;
 
 /**
@@ -77,7 +77,7 @@ public class UserWaitDialog extends JDialog implements Runnable, ChangeSender, C
     }
     
     public void changeEventReceived(EventObject event) {
-        if (event instanceof DataArriveEvent && (RequestType) event.getSource() == RequestType.ALL_USERS) {
+        if (event instanceof DataArriveEvent && (RecordPayloadType) event.getSource() == RecordPayloadType.ALL_USERS) {
             this.lock = false;
         }
     }

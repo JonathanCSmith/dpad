@@ -14,19 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.events.sessiondata;
-
-import java.util.EventObject;
-
-import net.jonathansmith.javadpad.common.database.RecordPayloadType;
+package net.jonathansmith.javadpad.common.database;
 
 /**
- *
+ * NOTE! Current implementation of db packets limits the data types to 256!
  * @author Jon
  */
-public class DataArriveEvent extends EventObject {
-    
-    public DataArriveEvent(RecordPayloadType tag) {
-        super(tag);
-    }
+public enum RecordPayloadType {
+    ALL_USERS,
+    USER;
 }

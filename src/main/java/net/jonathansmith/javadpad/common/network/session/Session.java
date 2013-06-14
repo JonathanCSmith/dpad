@@ -26,13 +26,13 @@ import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
 import net.jonathansmith.javadpad.common.database.records.Batch;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.ChangeSender;
-import net.jonathansmith.javadpad.common.network.RequestType;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
@@ -53,7 +53,7 @@ public abstract class Session implements ChangeSender {
     public final Channel channel;
     public final Engine engine;
     
-    protected final Map<RequestType, RecordsList<Record>> sessionData = new EnumMap<RequestType, RecordsList<Record>> (RequestType.class);
+    protected final Map<RecordPayloadType, RecordsList<Record>> sessionData = new EnumMap<RecordPayloadType, RecordsList<Record>> (RecordPayloadType.class);
     
     private final Random random = new Random();
     private final String id = Long.toString(random.nextLong(), 16).trim();
@@ -113,16 +113,19 @@ public abstract class Session implements ChangeSender {
     }
     
     // Session Data
-    public abstract void addData(String key, RequestType dataType, RecordsList<Record> data);
+    public abstract void addData(String key, RecordPayloadType dataType, RecordsList<Record> data);
     
-    public abstract void updateData(String key, RequestType dataType, RecordsTransform data);
+    public abstract void updateData(String key, RecordPayloadType dataType, RecordsTransform data);
     
-    // TODO: Not used yet - Core functionality
+    // Core session properties - what the ui will interact with
+    public abstract void setSessionData(String key, SessionData type, Record data);
+    
+    
     public User getUser() {
         return this.user;
     }
     
-    public void setUser(User user) {
+    protected void setUser(User user) {
         this.user = user;
     }
     
@@ -130,7 +133,7 @@ public abstract class Session implements ChangeSender {
         return this.experiment;
     }
     
-    public void setExperiment(Experiment experiment) {
+    protected void setExperiment(Experiment experiment) {
         this.experiment = experiment;
     }
     
@@ -138,7 +141,7 @@ public abstract class Session implements ChangeSender {
         return this.batch;
     }
     
-    public void setBatch(Batch batch) {
+    protected void setBatch(Batch batch) {
         this.batch = batch;
     }
     

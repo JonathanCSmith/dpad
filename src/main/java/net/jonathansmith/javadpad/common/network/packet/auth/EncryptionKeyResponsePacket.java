@@ -27,6 +27,7 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.protocol.CommonDecoder;
@@ -191,7 +192,8 @@ public class EncryptionKeyResponsePacket extends Packet {
         this.session.incrementState();
         
         // TODO: Delay or not delay
-        ((ServerSession) this.session).buildAndSendEncryptedSessionKeyPacket();
+        LockedPacket p2 = new EncryptedSessionKeyPacket(this.engine, this.session);
+        ((ServerSession) this.session).lockAndSendPacket(PacketPriority.CRITICAL, p2);
     }
     
     @Override

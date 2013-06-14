@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
-import net.jonathansmith.javadpad.common.network.RequestType;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
@@ -34,14 +34,13 @@ import org.apache.commons.lang3.SerializationUtils;
  *
  * @author Jon
  */
-public class DataUpdatePacket extends Packet {
+public class DataUpdatePacket extends LockedPacket {
+    
+    private static final AtomicBoolean lock = new AtomicBoolean(false);
     
     private static int id;
     
-    private final AtomicBoolean lock = new AtomicBoolean(false);
-    
-    private String key;
-    private RequestType dataType;
+    private RecordPayloadType dataType;
     private LinkedHashMap<Integer, Record> changes;
     private LinkedList<Integer> deletions;
     private RecordsList<Record> additions;
@@ -54,9 +53,8 @@ public class DataUpdatePacket extends Packet {
         super();
     }
     
-    public DataUpdatePacket(Engine engine, Session session, String key, RequestType dataType, RecordsTransform transform) {
+    public DataUpdatePacket(Engine engine, Session session, RecordPayloadType dataType, RecordsTransform transform) {
         super(engine, session);
-        this.key = key;
         this.dataType = dataType;
         this.changes = transform.getChanges();
         this.deletions = transform.getDeletions();
@@ -164,7 +162,7 @@ public class DataUpdatePacket extends Packet {
                 break;
                 
             case 1:
-                this.dataType = RequestType.values()[bytes[0]];
+                this.dataType = RecordPayloadType.values()[bytes[0]];
                 break;
                 
             case 2:

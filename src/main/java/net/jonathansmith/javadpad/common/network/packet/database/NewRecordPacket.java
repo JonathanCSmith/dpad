@@ -19,32 +19,44 @@ package net.jonathansmith.javadpad.common.network.packet.database;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 /**
  *
  * @author Jon
  */
-public class DataRequestPacket extends Packet {
+public class NewRecordPacket extends Packet {
     
     private static final AtomicBoolean lock = new AtomicBoolean(false);
-    
+
     private static int id;
     
-    private RecordPayloadType dataType;
+    private RecordPayloadType type;
+    private Record data;
+    private byte[] serializedData;
     
-    public DataRequestPacket() {
+    public NewRecordPacket() {
         super();
     }
     
-    public DataRequestPacket(Engine engine, Session session, RecordPayloadType dataType) {
+    public NewRecordPacket(Engine engine, Session session, RecordPayloadType dataType, Record data) {
         super(engine, session);
-        this.dataType = dataType;
+        this.type = dataType;
+        this.data = data;
+        
+        this.serializeData();
     }
-
+    
+    private void serializeData() {
+        this.serializedData = SerializationUtils.serialize(this.data);
+    }
+    
     @Override
     public int getID() {
         return id;
@@ -59,24 +71,50 @@ public class DataRequestPacket extends Packet {
 
     @Override
     public int getNumberOfPayloads() {
-        return 1;
+        return 2;
     }
 
     @Override
     public int getPayloadSize(int payloadNumber) {
-        return 1;
+        switch (payloadNumber) {
+            case 0:
+                return 1;
+                
+            case 1:
+                return this.serializedData.length;
+                
+            default:
+                return 0;
+        }
     }
 
     @Override
     public byte[] writePayload(int payloadNumber, int providedSize) {
-        byte[] returnVal = new byte[1];
-        returnVal[0] = (byte) this.dataType.ordinal();
-        return returnVal;
+        switch (payloadNumber) {
+            case 0:
+                byte[] out = new byte[1];
+                out[0] = (byte) this.type.ordinal();
+                return out;
+                
+            case 1:
+                return this.serializedData;
+                
+            default:
+                return null;
+        }
     }
 
     @Override
     public void parsePayload(int payloadNumber, byte[] bytes) {
-        this.dataType = RecordPayloadType.values()[bytes[0]];
+        switch (payloadNumber) {
+            case 0:
+                this.type = RecordPayloadType.values()[bytes[0]];
+                return;
+                
+            case 1:
+                this.data = (Record) SerializationUtils.deserialize(bytes);
+                return;
+        }
     }
 
     @Override
@@ -84,11 +122,14 @@ public class DataRequestPacket extends Packet {
 
     @Override
     public void handleServerSide() {
-        ((ServerSession) this.session).checkoutData(this.dataType);
+        if (this.data != null) {
+            ((ServerSession) this.session).submitNewRecord(this.type, this.data);
+        }
     }
 
     @Override
     public String toString() {
-        return "Data request packet for: " + this.dataType.toString().toLowerCase();
+        return "New record packet containing records of type: " + this.type.toString().toLowerCase();
     }
+    
 }

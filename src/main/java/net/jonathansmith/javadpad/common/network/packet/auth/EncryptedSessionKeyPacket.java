@@ -20,28 +20,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 
 /**
  *
  * @author Jon
  */
-public class EncryptedSessionKeyPacket extends Packet {
+public class EncryptedSessionKeyPacket extends LockedPacket {
+    
+    private static final AtomicBoolean lock = new AtomicBoolean(false);
     
     private static int id;
-    
-    private final AtomicBoolean lock = new AtomicBoolean(false);
-    
-    private String sessionID;
     
     public EncryptedSessionKeyPacket() {
         super();
     }
     
-    public EncryptedSessionKeyPacket(Engine engine, Session session, String id) {
+    public EncryptedSessionKeyPacket(Engine engine, Session session) {
         super(engine, session);
-        this.sessionID = id;
     }
 
     @Override
@@ -51,7 +48,7 @@ public class EncryptedSessionKeyPacket extends Packet {
 
     @Override
     public void setID(int newID) {
-        if (this.lock.compareAndSet(false, true)) {
+        if (lock.compareAndSet(false, true)) {
             id = newID;
         }
     }
@@ -67,7 +64,7 @@ public class EncryptedSessionKeyPacket extends Packet {
             return 0;
         }
         
-        return this.sessionID.getBytes().length;
+        return this.key.getBytes().length;
     }
 
     @Override
@@ -76,7 +73,7 @@ public class EncryptedSessionKeyPacket extends Packet {
             return null;
         }
         
-        return this.sessionID.getBytes();
+        return this.key.getBytes();
     }
 
     @Override
@@ -85,12 +82,12 @@ public class EncryptedSessionKeyPacket extends Packet {
             return;
         }
         
-        this.sessionID = new String(bytes);
+        this.key = new String(bytes);
     }
 
     @Override
     public void handleClientSide() {
-        ((ClientSession) this.session).setKey(this.sessionID);
+        ((ClientSession) this.session).setKey(this.key);
         this.session.incrementState();
     }
 
