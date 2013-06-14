@@ -19,7 +19,6 @@ package net.jonathansmith.javadpad.client.gui.displayoptions;
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.client.Client;
-import net.jonathansmith.javadpad.client.network.session.ClientSession;
 
 /**
  *
@@ -30,13 +29,11 @@ public abstract class DisplayOption {
     public JPanel currentPanel;
     public JPanel currentToolbar;
     public Client engine;
-    public ClientSession session;
     
     public DisplayOption() {}
     
-    public void setController(Client engine) {
+    public void setEngine(Client engine) {
         this.engine = engine;
-        this.session = this.engine.getSession();
     }
     
     public JPanel getCurrentView() {

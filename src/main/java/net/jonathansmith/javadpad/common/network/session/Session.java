@@ -136,6 +136,10 @@ public abstract class Session implements ChangeSender {
     
     // Locked read writers of session data
     protected final boolean addSessionData(String key, SessionData dataType, RecordsList<Record> data) {
+        if (dataType == null) {
+            return false;
+        }
+        
         if (key.contentEquals(this.serverKey)) {
             this.sessionData.put(dataType, data);
             return true;
@@ -145,6 +149,10 @@ public abstract class Session implements ChangeSender {
     }
     
     protected final RecordsList<Record> checkoutSessionData(SessionData dataType) {
+        if (dataType == null) {
+            return null;
+        }
+        
         return this.sessionData.get(dataType);
     }
     

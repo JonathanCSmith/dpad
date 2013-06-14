@@ -16,6 +16,7 @@
  */
 package net.jonathansmith.javadpad.client.gui.displayoptions.pane;
 
+
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.common.database.Record;

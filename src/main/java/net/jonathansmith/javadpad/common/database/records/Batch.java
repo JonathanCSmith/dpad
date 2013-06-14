@@ -22,7 +22,6 @@ import net.jonathansmith.javadpad.common.database.Record;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -41,7 +40,7 @@ public class Batch extends Record {
     private String name;
     private String description;
     private Equipment equipment;
-    private Set<DataSet> dataGroup;
+    private Set<DataSet> dataSets;
     
     public Batch() {}
     
@@ -83,27 +82,27 @@ public class Batch extends Record {
         this.equipment = eqp;
     }
     
-    @Column(name = "DataGroup")
-    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
+    @Column(name = "DataSet")
+    @OneToMany(orphanRemoval = true)
     public Set<DataSet> getDataSets() {
-        return this.dataGroup;
+        return this.dataSets;
     }
     
-    public void setDataSets(Set<DataSet> dataGroup) {
-        this.dataGroup = dataGroup;
+    public void setDataSets(Set<DataSet> dataSet) {
+        this.dataSets = dataSet;
     }
     
     public void addDataSet(DataSet id) {
-        if (this.dataGroup.contains(id)) {
+        if (this.dataSets.contains(id)) {
             return;
         }
         
-        this.dataGroup.add(id);
+        this.dataSets.add(id);
     }
     
     public void removeDataSet(DataSet id) {
-        if (this.dataGroup.contains(id)) {
-            this.dataGroup.remove(id);
+        if (this.dataSets.contains(id)) {
+            this.dataSets.remove(id);
         }
     }
     

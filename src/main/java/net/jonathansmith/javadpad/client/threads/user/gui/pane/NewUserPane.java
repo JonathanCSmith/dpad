@@ -17,6 +17,8 @@
 package net.jonathansmith.javadpad.client.threads.user.gui.pane;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 
 import javax.swing.GroupLayout;
@@ -41,10 +43,24 @@ public class NewUserPane extends NewRecordPane {
      */
     public NewUserPane() {
         initComponents();
-    }    
+    }
+    
+    @Override
+    public void addDisplayOptionListener(ActionListener listener) {
+        this.submit.addActionListener(listener);
+    }
     
     @Override
     public void addDisplayOptionMouseListener(MouseListener listener) {}
+    
+    @Override
+    public boolean isEventSourceSubmitButton(ActionEvent event) {
+        if (event.getSource() == this.submit) {
+            return true;
+        }
+        
+        return false;
+    }
 
     @Override
     public Record buildNewlySubmittedRecord() {

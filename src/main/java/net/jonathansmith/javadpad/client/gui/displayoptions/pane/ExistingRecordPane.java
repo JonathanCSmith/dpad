@@ -16,10 +16,10 @@
  */
 package net.jonathansmith.javadpad.client.gui.displayoptions.pane;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 
-import javax.swing.JButton;
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.common.database.Record;
@@ -31,17 +31,11 @@ import net.jonathansmith.javadpad.common.util.database.RecordsList;
  */
 public abstract class ExistingRecordPane extends JPanel {
     
-    public JButton submit = new JButton();
-    
-    public ExistingRecordPane() {
-        this.submit.setText("Submit");
-    }
-    
-    public void addDisplayOptionListener(ActionListener listener) {
-        this.submit.addActionListener(listener);
-    }
+    public abstract void addDisplayOptionListener(ActionListener listener);
     
     public abstract void addDisplayOptionMouseListener(MouseListener listener);
+    
+    public abstract boolean isEventSourceSubmitButton(ActionEvent event);
     
     public abstract void insertRecords(RecordsList<Record> data);
     

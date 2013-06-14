@@ -106,7 +106,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
         for (ClientRuntimeThread runtime : ClientRuntimeThread.values()) {
             if (runtime.isDisplayable()) {
                 option = runtime.getDisplay();
-                option.setController(this.engine);
+                option.setEngine(this.engine);
             }
         }
     }
@@ -115,8 +115,6 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
     public void run() {
         this.setVisible(true);
         EventQueue.invokeLater(this);
-//        this.type = RuntimeType.SETUP_CLIENT;
-//        this.validateState();
     }
      
     @Override
