@@ -18,7 +18,7 @@ package net.jonathansmith.javadpad.client.gui.loadandprocess;
 
 import java.awt.event.ActionEvent;
 
-import net.jonathansmith.javadpad.client.gui.DisplayOption;
+import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.gui.loadandprocess.panel.LPMainPanel;
 import net.jonathansmith.javadpad.client.gui.loadandprocess.toolbar.LPMainToolbar;
 

@@ -26,8 +26,8 @@ import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
+import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.database.records.Batch;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
@@ -53,7 +53,7 @@ public abstract class Session implements ChangeSender {
     public final Channel channel;
     public final Engine engine;
     
-    protected final Map<RecordPayloadType, RecordsList<Record>> sessionData = new EnumMap<RecordPayloadType, RecordsList<Record>> (RecordPayloadType.class);
+    protected final Map<SessionData, RecordsList<Record>> sessionData = new EnumMap<SessionData, RecordsList<Record>> (SessionData.class);
     
     private final Random random = new Random();
     private final String id = Long.toString(random.nextLong(), 16).trim();
@@ -113,13 +113,26 @@ public abstract class Session implements ChangeSender {
     }
     
     // Session Data
-    public abstract void addData(String key, RecordPayloadType dataType, RecordsList<Record> data);
+    public abstract void addData(String key, SessionData dataType, RecordsList<Record> data);
     
-    public abstract void updateData(String key, RecordPayloadType dataType, RecordsTransform data);
+    public abstract void updateData(String key, SessionData dataType, RecordsTransform data);
     
     // Core session properties - what the ui will interact with
-    public abstract void setSessionData(String key, SessionData type, Record data);
+    public abstract void setKeySessionData(String key, DatabaseRecord type, Record data);
     
+    // TODO: Any better? consolidate switch block with database accessors????
+    public Record getKeySessionData(DatabaseRecord type) {
+        switch (type) {
+            case USER:
+                return this.getUser();
+                
+            case EXPERIMENT:
+                return this.getExperiment();
+                
+            default:
+                return null;
+        }
+    }
     
     public User getUser() {
         return this.user;

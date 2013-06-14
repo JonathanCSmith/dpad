@@ -14,19 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.events.sessiondata;
+package net.jonathansmith.javadpad.client.gui.displayoptions.pane;
 
-import java.util.EventObject;
+import javax.swing.JPanel;
 
-import net.jonathansmith.javadpad.common.database.SessionData;
+import net.jonathansmith.javadpad.common.database.Record;
 
 /**
  *
  * @author Jon
  */
-public class DataArriveEvent extends EventObject {
+public abstract class CurrentRecordPane extends JPanel {
     
-    public DataArriveEvent(SessionData tag) {
-        super(tag);
-    }
+    public abstract void setCurrentData(Record record);
 }

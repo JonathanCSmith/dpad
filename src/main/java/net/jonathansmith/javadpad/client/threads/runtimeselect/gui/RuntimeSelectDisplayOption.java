@@ -17,12 +17,13 @@
 package net.jonathansmith.javadpad.client.threads.runtimeselect.gui;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import net.jonathansmith.javadpad.client.Client;
-import net.jonathansmith.javadpad.client.gui.DisplayOption;
+import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
-import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.panel.RuntimeSelectPane;
+import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.pane.RuntimeSelectPane;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.toolbar.RuntimeSelectToolbar;
 import net.jonathansmith.javadpad.common.database.records.Batch;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
@@ -32,7 +33,7 @@ import net.jonathansmith.javadpad.common.database.records.User;
  *
  * @author jonathansmith
  */
-public class RuntimeSelectDisplayOption extends DisplayOption {
+public class RuntimeSelectDisplayOption extends DisplayOption implements ActionListener {
 
     public RuntimeSelectPane runtimeSelectPane;
     public RuntimeSelectToolbar runtimeSelectToolbar;
@@ -116,10 +117,10 @@ public class RuntimeSelectDisplayOption extends DisplayOption {
             client.setRuntime(ClientRuntimeThread.USER);
         }
         
-//        else if (evt.getSource() == this.runtimeSelectToolbar.setExperiment) {
-//            client.setRuntime(ClientRuntimeThread.EXPERIMENT_SELECT);
-//        }
-//        
+        else if (evt.getSource() == this.runtimeSelectToolbar.setExperiment) {
+            client.setRuntime(ClientRuntimeThread.EXPERIMENT);
+        }
+        
 //        else if (evt.getSource() == this.runtimeSelectToolbar.setBatch) {
 //            client.setRuntime(ClientRuntimeThread.BATCH_SELECT);
 //        }

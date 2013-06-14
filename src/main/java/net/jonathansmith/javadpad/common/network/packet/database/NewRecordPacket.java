@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
@@ -37,7 +37,7 @@ public class NewRecordPacket extends Packet {
 
     private static int id;
     
-    private RecordPayloadType type;
+    private DatabaseRecord type;
     private Record data;
     private byte[] serializedData;
     
@@ -45,7 +45,7 @@ public class NewRecordPacket extends Packet {
         super();
     }
     
-    public NewRecordPacket(Engine engine, Session session, RecordPayloadType dataType, Record data) {
+    public NewRecordPacket(Engine engine, Session session, DatabaseRecord dataType, Record data) {
         super(engine, session);
         this.type = dataType;
         this.data = data;
@@ -108,7 +108,7 @@ public class NewRecordPacket extends Packet {
     public void parsePayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
-                this.type = RecordPayloadType.values()[bytes[0]];
+                this.type = DatabaseRecord.values()[bytes[0]];
                 return;
                 
             case 1:

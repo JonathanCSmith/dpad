@@ -19,7 +19,7 @@ package net.jonathansmith.javadpad.common.network.packet.database;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.RecordPayloadType;
+import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
@@ -34,13 +34,13 @@ public class DataRequestPacket extends Packet {
     
     private static int id;
     
-    private RecordPayloadType dataType;
+    private SessionData dataType;
     
     public DataRequestPacket() {
         super();
     }
     
-    public DataRequestPacket(Engine engine, Session session, RecordPayloadType dataType) {
+    public DataRequestPacket(Engine engine, Session session, SessionData dataType) {
         super(engine, session);
         this.dataType = dataType;
     }
@@ -76,7 +76,7 @@ public class DataRequestPacket extends Packet {
 
     @Override
     public void parsePayload(int payloadNumber, byte[] bytes) {
-        this.dataType = RecordPayloadType.values()[bytes[0]];
+        this.dataType = SessionData.values()[bytes[0]];
     }
 
     @Override

@@ -23,7 +23,7 @@ import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.client.Client;
-import net.jonathansmith.javadpad.client.gui.DisplayOption;
+import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.gui.batch.panel.DisplayBatchPane;
 import net.jonathansmith.javadpad.client.gui.batch.panel.ExistingBatchPane;
 import net.jonathansmith.javadpad.client.gui.batch.panel.NewBatchPane;

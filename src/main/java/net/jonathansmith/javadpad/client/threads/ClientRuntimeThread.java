@@ -17,10 +17,17 @@
 
 package net.jonathansmith.javadpad.client.threads;
 
-import net.jonathansmith.javadpad.client.gui.DisplayOption;
+import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.client.gui.displayoptions.RecordsDisplayOption;
+import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.CurrentExperimentPane;
+import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.ExistingExperimentPane;
+import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.NewExperimentPane;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.RuntimeSelectDisplayOption;
 import net.jonathansmith.javadpad.client.threads.startup.gui.StartupDisplayOption;
-import net.jonathansmith.javadpad.client.threads.user.UserDisplayOption;
+import net.jonathansmith.javadpad.client.threads.user.gui.pane.CurrentUserPane;
+import net.jonathansmith.javadpad.client.threads.user.gui.pane.ExistingUserPane;
+import net.jonathansmith.javadpad.client.threads.user.gui.pane.NewUserPane;
+import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 import net.jonathansmith.javadpad.common.threads.RunnableThread;
 import net.jonathansmith.javadpad.common.threads.RuntimeThread;
 
@@ -32,13 +39,11 @@ import net.jonathansmith.javadpad.common.threads.RuntimeThread;
 public enum ClientRuntimeThread implements RuntimeThread {
     STARTUP(false, true, new StartupDisplayOption(), null),
     RUNTIME_SELECT(false, true, new RuntimeSelectDisplayOption(), null),
-    USER(false, true, new UserDisplayOption(), null);
+    USER(false, true, new RecordsDisplayOption(DatabaseRecord.USER, new CurrentUserPane(), new NewUserPane(), new ExistingUserPane(), "User toolbar:"), null),
+    EXPERIMENT(false, true, new RecordsDisplayOption(DatabaseRecord.EXPERIMENT, new CurrentExperimentPane(), new NewExperimentPane(), new ExistingExperimentPane(), "Experiment toolbar:"), null);
     
     
     // OLD: Keeping for reference TODO: Phase these out
-//    
-//    USER_SELECT(false, true, new UserDisplayOption()),
-//    EXPERIMENT_SELECT(false, true, new ExperimentDisplayOption()),
 //    BATCH_SELECT(false, true, new BatchDisplayOption()),
 //    
 //    LOAD_AND_PROCESS(true, true, new LoadProcessDisplayOption()),

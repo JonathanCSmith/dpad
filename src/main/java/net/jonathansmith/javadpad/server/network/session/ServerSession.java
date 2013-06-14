@@ -22,8 +22,9 @@ import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
+import net.jonathansmith.javadpad.common.database.SessionData;
+import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
@@ -31,9 +32,10 @@ import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.DataPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
+import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
-import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.server.database.experiment.ExperimentManager;
 import net.jonathansmith.javadpad.server.database.user.UserManager;
 
 import java.math.BigInteger;
@@ -80,14 +82,14 @@ public final class ServerSession extends Session {
 
     // Session data
     @Override
-    public void addData(String key, RecordPayloadType dataType, RecordsList<Record> data) {
+    public void addData(String key, SessionData dataType, RecordsList<Record> data) {
         if (key.contentEquals(this.getSessionID())) {
             this.fireChange(new DataArriveEvent(dataType));
             this.sessionData.put(dataType, data);
         }
     }
 
-    public void checkoutData(RecordPayloadType dataType) {
+    public void checkoutData(SessionData dataType) {
         RecordsList<Record> data = this.requestData(dataType);
         
         if (this.sessionData.containsKey(dataType)) {
@@ -105,7 +107,7 @@ public final class ServerSession extends Session {
     }
 
     @Override
-    public void updateData(String key, RecordPayloadType dataType, RecordsTransform data) {
+    public void updateData(String key, SessionData dataType, RecordsTransform data) {
         if (key.contentEquals(this.getSessionID())) {
             RecordsList<Record> dataUpdate = this.requestData(dataType);
             this.sessionData.put(dataType, dataUpdate);
@@ -113,7 +115,7 @@ public final class ServerSession extends Session {
     }
     
     @Override
-    public void setSessionData(String key, SessionData type, Record data) {
+    public void setKeySessionData(String key, DatabaseRecord type, Record data) {
         if (!key.contentEquals(this.getSessionID())) {
             return;
         }
@@ -125,19 +127,28 @@ public final class ServerSession extends Session {
                 }
                 
                 this.setUser((User) data);
+                break;
+                
+            case EXPERIMENT:
+                if (!(data instanceof Experiment)) {
+                    return;
+                }
+                
+                this.setExperiment((Experiment) data);
+                break;
         }
     }
     
     @Override
     public void setUser(User user) {
         super.setUser(user);
-        LockedPacket p = new SetSessionDataPacket(this.engine, this, SessionData.USER, (Record) user);
+        LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.USER, (Record) user);
             this.lockAndSendPacket(PacketPriority.HIGH, p);
     }
 
     // Database
     // TODO: fix this with connection management
-    public RecordsList<Record> requestData(RecordPayloadType dataType) {
+    public RecordsList<Record> requestData(SessionData dataType) {
         switch (dataType) {
             case ALL_USERS:
                 return UserManager.getInstance().loadAll();
@@ -146,18 +157,26 @@ public final class ServerSession extends Session {
         }
     }
     
-    public void submitNewRecord(RecordPayloadType type, Record record) {
+    public void submitNewRecord(DatabaseRecord type, Record record) {
         switch (type) {
-            case ALL_USERS:
-                return;
-                
             case USER:
                 if (!(record instanceof User)) {
                     return;
                 }
                 
                 UserManager.getInstance().saveNew((User) record);
-                this.setSessionData(this.getSessionID(), SessionData.USER, record);
+                this.setKeySessionData(this.getSessionID(), DatabaseRecord.USER, record);
+                break;
+                
+            case EXPERIMENT:
+                if (!(record instanceof Experiment)) {
+                    return;
+                }
+                
+                ExperimentManager.getInstance().saveNew((Experiment) record);
+                this.setKeySessionData(this.getSessionID(), DatabaseRecord.EXPERIMENT, record);
+                this.getUser().addExperiment((Experiment) record);
+                break;
         }
     }
     
