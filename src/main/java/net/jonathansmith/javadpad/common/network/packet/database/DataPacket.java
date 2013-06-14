@@ -99,7 +99,7 @@ public class DataPacket extends LockedPacket {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber, int providedSize) {
+    public byte[] writePayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
                 return this.key.getBytes();
@@ -125,7 +125,8 @@ public class DataPacket extends LockedPacket {
                 break;
                 
             case 1:
-                this.dataType = RecordPayloadType.values()[bytes[0]];
+                int val = (int) bytes[0];
+                this.dataType = RecordPayloadType.values()[val];
                 break;
                 
             case 2:

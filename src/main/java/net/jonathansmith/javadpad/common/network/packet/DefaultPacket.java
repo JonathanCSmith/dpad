@@ -60,7 +60,7 @@ public class DefaultPacket extends Packet {
     }
     
     @Override
-    public byte[] writePayload(int payloadNumber, int providedSize) {
+    public byte[] writePayload(int payloadNumber) {
         return null;
     }
 

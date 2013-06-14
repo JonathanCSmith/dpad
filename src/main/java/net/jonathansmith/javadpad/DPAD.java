@@ -36,6 +36,8 @@ import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
+import net.jonathansmith.javadpad.common.network.packet.database.NewRecordPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.util.PlatformConverter;
 import net.jonathansmith.javadpad.server.Server;
 
@@ -127,6 +129,8 @@ public class DPAD extends Thread {
         Packet.addPacket(DataPacket.class);
         Packet.addPacket(DataRequestPacket.class);
         Packet.addPacket(DataUpdatePacket.class);
+        Packet.addPacket(NewRecordPacket.class);
+        Packet.addPacket(SetSessionDataPacket.class);
     }
     
     @Override

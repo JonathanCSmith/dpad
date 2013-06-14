@@ -89,7 +89,7 @@ public class NewRecordPacket extends Packet {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber, int providedSize) {
+    public byte[] writePayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
                 byte[] out = new byte[1];
@@ -113,7 +113,6 @@ public class NewRecordPacket extends Packet {
                 
             case 1:
                 this.data = (Record) SerializationUtils.deserialize(bytes);
-                return;
         }
     }
 

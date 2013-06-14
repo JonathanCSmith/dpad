@@ -130,7 +130,7 @@ public class DataUpdatePacket extends LockedPacket {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber, int providedSize) {
+    public byte[] writePayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
                 return this.key.getBytes();

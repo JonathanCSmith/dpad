@@ -22,8 +22,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
-import org.bouncycastle.crypto.modes.CFBBlockCipher;
-
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
@@ -33,8 +31,6 @@ import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
  * @author jonathansmith
  */
 public class CommonEncoder extends OneToOneEncoder {
-    
-    private CFBBlockCipher encrypter = null;
 
     @Override
     protected Object encode(ChannelHandlerContext chc, Channel chnl, Object o) throws Exception {
@@ -49,11 +45,11 @@ public class CommonEncoder extends OneToOneEncoder {
             if (numberOfPayloads != 0) {
                 for (int i = 0; i < numberOfPayloads; i++) {
                     packetPayloadSizes[i] = p.getPayloadSize(i);
-                    size += 8 + packetPayloadSizes[i];
+                    size += 4 + packetPayloadSizes[i];
                 }
             }
             
-            ChannelBuffer buff = ChannelBuffers.buffer(8 + 1 + 8 + size);
+            ChannelBuffer buff = ChannelBuffers.buffer(4 + 1 + 4 + size);
             buff.writeInt(p.getID());
             buff.writeByte(priority.ordinal());
             buff.writeInt(numberOfPayloads);
@@ -65,17 +61,8 @@ public class CommonEncoder extends OneToOneEncoder {
                         continue;
                     }
                     
-                    byte[] currentPayload = p.writePayload(i, packetPayloadSizes[i]);
-
-                    if (this.encrypter != null && !p.getIsUnencrypted()) {
-                        byte[] outputPayload = new byte[packetPayloadSizes[i]];
-                        this.encrypter.encryptBlock(currentPayload, 0, outputPayload, 0);
-                        buff.writeBytes(outputPayload);
-                    }
-
-                    else {
-                        buff.writeBytes(currentPayload);
-                    }
+                    byte[] currentPayload = p.writePayload(i);
+                    buff.writeBytes(currentPayload);
                 }
             }
             
@@ -83,9 +70,5 @@ public class CommonEncoder extends OneToOneEncoder {
         }
         
         return o;
-    }
-    
-    public void setEncryption(CFBBlockCipher cipher) {
-        this.encrypter = cipher;
     }
 }

@@ -81,7 +81,7 @@ public class HandshakePacket extends Packet {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber, int providedSize) {
+    public byte[] writePayload(int payloadNumber) {
         if (payloadNumber != 0) {
             this.engine.warn("Encode failure, payloads are being read wrong");
             return null;
