@@ -35,12 +35,17 @@ import net.jonathansmith.javadpad.client.threads.user.panel.ExistingUserPane;
 import net.jonathansmith.javadpad.client.threads.user.panel.NewUserPane;
 import net.jonathansmith.javadpad.client.threads.user.toolbar.UserToolbar;
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalClosedEvent;
-import net.jonathansmith.javadpad.common.network.RequestType;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
+import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.database.NewRecordPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
-import net.jonathansmith.javadpad.server.database.user.UserManager;
 
 /**
  *
@@ -102,7 +107,7 @@ public class UserDisplayOption extends DisplayOption implements MouseListener, C
         
         else if (evt.getSource() == this.userToolbar.loadUser) {
             if (!(this.getCurrentView() instanceof ExistingUserPane)) {
-                RecordsList<Record> data = session.checkoutData(RequestType.ALL_USERS);
+                RecordsList<Record> data = session.checkoutData(RecordPayloadType.ALL_USERS);
                 
                 if (data == null) {
                     this.queuedAction = true;
@@ -166,9 +171,8 @@ public class UserDisplayOption extends DisplayOption implements MouseListener, C
                 user.setLastName(lastName);
                 user.setPassword(password);
                 
-                UserManager manager = UserManager.getInstance();
-                manager.saveNew(user);
-                session.setUser(user);
+                Packet p = new NewRecordPacket(client, session, RecordPayloadType.USER, user);
+                session.addPacketToSend(PacketPriority.HIGH, p);
                 
             } else {
                 this.engine.warn("Some fields were incomplete, returning. Your entry was not saved.");
@@ -185,7 +189,9 @@ public class UserDisplayOption extends DisplayOption implements MouseListener, C
                 this.engine.warn("No user selected, returning to main user screen.");
             
             } else {
-                session.setUser(user);
+                LockedPacket p = new SetSessionDataPacket(client, session, SessionData.USER, user);
+                p.lockPacket("-");
+                session.addPacketToSend(PacketPriority.MEDIUM, p);
             }
             
             this.setCurrentView(this.displayPanel);
@@ -205,7 +211,9 @@ public class UserDisplayOption extends DisplayOption implements MouseListener, C
             User user = this.existingUserPane.getSelectedUser();
             
             if (user != null) {
-                session.setUser(user);
+                LockedPacket p = new SetSessionDataPacket(client, session, SessionData.USER, user);
+                p.lockPacket("-");
+                session.addPacketToSend(PacketPriority.MEDIUM, p);
             }
             
             this.setCurrentView(this.displayPanel);
@@ -232,7 +240,7 @@ public class UserDisplayOption extends DisplayOption implements MouseListener, C
             }
             
             else {
-                RecordsList<Record> users = session.checkoutData(RequestType.ALL_USERS);
+                RecordsList<Record> users = session.checkoutData(RecordPayloadType.ALL_USERS);
                 if (users == null) {
                     return; // No better way to handle I think, let the user refire an update request
                 }

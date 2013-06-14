@@ -73,8 +73,10 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
     }
     
     private void setCorePanels(JPanel panel, JPanel toolbar) {
+        int dividerLocation = this.displaySplitPane.getDividerLocation();
         this.displaySplitPane.setLeftComponent(panel);
         this.toolbarSplitPane.setLeftComponent(toolbar);
+        this.displaySplitPane.setDividerLocation(dividerLocation);
     }
     
     @Override

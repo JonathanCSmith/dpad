@@ -22,15 +22,17 @@ import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
+import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
-import net.jonathansmith.javadpad.common.network.RequestType;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKeyPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
+import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.database.user.UserManager;
 
@@ -71,54 +73,91 @@ public final class ServerSession extends Session {
         return this.hash;
     }
     
-    public void buildAndSendEncryptedSessionKeyPacket() {
-        Packet p = new EncryptedSessionKeyPacket(this.engine, this, this.getSessionID());
-        this.addPacketToSend(PacketPriority.CRITICAL, p);
+    public void lockAndSendPacket(PacketPriority priority, LockedPacket packet) {
+        packet.lockPacket(this.getSessionID());
+        this.addPacketToSend(priority, packet);
     }
 
     // Session data
     @Override
-    public void addData(String key, RequestType dataType, RecordsList<Record> data) {
+    public void addData(String key, RecordPayloadType dataType, RecordsList<Record> data) {
         if (key.contentEquals(this.getSessionID())) {
             this.fireChange(new DataArriveEvent(dataType));
             this.sessionData.put(dataType, data);
         }
     }
 
-    public void checkoutData(RequestType dataType) {
+    public void checkoutData(RecordPayloadType dataType) {
         RecordsList<Record> data = this.requestData(dataType);
         
         if (this.sessionData.containsKey(dataType)) {
             RecordsTransform transform = RecordsTransform.getTransform(this.sessionData.get(dataType), data);
             this.sessionData.put(dataType, transform.getData());
             
-            Packet p = new DataUpdatePacket(this.engine, this, this.getSessionID(), dataType, transform);
-            this.addPacketToSend(PacketPriority.MEDIUM, p);
-            return;
+            LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
         }
         
         else {
-            Packet p = new DataPacket(this.engine, this, this.getSessionID(), dataType, data);
-            this.addPacketToSend(PacketPriority.MEDIUM, p);
+            LockedPacket p = new DataPacket(this.engine, this, dataType, data);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
         }
     }
 
     @Override
-    public void updateData(String key, RequestType dataType, RecordsTransform data) {
+    public void updateData(String key, RecordPayloadType dataType, RecordsTransform data) {
         if (key.contentEquals(this.getSessionID())) {
             RecordsList<Record> dataUpdate = this.requestData(dataType);
             this.sessionData.put(dataType, dataUpdate);
         }
     }
+    
+    @Override
+    public void setSessionData(String key, SessionData type, Record data) {
+        if (!key.contentEquals(this.getSessionID())) {
+            return;
+        }
+        
+        switch (type) {
+            case USER:
+                if (!(data instanceof User)) {
+                    return;
+                }
+                
+                this.setUser((User) data);
+        }
+    }
+    
+    @Override
+    public void setUser(User user) {
+        super.setUser(user);
+        LockedPacket p = new SetSessionDataPacket(this.engine, this, SessionData.USER, (Record) user);
+            this.lockAndSendPacket(PacketPriority.HIGH, p);
+    }
 
     // Database
     // TODO: fix this with connection management
-    public RecordsList<Record> requestData(RequestType dataType) {
+    public RecordsList<Record> requestData(RecordPayloadType dataType) {
         switch (dataType) {
             case ALL_USERS:
                 return UserManager.getInstance().loadAll();
             default:
                 return null;
+        }
+    }
+    
+    public void submitNewRecord(RecordPayloadType type, Record record) {
+        switch (type) {
+            case ALL_USERS:
+                return;
+                
+            case USER:
+                if (!(record instanceof User)) {
+                    return;
+                }
+                
+                UserManager.getInstance().saveNew((User) record);
+                this.setSessionData(this.getSessionID(), SessionData.USER, record);
         }
     }
     

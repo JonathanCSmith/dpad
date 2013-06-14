@@ -14,16 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.network.packet.database;
+package net.jonathansmith.javadpad.common.network.packet.session;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
-import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -31,35 +30,32 @@ import org.apache.commons.lang3.SerializationUtils;
  *
  * @author Jon
  */
-public class DataPacket extends LockedPacket {
+public class SetSessionDataPacket extends LockedPacket {
     
     private static final AtomicBoolean lock = new AtomicBoolean(false);
-
+    
     private static int id;
     
-    private RecordPayloadType dataType;
-    private RecordsList<Record> data;
+    private SessionData type;
+    private Record data;
     private byte[] serializedData;
     
-    public DataPacket() {
+    public SetSessionDataPacket() {
         super();
     }
     
-    public DataPacket(Engine engine, Session session, RecordPayloadType dataType, RecordsList<Record> data) {
+    public SetSessionDataPacket(Engine engine, Session session, SessionData type, Record record) {
         super(engine, session);
-        this.dataType = dataType;
-        this.data = data;
+        this.type = type;
+        this.data = record;
+        
         this.serializeData();
     }
     
     private void serializeData() {
-        if (this.data == null || this.data.size() == 0) {
-            return;
-        }
-        
         this.serializedData = SerializationUtils.serialize(this.data);
     }
-    
+
     @Override
     public int getID() {
         return id;
@@ -74,10 +70,6 @@ public class DataPacket extends LockedPacket {
 
     @Override
     public int getNumberOfPayloads() {
-        if (this.data == null || this.data.size() == 0) {
-            return 2;
-        }
-        
         return 3;
     }
 
@@ -106,7 +98,7 @@ public class DataPacket extends LockedPacket {
                 
             case 1:
                 byte[] out = new byte[1];
-                out[0] = (byte) this.dataType.ordinal();
+                out[0] = (byte) this.type.ordinal();
                 return out;
                 
             case 2:
@@ -122,41 +114,29 @@ public class DataPacket extends LockedPacket {
         switch (payloadNumber) {
             case 0:
                 this.key = new String(bytes);
-                break;
+                return;
                 
             case 1:
-                this.dataType = RecordPayloadType.values()[bytes[0]];
-                break;
+                this.type = SessionData.values()[bytes[0]];
+                return;
                 
             case 2:
-                RecordsList<Record> newData = (RecordsList<Record>) SerializationUtils.deserialize(bytes);
-                this.data = newData;
+                this.data = (Record) SerializationUtils.deserialize(bytes);
         }
     }
 
     @Override
     public void handleClientSide() {
-        if (this.data == null) {
-            this.data = new RecordsList<Record> ();
-        }
-        
-        this.session.addData(this.key, this.dataType, this.data);
+        this.session.setSessionData(this.key, this.type, this.data);
     }
 
     @Override
-    public void handleServerSide() {}
+    public void handleServerSide() {
+        this.session.setSessionData(this.key, this.type, this.data);
+    }
 
     @Override
     public String toString() {
-        int size;
-        if (this.data == null) {
-            size = 0;
-        }
-        
-        else {
-            size = this.data.size();
-        }
-        
-        return "Data packet containing: " + this.dataType.toString().toLowerCase() + " with " + size + " entries";
+        return "Set session data packet for data type: " + this.type.toString().toLowerCase();
     }
 }

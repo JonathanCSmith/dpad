@@ -23,13 +23,16 @@ import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.RecordPayloadType;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
+import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
-import net.jonathansmith.javadpad.common.network.RequestType;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
+import static net.jonathansmith.javadpad.common.network.session.SessionData.USER;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
@@ -38,7 +41,7 @@ import net.jonathansmith.javadpad.common.util.database.RecordsList;
  */
 public final class ClientSession extends Session {
     
-    private final Map<RequestType, Long> sessionDataTimestamp = new EnumMap<RequestType, Long> (RequestType.class);
+    private final Map<RecordPayloadType, Long> sessionDataTimestamp = new EnumMap<RecordPayloadType, Long> (RecordPayloadType.class);
     
     private String lockKey;
     
@@ -54,7 +57,7 @@ public final class ClientSession extends Session {
     }
 
     @Override
-    public void addData(String key, RequestType dataType, RecordsList<Record> data) {
+    public void addData(String key, RecordPayloadType dataType, RecordsList<Record> data) {
         if (key.contentEquals(this.lockKey)) {
             this.fireChange(new DataArriveEvent(dataType));
             this.sessionData.put(dataType, data);
@@ -62,7 +65,7 @@ public final class ClientSession extends Session {
         }
     }
 
-    public RecordsList<Record> checkoutData(RequestType dataType) {
+    public RecordsList<Record> checkoutData(RecordPayloadType dataType) {
         if (this.sessionDataTimestamp.containsKey(dataType)) {
             long entryTime = this.sessionDataTimestamp.get(dataType);
             
@@ -81,7 +84,7 @@ public final class ClientSession extends Session {
     }
 
     @Override
-    public void updateData(String key, RequestType dataType, RecordsTransform data) {
+    public void updateData(String key, RecordPayloadType dataType, RecordsTransform data) {
         if (key.contentEquals(this.lockKey)) {
             if (!this.sessionData.containsKey(dataType)) {
                 Packet p = new DataRequestPacket(this.engine, this, dataType);
@@ -92,6 +95,22 @@ public final class ClientSession extends Session {
             RecordsList<Record> result = data.transform(this.sessionData.get(dataType));
             this.sessionData.put(dataType, result);
             this.sessionDataTimestamp.put(dataType, System.currentTimeMillis());
+        }
+    }
+    
+    @Override
+    public void setSessionData(String key, SessionData type, Record data) {
+        if (!key.contentEquals(this.lockKey)) {
+            return;
+        }
+        
+        switch (type) {
+            case USER:
+                if (!(data instanceof User)) {
+                    return;
+                }
+                
+                this.setUser((User) data);
         }
     }
     

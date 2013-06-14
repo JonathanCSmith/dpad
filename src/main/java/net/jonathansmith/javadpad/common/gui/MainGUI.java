@@ -25,6 +25,7 @@ import java.awt.event.WindowEvent;
 import java.util.EventObject;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -45,7 +46,7 @@ import org.jdesktop.layout.LayoutStyle;
  *
  * @author jonathansmith
  */
-public class MainGUI extends javax.swing.JFrame implements Runnable, ChangeListener {
+public class MainGUI extends JFrame implements Runnable, ChangeListener {
 
     private final DPAD main;
     
