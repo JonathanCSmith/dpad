@@ -23,16 +23,16 @@ import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
+import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
-import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 import static net.jonathansmith.javadpad.common.network.session.DatabaseRecord.USER;
+import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
@@ -43,8 +43,6 @@ public final class ClientSession extends Session {
     
     private final Map<SessionData, Long> sessionDataTimestamp = new EnumMap<SessionData, Long> (SessionData.class);
     
-    private String lockKey;
-    
     public ClientSession(Engine eng, Channel c) {
         super(eng, c);
         this.incoming = new IncomingClientNetworkThread(eng, this, this.getSessionID());
@@ -53,54 +51,51 @@ public final class ClientSession extends Session {
     }    
     
     public void setKey(String key) {
-        this.lockKey = key;
+        this.setServerKey(key);
     }
 
     @Override
     public void addData(String key, SessionData dataType, RecordsList<Record> data) {
-        if (key.contentEquals(this.lockKey)) {
+        if (this.addSessionData(key, dataType, data)) {
             this.fireChange(new DataArriveEvent(dataType));
-            this.sessionData.put(dataType, data);
             this.sessionDataTimestamp.put(dataType, System.currentTimeMillis());
         }
-    }
-
-    public RecordsList<Record> checkoutData(SessionData dataType) {
-        if (this.sessionDataTimestamp.containsKey(dataType)) {
-            long entryTime = this.sessionDataTimestamp.get(dataType);
-            
-            if (System.currentTimeMillis() - entryTime > 300000) {
-                Packet p = new DataRequestPacket(this.engine, this, dataType);
-                this.addPacketToSend(PacketPriority.HIGH, p);
-                return null;
-            }
-            
-            return this.sessionData.get(dataType);
-        }
-        
-        Packet p = new DataRequestPacket(this.engine, this, dataType);
-        this.addPacketToSend(PacketPriority.HIGH, p);
-        return null;
     }
 
     @Override
     public void updateData(String key, SessionData dataType, RecordsTransform data) {
-        if (key.contentEquals(this.lockKey)) {
-            if (!this.sessionData.containsKey(dataType)) {
-                Packet p = new DataRequestPacket(this.engine, this, dataType);
-                this.addPacketToSend(PacketPriority.HIGH, p);
-                return;
+        RecordsList<Record> currentData = this.checkoutSessionData(dataType);
+        if (this.isServerKey(key)) {
+            if (currentData != null) {
+                currentData = data.transform(currentData);
+                this.addSessionData(key, dataType, currentData);
+                this.sessionDataTimestamp.put(dataType, System.currentTimeMillis());
             }
             
-            RecordsList<Record> result = data.transform(this.sessionData.get(dataType));
-            this.sessionData.put(dataType, result);
-            this.sessionDataTimestamp.put(dataType, System.currentTimeMillis());
+            else {
+                Packet p = new DataRequestPacket(this.engine, this, dataType);
+                this.addPacketToSend(PacketPriority.HIGH, p);
+            }
+        }
+    }
+
+    @Override
+    public RecordsList<Record> checkoutData(SessionData dataType) {
+        RecordsList<Record> data = this.checkoutSessionData(dataType);
+        if (data == null || !this.sessionDataTimestamp.containsKey(dataType) || System.currentTimeMillis() - this.sessionDataTimestamp.get(dataType) > 300000) {
+            Packet p = new DataRequestPacket(this.engine, this, dataType);
+            this.addPacketToSend(PacketPriority.HIGH, p);
+            return null;
+        }
+        
+        else {
+            return data;
         }
     }
     
     @Override
     public void setKeySessionData(String key, DatabaseRecord type, Record data) {
-        if (!key.contentEquals(this.lockKey)) {
+        if (this.isServerKey(key)) {
             return;
         }
         

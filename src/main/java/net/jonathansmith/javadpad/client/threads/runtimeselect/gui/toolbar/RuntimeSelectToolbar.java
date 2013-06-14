@@ -80,15 +80,15 @@ public class RuntimeSelectToolbar extends JPanel {
 
         jLabel4.setText("Experiment:");
 
-        jLabel6.setText("Batch");
+        jLabel6.setText("Data:");
 
-        setBatch.setText("Set Batch");
+        setBatch.setText("Set Data");
 
-        jLabel7.setText("User");
+        jLabel7.setText("User:");
 
-        jLabel8.setText("Batch Data");
+        jLabel8.setText("Plugin:");
 
-        addData.setText("Add Data");
+        addData.setText("Upload Plugin");
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);

@@ -57,6 +57,7 @@ public final class ServerSession extends Session {
         this.incoming = new IncomingServerNetworkThread(eng, this, this.getSessionID());
         this.outgoing = new OutgoingServerNetworkThread(eng, this, this.getSessionID());
         this.start();
+        this.setServerKey(this.getSessionID());
     }
     
     public byte[] getVerifyToken() {
@@ -83,35 +84,44 @@ public final class ServerSession extends Session {
     // Session data
     @Override
     public void addData(String key, SessionData dataType, RecordsList<Record> data) {
-        if (key.contentEquals(this.getSessionID())) {
+        if (this.addSessionData(key, dataType, data)) {
             this.fireChange(new DataArriveEvent(dataType));
-            this.sessionData.put(dataType, data);
-        }
-    }
-
-    public void checkoutData(SessionData dataType) {
-        RecordsList<Record> data = this.requestData(dataType);
-        
-        if (this.sessionData.containsKey(dataType)) {
-            RecordsTransform transform = RecordsTransform.getTransform(this.sessionData.get(dataType), data);
-            this.sessionData.put(dataType, transform.getData());
-            
-            LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
-            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
-        }
-        
-        else {
-            LockedPacket p = new DataPacket(this.engine, this, dataType, data);
-            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
         }
     }
 
     @Override
     public void updateData(String key, SessionData dataType, RecordsTransform data) {
-        if (key.contentEquals(this.getSessionID())) {
-            RecordsList<Record> dataUpdate = this.requestData(dataType);
-            this.sessionData.put(dataType, dataUpdate);
+        RecordsList<Record> oldData = this.checkoutSessionData(dataType);
+        if (oldData == null) {
+            return;
         }
+        
+        RecordsList<Record> dataUpdate = data.transform(oldData);
+        if (this.addSessionData(this.getSessionID(), dataType, dataUpdate)) {
+            RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
+            LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+        }
+    }
+
+    @Override
+    public RecordsList<Record> checkoutData(SessionData dataType) {
+        RecordsList<Record> oldData = this.checkoutSessionData(dataType);
+        RecordsList<Record> dataUpdate = this.requestData(dataType);
+        if (this.addSessionData(this.getSessionID(), dataType, dataUpdate)) {
+            if (oldData != null) {
+                RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
+                LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
+                this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            }
+            
+            else {
+                LockedPacket p = new DataPacket(this.engine, this, dataType, dataUpdate);
+                this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            }
+        }
+        
+        return dataUpdate;
     }
     
     @Override

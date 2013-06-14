@@ -26,6 +26,7 @@ import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.pane.RuntimeSelectPane;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.toolbar.RuntimeSelectToolbar;
 import net.jonathansmith.javadpad.common.database.records.Batch;
+import net.jonathansmith.javadpad.common.database.records.DataSet;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
 
@@ -77,34 +78,40 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
             User user = session.getUser();
             
             if (user != null) {
-                this.runtimeSelectPane.jTextField1.setText(user.getUsername());
+                this.runtimeSelectPane.usernameField.setText(user.getUsername());
                 
                 Experiment experiment = session.getExperiment();
                 
                 if (experiment != null) {
-                    this.runtimeSelectPane.jTextField2.setText(experiment.getName());
+                    this.runtimeSelectPane.experimentField.setText(experiment.getName());
                     
                     Batch batch = session.getBatch();
                     
                     if (batch != null) {
-                        this.runtimeSelectPane.jTextField3.setText(batch.getName());
+                        this.runtimeSelectPane.dataBatchField.setText(batch.getName());
+                        
+                        DataSet set = session.getDataset();
+                        
+                        if (set != null) {
+                            this.runtimeSelectPane.dataSetField.setText(set.getDataType().getName());
+                        }
                     }
                     
                     else {
-                        this.runtimeSelectPane.jTextField3.setText("");
+                        this.runtimeSelectPane.dataBatchField.setText("");
                     }
                 }
                 
                 else {
-                    this.runtimeSelectPane.jTextField2.setText("");
-                    this.runtimeSelectPane.jTextField3.setText("");
+                    this.runtimeSelectPane.experimentField.setText("");
+                    this.runtimeSelectPane.dataBatchField.setText("");
                 }
             }
             
             else {
-                this.runtimeSelectPane.jTextField1.setText("");
-                this.runtimeSelectPane.jTextField2.setText("");
-                this.runtimeSelectPane.jTextField3.setText("");
+                this.runtimeSelectPane.usernameField.setText("");
+                this.runtimeSelectPane.experimentField.setText("");
+                this.runtimeSelectPane.dataBatchField.setText("");
             }
         }
     }
