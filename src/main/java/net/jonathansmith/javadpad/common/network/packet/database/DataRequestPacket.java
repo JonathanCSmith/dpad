@@ -68,7 +68,7 @@ public class DataRequestPacket extends Packet {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber, int providedSize) {
+    public byte[] writePayload(int payloadNumber) {
         byte[] returnVal = new byte[1];
         returnVal[0] = (byte) this.dataType.ordinal();
         return returnVal;

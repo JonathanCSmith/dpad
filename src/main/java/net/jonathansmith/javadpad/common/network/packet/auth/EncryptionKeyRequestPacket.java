@@ -30,7 +30,6 @@ import org.bouncycastle.crypto.util.PublicKeyFactory;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.protocol.CommonEncoder;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 import net.jonathansmith.javadpad.common.security.SecurityHandler;
@@ -91,7 +90,7 @@ public class EncryptionKeyRequestPacket extends Packet {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber, int providedSize) {
+    public byte[] writePayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
                 return this.keys;
@@ -131,9 +130,9 @@ public class EncryptionKeyRequestPacket extends Packet {
             return;
         }
         
-        final byte[] sharedKey = SecurityHandler.getInstance().getSymetricKey();
-        
+        byte[] sharedKey = SecurityHandler.getInstance().getSymetricKey();
         AsymmetricBlockCipher cipher = SecurityHandler.getInstance().getAsymmetricCipher();
+        
         try {
             AsymmetricKeyParameter publicKey = PublicKeyFactory.createKey(this.keys);
             cipher.init(SecurityHandler.ENCRYPT_MODE, publicKey);
@@ -146,8 +145,8 @@ public class EncryptionKeyRequestPacket extends Packet {
             CFBBlockCipher toServerCipher = SecurityHandler.getInstance().getSymmetricCipher();
             toServerCipher.init(SecurityHandler.ENCRYPT_MODE, symmetricKey);
             
-            CommonEncoder encoder = this.session.channel.getPipeline().get(CommonEncoder.class);
-            encoder.setEncryption(toServerCipher);
+            //CommonEncoder encoder = this.session.channel.getPipeline().get(CommonEncoder.class);
+            //encoder.setEncryption(toServerCipher);
             
             Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, encodedSecret, encodedToken);
             this.session.addPacketToSend(PacketPriority.CRITICAL, p);

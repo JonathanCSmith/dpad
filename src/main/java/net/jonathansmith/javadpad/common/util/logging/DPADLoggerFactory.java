@@ -24,6 +24,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -70,26 +71,35 @@ public class DPADLoggerFactory {
         
         PatternLayout pattern = new PatternLayout("%d [%p|%c|%C{1}] %m%n");
         
-        SwingAppender console = new SwingAppender(pattern, (LogDisplay) engine.getGUI());
-        LevelRangeFilter consoleFilter = new LevelRangeFilter();
+        SwingAppender swing = new SwingAppender(pattern, (LogDisplay) engine.getGUI());
+        LevelRangeFilter swingFilter = new LevelRangeFilter();
         if (engine.isDebug()) {
-            consoleFilter.setLevelMin(level);
-            consoleFilter.setLevelMax(Level.FATAL);
+            swingFilter.setLevelMin(level);
+            swingFilter.setLevelMax(Level.FATAL);
         }
         
         else {
-            consoleFilter.setLevelMin(Level.INFO);
-            consoleFilter.setLevelMax(Level.WARN);
+            swingFilter.setLevelMin(Level.INFO);
+            swingFilter.setLevelMax(Level.WARN);
         }
         
-        console.addFilter(null);
-        logger.addAppender(console);
+        swing.addFilter(swingFilter);
+        logger.addAppender(swing);
         
         try {
-            FileAppender fileAppender = new DailyRollingFileAppender(pattern, engine.getFileSystem().getLogDirectory().getAbsolutePath().concat("/log.log"), "'.'yyyy-MM-dd");
+            String path = engine.getFileSystem().getLogDirectory().getAbsolutePath().concat("\\log.log");
+            FileAppender fileAppender = new DailyRollingFileAppender(pattern, path, "'.'yyyy-MM-dd");
+            
             LevelRangeFilter fileFilter = new LevelRangeFilter();
-            fileFilter.setLevelMin(Level.WARN);
             fileFilter.setLevelMax(Level.FATAL);
+            if (engine.isDebug()) {
+                fileFilter.setLevelMin(Level.ALL);
+            }
+            
+            else {
+                fileFilter.setLevelMin(Level.WARN);
+            }
+            
             fileAppender.addFilter(fileFilter);
             fileAppender.setAppend(true);
             fileAppender.activateOptions();
@@ -98,6 +108,12 @@ public class DPADLoggerFactory {
         
         catch (IOException ex) {
             logger.error("Couldn not create FileAppender for error logging!");
+        }
+        
+        if (engine.isDebug()) {
+            ConsoleAppender consoleAppender = new ConsoleAppender(pattern);
+            consoleAppender.addFilter(swingFilter);
+            logger.addAppender(consoleAppender);
         }
         
         // Hopefully this is the same logger!

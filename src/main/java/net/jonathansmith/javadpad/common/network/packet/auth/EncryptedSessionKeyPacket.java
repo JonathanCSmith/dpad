@@ -68,7 +68,7 @@ public class EncryptedSessionKeyPacket extends LockedPacket {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber, int providedSize) {
+    public byte[] writePayload(int payloadNumber) {
         if (payloadNumber != 0) {
             return null;
         }

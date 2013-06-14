@@ -79,8 +79,9 @@ public class SecurityHandler {
         }
         
         SecureRandom secureRandom = this.getSecureRandom("SHA1PRNG", "SUN");
-        RSAKeyGenerationParameters params = new RSAKeyGenerationParameters(new BigInteger("15201", 16), secureRandom, 1024, 80);
+        
         AsymmetricCipherKeyPairGenerator generator = new RSAKeyPairGenerator();
+        RSAKeyGenerationParameters params = new RSAKeyGenerationParameters(new BigInteger("10001", 16), secureRandom, 1024, 80);
         generator.init(params);
         
         AsymmetricCipherKeyPair newPair = generator.generateKeyPair();

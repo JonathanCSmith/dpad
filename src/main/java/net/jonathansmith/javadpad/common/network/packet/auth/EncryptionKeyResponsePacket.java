@@ -30,8 +30,6 @@ import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.protocol.CommonDecoder;
-import net.jonathansmith.javadpad.common.network.protocol.CommonEncoder;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 import net.jonathansmith.javadpad.common.security.SecurityHandler;
@@ -93,7 +91,7 @@ public class EncryptionKeyResponsePacket extends Packet {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber, int providedSize) {
+    public byte[] writePayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
                 return this.keys;
@@ -137,8 +135,8 @@ public class EncryptionKeyResponsePacket extends Packet {
         CipherParameters symmetricKey = new ParametersWithIV(new KeyParameter(sharedSecret), sharedSecret);
         CFBBlockCipher fromServerCipher = SecurityHandler.getInstance().getSymmetricCipher();
         fromServerCipher.init(SecurityHandler.DECRYPT_MODE, symmetricKey);
-        CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
-        decoder.setDecryption(fromServerCipher);
+        //CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
+        //decoder.setDecryption(fromServerCipher);
     }
 
     @Override
@@ -179,15 +177,15 @@ public class EncryptionKeyResponsePacket extends Packet {
         
         CFBBlockCipher toClientCipher = SecurityHandler.getInstance().getSymmetricCipher();
         toClientCipher.init(SecurityHandler.ENCRYPT_MODE, symmetricKey);
-        CommonEncoder encoder = this.session.channel.getPipeline().get(CommonEncoder.class);
-        encoder.setEncryption(toClientCipher);
+        //CommonEncoder encoder = this.session.channel.getPipeline().get(CommonEncoder.class);
+        //encoder.setEncryption(toClientCipher);
         
         CFBBlockCipher fromClientCipher = SecurityHandler.getInstance().getSymmetricCipher();
         fromClientCipher.init(SecurityHandler.DECRYPT_MODE, symmetricKey);
-        CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
-        decoder.setDecryption(fromClientCipher);
+        //CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
+        //decoder.setDecryption(fromClientCipher);
         
-        Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, new byte[0], new byte[0]);
+        Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, new byte[1], new byte[1]);
         this.session.addPacketToSend(PacketPriority.CRITICAL, p);
         this.session.incrementState();
         

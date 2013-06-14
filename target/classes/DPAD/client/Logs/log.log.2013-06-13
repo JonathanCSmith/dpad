@@ -1,0 +1,112 @@
+2013-06-13 18:37:44,940 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Exception caught in: client CommonHandler
+java.lang.ArrayIndexOutOfBoundsException: 41
+	at net.jonathansmith.javadpad.common.network.packet.database.DataPacket.parsePayload(DataPacket.java:130)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonDecoder.decode(CommonDecoder.java:102)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonDecoder.decode(CommonDecoder.java:32)
+	at net.jonathansmith.javadpad.common.network.protocol.StateDrivenDecoder.decode(StateDrivenDecoder.java:46)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.callDecode(ReplayingDecoder.java:500)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.messageReceived(ReplayingDecoder.java:435)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:268)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:255)
+	at org.jboss.netty.channel.local.DefaultLocalChannel.flushWriteBuffer(DefaultLocalChannel.java:175)
+	at org.jboss.netty.channel.local.LocalClientChannelSink.eventSunk(LocalClientChannelSink.java:80)
+	at org.jboss.netty.channel.Channels.write(Channels.java:725)
+	at org.jboss.netty.handler.codec.oneone.OneToOneEncoder.doEncode(OneToOneEncoder.java:71)
+	at org.jboss.netty.handler.codec.oneone.OneToOneEncoder.handleDownstream(OneToOneEncoder.java:59)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonLogger.handleDownstream(CommonLogger.java:90)
+	at org.jboss.netty.channel.Channels.write(Channels.java:704)
+	at org.jboss.netty.channel.Channels.write(Channels.java:671)
+	at org.jboss.netty.channel.AbstractChannel.write(AbstractChannel.java:248)
+	at net.jonathansmith.javadpad.common.network.session.Session.sendPacketMessage(Session.java:112)
+	at net.jonathansmith.javadpad.common.network.session.NetworkThread.sendPacket(NetworkThread.java:64)
+	at net.jonathansmith.javadpad.server.network.session.OutgoingServerNetworkThread.run(OutgoingServerNetworkThread.java:82)
+2013-06-13 18:42:54,114 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Exception caught in: client CommonHandler
+java.lang.ArrayIndexOutOfBoundsException: -38
+	at net.jonathansmith.javadpad.common.network.packet.database.DataPacket.parsePayload(DataPacket.java:130)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonDecoder.decode(CommonDecoder.java:102)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonDecoder.decode(CommonDecoder.java:32)
+	at net.jonathansmith.javadpad.common.network.protocol.StateDrivenDecoder.decode(StateDrivenDecoder.java:46)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.callDecode(ReplayingDecoder.java:500)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.messageReceived(ReplayingDecoder.java:435)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:268)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:255)
+	at org.jboss.netty.channel.local.DefaultLocalChannel.flushWriteBuffer(DefaultLocalChannel.java:175)
+	at org.jboss.netty.channel.local.LocalClientChannelSink.eventSunk(LocalClientChannelSink.java:80)
+	at org.jboss.netty.channel.Channels.write(Channels.java:725)
+	at org.jboss.netty.handler.codec.oneone.OneToOneEncoder.doEncode(OneToOneEncoder.java:71)
+	at org.jboss.netty.handler.codec.oneone.OneToOneEncoder.handleDownstream(OneToOneEncoder.java:59)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonLogger.handleDownstream(CommonLogger.java:90)
+	at org.jboss.netty.channel.Channels.write(Channels.java:704)
+	at org.jboss.netty.channel.Channels.write(Channels.java:671)
+	at org.jboss.netty.channel.AbstractChannel.write(AbstractChannel.java:248)
+	at net.jonathansmith.javadpad.common.network.session.Session.sendPacketMessage(Session.java:112)
+	at net.jonathansmith.javadpad.common.network.session.NetworkThread.sendPacket(NetworkThread.java:64)
+	at net.jonathansmith.javadpad.server.network.session.OutgoingServerNetworkThread.run(OutgoingServerNetworkThread.java:82)
+2013-06-13 18:43:18,841 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Early exit forced by user closing modal
+2013-06-13 18:43:18,915 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Exception caught in: client CommonHandler
+java.lang.UnsupportedOperationException: Not supported yet.
+	at net.jonathansmith.javadpad.client.network.session.ClientSession.dispose(ClientSession.java:110)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonHandler.channelDisconnected(CommonHandler.java:77)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonLogger.handleUpstream(CommonLogger.java:42)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.cleanup(ReplayingDecoder.java:570)
+	at org.jboss.netty.handler.codec.frame.FrameDecoder.channelDisconnected(FrameDecoder.java:365)
+	at org.jboss.netty.channel.Channels.fireChannelDisconnected(Channels.java:396)
+	at org.jboss.netty.channel.local.DefaultLocalChannel.closeNow(DefaultLocalChannel.java:134)
+	at org.jboss.netty.channel.local.LocalClientChannelSink.eventSunk(LocalClientChannelSink.java:53)
+	at org.jboss.netty.handler.codec.oneone.OneToOneEncoder.handleDownstream(OneToOneEncoder.java:54)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonLogger.handleDownstream(CommonLogger.java:69)
+	at org.jboss.netty.channel.Channels.close(Channels.java:812)
+	at org.jboss.netty.channel.AbstractChannel.close(AbstractChannel.java:197)
+	at net.jonathansmith.javadpad.client.Client.finish(Client.java:232)
+	at net.jonathansmith.javadpad.client.Client.run(Client.java:227)
+2013-06-13 18:43:19,009 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] An error has forced all threads to shutdown
+2013-06-13 18:43:19,010 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Data integrity cannot currently be guaranteed
+2013-06-13 18:43:19,010 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] ===============================================
+2013-06-13 18:43:19,010 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Error in client main thread
+2013-06-13 18:43:19,010 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] ===============================================
+2013-06-13 18:43:19,012 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Shutdown by main
+2013-06-13 20:41:31,057 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Exception caught in: client CommonHandler
+java.lang.ArrayIndexOutOfBoundsException: 25
+	at net.jonathansmith.javadpad.common.network.packet.database.DataPacket.parsePayload(DataPacket.java:130)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonDecoder.decode(CommonDecoder.java:102)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonDecoder.decode(CommonDecoder.java:32)
+	at net.jonathansmith.javadpad.common.network.protocol.StateDrivenDecoder.decode(StateDrivenDecoder.java:46)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.callDecode(ReplayingDecoder.java:500)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.messageReceived(ReplayingDecoder.java:435)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:268)
+	at org.jboss.netty.channel.Channels.fireMessageReceived(Channels.java:255)
+	at org.jboss.netty.channel.local.DefaultLocalChannel.flushWriteBuffer(DefaultLocalChannel.java:175)
+	at org.jboss.netty.channel.local.LocalClientChannelSink.eventSunk(LocalClientChannelSink.java:80)
+	at org.jboss.netty.channel.Channels.write(Channels.java:725)
+	at org.jboss.netty.handler.codec.oneone.OneToOneEncoder.doEncode(OneToOneEncoder.java:71)
+	at org.jboss.netty.handler.codec.oneone.OneToOneEncoder.handleDownstream(OneToOneEncoder.java:59)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonLogger.handleDownstream(CommonLogger.java:90)
+	at org.jboss.netty.channel.Channels.write(Channels.java:704)
+	at org.jboss.netty.channel.Channels.write(Channels.java:671)
+	at org.jboss.netty.channel.AbstractChannel.write(AbstractChannel.java:248)
+	at net.jonathansmith.javadpad.common.network.session.Session.sendPacketMessage(Session.java:112)
+	at net.jonathansmith.javadpad.common.network.session.NetworkThread.sendPacket(NetworkThread.java:64)
+	at net.jonathansmith.javadpad.server.network.session.OutgoingServerNetworkThread.run(OutgoingServerNetworkThread.java:82)
+2013-06-13 20:41:36,951 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Early exit forced by user closing modal
+2013-06-13 20:41:36,982 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Exception caught in: client CommonHandler
+java.lang.UnsupportedOperationException: Not supported yet.
+	at net.jonathansmith.javadpad.client.network.session.ClientSession.dispose(ClientSession.java:110)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonHandler.channelDisconnected(CommonHandler.java:77)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonLogger.handleUpstream(CommonLogger.java:42)
+	at org.jboss.netty.handler.codec.replay.ReplayingDecoder.cleanup(ReplayingDecoder.java:570)
+	at org.jboss.netty.handler.codec.frame.FrameDecoder.channelDisconnected(FrameDecoder.java:365)
+	at org.jboss.netty.channel.Channels.fireChannelDisconnected(Channels.java:396)
+	at org.jboss.netty.channel.local.DefaultLocalChannel.closeNow(DefaultLocalChannel.java:134)
+	at org.jboss.netty.channel.local.LocalClientChannelSink.eventSunk(LocalClientChannelSink.java:53)
+	at org.jboss.netty.handler.codec.oneone.OneToOneEncoder.handleDownstream(OneToOneEncoder.java:54)
+	at net.jonathansmith.javadpad.common.network.protocol.CommonLogger.handleDownstream(CommonLogger.java:69)
+	at org.jboss.netty.channel.Channels.close(Channels.java:812)
+	at org.jboss.netty.channel.AbstractChannel.close(AbstractChannel.java:197)
+	at net.jonathansmith.javadpad.client.Client.finish(Client.java:232)
+	at net.jonathansmith.javadpad.client.Client.run(Client.java:227)
+2013-06-13 20:41:37,091 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] An error has forced all threads to shutdown
+2013-06-13 20:41:37,091 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Data integrity cannot currently be guaranteed
+2013-06-13 20:41:37,091 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] ===============================================
+2013-06-13 20:41:37,091 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Error in client main thread
+2013-06-13 20:41:37,091 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] ===============================================
+2013-06-13 20:41:37,091 [ERROR|class net.jonathansmith.javadpad.client.Client|Engine] Shutdown by main

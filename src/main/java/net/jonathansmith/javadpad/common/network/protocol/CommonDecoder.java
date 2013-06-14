@@ -19,11 +19,10 @@ package net.jonathansmith.javadpad.common.network.protocol;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 
-import org.bouncycastle.crypto.modes.CFBBlockCipher;
-
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.util.logging.exceptions.DecoderException;
 
 /**
  *
@@ -37,7 +36,6 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
     private int paramSize;
     private int frameRead = 0;
     private Packet packet;
-    private CFBBlockCipher decrypter = null;
  
     public CommonDecoder() {
         super(DecodingState.TYPE);
@@ -79,9 +77,6 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
  
             case PARAM_SIZE:
                 this.paramSize = buffer.readInt();
-                return this.continueDecoding(DecodingState.PARAM_VALUE);
- 
-            case PARAM_VALUE:
                 if (this.paramSize == 0) {
                     this.frameRead++;
                     if (this.frameRead >= this.paramCount) {
@@ -89,39 +84,40 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                     }
                     
                     else {
+                        System.out.println("For packet: " + this.packet.getClass().toString());
+                        System.out.println("Skipping payload number: " + (this.frameRead - 1));
+                        System.out.println("As it declared and empty payload");
                         return this.continueDecoding(DecodingState.PARAM_SIZE);
                     }
                 }
                 
-                byte[] currentPayload = new byte[this.paramSize];
-                byte[] outputPayload = new byte[this.paramSize];
-                buffer.readBytes(currentPayload);
-                
-                if (this.decrypter != null && !this.packet.getIsUnencrypted()) {
-                    this.decrypter.decryptBlock(currentPayload, 0, outputPayload, 0);
-                    this.packet.parsePayload(this.frameRead, outputPayload);
-                }
-                
                 else {
+                    return this.continueDecoding(DecodingState.PARAM_VALUE);
+                }
+ 
+            case PARAM_VALUE:
+                try {
+                    byte[] currentPayload = new byte[this.paramSize];
+                    buffer.readBytes(currentPayload);
                     this.packet.parsePayload(this.frameRead, currentPayload);
+                    this.frameRead++;
+
+                    if (this.frameRead >= this.paramCount) {
+                        return this.finishedDecoding(new PacketMessage(this.packet, this.priority));
+                    }
+
+                    else {
+                        return this.continueDecoding(DecodingState.PARAM_SIZE);
+                    }
                 }
-                this.frameRead++;
                 
-                if (this.frameRead >= this.paramCount) {
-                    return this.finishedDecoding(new PacketMessage(this.packet, this.priority));
-                }
-                
-                else {
-                    return this.continueDecoding(DecodingState.PARAM_SIZE);
+                catch (Exception e) {
+                    throw new DecoderException("Packet: " + this.packet.getClass().toString() + " is having issues when decoding! Payload number was: " + this.frameRead, e);
                 }
  
             default:
                 throw new IllegalStateException("Unknown state: " + currentState);
         }
-    }
-    
-    public void setDecryption(CFBBlockCipher decryption) {
-        this.decrypter = decryption;
     }
  
     // public classes --------------------------------------------------------
