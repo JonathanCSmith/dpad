@@ -29,62 +29,29 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
-import net.jonathansmith.javadpad.client.network.session.ClientSession;
-import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.ChangeSender;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
-import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
-import net.jonathansmith.javadpad.common.network.session.Session;
 
 /**
  *
  * @author Jon
  */
-public class WaitForRecordsDialog extends JDialog implements Runnable, ChangeSender, ChangeListener {
+public class WaitForRecordsDialog extends JDialog implements ChangeSender {
 
-    private final Session session;
     private final CopyOnWriteArrayList<ChangeListener> listeners;
-    private final SessionData awaitedPayload;
     
     private boolean lock = true;
     
     /**
      * Creates new form UserWaitDialog
      */
-    public WaitForRecordsDialog(java.awt.Frame parent, boolean modal, Session session, SessionData type) {
+    public WaitForRecordsDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        this.session = session;
-        this.awaitedPayload = type;
-        ((ClientSession) this.session).addListener(this);
         this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
         initComponents();
     }
-    
-    @Override
-    public void run() {
-        while (lock) {
-            try {
-                Thread.sleep(100);
-            }
-            
-            catch (InterruptedException ex) {
-                this.session.engine.error("Error while waiting for server response. Interrupted!", ex);
-            }
-        }
-        
-        this.session.removeListener(this);
-        this.setVisible(false);
-        this.fireChange(new ModalCloseEvent(this, false));
-    }
-    
-    public void changeEventReceived(EventObject event) {
-        if (event instanceof DataArriveEvent && (SessionData) event.getSource() == this.awaitedPayload) {
-            this.lock = false;
-        }
-    }
 
-    
     @Override
     public void addListener(ChangeListener listener) {
         if (!this.listeners.contains(listener)) {
