@@ -86,4 +86,8 @@ public class UserTableModel extends AbstractTableModel {
             }
         }
     }
+    
+    public void clearData() {
+        this.users.clear();
+    }
 }

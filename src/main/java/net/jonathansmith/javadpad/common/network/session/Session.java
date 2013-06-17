@@ -36,6 +36,7 @@ import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.ChangeSender;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
@@ -126,6 +127,11 @@ public abstract class Session implements ChangeSender {
     
     protected final boolean isServerKey(String key) {
         return key.contentEquals(this.serverKey);
+    }
+    
+    public final void lockAndSendPacket(PacketPriority priority, LockedPacket packet) {
+        packet.lockPacket(this.serverKey);
+        this.addPacketToSend(priority, packet);
     }
     
     public abstract void addData(String key, SessionData dataType, RecordsList<Record> data);

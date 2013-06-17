@@ -73,6 +73,13 @@ public class ExistingExperimentPane extends ExistingRecordPane {
     @Override
     public void insertRecords(RecordsList<Record> data) {
         ((ExperimentListModel) this.jList1.getModel()).setData(data);
+        this.jList1.repaint();
+    }
+    
+    @Override
+    public void clearRecords() {
+        ((ExperimentListModel) this.jList1.getModel()).clearData();
+        this.jList1.repaint();
     }
 
     @Override
@@ -169,7 +176,7 @@ public class ExistingExperimentPane extends ExistingRecordPane {
     // End of variables declaration//GEN-END:variables
 
     private class ListSelection implements ListSelectionListener {
-
+        
         @Override
         public void valueChanged(ListSelectionEvent evt) {
                 ListSelectionModel model = (ListSelectionModel) evt.getSource();

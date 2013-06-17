@@ -73,9 +73,9 @@ public class WaitForRecordsDialog extends JDialog implements Runnable, ChangeSen
             }
         }
         
-        this.fireChange(new ModalCloseEvent(this, false));
         this.session.removeListener(this);
         this.setVisible(false);
+        this.fireChange(new ModalCloseEvent(this, false));
     }
     
     public void changeEventReceived(EventObject event) {

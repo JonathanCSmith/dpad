@@ -75,11 +75,6 @@ public final class ServerSession extends Session {
     public String getSha1Hash() {
         return this.hash;
     }
-    
-    public void lockAndSendPacket(PacketPriority priority, LockedPacket packet) {
-        packet.lockPacket(this.getSessionID());
-        this.addPacketToSend(priority, packet);
-    }
 
     // Session data
     @Override
@@ -153,7 +148,14 @@ public final class ServerSession extends Session {
     public void setUser(User user) {
         super.setUser(user);
         LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.USER, (Record) user);
-            this.lockAndSendPacket(PacketPriority.HIGH, p);
+        this.lockAndSendPacket(PacketPriority.HIGH, p);
+    }
+    
+    @Override
+    public void setExperiment(Experiment experiment) {
+        super.setExperiment(experiment);
+        LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.EXPERIMENT, (Record) experiment);
+        this.lockAndSendPacket(PacketPriority.HIGH, p);
     }
 
     // Database
@@ -162,6 +164,10 @@ public final class ServerSession extends Session {
         switch (dataType) {
             case ALL_USERS:
                 return UserManager.getInstance().loadAll();
+                
+            case ALL_EXPERIMENTS:
+                return ExperimentManager.getInstance().loadAll();
+                
             default:
                 return null;
         }
@@ -185,7 +191,10 @@ public final class ServerSession extends Session {
                 
                 ExperimentManager.getInstance().saveNew((Experiment) record);
                 this.setKeySessionData(this.getSessionID(), DatabaseRecord.EXPERIMENT, record);
-                this.getUser().addExperiment((Experiment) record);
+                
+                User user = this.getUser();
+                user.addExperiment((Experiment) record);
+                UserManager.getInstance().save(user);
                 break;
         }
     }

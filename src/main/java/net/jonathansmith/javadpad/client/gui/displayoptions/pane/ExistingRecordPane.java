@@ -39,5 +39,7 @@ public abstract class ExistingRecordPane extends JPanel {
     
     public abstract void insertRecords(RecordsList<Record> data);
     
+    public abstract void clearRecords();
+    
     public abstract Record getSelectedRecord();
 }

@@ -24,7 +24,6 @@ import java.awt.event.MouseListener;
 import java.util.EventObject;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
@@ -95,12 +94,11 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
             RecordsList<Record> data = this.engine.getSession().checkoutData(dataType);
 
             if (data == null) {
-                this.queuedAction = true;
-
                 final WaitForRecordsDialog dialog = new WaitForRecordsDialog(new JFrame(), true, this.engine.getSession(), dataType);
                 dialog.addListener(this);
                 Thread waitThread = new Thread(dialog);
                 waitThread.start();
+                this.queuedAction = true;
 
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -108,6 +106,10 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
                         dialog.setVisible(true);
                     }
                 });
+                
+                this.existingRecordPane.clearRecords();
+                this.setCurrentView(this.existingRecordPane);
+                this.engine.getGUI().validateState();
             }
 
             else {
@@ -134,6 +136,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
         if (record != null) {
             Packet p = new NewRecordPacket(this.engine, this.engine.getSession(), this.recordType, record);
             this.engine.getSession().addPacketToSend(PacketPriority.HIGH, p);
+            this.newRecordPane.clearInfo();
         }
 
         else {
@@ -153,8 +156,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
 
         else {
             LockedPacket p = new SetSessionDataPacket(this.engine, this.engine.getSession(), this.recordType, record);
-            p.lockPacket("-");
-            this.engine.getSession().addPacketToSend(PacketPriority.MEDIUM, p);
+            this.engine.getSession().lockAndSendPacket(PacketPriority.HIGH, p);
         }
 
         this.setCurrentView(this.currentRecordPane);
@@ -162,17 +164,12 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     }
     
     @Override
-    public void setCurrentView(JPanel panel) {
-        super.setCurrentView(panel);
-        
-        if (panel == this.currentRecordPane) {
+    public void validateState() {
+        if (this.currentPanel == this.currentRecordPane) {
             Record record = this.engine.getSession().getKeySessionData(this.recordType);
             this.currentRecordPane.setCurrentData(record);
         }
     }
-    
-    @Override
-    public void validateState() {}
     
     @Override
     public void actionPerformed(ActionEvent evt) {
@@ -241,7 +238,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
                 this.queuedAction = false;
                 this.setCurrentView(this.existingRecordPane);
                 this.existingRecordPane.insertRecords(data);
-                this.engine.getGUI().validate();
+                this.engine.getGUI().validateState();
             }
         }
     }

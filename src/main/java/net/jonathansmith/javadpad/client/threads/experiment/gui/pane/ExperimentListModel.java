@@ -36,6 +36,11 @@ public class ExperimentListModel extends AbstractListModel {
     public int getSize() {
         return this.experiments.size();
     }
+    
+    public void addElement(Experiment experiment) {
+        this.experiments.add(experiment);
+        this.fireIntervalAdded(this, this.experiments.size() - 1, this.experiments.size() - 1);
+    }
 
     public Object getElementAt(int i) {
         Experiment experiment = this.experiments.get(i);
@@ -56,8 +61,12 @@ public class ExperimentListModel extends AbstractListModel {
         
         for (Record data : list) {
             if (data instanceof Experiment) {
-                this.experiments.add((Experiment) data);
+                this.addElement((Experiment) data);
             }
         }
+    }
+    
+    public void clearData() {
+        this.experiments.clear();
     }
 }
