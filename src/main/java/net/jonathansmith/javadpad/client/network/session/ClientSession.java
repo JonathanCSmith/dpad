@@ -25,6 +25,7 @@ import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
 import net.jonathansmith.javadpad.common.database.SessionData;
+import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
@@ -95,7 +96,7 @@ public final class ClientSession extends Session {
     
     @Override
     public void setKeySessionData(String key, DatabaseRecord type, Record data) {
-        if (this.isServerKey(key)) {
+        if (!this.isServerKey(key)) {
             return;
         }
         
@@ -106,6 +107,15 @@ public final class ClientSession extends Session {
                 }
                 
                 this.setUser((User) data);
+                break;
+                
+            case EXPERIMENT:
+                if (!(data instanceof Experiment)) {
+                    return;
+                }
+                
+                this.setExperiment((Experiment) data);
+                break;
         }
     }
     

@@ -71,6 +71,12 @@ public class ExistingUserPane extends ExistingRecordPane {
         ((UserTableModel) this.jTable1.getModel()).setData(data);
         this.jTable1.repaint();
     }
+    
+    @Override
+    public void clearRecords() {
+        ((UserTableModel) this.jTable1.getModel()).clearData();
+        this.jTable1.repaint();
+    }
 
     @Override
     public Record getSelectedRecord() {
