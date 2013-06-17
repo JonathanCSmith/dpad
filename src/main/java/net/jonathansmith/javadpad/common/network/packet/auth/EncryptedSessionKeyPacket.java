@@ -18,7 +18,6 @@ package net.jonathansmith.javadpad.common.network.packet.auth;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
@@ -39,6 +38,10 @@ public class EncryptedSessionKeyPacket extends LockedPacket {
     
     public EncryptedSessionKeyPacket(Engine engine, Session session) {
         super(engine, session);
+    }
+    
+    public String getKey() {
+        return this.key;
     }
 
     @Override
@@ -87,8 +90,7 @@ public class EncryptedSessionKeyPacket extends LockedPacket {
 
     @Override
     public void handleClientSide() {
-        ((ClientSession) this.session).setKey(this.key);
-        this.session.incrementState();
+        this.session.handleSessionKey(this);
     }
 
     @Override

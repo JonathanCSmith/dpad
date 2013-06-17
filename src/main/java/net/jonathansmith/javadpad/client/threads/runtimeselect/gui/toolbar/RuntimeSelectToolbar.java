@@ -22,9 +22,7 @@ import java.awt.Insets;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 
 /**
@@ -51,12 +49,9 @@ public class RuntimeSelectToolbar extends JPanel {
 
         setUser = new JButton();
         setExperiment = new JButton();
-        jLabel4 = new JLabel();
-        jLabel6 = new JLabel();
         setBatch = new JButton();
-        jLabel7 = new JLabel();
-        jLabel8 = new JLabel();
         addData = new JButton();
+        shutdown = new JButton();
 
         setMaximumSize(new Dimension(120, 32767));
         setMinimumSize(new Dimension(120, 0));
@@ -78,17 +73,11 @@ public class RuntimeSelectToolbar extends JPanel {
         setExperiment.setMinimumSize(new Dimension(105, 23));
         setExperiment.setPreferredSize(new Dimension(105, 23));
 
-        jLabel4.setText("Experiment:");
-
-        jLabel6.setText("Data:");
-
         setBatch.setText("Set Data");
 
-        jLabel7.setText("User:");
-
-        jLabel8.setText("Plugin:");
-
         addData.setText("Upload Plugin");
+
+        shutdown.setText("Shutdown");
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -96,56 +85,41 @@ public class RuntimeSelectToolbar extends JPanel {
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel8)
-                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(GroupLayout.Alignment.TRAILING, layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                            .addComponent(setUser, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                            .addComponent(setExperiment, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE))
-                        .addComponent(jLabel4))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(setUser, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                    .addComponent(setExperiment, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
                     .addComponent(setBatch, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel6)
-                    .addComponent(jLabel7)
-                    .addComponent(addData, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(addData, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(shutdown, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {setBatch, setExperiment, setUser});
+        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {addData, setBatch, setExperiment, setUser, shutdown});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(jLabel7)
-                .addGap(5, 5, 5)
                 .addComponent(setUser, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
-                .addComponent(jLabel4)
                 .addGap(5, 5, 5)
                 .addComponent(setExperiment, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
-                .addComponent(jLabel6)
-                .addGap(5, 5, 5)
                 .addComponent(setBatch)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel8)
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(5, 5, 5)
                 .addComponent(addData)
-                .addContainerGap(110, Short.MAX_VALUE))
+                .addGap(5, 5, 5)
+                .addComponent(shutdown)
+                .addContainerGap(165, Short.MAX_VALUE))
         );
 
-        layout.linkSize(SwingConstants.VERTICAL, new Component[] {setBatch, setExperiment, setUser});
+        layout.linkSize(SwingConstants.VERTICAL, new Component[] {addData, setBatch, setExperiment, setUser, shutdown});
 
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public JButton addData;
-    private JLabel jLabel4;
-    private JLabel jLabel6;
-    private JLabel jLabel7;
-    private JLabel jLabel8;
     public JButton setBatch;
     public JButton setExperiment;
     public JButton setUser;
+    public JButton shutdown;
     // End of variables declaration//GEN-END:variables
 }

@@ -29,6 +29,7 @@ import net.jonathansmith.javadpad.common.database.records.Batch;
 import net.jonathansmith.javadpad.common.database.records.DataSet;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 
 /**
  *
@@ -55,6 +56,13 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
     public void validateState() {
         Client client = (Client) this.engine;
         ClientSession session = client.getSession();
+        
+        if (session.getState() != NetworkThreadState.RUNNING) {
+            this.runtimeSelectToolbar.setUser.setEnabled(false);
+            this.runtimeSelectToolbar.setExperiment.setEnabled(false);
+            this.runtimeSelectToolbar.setBatch.setEnabled(false);
+            return;
+        }
         
         if (session.getUser() == null) {
             this.runtimeSelectToolbar.setUser.setEnabled(true);
