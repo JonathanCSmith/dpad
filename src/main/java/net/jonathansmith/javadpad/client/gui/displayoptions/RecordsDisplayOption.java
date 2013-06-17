@@ -22,6 +22,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import java.util.EventObject;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -35,6 +36,7 @@ import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
+import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
@@ -50,15 +52,20 @@ import net.jonathansmith.javadpad.server.database.QueryType;
  */
 public class RecordsDisplayOption extends DisplayOption implements ActionListener, MouseListener, ChangeListener {
     
+    private final CopyOnWriteArrayList<ChangeListener> listeners;
+    
     public final DatabaseRecord recordType;
     public final CurrentRecordPane currentRecordPane;
     public final NewRecordPane newRecordPane;
     public final ExistingRecordPane existingRecordPane;
     public final RecordToolbar toolbar;
     
-    private boolean queuedAction = false;
+    private WaitForRecordsDialog dialog = null;
     
     public RecordsDisplayOption(DatabaseRecord type, CurrentRecordPane curr, NewRecordPane n, ExistingRecordPane exist, String title) {
+        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
+        this.session.addListener(this);
+        
         this.recordType = type;
         this.currentRecordPane = curr;
         this.newRecordPane = n;
@@ -94,11 +101,8 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
             RecordsList<Record> data = this.engine.getSession().checkoutData(dataType);
 
             if (data == null) {
-                final WaitForRecordsDialog dialog = new WaitForRecordsDialog(new JFrame(), true, this.engine.getSession(), dataType);
+                this.dialog = new WaitForRecordsDialog(new JFrame(), true);
                 dialog.addListener(this);
-                Thread waitThread = new Thread(dialog);
-                waitThread.start();
-                this.queuedAction = true;
 
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -173,7 +177,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (this.queuedAction) {
+        if (this.dialog != null) {
             return;
         }
     
@@ -200,7 +204,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
         
     @Override
     public void mouseClicked(MouseEvent me) {
-        if (this.queuedAction) {
+        if (this.dialog != null) {
             return;
         }
         
@@ -228,18 +232,19 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
             if (evt.getWasForcedClosed()) {
                 this.engine.forceShutdown("Early exit forced by user closing modal", null);
             }
+        }
             
-            else {
-                RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL));
-                if (data == null) {
-                    return; // TODO: Verify if there is a better way of handling this, don't want packet spam tho
-                }
-                
-                this.queuedAction = false;
-                this.setCurrentView(this.existingRecordPane);
-                this.existingRecordPane.insertRecords(data);
-                this.engine.getGUI().validateState();
+        else if (event instanceof DataArriveEvent) {
+            RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL));
+            if (data == null) {
+                return; // TODO: Verify if there is a better way of handling this, don't want packet spam tho
             }
+
+            this.dialog.dispose();
+            this.dialog = null;
+            this.setCurrentView(this.existingRecordPane);
+            this.existingRecordPane.insertRecords(data);
+            this.engine.getGUI().validateState();
         }
     }
 }
