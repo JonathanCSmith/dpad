@@ -20,6 +20,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.netty.channel.Channel;
 
+import org.bouncycastle.crypto.AsymmetricBlockCipher;
+import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
+import org.bouncycastle.crypto.CipherParameters;
+import org.bouncycastle.crypto.modes.CFBBlockCipher;
+import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.crypto.params.ParametersWithIV;
+
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
@@ -29,11 +36,16 @@ import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKeyPacket;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
+import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.security.SecurityHandler;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.database.experiment.ExperimentManager;
 import net.jonathansmith.javadpad.server.database.user.UserManager;
@@ -60,11 +72,103 @@ public final class ServerSession extends Session {
         this.setServerKey(this.getSessionID());
     }
     
+    @Override
+    public void handleHandshake(HandshakePacket p) {
+        if (this.getState() != NetworkThreadState.EXCHANGING_HANDSHAKE) {
+            this.engine.warn("Invalid handshake packet received. Discarding.");
+            this.disconnect();
+            this.dispose();
+            return;
+        }
+        
+        if (!this.engine.getVersion().contentEquals(p.version)) {
+            this.engine.warn("Incompatible client/server versions. Client has: " + p.version + ", Server has: " + this.engine.getVersion());
+            this.disconnect();
+            this.dispose();
+            return;
+        }
+        
+        byte[] randomByte = new byte[4];
+        p.random.nextBytes(randomByte);
+        this.setVerifyToken(randomByte);
+        
+        AsymmetricCipherKeyPair keys = SecurityHandler.getInstance().getKeyPair();
+        byte[] secret = SecurityHandler.getInstance().encodeKey(keys.getPublic());
+        
+        EncryptionKeyRequestPacket reply = new EncryptionKeyRequestPacket(this.engine, this, secret, randomByte);
+        this.handleEncryptionKeyRequest(reply);
+    }
+    
+    @Override
+    public void handleEncryptionKeyRequest(EncryptionKeyRequestPacket p) {
+        this.addPacketToSend(PacketPriority.CRITICAL, p);
+        this.incrementState();
+    }
+    
+    @Override
+    public void handleEncryptionKeyResponse(EncryptionKeyResponsePacket p, boolean isReply) {
+        if (this.getState() != NetworkThreadState.EXCHANGING_AUTHENTICATION) {
+            this.engine.warn("Cannot respond to an authentication challenge, as either the handshake is not complete or we have not sent the token");
+            this.disconnect();
+            this.dispose();
+            return;
+        }
+        
+        AsymmetricCipherKeyPair pair = SecurityHandler.getInstance().getKeyPair();
+        AsymmetricBlockCipher cipher = SecurityHandler.getInstance().getAsymmetricCipher();
+        cipher.init(SecurityHandler.DECRYPT_MODE, pair.getPrivate());
+        
+        final byte[] initialVector = SecurityHandler.getInstance().processAll(cipher, p.keys);
+        final byte[] validateToken = SecurityHandler.getInstance().processAll(cipher, p.token);
+        final byte[] savedToken = this.getVerifyToken();
+        
+        if (validateToken.length != 4) {
+            this.engine.warn("Invalid token from session");
+            this.disconnect();
+            return;
+        }
+        
+        for (int i = 0; i < validateToken.length; i++) {
+            if (validateToken[i] != savedToken[i]) {
+                this.engine.warn("Invalid token from session");
+                this.disconnect();
+                return;
+            }
+        }
+        
+        byte[] publicKeyEncoded = SecurityHandler.getInstance().encodeKey(pair.getPublic());
+        this.sha1Hash(new Object[] {initialVector, publicKeyEncoded});
+        
+        CipherParameters symmetricKey = new ParametersWithIV(new KeyParameter(initialVector), initialVector);
+        
+        CFBBlockCipher toClientCipher = SecurityHandler.getInstance().getSymmetricCipher();
+        toClientCipher.init(SecurityHandler.ENCRYPT_MODE, symmetricKey);
+        //CommonEncoder encoder = this.session.channel.getPipeline().get(CommonEncoder.class);
+        //encoder.setEncryption(toClientCipher);
+        
+        CFBBlockCipher fromClientCipher = SecurityHandler.getInstance().getSymmetricCipher();
+        fromClientCipher.init(SecurityHandler.DECRYPT_MODE, symmetricKey);
+        //CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
+        //decoder.setDecryption(fromClientCipher);
+        
+        EncryptionKeyResponsePacket reply = new EncryptionKeyResponsePacket(this.engine, this, new byte[1], new byte[1]);
+        this.addPacketToSend(PacketPriority.CRITICAL, reply);
+        this.incrementState();
+        
+        EncryptedSessionKeyPacket p2 = new EncryptedSessionKeyPacket(this.engine, this);
+        this.handleSessionKey(p2);
+    }
+    
+    @Override
+    public void handleSessionKey(EncryptedSessionKeyPacket p) {
+        this.lockAndSendPacket(PacketPriority.CRITICAL, p);
+    }
+    
     public byte[] getVerifyToken() {
         return this.token;
     }
     
-    public void setVerifyToken(byte[] token) {
+    private void setVerifyToken(byte[] token) {
         this.token = token;
     }
 

@@ -39,6 +39,10 @@ import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKeyPacket;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
+import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
@@ -84,12 +88,20 @@ public abstract class Session implements ChangeSender {
         return this.id;
     }
     
-    // Network handlers
-    public NetworkThreadState getState() {
+    // Authentication
+    public abstract void handleHandshake(HandshakePacket p);
+    
+    public abstract void handleEncryptionKeyRequest(EncryptionKeyRequestPacket p);
+    
+    public abstract void handleEncryptionKeyResponse(EncryptionKeyResponsePacket p, boolean isReply);
+    
+    public abstract void handleSessionKey(EncryptedSessionKeyPacket p);
+    
+    public final NetworkThreadState getState() {
         return this.state;
     }
     
-    public void incrementState() {
+    protected final void incrementState() {
         if (this.state == NetworkThreadState.RUNNING) {
             return;
         }
@@ -102,6 +114,7 @@ public abstract class Session implements ChangeSender {
         }
     }
     
+    // Network handlers
     public void addPacketToSend(PacketPriority priority, Packet p) {
         this.outgoing.addPacket(priority, p);
     }

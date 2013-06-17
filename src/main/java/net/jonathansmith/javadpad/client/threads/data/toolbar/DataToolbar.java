@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.gui.displayoptions.toolbar;
+package net.jonathansmith.javadpad.client.threads.data.toolbar;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -31,20 +31,16 @@ import org.jdesktop.layout.LayoutStyle;
  *
  * @author jonathansmith
  */
-public class RecordToolbar extends JPanel {
+public class DataToolbar extends JPanel {
 
-    /**
-     * Creates new form 
-     */
-    public RecordToolbar(String title) {
+    public DataToolbar() {
         initComponents();
-        this.jLabel1.setText(title);
     }
 
     public void addDisplayOptionListener(ActionListener listener) {
-        this.back.addActionListener(listener);
-        this.loadRecord.addActionListener(listener);
-        this.newRecord.addActionListener(listener);
+        this.addData.addActionListener(listener);
+        this.loadBatch.addActionListener(listener);
+        this.addBatch.addActionListener(listener);
     }
     
     /**
@@ -57,18 +53,30 @@ public class RecordToolbar extends JPanel {
     private void initComponents() {
 
         jLabel1 = new JLabel();
-        newRecord = new JButton();
-        loadRecord = new JButton();
+        addBatch = new JButton();
+        loadBatch = new JButton();
+        addData = new JButton();
+        loadData = new JButton();
+        processData = new JButton();
+        analyseData = new JButton();
         back = new JButton();
 
         setMaximumSize(new Dimension(120, 32767));
         setMinimumSize(new Dimension(120, 0));
 
-        jLabel1.setText("Experiment Toolbar:");
+        jLabel1.setText("Data Toolbar:");
 
-        newRecord.setText("New");
+        addBatch.setText("Add Batch");
 
-        loadRecord.setText("Existing");
+        loadBatch.setText("Load Batch");
+
+        addData.setText("Add Data");
+
+        loadData.setText("Load Data");
+
+        processData.setText("Process Data");
+
+        analyseData.setText("Analyse Data");
 
         back.setText("Back");
 
@@ -81,35 +89,51 @@ public class RecordToolbar extends JPanel {
                 .add(0, 0, Short.MAX_VALUE))
             .add(layout.createSequentialGroup()
                 .add(5, 5, 5)
-                .add(layout.createParallelGroup(GroupLayout.LEADING)
-                    .add(back)
-                    .add(newRecord, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-                    .add(loadRecord))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(layout.createParallelGroup(GroupLayout.LEADING, false)
+                    .add(back, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .add(analyseData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                    .add(addBatch, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                    .add(loadData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                    .add(addData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                    .add(loadBatch, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                    .add(processData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE))
+                .add(5, 5, 5))
         );
 
-        layout.linkSize(new Component[] {back, loadRecord, newRecord}, GroupLayout.HORIZONTAL);
+        layout.linkSize(new Component[] {addBatch, addData, analyseData, back, loadBatch, loadData, processData}, GroupLayout.HORIZONTAL);
 
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(jLabel1)
                 .add(5, 5, 5)
-                .add(newRecord)
+                .add(addBatch)
                 .add(5, 5, 5)
-                .add(loadRecord)
+                .add(loadBatch)
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(addData)
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(loadData)
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(processData)
+                .addPreferredGap(LayoutStyle.RELATED)
+                .add(analyseData)
                 .addPreferredGap(LayoutStyle.RELATED)
                 .add(back)
-                .add(0, 178, Short.MAX_VALUE))
+                .add(0, 62, Short.MAX_VALUE))
         );
 
-        layout.linkSize(new Component[] {back, loadRecord, newRecord}, GroupLayout.VERTICAL);
+        layout.linkSize(new Component[] {addBatch, addData, analyseData, back, loadBatch, loadData, processData}, GroupLayout.VERTICAL);
 
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public JButton addBatch;
+    public JButton addData;
+    public JButton analyseData;
     public JButton back;
     private JLabel jLabel1;
-    public JButton loadRecord;
-    public JButton newRecord;
+    public JButton loadBatch;
+    public JButton loadData;
+    public JButton processData;
     // End of variables declaration//GEN-END:variables
 }

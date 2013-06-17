@@ -19,21 +19,9 @@ package net.jonathansmith.javadpad.common.network.packet.auth;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.bouncycastle.crypto.AsymmetricBlockCipher;
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-import org.bouncycastle.crypto.CipherParameters;
-import org.bouncycastle.crypto.modes.CFBBlockCipher;
-import org.bouncycastle.crypto.params.KeyParameter;
-import org.bouncycastle.crypto.params.ParametersWithIV;
-
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
-import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.session.Session;
-import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
-import net.jonathansmith.javadpad.common.security.SecurityHandler;
-import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 /**
  *
@@ -45,8 +33,8 @@ public class EncryptionKeyResponsePacket extends Packet {
     
     private static int id;
     
-    private byte[] keys;
-    private byte[] token;
+    public byte[] keys;
+    public byte[] token;
     
     public EncryptionKeyResponsePacket() {
         super();
@@ -124,74 +112,12 @@ public class EncryptionKeyResponsePacket extends Packet {
 
     @Override
     public void handleClientSide() {
-        if (this.session.getState() != NetworkThreadState.EXCHANGING_AUTHENTICATION) {
-            this.engine.error("Cannot respond to an authentication challenge, as either the handshake is not complete or we have not received the token");
-            this.session.disconnect();
-            this.session.dispose();
-            return;
-        }
-        
-        final byte[] sharedSecret = SecurityHandler.getInstance().getSymetricKey();
-        CipherParameters symmetricKey = new ParametersWithIV(new KeyParameter(sharedSecret), sharedSecret);
-        CFBBlockCipher fromServerCipher = SecurityHandler.getInstance().getSymmetricCipher();
-        fromServerCipher.init(SecurityHandler.DECRYPT_MODE, symmetricKey);
-        //CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
-        //decoder.setDecryption(fromServerCipher);
+        this.session.handleEncryptionKeyResponse(this, true);
     }
 
     @Override
     public void handleServerSide() {
-        if (this.session.getState() != NetworkThreadState.EXCHANGING_AUTHENTICATION) {
-            this.engine.warn("Cannot respond to an authentication challenge, as either the handshake is not complete or we have not sent the token");
-            this.session.disconnect();
-            this.session.dispose();
-            return;
-        }
-        
-        AsymmetricCipherKeyPair pair = SecurityHandler.getInstance().getKeyPair();
-        AsymmetricBlockCipher cipher = SecurityHandler.getInstance().getAsymmetricCipher();
-        cipher.init(SecurityHandler.DECRYPT_MODE, pair.getPrivate());
-        
-        final byte[] initialVector = SecurityHandler.getInstance().processAll(cipher, this.keys);
-        final byte[] validateToken = SecurityHandler.getInstance().processAll(cipher, this.token);
-        final byte[] savedToken = ((ServerSession) this.session).getVerifyToken();
-        
-        if (validateToken.length != 4) {
-            this.engine.warn("Invalid token from session");
-            this.session.disconnect();
-            return;
-        }
-        
-        for (int i = 0; i < validateToken.length; i++) {
-            if (validateToken[i] != savedToken[i]) {
-                this.engine.warn("Invalid token from session");
-                this.session.disconnect();
-                return;
-            }
-        }
-        
-        byte[] publicKeyEncoded = SecurityHandler.getInstance().encodeKey(pair.getPublic());
-        ((ServerSession) this.session).sha1Hash(new Object[] {initialVector, publicKeyEncoded});
-        
-        CipherParameters symmetricKey = new ParametersWithIV(new KeyParameter(initialVector), initialVector);
-        
-        CFBBlockCipher toClientCipher = SecurityHandler.getInstance().getSymmetricCipher();
-        toClientCipher.init(SecurityHandler.ENCRYPT_MODE, symmetricKey);
-        //CommonEncoder encoder = this.session.channel.getPipeline().get(CommonEncoder.class);
-        //encoder.setEncryption(toClientCipher);
-        
-        CFBBlockCipher fromClientCipher = SecurityHandler.getInstance().getSymmetricCipher();
-        fromClientCipher.init(SecurityHandler.DECRYPT_MODE, symmetricKey);
-        //CommonDecoder decoder = this.session.channel.getPipeline().get(CommonDecoder.class);
-        //decoder.setDecryption(fromClientCipher);
-        
-        Packet p = new EncryptionKeyResponsePacket(this.engine, this.session, new byte[1], new byte[1]);
-        this.session.addPacketToSend(PacketPriority.CRITICAL, p);
-        this.session.incrementState();
-        
-        // TODO: Delay or not delay
-        LockedPacket p2 = new EncryptedSessionKeyPacket(this.engine, this.session);
-        ((ServerSession) this.session).lockAndSendPacket(PacketPriority.CRITICAL, p2);
+        this.session.handleEncryptionKeyResponse(this, true);
     }
     
     @Override

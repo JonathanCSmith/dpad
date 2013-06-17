@@ -21,9 +21,9 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 
 import net.jonathansmith.javadpad.client.Client;
+import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
-import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.protocol.CommonHandler;
 
@@ -48,9 +48,16 @@ public class ClientConnectListener implements ChannelFutureListener {
             handler.setSession(session);
             this.client.setSession(session);
             
-            Packet p = new HandshakePacket(this.client, session, this.client.getVersion());
-            session.addPacketToSend(PacketPriority.CRITICAL, p);
-            session.incrementState();
+            HandshakePacket p = new HandshakePacket(this.client, session, this.client.getVersion());
+            session.handleHandshake(p);
+            
+            DisplayOption option;
+            for (ClientRuntimeThread runtime : ClientRuntimeThread.values()) {
+                if (runtime.isDisplayable()) {
+                    option = runtime.getDisplay();
+                    option.setEngine(this.client, session);
+                }
+            }
         }
     }
 }

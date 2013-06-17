@@ -18,15 +18,9 @@ package net.jonathansmith.javadpad.common.network.packet.auth;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
-
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
-import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.session.Session;
-import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
-import net.jonathansmith.javadpad.common.security.SecurityHandler;
-import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 import java.security.SecureRandom;
 
@@ -36,7 +30,7 @@ import java.security.SecureRandom;
  */
 public class HandshakePacket extends Packet {
     
-    private static final SecureRandom random = new SecureRandom();
+    public static final SecureRandom random = new SecureRandom();
     private static final AtomicBoolean lock = new AtomicBoolean(false);
     
     private static int id;
@@ -108,30 +102,7 @@ public class HandshakePacket extends Packet {
 
     @Override
     public void handleServerSide() {
-        if (this.session.getState() != NetworkThreadState.EXCHANGING_HANDSHAKE) {
-            this.engine.warn("Invalid handshake packet received. Discarding.");
-            this.session.disconnect();
-            this.session.dispose();
-            return;
-        }
-        
-        if (!this.engine.getVersion().contentEquals(this.version)) {
-            this.engine.warn("Incompatible client/server versions. Client has: " + this.version + ", Server has: " + this.engine.getVersion());
-            this.session.disconnect();
-            this.session.dispose();
-            return;
-        }
-        
-        byte[] randomByte = new byte[4];
-        random.nextBytes(randomByte);
-        ((ServerSession) this.session).setVerifyToken(randomByte);
-        
-        AsymmetricCipherKeyPair keys = SecurityHandler.getInstance().getKeyPair();
-        byte[] secret = SecurityHandler.getInstance().encodeKey(keys.getPublic());
-        
-        Packet p = new EncryptionKeyRequestPacket(this.engine, this.session, secret, randomByte);
-        this.session.addPacketToSend(PacketPriority.CRITICAL, p);
-        this.session.incrementState();
+        this.session.handleHandshake(this);
     }
     
     @Override

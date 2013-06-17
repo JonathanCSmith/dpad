@@ -101,14 +101,6 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
         } 
         
         this.initComponents();
-        
-        DisplayOption option;
-        for (ClientRuntimeThread runtime : ClientRuntimeThread.values()) {
-            if (runtime.isDisplayable()) {
-                option = runtime.getDisplay();
-                option.setEngine(this.engine);
-            }
-        }
     }
     
     @Override
