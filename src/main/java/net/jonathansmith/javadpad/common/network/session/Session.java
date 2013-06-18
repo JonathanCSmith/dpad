@@ -26,11 +26,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.database.DataSet;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
 import net.jonathansmith.javadpad.common.database.SessionData;
-import net.jonathansmith.javadpad.common.database.records.Batch;
-import net.jonathansmith.javadpad.common.database.records.DataSet;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
@@ -74,8 +73,7 @@ public abstract class Session implements ChangeSender {
     private String serverKey;
     private User user;
     private Experiment experiment;
-    private Batch batch;
-    private DataSet dataset;
+    private DataSet currentData;
     
     public Session(Engine eng, Channel channel) {
         this.engine = eng;
@@ -208,21 +206,13 @@ public abstract class Session implements ChangeSender {
         this.experiment = experiment;
     }
     
-    public Batch getBatch() {
-        return this.batch;
+    public DataSet getCurrentData() {
+        return this.currentData;
     }
     
-    protected void setBatch(Batch batch) {
-        this.batch = batch;
+    protected void setCurrentData(DataSet data) {
+        this.currentData = data;
     }
-    
-    public DataSet getDataset() {
-        return this.dataset;
-    }
-    
-    protected void setDataset(DataSet set) {
-        this.dataset = set;
-    } 
     
     // Functional methods
     public final void start() {

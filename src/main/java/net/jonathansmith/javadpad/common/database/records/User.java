@@ -19,8 +19,6 @@ package net.jonathansmith.javadpad.common.database.records;
 import java.util.Arrays;
 import java.util.Set;
 
-import net.jonathansmith.javadpad.common.database.Record;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,13 +27,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.Record;
+
 
 /**
  *
  * @author Jon
  */
 @Entity
-@Table(name = "User", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+@Table(name = "User", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class User extends Record {
     
     private String username;
@@ -54,7 +54,7 @@ public class User extends Record {
     }
     
     @Id
-    @Column(name = "uuid", updatable = false, unique = true, nullable = false)
+    @Column(name = "UUID", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
     }
@@ -99,7 +99,7 @@ public class User extends Record {
         this.password = password;
     }
     
-    @Column(name = "ExperimentIDs")
+    @Column(name = "Experiments")
     @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     public Set<Experiment> getExperiments() {
         return this.experiments;
