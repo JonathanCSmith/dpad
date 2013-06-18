@@ -29,7 +29,7 @@ import net.jonathansmith.javadpad.common.database.Record;
  * @author jonathansmith
  */
 @Entity
-@Table(name = "Data Type", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
+@Table(name = "DataType", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class DataType extends Record {
     
     private String name;

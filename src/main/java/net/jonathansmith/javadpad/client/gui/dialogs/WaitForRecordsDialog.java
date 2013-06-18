@@ -41,7 +41,7 @@ public class WaitForRecordsDialog extends JDialog implements ChangeSender {
 
     private final CopyOnWriteArrayList<ChangeListener> listeners;
     
-    private boolean lock = true;
+    private boolean wasClosedProgrammatically = false;
     
     /**
      * Creates new form UserWaitDialog
@@ -50,6 +50,10 @@ public class WaitForRecordsDialog extends JDialog implements ChangeSender {
         super(parent, modal);
         this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
         initComponents();
+    }
+    
+    public void maskCloseEvent() {
+        this.wasClosedProgrammatically = true;
     }
 
     @Override
@@ -125,7 +129,9 @@ public class WaitForRecordsDialog extends JDialog implements ChangeSender {
     }// </editor-fold>//GEN-END:initComponents
 
     private void WindownCloseHandler(WindowEvent evt) {//GEN-FIRST:event_WindownCloseHandler
-        this.fireChange(new ModalCloseEvent(this, true));
+        if (!this.wasClosedProgrammatically) {
+            this.fireChange(new ModalCloseEvent(this, true));
+        }
     }//GEN-LAST:event_WindownCloseHandler
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

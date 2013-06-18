@@ -50,7 +50,7 @@ public class Equipment extends Record {
         this.uuid = uuid;
     }
     
-    @Column(name = "Equipment UUID", updatable = false, unique = true, nullable = false)
+    @Column(name = "EquipmentUUID", updatable = false, unique = true, nullable = false)
     public String getEquipmentUUID() {
         return this.equipmentUUID;
     }

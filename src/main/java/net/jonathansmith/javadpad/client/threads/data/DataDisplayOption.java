@@ -49,11 +49,11 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
     
     public DataDisplayOption() {
         super();
-        this.currentInformationPane = new CurrentDataInformationPane();
-        this.newBatchPane = new NewBatchPane();
-        this.existingBatchPane = new ExistingBatchPane();
-        this.newDataPane = new NewDataPane();
-        this.existingDataPane = new ExistingDataPane();
+//        this.currentInformationPane = new CurrentDataInformationPane();
+//        this.newBatchPane = new NewBatchPane();
+//        this.existingBatchPane = new ExistingBatchPane();
+//        this.newDataPane = new NewDataPane();
+//        this.existingDataPane = new ExistingDataPane();
         //this.processingPane = new ProcessDataPane();
         //this.analysingPane = new AnalyseDataPane();
         

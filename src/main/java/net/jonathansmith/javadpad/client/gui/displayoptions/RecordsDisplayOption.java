@@ -27,11 +27,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.ExistingRecordPane;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.NewRecordPane;
 import net.jonathansmith.javadpad.client.gui.displayoptions.toolbar.RecordToolbar;
+import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
@@ -64,7 +66,6 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     
     public RecordsDisplayOption(DatabaseRecord type, CurrentRecordPane curr, NewRecordPane n, ExistingRecordPane exist, String title) {
         this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
-        this.session.addListener(this);
         
         this.recordType = type;
         this.currentRecordPane = curr;
@@ -168,6 +169,12 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     }
     
     @Override
+    public void setEngine(Client engine, ClientSession session) {
+        super.setEngine(engine, session);
+        this.session.addListener(this);
+    }
+    
+    @Override
     public void validateState() {
         if (this.currentPanel == this.currentRecordPane) {
             Record record = this.engine.getSession().getKeySessionData(this.recordType);
@@ -246,6 +253,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
                 return; // TODO: Verify if there is a better way of handling this, don't want packet spam tho
             }
 
+            this.dialog.maskCloseEvent();
             this.dialog.dispose();
             this.dialog = null;
             this.setCurrentView(this.existingRecordPane);
