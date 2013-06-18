@@ -233,8 +233,14 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
                 this.engine.forceShutdown("Early exit forced by user closing modal", null);
             }
         }
+        
+        // TODO: session data change listener!
             
         else if (event instanceof DataArriveEvent) {
+            if (this.dialog == null) {
+                return; // We are not waiting for anything!
+            }
+            
             RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL));
             if (data == null) {
                 return; // TODO: Verify if there is a better way of handling this, don't want packet spam tho

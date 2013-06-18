@@ -18,15 +18,14 @@ package net.jonathansmith.javadpad.common.database.records;
 
 import java.util.Set;
 
-import net.jonathansmith.javadpad.common.database.Record;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+
+import net.jonathansmith.javadpad.common.database.Record;
 
 
 /**
@@ -34,17 +33,20 @@ import javax.persistence.UniqueConstraint;
  * @author Jon
  */
 @Entity
-@Table(name = "Experiment", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+@Table(name = "Experiment", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class Experiment extends Record {
     
     private String name;
     private String description;
-    private Set<Batch> batches;
+    
+    private Set<RawDataSet> loadedData;
+    private Set<ProcessedDataSet> processedData;
+    private Set<AnalysedDataSet> analysedData;
     
     public Experiment() {}
     
     @Id
-    @Column(name = "uuid", updatable = false, unique = true, nullable = false)
+    @Column(name = "UUID", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
     }
@@ -71,36 +73,80 @@ public class Experiment extends Record {
         this.description = description;
     }
     
-    @Column(name = "BatchIDs")
-    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
-    public Set<Batch> getBatches() {
-        return this.batches;
+    @Column(name = "Loaded Data")
+    @OneToMany(orphanRemoval = true)
+    public Set<RawDataSet> getLoadedData() {
+        return this.loadedData;
     }
     
-    public void setBatches(Set<Batch> batches) {
-        this.batches = batches;
+    public void setLoadedData(Set<RawDataSet> data) {
+        this.loadedData = data;
     }
     
-    public void addBatch(Batch id) {
-        if (this.batches.contains(id)) {
-            return;
-        }
-        
-        this.batches.add(id);
-    }
-    
-    public void removeBatch(Batch id) {
-        if (this.batches.contains(id)) {
-            this.batches.remove(id);
+    public void addLoadedData(RawDataSet data) {
+        if (!this.loadedData.contains(data)) {
+            this.loadedData.add(data);
         }
     }
     
+    public void removeLoadedData(RawDataSet data) {
+        if (this.loadedData.contains(data)) {
+            this.loadedData.remove(data);
+        }
+    }
+    
+    @Column(name = "Processed Data")
+    @OneToMany(orphanRemoval = true)
+    public Set<ProcessedDataSet> getProcessedData() {
+        return this.processedData;
+    }
+    
+    public void setProcessedData(Set<ProcessedDataSet> data) {
+        this.processedData = data;
+    }
+    
+    public void addProcessedData(ProcessedDataSet data) {
+        if (!this.processedData.contains(data)) {
+            this.processedData.add(data);
+        }
+    }
+    
+    public void removeProcessedData(ProcessedDataSet data) {
+        if (this.processedData.contains(data)) {
+            this.processedData.remove(data);
+        }
+    }
+    
+    @Column(name = "Analysed Data")
+    @OneToMany(orphanRemoval = true)
+    public Set<AnalysedDataSet> getAnalysedData() {
+        return this.analysedData;
+    }
+    
+    public void setAnalysedData(Set<AnalysedDataSet> data) {
+        this.analysedData = data;
+    }
+    
+    public void addAnalysedData(AnalysedDataSet data) {
+        if (!this.analysedData.contains(data)) {
+            this.analysedData.add(data);
+        }
+    }
+    
+    public void removeAnalysedData(AnalysedDataSet data) {
+        if (this.analysedData.contains(data)) {
+            this.analysedData.remove(data);
+        }
+    }
+   
     @Override
     public boolean equals(Object o) {
         if (o instanceof Experiment) {
             Experiment e = (Experiment) o;
-            if (this.getBatches().equals(e.getBatches())
-                && this.getDescription().contentEquals(e.getDescription())
+            if (this.getLoadedData().equals(e.getLoadedData())
+                && this.getProcessedData().equals(e.getProcessedData())
+                    && this.getAnalysedData().equals(e.getAnalysedData())
+                    && this.getDescription().contentEquals(e.getDescription())
                     && this.getName().contentEquals(e.getName())
                     && this.getUUID().contentEquals(e.getUUID())) {
                 return true;

@@ -22,7 +22,6 @@ import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 
 /**
@@ -49,28 +48,16 @@ public class RuntimeSelectPane extends JPanel {
 
         jLabel1 = new JLabel();
         jLabel2 = new JLabel();
-        jLabel3 = new JLabel();
         usernameField = new JTextField();
         experimentField = new JTextField();
-        dataBatchField = new JTextField();
-        jLabel4 = new JLabel();
-        dataSetField = new JTextField();
 
         jLabel1.setText("Username:");
 
         jLabel2.setText("Experiment:");
 
-        jLabel3.setText("Data Batch:");
-
         usernameField.setEditable(false);
 
         experimentField.setEditable(false);
-
-        dataBatchField.setEditable(false);
-
-        jLabel4.setText("Data Set:");
-
-        dataSetField.setEditable(false);
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -80,21 +67,17 @@ public class RuntimeSelectPane extends JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
-                    .addComponent(jLabel1, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
-                    .addComponent(jLabel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel4, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel1, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE))
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                    .addComponent(dataSetField)
                     .addComponent(usernameField, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
-                    .addComponent(experimentField)
-                    .addComponent(dataBatchField))
+                    .addComponent(experimentField))
                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {jLabel1, jLabel2, jLabel3, jLabel4});
+        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {jLabel1, jLabel2});
 
-        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {dataBatchField, dataSetField, experimentField, usernameField});
+        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {experimentField, usernameField});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -107,26 +90,14 @@ public class RuntimeSelectPane extends JPanel {
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(experimentField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGap(5, 5, 5)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(dataBatchField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(dataSetField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(173, Short.MAX_VALUE))
+                .addContainerGap(224, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public JTextField dataBatchField;
-    public JTextField dataSetField;
     public JTextField experimentField;
     private JLabel jLabel1;
     private JLabel jLabel2;
-    private JLabel jLabel3;
-    private JLabel jLabel4;
     public JTextField usernameField;
     // End of variables declaration//GEN-END:variables
 }

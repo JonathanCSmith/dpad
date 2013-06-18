@@ -16,20 +16,20 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
-import net.jonathansmith.javadpad.common.database.Record;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.Record;
+
 /**
  *
  * @author jonathansmith
  */
 @Entity
-@Table(name = "Equipment", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+@Table(name = "Equipment", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class Equipment extends Record {
     
     private String equipmentUUID;
@@ -41,7 +41,7 @@ public class Equipment extends Record {
     public Equipment() {}
     
     @Id
-    @Column(name = "uuid", updatable = false, unique = true, nullable = false)
+    @Column(name = "UUID", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
     }
@@ -50,7 +50,7 @@ public class Equipment extends Record {
         this.uuid = uuid;
     }
     
-    @Column(name = "EquipmentUUID", updatable = false, unique = true, nullable = false)
+    @Column(name = "Equipment UUID", updatable = false, unique = true, nullable = false)
     public String getEquipmentUUID() {
         return this.equipmentUUID;
     }

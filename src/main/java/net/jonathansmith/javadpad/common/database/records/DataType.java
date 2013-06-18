@@ -16,20 +16,20 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
-import net.jonathansmith.javadpad.common.database.Record;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.Record;
+
 /**
  *
  * @author jonathansmith
  */
 @Entity
-@Table(name = "DataType", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
+@Table(name = "Data Type", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class DataType extends Record {
     
     private String name;
@@ -38,7 +38,7 @@ public class DataType extends Record {
     public DataType() {}
     
     @Id
-    @Column(name = "uuid", updatable = false, unique = true, nullable = false)
+    @Column(name = "UUID", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
     }

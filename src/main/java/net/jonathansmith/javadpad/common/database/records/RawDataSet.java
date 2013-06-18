@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 jonathansmith
+ * Copyright (C) 2013 Jon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,67 +16,44 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
-import java.util.Arrays;
-
-import net.jonathansmith.javadpad.common.database.Record;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.bouncycastle.util.Arrays;
+
+import net.jonathansmith.javadpad.common.database.DataSet;
+import net.jonathansmith.javadpad.common.database.Record;
+
 /**
  *
- * @author jonathansmith
+ * @author Jon
  */
 @Entity
-@Table(name = "DataSet", uniqueConstraints = @UniqueConstraint(columnNames = "uuid"))
-public class DataSet extends Record {
+@Table(name = "Raw Data Sets", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
+public class RawDataSet extends Record implements DataSet {
     
-    private int[] rawTimes;
-    private int[] rawData;
-    private int[] times;
     private int[] data;
+    private int[] times;
     private DataType dataType;
+    private Equipment equipment;
     
-    public DataSet() {}
+    public RawDataSet() {
+        super();
+    }
     
     @Id
-    @Column(name = "uuid", updatable = false, unique = true, nullable = false)
+    @Column(name = "UUID", updatable = false, unique = true, nullable = false)
     public String getUUID() {
         return this.uuid;
     }
     
     public void setUUID(String uuid) {
         this.uuid = uuid;
-    }
-    
-    @Column(name = "RawTimes")
-    public int[] getRawTimes() {
-        return this.rawTimes;
-    }
-    
-    public void setRawTimes(int[] times) {
-        this.rawTimes = times;
-    }
-    
-    @Column(name = "RawData")
-    public int[] getRawData() {
-        return this.rawData;
-    }
-    
-    public void setRawData(int[] data) {
-        this.rawData = data;
-    }
-    
-    @Column(name = "DataType")
-    public DataType getDataType() {
-        return this.dataType;
-    }
-    
-    public void setDataType(DataType dataType) {
-        this.dataType = dataType;
     }
     
     @Column(name = "Data")
@@ -97,20 +74,38 @@ public class DataSet extends Record {
         this.times = times;
     }
     
+    @JoinColumn(name = "Data Type")
+    @ManyToOne
+    public DataType getDataType() {
+        return this.dataType;
+    }
+    
+    public void setDataType(DataType data) {
+        this.dataType = data;
+    }
+    
+    @JoinColumn(name = "Equipment")
+    @ManyToOne
+    public Equipment getEquipment() {
+        return this.equipment;
+    }
+    
+    public void setEquipment(Equipment data) {
+        this.equipment = data;
+    }
+    
     @Override
     public boolean equals(Object o) {
-        if (o instanceof DataSet) {
-            DataSet d = (DataSet) o;
-            if (Arrays.equals(this.getData(), d.getData())
-                && this.getDataType().equals(d.getDataType())
-                    && Arrays.equals(this.getRawData(), d.getRawData())
-                    && Arrays.equals(this.getRawTimes(), d.getRawTimes())
-                    && Arrays.equals(this.getTimes(), d.getRawTimes())
-                    && this.getUUID().contentEquals(d.getUUID())) {
+        if (o instanceof RawDataSet) {
+            RawDataSet d = (RawDataSet) o;
+            
+            if (this.getUUID().contentEquals(d.getUUID())
+                && Arrays.areEqual(this.getData(), d.getData())
+                    && Arrays.areEqual(this.getTimes(), d.getTimes())
+                    && this.getDataType().equals(d.getDataType())
+                    && this.getEquipment().equals(d.getEquipment())) {
                 return true;
             }
-            
-            return false;
         }
         
         return false;
