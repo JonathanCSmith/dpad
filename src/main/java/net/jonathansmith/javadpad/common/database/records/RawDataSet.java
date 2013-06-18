@@ -34,7 +34,7 @@ import net.jonathansmith.javadpad.common.database.Record;
  * @author Jon
  */
 @Entity
-@Table(name = "Raw Data Sets", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
+@Table(name = "RawData", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class RawDataSet extends Record implements DataSet {
     
     private int[] data;
@@ -74,7 +74,7 @@ public class RawDataSet extends Record implements DataSet {
         this.times = times;
     }
     
-    @JoinColumn(name = "Data Type")
+    @JoinColumn(name = "DataType")
     @ManyToOne
     public DataType getDataType() {
         return this.dataType;

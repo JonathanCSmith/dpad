@@ -210,8 +210,10 @@ public final class ServerSession extends Session {
         if (this.addSessionData(this.getSessionID(), dataType, dataUpdate)) {
             if (oldData != null) {
                 RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
-                LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
-                this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+                if (transform != null) {
+                    LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
+                    this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+                }
             }
             
             else {

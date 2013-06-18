@@ -73,7 +73,7 @@ public class Experiment extends Record {
         this.description = description;
     }
     
-    @Column(name = "Loaded Data")
+    @Column(name = "RawData")
     @OneToMany(orphanRemoval = true)
     public Set<RawDataSet> getLoadedData() {
         return this.loadedData;
@@ -95,7 +95,7 @@ public class Experiment extends Record {
         }
     }
     
-    @Column(name = "Processed Data")
+    @Column(name = "ProcessedData")
     @OneToMany(orphanRemoval = true)
     public Set<ProcessedDataSet> getProcessedData() {
         return this.processedData;
@@ -117,7 +117,7 @@ public class Experiment extends Record {
         }
     }
     
-    @Column(name = "Analysed Data")
+    @Column(name = "AnalysedData")
     @OneToMany(orphanRemoval = true)
     public Set<AnalysedDataSet> getAnalysedData() {
         return this.analysedData;

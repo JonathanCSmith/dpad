@@ -143,8 +143,8 @@ public final class ClientSession extends Session {
     @Override
     public void addData(String key, SessionData dataType, RecordsList<Record> data) {
         if (this.addSessionData(key, dataType, data)) {
-            this.fireChange(new DataArriveEvent(dataType));
             this.sessionDataTimestamp.put(dataType, System.currentTimeMillis());
+            this.fireChange(new DataArriveEvent(dataType));
         }
     }
 
