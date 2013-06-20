@@ -14,13 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database;
+package net.jonathansmith.javadpad.server.database.connection;
+
+import org.hibernate.Session;
 
 /**
  *
  * @author Jon
  */
-public enum QueryType {
-    SINGLE,
-    ALL;
+public class DatabaseConnection {
+    
+    private final Session sess;
+    
+    public DatabaseConnection(Session sess) {
+        this.sess = sess;
+    }
+    
+    public Session getSession() {
+        return this.sess;
+    }
+    
+    public void beginTransaction() {
+        this.sess.beginTransaction();
+    }
+    
+    public void commitTransaction() {
+        this.sess.getTransaction().commit();
+    }
+    
+    public void rollbackTransaction() {
+        this.sess.getTransaction().rollback();
+    }
+    
+    public void closeConnection() {
+        this.sess.close();
+    }
 }

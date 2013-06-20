@@ -14,15 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.experiment;
+package net.jonathansmith.javadpad.server.database.recordsaccess.experiment;
 
 import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.server.database.GenericDAO;
+import net.jonathansmith.javadpad.server.database.recordsaccess.GenericManager;
 
 /**
  *
  * @author Jon
  */
-public class ExperimentDAO extends GenericDAO<Experiment, String> {
+public class ExperimentManager extends GenericManager<Experiment> {
     
+    private static ExperimentManager instance = null;
+    
+    private ExperimentManager() {
+        super(new ExperimentDAO(), Experiment.class);
+    }
+    
+    public static ExperimentManager getInstance() {
+        if (instance == null) {
+            instance = new ExperimentManager();
+        }
+        
+        return instance;
+    }
+    
+    @Override
+    public ExperimentDAO getDAO() {
+        return (ExperimentDAO) this.dao;
+    }
 }

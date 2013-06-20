@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database;
+package net.jonathansmith.javadpad.server.database.recordsaccess;
 
 import java.io.Serializable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.util.database.RecordsList;
-
 import org.hibernate.Query;
 import org.hibernate.Session;
+
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
  *
@@ -33,22 +33,15 @@ import org.hibernate.Session;
  */
 public class GenericDAO<T extends Record, ID extends Serializable> {
     
-    protected Session getSession() {
-        return DatabaseConnection.getSession();
-    }
-    
-    public void save(T entity) {
-        Session sess = this.getSession();
+    public void save(Session sess, T entity) {
         sess.saveOrUpdate(entity);
     }
     
-    public void merge(T entity) {
-        Session sess = this.getSession();
+    public void merge(Session sess, T entity) {
         sess.merge(entity);
     }
     
-    public void delete(T entity) {
-        Session sess = this.getSession();
+    public void delete(Session sess, T entity) {
         sess.delete(entity);
     }
     
@@ -62,14 +55,12 @@ public class GenericDAO<T extends Record, ID extends Serializable> {
         return t;
     }
     
-    public T findByID(Class clazz, String uuid) {
-        Session sess = this.getSession();
+    public T findByID(Session sess, Class clazz, String uuid) {
         T t = (T) sess.get(clazz, uuid);
         return t;
     }
     
-    public RecordsList<T> findAll(Class clazz) {
-        Session sess = this.getSession();
+    public RecordsList<T> findAll(Session sess, Class clazz) {
         Query query = sess.createQuery("from " + clazz.getName());
         ArrayList<T> array = (ArrayList<T>) query.list();
         RecordsList<T> T = new RecordsList<T> ();

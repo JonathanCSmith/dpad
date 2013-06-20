@@ -21,7 +21,7 @@ import java.awt.Component;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 
 /**
@@ -48,16 +48,12 @@ public class RuntimeSelectPane extends JPanel {
 
         jLabel1 = new JLabel();
         jLabel2 = new JLabel();
-        usernameField = new JTextField();
-        experimentField = new JTextField();
+        usernameField = new JLabel();
+        experimentField = new JLabel();
 
         jLabel1.setText("Username:");
 
         jLabel2.setText("Experiment:");
-
-        usernameField.setEditable(false);
-
-        experimentField.setEditable(false);
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -68,36 +64,34 @@ public class RuntimeSelectPane extends JPanel {
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel2, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
                     .addComponent(jLabel1, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE))
-                .addGap(5, 5, 5)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                    .addComponent(usernameField, GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
-                    .addComponent(experimentField))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(usernameField, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(experimentField, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 271, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {jLabel1, jLabel2});
 
-        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {experimentField, usernameField});
-
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addGap(8, 8, 8)
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
-                    .addComponent(usernameField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGap(5, 5, 5)
+                    .addComponent(usernameField, GroupLayout.PREFERRED_SIZE, 14, GroupLayout.PREFERRED_SIZE))
+                .addGap(11, 11, 11)
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(experimentField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(224, Short.MAX_VALUE))
+                    .addComponent(experimentField, GroupLayout.PREFERRED_SIZE, 14, GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(227, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public JTextField experimentField;
+    public JLabel experimentField;
     private JLabel jLabel1;
     private JLabel jLabel2;
-    public JTextField usernameField;
+    public JLabel usernameField;
     // End of variables declaration//GEN-END:variables
 }

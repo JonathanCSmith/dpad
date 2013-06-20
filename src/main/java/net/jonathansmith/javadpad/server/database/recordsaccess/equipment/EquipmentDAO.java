@@ -14,24 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.datatype;
+package net.jonathansmith.javadpad.server.database.recordsaccess.equipment;
 
-import net.jonathansmith.javadpad.common.database.records.DataType;
 import org.hibernate.Query;
+import org.hibernate.Session;
 
-import net.jonathansmith.javadpad.server.database.DatabaseConnection;
-import net.jonathansmith.javadpad.server.database.GenericDAO;
+import net.jonathansmith.javadpad.common.database.records.Equipment;
+import net.jonathansmith.javadpad.server.database.recordsaccess.GenericDAO;
 
 /**
  *
  * @author jonathansmith
  */
-public class DataTypeDAO extends GenericDAO<DataType, String> {
+public class EquipmentDAO extends GenericDAO<Equipment, String> {
     
-    public DataType findByName(String dataTypeName) {
-        String sql = "SELECT p FROM DataType p WHERE p.name :dataTypeName";
-        Query query = DatabaseConnection.getSession().createQuery(sql).setParameter("name", dataTypeName);
-        DataType dataType = findOne(query);
-        return dataType;
+    public Equipment findByEquipmentUUID(Session sess, String uuid) {
+        String sql = "Select p FROM Equipment p WHERE p.EquipmentUUID :uuid";
+        Query query = sess.createQuery(sql).setParameter("uuid", uuid);
+        Equipment equipment = findOne(query);
+        return equipment;
     }
 }

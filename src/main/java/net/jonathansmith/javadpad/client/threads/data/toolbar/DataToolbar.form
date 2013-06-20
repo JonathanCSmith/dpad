@@ -28,16 +28,13 @@
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="back" linkSize="3" max="32767" attributes="0"/>
                   <Component id="analyseData" linkSize="3" pref="115" max="32767" attributes="0"/>
-                  <Component id="addBatch" linkSize="3" pref="115" max="32767" attributes="0"/>
-                  <Component id="loadData" linkSize="3" alignment="0" pref="115" max="32767" attributes="0"/>
-                  <Component id="addData" linkSize="3" pref="115" max="32767" attributes="0"/>
-                  <Component id="loadBatch" linkSize="3" alignment="0" pref="115" max="32767" attributes="0"/>
-                  <Component id="processData" linkSize="3" alignment="0" pref="115" max="32767" attributes="0"/>
+                  <Component id="processData" linkSize="3" pref="115" max="32767" attributes="0"/>
+                  <Component id="loadData" linkSize="3" pref="115" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
           </Group>
@@ -48,20 +45,14 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Component id="addBatch" linkSize="2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Component id="loadBatch" linkSize="2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="addData" linkSize="2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
               <Component id="loadData" linkSize="2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Component id="processData" linkSize="2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Component id="analyseData" linkSize="2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Component id="back" linkSize="2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="62" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="147" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -72,34 +63,13 @@
         <Property name="text" type="java.lang.String" value="Data Toolbar:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="addBatch">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Add Batch"/>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
-      </AuxValues>
-    </Component>
-    <Component class="javax.swing.JButton" name="loadBatch">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Load Batch"/>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
-      </AuxValues>
-    </Component>
-    <Component class="javax.swing.JButton" name="addData">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Add Data"/>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
-      </AuxValues>
-    </Component>
     <Component class="javax.swing.JButton" name="loadData">
       <Properties>
         <Property name="text" type="java.lang.String" value="Load Data"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadDataActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>

@@ -14,33 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.experiment;
+package net.jonathansmith.javadpad.server.database.recordsaccess.user;
 
-import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.server.database.GenericManager;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
+import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.server.database.recordsaccess.GenericDAO;
 
 /**
  *
  * @author Jon
  */
-public class ExperimentManager extends GenericManager<Experiment> {
+public class UserDAO extends GenericDAO<User, String> {
     
-    private static ExperimentManager instance = null;
-    
-    private ExperimentManager() {
-        super(new ExperimentDAO(), Experiment.class);
-    }
-    
-    public static ExperimentManager getInstance() {
-        if (instance == null) {
-            instance = new ExperimentManager();
-        }
-        
-        return instance;
-    }
-    
-    @Override
-    public ExperimentDAO getDAO() {
-        return (ExperimentDAO) this.dao;
+    public User findByName(Session sess, String username) {
+        String sql = "SELECT p FROM User p WHERE p.name :name";
+        Query query = sess.createQuery(sql).setParameter("name", username);
+        User user = findOne(query);
+        return user;
     }
 }

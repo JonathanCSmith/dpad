@@ -21,7 +21,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -42,6 +41,7 @@ public class User extends Record {
     private String firstName;
     private String lastName;
     private char[] password;
+    private int experimentNumber;
     private Set<Experiment> experiments;
     
     public User() {}
@@ -99,14 +99,24 @@ public class User extends Record {
         this.password = password;
     }
     
+    @Column(name = "ExperimentNumber")
+    public int getNumberOfExperiments() {
+        return this.experimentNumber;
+    }
+    
+    public void setNumberOfExperiments(int i) {
+        this.experimentNumber = i;
+    }
+    
     @Column(name = "Experiments")
-    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(orphanRemoval = true)
     public Set<Experiment> getExperiments() {
         return this.experiments;
     }
     
     public void setExperiments(Set<Experiment> experiments) {
         this.experiments = experiments;
+        this.setNumberOfExperiments(this.experiments.size());
     }
     
     public void addExperiment(Experiment experiment) {
@@ -115,11 +125,13 @@ public class User extends Record {
         }
         
         this.experiments.add(experiment);
+        this.experimentNumber++;
     }
     
     public void removeExperiment(Experiment experiment) {
         if (this.experiments.contains(experiment)) {
             this.experiments.remove(experiment);
+            this.experimentNumber--;
         }
     }
     

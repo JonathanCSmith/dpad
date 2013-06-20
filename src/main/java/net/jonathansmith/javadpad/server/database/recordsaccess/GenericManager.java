@@ -14,14 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database;
+package net.jonathansmith.javadpad.server.database.recordsaccess;
+
+import org.hibernate.HibernateException;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.Server;
-
-import org.hibernate.HibernateException;
+import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
 
 /**
  *
@@ -39,12 +40,12 @@ public abstract class GenericManager<T extends Record> {
         this.clazz = clazz;
     }
     
-    public RecordsList<Record> loadAll() {
+    public RecordsList<Record> loadAll(DatabaseConnection connection) {
         RecordsList<Record> all = new RecordsList<Record> ();
         try {
-            DatabaseConnection.beginTransaction();
-            all = this.dao.findAll(this.clazz);
-            DatabaseConnection.commitTransaction();
+            connection.beginTransaction();
+            all = this.dao.findAll(connection.getSession(), this.clazz);
+            connection.commitTransaction();
             
         } catch (HibernateException ex) {
             this.engine.error("Database access error", ex);
@@ -53,12 +54,12 @@ public abstract class GenericManager<T extends Record> {
         return all;
     }
     
-    public boolean save(T input) {
+    public boolean save(DatabaseConnection connection, T input) {
         boolean success = false;
         try {
-            DatabaseConnection.beginTransaction();
-            this.dao.save(input);
-            DatabaseConnection.commitTransaction();
+            connection.beginTransaction();
+            this.dao.save(connection.getSession(), input);
+            connection.commitTransaction();
             success = true;
             
         } catch (HibernateException ex) {
@@ -68,12 +69,12 @@ public abstract class GenericManager<T extends Record> {
         return success;
     }
     
-    public boolean saveNew(T input) {
+    public boolean saveNew(DatabaseConnection connection, T input) {
         boolean success = false;
         try {
-            DatabaseConnection.beginTransaction();
-            this.dao.save(input);
-            DatabaseConnection.commitTransaction();
+            connection.beginTransaction();
+            this.dao.save(connection.getSession(), input);
+            connection.commitTransaction();
             success = true;
             
         } catch (HibernateException ex) {
@@ -83,12 +84,12 @@ public abstract class GenericManager<T extends Record> {
         return success;
     }
     
-    public T findByID(String uuid) {
+    public T findByID(DatabaseConnection connection, String uuid) {
         T out = null;
         try {
-            DatabaseConnection.beginTransaction();
-            out = (T) this.dao.findByID(this.clazz, uuid);
-            DatabaseConnection.commitTransaction();
+            connection.beginTransaction();
+            out = (T) this.dao.findByID(connection.getSession(), this.clazz, uuid);
+            connection.commitTransaction();
             
         } catch (HibernateException ex) {
             this.engine.error("Database access error", ex);
@@ -97,17 +98,17 @@ public abstract class GenericManager<T extends Record> {
         return out;
     }
     
-    public boolean deleteExisting(T input) {
+    public boolean deleteExisting(DatabaseConnection connection, T input) {
         boolean success = false;
         try {
-            DatabaseConnection.beginTransaction();
-            this.dao.delete(input);
-            DatabaseConnection.commitTransaction();
+            connection.beginTransaction();
+            this.dao.delete(connection.getSession(), input);
+            connection.commitTransaction();
             success = true;
             
         } catch (HibernateException ex) {
             this.engine.error("Database access error", ex);
-            DatabaseConnection.rollbackTransaction();
+            connection.rollbackTransaction();
         }
         
         return success;

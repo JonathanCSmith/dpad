@@ -36,6 +36,12 @@ import org.jboss.netty.channel.local.DefaultLocalServerChannelFactory;
 import org.jboss.netty.channel.local.LocalAddress;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
+import org.hibernate.HibernateException;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
+
 import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.common.Engine;
@@ -51,15 +57,10 @@ import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
 import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
-import net.jonathansmith.javadpad.server.database.DatabaseConnection;
+import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
+import net.jonathansmith.javadpad.server.database.recordsaccess.DatabaseManager;
 import net.jonathansmith.javadpad.server.gui.ServerGUI;
 import net.jonathansmith.javadpad.server.network.session.SessionRegistry;
-
-import org.hibernate.HibernateException;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 
 /**
  *
@@ -71,7 +72,7 @@ public class Server extends Engine {
     private final SessionRegistry sessionRegistry;
     
     private ServerBootstrap bootstrap;
-    private DatabaseConnection databaseConnection;
+    private DatabaseManager databaseManager;
     
     public Server(DPAD main, String host, int port) {
         super(main, Platform.SERVER, host, port);
@@ -91,6 +92,10 @@ public class Server extends Engine {
     
     public SessionRegistry getSessionRegistry() {
         return this.sessionRegistry;
+    }
+    
+    public DatabaseConnection getSessionConnection() {
+        return this.databaseManager.getConnection();
     }
 
     @Override
@@ -129,7 +134,7 @@ public class Server extends Engine {
             return;
         }
         
-        this.databaseConnection = new DatabaseConnection(sessionFactory, registry);
+        this.databaseManager = new DatabaseManager(sessionFactory, registry);
         
         this.info("Beginning network initialisation");
         
@@ -222,6 +227,13 @@ public class Server extends Engine {
         config.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         config.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
         config.setProperty("hibernate.connection.url", "jdbc:h2:file:" + this.getFileSystem().getDatabaseDirectory() + "/JDPADDatabase");
+        
+        config.setProperty("connection.provider.provider_class", "com.jolbox.bonecp.provider.BoneCPConnectionProvider");
+        config.setProperty("bonecp.partitionCount", "3");
+        config.setProperty("bonecp.maxConnectionsPerPartition", "15");
+        config.setProperty("bonecp.minConnectionsPerPartition", "2");
+        config.setProperty("bonecp.acquireIncrement", "3");
+        
         config.setProperty("hibernate.connection.username", "sa");
         config.setProperty("hibernate.connection.password", "");
         config.setProperty("hibernate.current_session_context_class", "thread");

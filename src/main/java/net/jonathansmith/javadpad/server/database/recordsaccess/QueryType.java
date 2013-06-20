@@ -14,24 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.user;
-
-import net.jonathansmith.javadpad.common.database.records.User;
-import org.hibernate.Query;
-
-import net.jonathansmith.javadpad.server.database.DatabaseConnection;
-import net.jonathansmith.javadpad.server.database.GenericDAO;
+package net.jonathansmith.javadpad.server.database.recordsaccess;
 
 /**
  *
  * @author Jon
  */
-public class UserDAO extends GenericDAO<User, String> {
-    
-    public User findByName(String username) {
-        String sql = "SELECT p FROM User p WHERE p.name :name";
-        Query query = DatabaseConnection.getSession().createQuery(sql).setParameter("name", username);
-        User user = findOne(query);
-        return user;
-    }
+public enum QueryType {
+    SINGLE,
+    SESSION_SPECIFIC;
 }

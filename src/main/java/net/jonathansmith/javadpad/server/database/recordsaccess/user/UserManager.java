@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 jonathansmith
+ * Copyright (C) 2013 Jon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,41 +14,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.equipment;
-
-import net.jonathansmith.javadpad.common.database.records.Equipment;
-import net.jonathansmith.javadpad.server.database.DatabaseConnection;
-import net.jonathansmith.javadpad.server.database.GenericManager;
+package net.jonathansmith.javadpad.server.database.recordsaccess.user;
 
 import javax.persistence.NonUniqueResultException;
+
 import org.hibernate.HibernateException;
+
+import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
+import net.jonathansmith.javadpad.server.database.recordsaccess.GenericManager;
 
 /**
  *
- * @author jonathansmith
+ * @author Jon
  */
-public class EquipmentManager extends GenericManager<Equipment> {
+public class UserManager extends GenericManager<User> {
     
-    private static EquipmentManager instance = null;
+    private static UserManager instance;
     
-    private EquipmentManager() {
-        super(new EquipmentDAO(), Equipment.class);
+    private UserManager() {
+        super(new UserDAO(), User.class);
     }
     
-    public static EquipmentManager getInstance() {
+    public static UserManager getInstance() {
         if (instance == null) {
-            instance = new EquipmentManager();
+            instance = new UserManager();
         }
         
         return instance;
     }
     
-    public Equipment findEquipmentByEquipmentID(String uuid) {
-        Equipment equipment = null;
+    public User findUserByUsername(DatabaseConnection connection, String name) {
+        User user = null;
         try {
-            DatabaseConnection.beginTransaction();
-            equipment = this.getDAO().findByEquipmentUUID(uuid);
-            DatabaseConnection.commitTransaction();
+            connection.beginTransaction();
+            user = this.getDAO().findByName(connection.getSession(), name);
+            connection.commitTransaction();
             
         } catch (NonUniqueResultException ex) {
             this.engine.error("Query resulted in a non unique answer", ex);
@@ -56,11 +57,11 @@ public class EquipmentManager extends GenericManager<Equipment> {
             this.engine.error("Database access error", ex);
         }
         
-        return equipment;
+        return user;
     }
     
     @Override
-    public EquipmentDAO getDAO() {
-        return (EquipmentDAO) this.dao;
+    public UserDAO getDAO() {
+        return (UserDAO) this.dao;
     }
 }
