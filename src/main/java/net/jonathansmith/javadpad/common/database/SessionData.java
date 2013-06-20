@@ -17,17 +17,17 @@
 package net.jonathansmith.javadpad.common.database;
 
 import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
-import net.jonathansmith.javadpad.server.database.QueryType;
+import net.jonathansmith.javadpad.server.database.recordsaccess.QueryType;
 
 /**
  * NOTE! Current implementation of db packets limits the data types to 256!
  * @author Jon
  */
 public enum SessionData {
-    ALL_USERS(DatabaseRecord.USER, QueryType.ALL),
+    ALL_USERS(DatabaseRecord.USER, QueryType.SESSION_SPECIFIC),
     USER(DatabaseRecord.USER, QueryType.SINGLE),
     
-    ALL_EXPERIMENTS(DatabaseRecord.EXPERIMENT, QueryType.ALL),
+    USER_EXPERIMENTS(DatabaseRecord.EXPERIMENT, QueryType.SESSION_SPECIFIC),
     EXPERIMENT(DatabaseRecord.EXPERIMENT, QueryType.SINGLE);
     
     private final DatabaseRecord recordType;

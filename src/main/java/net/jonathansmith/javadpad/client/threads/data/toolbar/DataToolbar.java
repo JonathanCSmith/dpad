@@ -18,6 +18,7 @@ package net.jonathansmith.javadpad.client.threads.data.toolbar;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
@@ -25,7 +26,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.jdesktop.layout.GroupLayout;
-import org.jdesktop.layout.LayoutStyle;
 
 /**
  *
@@ -38,9 +38,9 @@ public class DataToolbar extends JPanel {
     }
 
     public void addDisplayOptionListener(ActionListener listener) {
-        this.addData.addActionListener(listener);
-        this.loadBatch.addActionListener(listener);
-        this.addBatch.addActionListener(listener);
+        this.loadData.addActionListener(listener);
+        this.processData.addActionListener(listener);
+        this.analyseData.addActionListener(listener);
     }
     
     /**
@@ -53,9 +53,6 @@ public class DataToolbar extends JPanel {
     private void initComponents() {
 
         jLabel1 = new JLabel();
-        addBatch = new JButton();
-        loadBatch = new JButton();
-        addData = new JButton();
         loadData = new JButton();
         processData = new JButton();
         analyseData = new JButton();
@@ -66,13 +63,12 @@ public class DataToolbar extends JPanel {
 
         jLabel1.setText("Data Toolbar:");
 
-        addBatch.setText("Add Batch");
-
-        loadBatch.setText("Load Batch");
-
-        addData.setText("Add Data");
-
         loadData.setText("Load Data");
+        loadData.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                loadDataActionPerformed(evt);
+            }
+        });
 
         processData.setText("Process Data");
 
@@ -87,52 +83,45 @@ public class DataToolbar extends JPanel {
             .add(layout.createSequentialGroup()
                 .add(jLabel1)
                 .add(0, 0, Short.MAX_VALUE))
-            .add(layout.createSequentialGroup()
+            .add(GroupLayout.TRAILING, layout.createSequentialGroup()
                 .add(5, 5, 5)
-                .add(layout.createParallelGroup(GroupLayout.LEADING, false)
+                .add(layout.createParallelGroup(GroupLayout.LEADING)
                     .add(back, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .add(analyseData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                    .add(addBatch, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                    .add(loadData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                    .add(addData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                    .add(loadBatch, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                    .add(processData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE))
+                    .add(processData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                    .add(loadData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE))
                 .add(5, 5, 5))
         );
 
-        layout.linkSize(new Component[] {addBatch, addData, analyseData, back, loadBatch, loadData, processData}, GroupLayout.HORIZONTAL);
+        layout.linkSize(new Component[] {analyseData, back, loadData, processData}, GroupLayout.HORIZONTAL);
 
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(jLabel1)
                 .add(5, 5, 5)
-                .add(addBatch)
-                .add(5, 5, 5)
-                .add(loadBatch)
-                .addPreferredGap(LayoutStyle.RELATED)
-                .add(addData)
-                .addPreferredGap(LayoutStyle.RELATED)
                 .add(loadData)
-                .addPreferredGap(LayoutStyle.RELATED)
+                .add(5, 5, 5)
                 .add(processData)
-                .addPreferredGap(LayoutStyle.RELATED)
+                .add(5, 5, 5)
                 .add(analyseData)
-                .addPreferredGap(LayoutStyle.RELATED)
+                .add(5, 5, 5)
                 .add(back)
-                .add(0, 62, Short.MAX_VALUE))
+                .add(0, 147, Short.MAX_VALUE))
         );
 
-        layout.linkSize(new Component[] {addBatch, addData, analyseData, back, loadBatch, loadData, processData}, GroupLayout.VERTICAL);
+        layout.linkSize(new Component[] {analyseData, back, loadData, processData}, GroupLayout.VERTICAL);
 
     }// </editor-fold>//GEN-END:initComponents
+
+    private void loadDataActionPerformed(ActionEvent evt) {//GEN-FIRST:event_loadDataActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_loadDataActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public JButton addBatch;
-    public JButton addData;
     public JButton analyseData;
     public JButton back;
     private JLabel jLabel1;
-    public JButton loadBatch;
     public JButton loadData;
     public JButton processData;
     // End of variables declaration//GEN-END:variables

@@ -46,7 +46,7 @@ import net.jonathansmith.javadpad.common.network.packet.database.NewRecordPacket
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
-import net.jonathansmith.javadpad.server.database.QueryType;
+import net.jonathansmith.javadpad.server.database.recordsaccess.QueryType;
 
 /**
  *
@@ -98,7 +98,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     
     public void loadRecordButton() {
         if (this.getCurrentView() != this.existingRecordPane) {
-            SessionData dataType = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL);
+            SessionData dataType = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SESSION_SPECIFIC);
             RecordsList<Record> data = this.engine.getSession().checkoutData(dataType);
 
             if (data == null) {
@@ -248,7 +248,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
                 return; // We are not waiting for anything!
             }
             
-            RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL));
+            RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SESSION_SPECIFIC));
             if (data == null) {
                 return; // TODO: Verify if there is a better way of handling this, don't want packet spam tho
             }

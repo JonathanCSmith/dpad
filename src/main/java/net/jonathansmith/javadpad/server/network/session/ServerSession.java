@@ -16,6 +16,7 @@
  */
 package net.jonathansmith.javadpad.server.network.session;
 
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.netty.channel.Channel;
@@ -47,8 +48,10 @@ import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.security.SecurityHandler;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
-import net.jonathansmith.javadpad.server.database.experiment.ExperimentManager;
-import net.jonathansmith.javadpad.server.database.user.UserManager;
+import net.jonathansmith.javadpad.server.Server;
+import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
+import net.jonathansmith.javadpad.server.database.recordsaccess.experiment.ExperimentManager;
+import net.jonathansmith.javadpad.server.database.recordsaccess.user.UserManager;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -60,6 +63,7 @@ import java.security.MessageDigest;
 public final class ServerSession extends Session {
     
     private final AtomicBoolean shaLock = new AtomicBoolean(false);
+    private final DatabaseConnection connection;
     
     private byte[] token;
     private String hash;
@@ -70,6 +74,7 @@ public final class ServerSession extends Session {
         this.outgoing = new OutgoingServerNetworkThread(eng, this, this.getSessionID());
         this.start();
         this.setServerKey(this.getSessionID());
+        connection = ((Server) this.engine).getSessionConnection();
     }
     
     @Override
@@ -269,10 +274,24 @@ public final class ServerSession extends Session {
     public RecordsList<Record> requestData(SessionData dataType) {
         switch (dataType) {
             case ALL_USERS:
-                return UserManager.getInstance().loadAll();
+                return UserManager.getInstance().loadAll(this.connection);
                 
-            case ALL_EXPERIMENTS:
-                return ExperimentManager.getInstance().loadAll();
+            case USER_EXPERIMENTS:
+                User user = this.getUser();
+                if (user != null) {
+                    Set<Experiment> experiments = user.getExperiments();
+                    
+                    if (!experiments.isEmpty()) {
+                        RecordsList<Record> out = new RecordsList<Record> ();
+                        for (Experiment exp : experiments) {
+                            out.add(exp);
+                        }
+                        
+                        return out;
+                    }
+                }
+                
+                return new RecordsList<Record> ();
                 
             default:
                 return null;
@@ -286,7 +305,7 @@ public final class ServerSession extends Session {
                     return;
                 }
                 
-                UserManager.getInstance().saveNew((User) record);
+                UserManager.getInstance().saveNew(this.connection, (User) record);
                 this.setKeySessionData(this.getSessionID(), DatabaseRecord.USER, record);
                 break;
                 
@@ -295,12 +314,12 @@ public final class ServerSession extends Session {
                     return;
                 }
                 
-                ExperimentManager.getInstance().saveNew((Experiment) record);
+                ExperimentManager.getInstance().saveNew(this.connection, (Experiment) record);
                 this.setKeySessionData(this.getSessionID(), DatabaseRecord.EXPERIMENT, record);
                 
                 User user = this.getUser();
                 user.addExperiment((Experiment) record);
-                UserManager.getInstance().save(user);
+                UserManager.getInstance().save(this.connection, user);
                 break;
         }
     }
@@ -308,17 +327,23 @@ public final class ServerSession extends Session {
     // Runtime
     @Override
     public void shutdown(boolean force) {
+        this.disconnect();
+        this.dispose();
+        
         throw new UnsupportedOperationException("Not supported yet."); // TODO:
     }
 
     @Override
     public void disconnect() {
         // TODO: Save session information
+        
+        this.connection.closeConnection();
         throw new UnsupportedOperationException("Not supported yet."); // TODO
     }
 
     @Override
     public void dispose() {
+        
         throw new UnsupportedOperationException("Not supported yet."); // TODO
     }
     
