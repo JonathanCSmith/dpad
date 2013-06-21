@@ -109,7 +109,6 @@ public class Server extends Engine {
         this.setCompleteLogger(DPADLoggerFactory.getInstance().getLogger(this));
         
         // TODO: Config?
-        // TODO: Connection pool
         // TODO: Default properties
         
         this.info("Beginning database initialisation");
@@ -120,21 +119,34 @@ public class Server extends Engine {
         DPADLoggerFactory.getInstance().getLogger(this, "org.hibernate", Level.WARN);
         
         Configuration config = this.buildSessionConfiguration();
+        boolean isNew = config.getProperty("hibernate.hbm2ddl.auto").contentEquals("create");
+        
         ServiceRegistry registry = new ServiceRegistryBuilder().applySettings(config.getProperties()).buildServiceRegistry();
         
         SessionFactory sessionFactory;
         try {
             sessionFactory = config.buildSessionFactory(registry);
             sessionFactory.openSession();
-            
-        } catch (HibernateException ex) {
-            this.error("Connection to: " + this.getFileSystem().getDatabaseDirectory() + " was rejected or unavailable", ex);
-            this.isAlive = false;
-            this.errored = true;
+
+            if (isNew) {
+                this.warn("");
+                this.warn("==========================================================");
+                this.warn("Retrying database creation for a second time as it is new!");
+                this.warn("==========================================================");
+                this.warn("");
+                
+                sessionFactory.close();
+                sessionFactory = config.buildSessionFactory(registry);
+                sessionFactory.openSession();
+            }
+        }
+
+        catch (HibernateException ex) {
+            this.forceShutdown("Connection to: " + this.getFileSystem().getDatabaseDirectory() + " was rejected or unavailable", ex);
             return;
         }
         
-        this.databaseManager = new DatabaseManager(sessionFactory, registry);
+        this.databaseManager = new DatabaseManager(sessionFactory);
         
         this.info("Beginning network initialisation");
         
@@ -175,11 +187,8 @@ public class Server extends Engine {
 
     @Override
     public void run() {
-        // TODO: Startup
-        
         while (this.isAlive && !this.errored) {
             try {
-                // TODO: Pulse threads incl session registry
                 Thread.sleep(100);
             } 
             
@@ -196,30 +205,35 @@ public class Server extends Engine {
     }
     
     public void finish() {
+        // Hibernate, bonecp shutdown TODO: verify this is all
+        this.databaseManager.closeAll();
+        
+        // Netty shutdown
         this.channelGroup.close().awaitUninterruptibly();
         this.bootstrap.releaseExternalResources();
-        System.out.println("Server stopped!");
+        this.warn("Server stopped");
+        
+        // Allow main runtime preservation if possible
+        this.main.removeTab(this.gui);
     }
 
     @Override
     public void saveAndShutdown() {
-        this.isAlive = false;
-        
-        // TODO: handle saving
+        // TODO: worker threads shutdown
         this.sessionRegistry.shutdownSessions(false);
         
         this.info("Shuttdown called on: " + this.platform.toString());
+        this.isAlive = false;
     }
 
     @Override
     public void forceShutdown(String cause, Throwable ex) {
-        this.isAlive = false;
-        this.errored = true;
-        
-        // TODO: handle force shutdown, work out what data can be trusted
+        // TODO: worker threads force shutdown
         this.sessionRegistry.shutdownSessions(true);
         
         this.error(cause, ex);
+        this.isAlive = false;
+        this.errored = true;
     }
     
     private Configuration buildSessionConfiguration() {

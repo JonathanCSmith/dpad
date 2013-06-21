@@ -47,6 +47,9 @@ import net.jonathansmith.javadpad.common.events.ChangeSender;
 import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadShutdownEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
+import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.session.DisconnectPacket;
 import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
 import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 import net.jonathansmith.javadpad.common.threads.RunnableThread;
@@ -65,6 +68,7 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
     private ClientBootstrap bootstrap;
     private ClientSession session;
     private ClientRuntimeThread currentThread;
+    private boolean disconnectExpected = false;
     
     public Client(DPAD main, String host, int port) {
         super(main, Platform.CLIENT, host, port);
@@ -236,18 +240,34 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
         
         this.bootstrap.releaseExternalResources();
         this.info("Client Stopped!");
+        
+        // Allow main runtime preservation if possible
+        this.main.removeTab(this.gui);
     }
     
     public void channelDisconnect() {
-        // TODO: decide whether we should automatically reconnect
+        if (!this.disconnectExpected) {
+            this.forceShutdown("Server disconnected unexpectedly", null);
+            return;
+        }
+        
+        // TODO: Reason post?
         this.saveAndShutdown();
+    }
+    
+    public void setDisconnectExpected() {
+        this.disconnectExpected = true;
     }
 
     @Override
     public void saveAndShutdown() {
         this.isAlive = false;
         
-        // TODO: handle saving
+        if (!this.disconnectExpected) {
+            Packet p = new DisconnectPacket(this, this.session, false);
+            this.session.addPacketToSend(PacketPriority.CRITICAL, p);
+        }
+        this.session.disconnect(false);
         
         this.info("Shutdown called on: " + this.platform.toString());
     }
@@ -257,7 +277,7 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
         this.isAlive = false;
         this.errored = true;
         
-        // TODO: handle force shutdown, work out what data can be trusted
+        this.session.disconnect(true);
         
         this.error(message, ex);
     }

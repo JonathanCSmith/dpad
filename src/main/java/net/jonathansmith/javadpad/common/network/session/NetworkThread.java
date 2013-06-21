@@ -48,7 +48,8 @@ public abstract class NetworkThread extends Thread {
     
     private final String key;
     
-    private boolean shouldShutdown = false;
+    protected boolean shouldShutdown = false;
+    protected boolean running = false;
     
     public NetworkThread(Engine engine, Session sess, String key) {
         this.engine = engine;
@@ -57,21 +58,35 @@ public abstract class NetworkThread extends Thread {
     }
     
     public void addPacket(PacketPriority priority, Packet packet) {
-        this.packets.put(priority, packet);
+        if (!this.shouldShutdown) {
+            this.packets.put(priority, packet);
+        }
     }
     
     public void sendPacket(PacketMessage pm) {
-        this.session.sendPacketMessage(this.key, pm);
+        if (!this.shouldShutdown) {
+            this.session.sendPacketMessage(this.key, pm);
+        }
+    }
+    
+    @Override
+    public void start() {
+        this.running = true;
+        super.start();
     }
     
     @Override
     public abstract void run();
     
     public boolean isRunning() {
-        return !this.shouldShutdown;
+        return this.running;
     }
     
-    public final void shutdown() {
+    public final void shutdown(boolean force) {
         this.shouldShutdown = true;
+        
+        if (force) {
+            this.packets.clear();
+        }
     }
 }

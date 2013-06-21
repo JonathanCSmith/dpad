@@ -18,7 +18,6 @@ package net.jonathansmith.javadpad.server.database.recordsaccess;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.service.ServiceRegistry;
 
 import com.jolbox.bonecp.BoneCP;
 
@@ -30,23 +29,25 @@ import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
  */
 public class DatabaseManager {
     
-    public static SessionFactory factory;
-    public static ServiceRegistry registry;
+    public SessionFactory factory;
     
     private BoneCP connectionPool = null;
     
-    public DatabaseManager(SessionFactory factory, ServiceRegistry registry) {
-        DatabaseManager.factory = factory;
-        DatabaseManager.registry = registry;
+    public DatabaseManager(SessionFactory factory) {
+        this.factory = factory;
     }
     
-    public static SessionFactory getSessionFactory() {
-        return DatabaseManager.factory;
+    private SessionFactory getSessionFactory() {
+        return this.factory;
     }
     
     public DatabaseConnection getConnection() {
-        Session sess = DatabaseManager.getSessionFactory().openSession();
+        Session sess = this.getSessionFactory().openSession();
         DatabaseConnection connection = new DatabaseConnection(sess);
         return connection;
+    }
+    
+    public void closeAll() {
+        this.factory.close();
     }
 }

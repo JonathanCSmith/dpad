@@ -42,13 +42,6 @@ public enum ClientRuntimeThread implements RuntimeThread {
     USER(false, true, new RecordsDisplayOption(DatabaseRecord.USER, new CurrentUserPane(), new NewUserPane(), new ExistingUserPane(), "User toolbar:"), null),
     EXPERIMENT(false, true, new RecordsDisplayOption(DatabaseRecord.EXPERIMENT, new CurrentExperimentPane(), new NewExperimentPane(), new ExistingExperimentPane(), "Experiment toolbar:"), null);
     
-    
-    // OLD: Keeping for reference TODO: Phase these out
-//    BATCH_SELECT(false, true, new BatchDisplayOption()),
-//    
-//    LOAD_AND_PROCESS(true, true, new LoadProcessDisplayOption()),
-//    ANALYSE_AND_DISPLAY(true, false, null);
-    
     private final boolean runnable;
     private final boolean displayable;
     private final DisplayOption display;

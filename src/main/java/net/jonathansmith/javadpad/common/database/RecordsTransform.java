@@ -72,7 +72,6 @@ public class RecordsTransform {
         return this.data;
     }
     
-    // TODO: verify that this works!
     public static RecordsTransform getTransform(RecordsList<Record> oldData, RecordsList<Record> newData) {
         if (newData == null || newData.size() == 0) {
             return null;

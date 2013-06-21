@@ -54,10 +54,10 @@ public class SessionRegistry {
     
     public void shutdownSessions(boolean force) {
         for (ServerSession session : this.sessions.keySet()) {
-            session.shutdown(force);
-            session.disconnect();
-            session.dispose();
+            session.disconnect(force);
         }
+        
+        this.sessions.clear();
     }
     
     public void sendPacketToAllSessions(PacketPriority priority, Packet packet) {
