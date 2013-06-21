@@ -50,8 +50,6 @@ import com.beust.jcommander.Parameter;
  */
 public class DPAD extends Thread {
     
-    // TODO: Reintroduce old work
-    
     public enum Platform {
         CLIENT,
         SERVER,
@@ -100,6 +98,10 @@ public class DPAD extends Thread {
     
     public void acquireTab(Platform platform, TabbedGUI panel) {
         this.gui.addTab(platform.toString().toLowerCase(), panel);
+    }
+    
+    public void removeTab(TabbedGUI panel) {
+        this.gui.removeTab(panel);
     }
     
     public void init(MainGUI gui) {

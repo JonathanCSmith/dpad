@@ -74,8 +74,7 @@ public final class ClientSession extends Session {
     public void handleEncryptionKeyRequest(EncryptionKeyRequestPacket p) {
         if (this.getState() != NetworkThreadState.EXCHANGING_AUTHENTICATION) {
             this.engine.error("Cannot respond to an authentication challenge, as either the handshake is not complete or we have not received the token");
-            this.disconnect();
-            this.dispose();
+            this.disconnect(true);
             return;
         }
         
@@ -102,8 +101,7 @@ public final class ClientSession extends Session {
             
         } catch (Exception ex) {
             this.engine.error("Error when responding to encryption key request", ex);
-            this.disconnect();
-            this.dispose();
+            this.disconnect(true);
         }
     }
     
@@ -112,8 +110,7 @@ public final class ClientSession extends Session {
         if (isReply) {
             if (this.getState() != NetworkThreadState.EXCHANGING_AUTHENTICATION) {
                 this.engine.error("Cannot respond to an authentication challenge, as either the handshake is not complete or we have not received the token");
-                this.disconnect();
-                this.dispose();
+                this.disconnect(true);
                 return;
             }
 
@@ -203,19 +200,24 @@ public final class ClientSession extends Session {
                 break;
         }
     }
-    
-    @Override
-    public void shutdown(boolean force) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
-    }
 
     @Override
-    public void disconnect() {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO
-    }
-
-    @Override
-    public void dispose() {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO
+    public void disconnect(boolean force) {
+        this.incoming.shutdown(force);
+        this.outgoing.shutdown(force);
+        
+        while (this.incoming.isRunning() || this.outgoing.isRunning()) {
+            try {
+                Thread.sleep(100);
+            }
+            
+            catch (InterruptedException ex) {
+                this.engine.error("Shutdown of network threads was interrupted, channel may have exited early", ex);
+            }
+        }
+        
+        if (this.channel.isConnected()) {
+            this.channel.disconnect();
+        }
     }
 }

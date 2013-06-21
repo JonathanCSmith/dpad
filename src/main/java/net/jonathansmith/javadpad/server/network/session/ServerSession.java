@@ -43,6 +43,7 @@ import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRespon
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
+import net.jonathansmith.javadpad.common.network.packet.session.DisconnectPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
@@ -67,6 +68,7 @@ public final class ServerSession extends Session {
     
     private byte[] token;
     private String hash;
+    private boolean disconnectExpected = false;
     
     public ServerSession(Engine eng, Channel channel) {
         super(eng, channel);
@@ -81,15 +83,13 @@ public final class ServerSession extends Session {
     public void handleHandshake(HandshakePacket p) {
         if (this.getState() != NetworkThreadState.EXCHANGING_HANDSHAKE) {
             this.engine.warn("Invalid handshake packet received. Discarding.");
-            this.disconnect();
-            this.dispose();
+            this.disconnect(true);
             return;
         }
         
         if (!this.engine.getVersion().contentEquals(p.version)) {
             this.engine.warn("Incompatible client/server versions. Client has: " + p.version + ", Server has: " + this.engine.getVersion());
-            this.disconnect();
-            this.dispose();
+            this.disconnect(true);
             return;
         }
         
@@ -114,8 +114,7 @@ public final class ServerSession extends Session {
     public void handleEncryptionKeyResponse(EncryptionKeyResponsePacket p, boolean isReply) {
         if (this.getState() != NetworkThreadState.EXCHANGING_AUTHENTICATION) {
             this.engine.warn("Cannot respond to an authentication challenge, as either the handshake is not complete or we have not sent the token");
-            this.disconnect();
-            this.dispose();
+            this.disconnect(true);
             return;
         }
         
@@ -129,14 +128,14 @@ public final class ServerSession extends Session {
         
         if (validateToken.length != 4) {
             this.engine.warn("Invalid token from session");
-            this.disconnect();
+            this.disconnect(true);
             return;
         }
         
         for (int i = 0; i < validateToken.length; i++) {
             if (validateToken[i] != savedToken[i]) {
                 this.engine.warn("Invalid token from session");
-                this.disconnect();
+                this.disconnect(true);
                 return;
             }
         }
@@ -270,7 +269,6 @@ public final class ServerSession extends Session {
     }
 
     // Database
-    // TODO: fix this with connection management
     public RecordsList<Record> requestData(SessionData dataType) {
         switch (dataType) {
             case ALL_USERS:
@@ -325,26 +323,28 @@ public final class ServerSession extends Session {
     }
     
     // Runtime
+    /*
+     * Used to disconnect the client without affecting the server. Needs to be
+     * available
+     */
     @Override
-    public void shutdown(boolean force) {
-        this.disconnect();
-        this.dispose();
+    public void disconnect(boolean force) {
+        if (!this.disconnectExpected) {
+            LockedPacket p = new DisconnectPacket(this.engine, this, force);
+            this.lockAndSendPacket(PacketPriority.CRITICAL, p);
+        }
         
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
-    }
-
-    @Override
-    public void disconnect() {
-        // TODO: Save session information
+        this.incoming.shutdown(force);
+        this.outgoing.shutdown(force);
         
         this.connection.closeConnection();
-        throw new UnsupportedOperationException("Not supported yet."); // TODO
+        if (this.channel.isConnected()) {
+            this.channel.disconnect();
+        }
     }
-
-    @Override
-    public void dispose() {
-        
-        throw new UnsupportedOperationException("Not supported yet."); // TODO
+    
+    public void setDisconnectExpected() {
+        this.disconnectExpected = true;
     }
     
     public void sha1Hash(Object[] input) {

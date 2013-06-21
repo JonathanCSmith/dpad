@@ -92,6 +92,14 @@ public class MainGUI extends JFrame implements Runnable, ChangeListener {
         this.mainDisplay.addTab(tabName, tabContents);
     }
     
+    public void removeTab(TabbedGUI tab) {
+        this.mainDisplay.remove(tab);
+        
+        if (this.mainDisplay.getTabCount() == 0) {
+            this.dispose();
+        }
+    }
+    
     @Override
     public void changeEventReceived(EventObject event) {
         if (event instanceof ContentChangedEvent) {

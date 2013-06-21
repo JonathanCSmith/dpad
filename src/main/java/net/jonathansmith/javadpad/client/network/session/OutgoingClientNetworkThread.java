@@ -45,6 +45,11 @@ public class OutgoingClientNetworkThread extends NetworkThread {
     public void run() {
         while (this.isRunning()) {
             if (this.packets.isEmpty()) {
+                if (this.shouldShutdown) {
+                    this.running = false;
+                    continue;
+                }
+                
                 try {
                     Thread.sleep(100);
                 }

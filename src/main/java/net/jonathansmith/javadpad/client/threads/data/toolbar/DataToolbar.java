@@ -18,7 +18,6 @@ package net.jonathansmith.javadpad.client.threads.data.toolbar;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
@@ -64,11 +63,6 @@ public class DataToolbar extends JPanel {
         jLabel1.setText("Data Toolbar:");
 
         loadData.setText("Load Data");
-        loadData.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                loadDataActionPerformed(evt);
-            }
-        });
 
         processData.setText("Process Data");
 
@@ -113,10 +107,6 @@ public class DataToolbar extends JPanel {
         layout.linkSize(new Component[] {analyseData, back, loadData, processData}, GroupLayout.VERTICAL);
 
     }// </editor-fold>//GEN-END:initComponents
-
-    private void loadDataActionPerformed(ActionEvent evt) {//GEN-FIRST:event_loadDataActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_loadDataActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public JButton analyseData;

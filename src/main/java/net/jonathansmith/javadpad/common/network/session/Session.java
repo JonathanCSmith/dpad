@@ -173,6 +173,10 @@ public abstract class Session implements ChangeSender {
         return this.sessionData.get(dataType);
     }
     
+    protected final void clearSessionData() {
+        this.sessionData.clear();
+    }
+    
     // Core session properties - what the ui will interact with
     public abstract void setKeySessionData(String key, DatabaseRecord type, Record data);
     
@@ -219,12 +223,8 @@ public abstract class Session implements ChangeSender {
         this.incoming.start();
         this.outgoing.start();
     }
-    
-    public abstract void shutdown(boolean force);
 
-    public abstract void disconnect();
-    
-    public abstract void dispose();
+    public abstract void disconnect(boolean force);
     
     // Change senders
     @Override
