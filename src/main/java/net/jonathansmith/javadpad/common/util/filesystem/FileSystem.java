@@ -86,12 +86,8 @@ public class FileSystem {
             successful &= this.getDatabaseDirectory().mkdir();
         }
         
-        if (successful && !this.getLoaderPluginDirectory().exists()) {
-            successful &= this.getLoaderPluginDirectory().mkdir();
-        }
-        
-        if (successful && !this.getAnalyserPluginDirectory().exists()) {
-            successful &= this.getAnalyserPluginDirectory().mkdir();
+        if (successful && !this.getPluginDirectory().exists()) {
+            successful &= this.getPluginDirectory().mkdir();
         }
         
         if (!successful) {
@@ -111,12 +107,8 @@ public class FileSystem {
         return new File(this.parentDir, "Database");
     }
     
-    public File getLoaderPluginDirectory() {
-        return new File(this.parentDir, "LoadPlugins");
-    }
-    
-    public File getAnalyserPluginDirectory() {
-        return new File(this.parentDir, "AnalysePlugins");
+    public File getPluginDirectory() {
+        return new File(this.parentDir, "Plugins");
     }
     
     public String getParentAbsolutePath() {
