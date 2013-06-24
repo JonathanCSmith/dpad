@@ -62,14 +62,15 @@ public class CommonHandler extends SimpleChannelUpstreamHandler {
     @Override
     public void channelDisconnected(ChannelHandlerContext ctx, ChannelStateEvent e) {
         Channel c = e.getChannel();
+        if (!this.engine.isAlive()) {
+            return;
+        }
         
         if (this.engine.platform == Platform.SERVER) {
-            if (this.engine.isAlive()) {
-                this.engine.info("Client disconnected");
-                ((Server) this.engine).getChannelGroup().remove(c);
-                ((Server) this.engine).getSessionRegistry().remove((ServerSession) this.session);
-                this.session.disconnect(false);
-            }
+            this.engine.info("Client disconnected");
+            ((Server) this.engine).getChannelGroup().remove(c);
+            ((Server) this.engine).getSessionRegistry().remove((ServerSession) this.session);
+            this.session.disconnect(false);
         }
         
         else {
