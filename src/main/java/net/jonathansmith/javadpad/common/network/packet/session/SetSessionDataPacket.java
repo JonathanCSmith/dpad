@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
-import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
+import net.jonathansmith.javadpad.common.network.session.Session;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -69,20 +69,17 @@ public class SetSessionDataPacket extends LockedPacket {
     }
 
     @Override
-    public int getNumberOfPayloads() {
-        return 3;
+    public int getNumberOfLockedPayloads() {
+        return 2;
     }
 
     @Override
-    public int getPayloadSize(int payloadNumber) {
+    public int getLockedPayloadSize(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-                return this.key.getBytes().length;
-                
-            case 1:
                 return 1;
                 
-            case 2:
+            case 1:
                 return this.serializedData.length;
                 
             default:
@@ -91,17 +88,14 @@ public class SetSessionDataPacket extends LockedPacket {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber) {
+    public byte[] writeLockedPayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-                return this.key.getBytes();
-                
-            case 1:
                 byte[] out = new byte[1];
                 out[0] = (byte) this.type.ordinal();
                 return out;
                 
-            case 2:
+            case 1:
                 return this.serializedData;
                 
             default:
@@ -110,29 +104,25 @@ public class SetSessionDataPacket extends LockedPacket {
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes) {
+    public void parseLockedPayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
-                this.key = new String(bytes);
-                return;
-                
-            case 1:
                 this.type = DatabaseRecord.values()[bytes[0]];
                 return;
                 
-            case 2:
+            case 1:
                 this.data = (Record) SerializationUtils.deserialize(bytes);
         }
     }
 
     @Override
     public void handleClientSide() {
-        this.session.setKeySessionData(this.key, this.type, this.data);
+        this.session.setKeySessionData(this.getKey(), this.type, this.data);
     }
 
     @Override
     public void handleServerSide() {
-        this.session.setKeySessionData(this.key, this.type, this.data);
+        this.session.setKeySessionData(this.getKey(), this.type, this.data);
     }
 
     @Override

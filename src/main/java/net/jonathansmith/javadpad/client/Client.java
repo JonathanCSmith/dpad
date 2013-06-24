@@ -269,6 +269,8 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
         }
         this.session.disconnect(false);
         
+        this.sendQuitToRuntimeThread("Shutdown", false);
+        
         this.info("Shutdown called on: " + this.platform.toString());
     }
 
@@ -278,6 +280,8 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
         this.errored = true;
         
         this.session.disconnect(true);
+        
+        this.sendQuitToRuntimeThread(message, true);
         
         this.error(message, ex);
     }

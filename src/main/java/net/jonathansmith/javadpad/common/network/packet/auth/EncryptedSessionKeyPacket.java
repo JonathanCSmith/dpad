@@ -39,10 +39,6 @@ public class EncryptedSessionKeyPacket extends LockedPacket {
     public EncryptedSessionKeyPacket(Engine engine, Session session) {
         super(engine, session);
     }
-    
-    public String getKey() {
-        return this.key;
-    }
 
     @Override
     public int getID() {
@@ -57,36 +53,22 @@ public class EncryptedSessionKeyPacket extends LockedPacket {
     }
 
     @Override
-    public int getNumberOfPayloads() {
-        return 1;
+    public int getNumberOfLockedPayloads() {
+        return 0;
     }
 
     @Override
-    public int getPayloadSize(int payloadNumber) {
-        if (payloadNumber != 0) {
-            return 0;
-        }
-        
-        return this.key.getBytes().length;
+    public int getLockedPayloadSize(int payloadNumber) {
+        return 0;
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber) {
-        if (payloadNumber != 0) {
-            return null;
-        }
-        
-        return this.key.getBytes();
+    public byte[] writeLockedPayload(int payloadNumber) {
+        return null;
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes) {
-        if (payloadNumber != 0) {
-            return;
-        }
-        
-        this.key = new String(bytes);
-    }
+    public void parseLockedPayload(int payloadNumber, byte[] bytes) {}
 
     @Override
     public void handleClientSide() {

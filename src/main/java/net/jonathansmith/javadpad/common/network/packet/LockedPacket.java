@@ -29,7 +29,7 @@ public abstract class LockedPacket extends Packet{
     
     private final AtomicBoolean lock = new AtomicBoolean(false);
     
-    protected String key;
+    private String key;
     
     public LockedPacket() {
         super();
@@ -44,4 +44,54 @@ public abstract class LockedPacket extends Packet{
             this.key = key;
         }
     }
+    
+    public String getKey() {
+        return this.key;
+    }
+    
+    @Override
+    public final int getNumberOfPayloads() {
+        return this.getNumberOfLockedPayloads() + 1;
+    }
+    
+    public abstract int getNumberOfLockedPayloads();
+    
+    @Override
+    public final int getPayloadSize(int payloadNumber) {
+        if (payloadNumber == 0) {
+            return this.key.getBytes().length;
+        }
+        
+        else {
+            return this.getLockedPayloadSize(payloadNumber - 1);
+        }
+    }
+    
+    public abstract int getLockedPayloadSize(int payloadNumber);
+    
+    @Override
+    public final byte[] writePayload(int payloadNumber) {
+        if (payloadNumber == 0) {
+            return this.key.getBytes();
+        }
+        
+        else {
+            return this.writeLockedPayload(payloadNumber - 1);
+        }
+    }
+    
+    public abstract byte[] writeLockedPayload(int payloadNumber);
+    
+    @Override
+    public final void parsePayload(int payloadNumber, byte[] bytes) {
+        if (payloadNumber == 0) {
+            this.lockPacket(new String(bytes));
+        }
+        
+        else {
+            this.parseLockedPayload(payloadNumber - 1, bytes);
+        }
+    }
+    
+    public abstract void parseLockedPayload(int payloadNumber, byte[] bytes);
 }

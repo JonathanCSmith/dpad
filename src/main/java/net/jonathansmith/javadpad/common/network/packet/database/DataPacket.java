@@ -73,24 +73,21 @@ public class DataPacket extends LockedPacket {
     }
 
     @Override
-    public int getNumberOfPayloads() {
+    public int getNumberOfLockedPayloads() {
         if (this.data == null || this.data.size() == 0) {
-            return 2;
+            return 1;
         }
         
-        return 3;
+        return 2;
     }
 
     @Override
-    public int getPayloadSize(int payloadNumber) {
+    public int getLockedPayloadSize(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-                return this.key.getBytes().length;
-                
-            case 1:
                 return 1;
                 
-            case 2:
+            case 1:
                 return this.serializedData.length;
                 
             default:
@@ -99,17 +96,14 @@ public class DataPacket extends LockedPacket {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber) {
+    public byte[] writeLockedPayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-                return this.key.getBytes();
-                
-            case 1:
                 byte[] out = new byte[1];
                 out[0] = (byte) this.dataType.ordinal();
                 return out;
                 
-            case 2:
+            case 1:
                 return this.serializedData;
                 
             default:
@@ -118,18 +112,14 @@ public class DataPacket extends LockedPacket {
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes) {
+    public void parseLockedPayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
-                this.key = new String(bytes);
-                break;
-                
-            case 1:
                 int val = (int) bytes[0];
                 this.dataType = SessionData.values()[val];
                 break;
                 
-            case 2:
+            case 1:
                 RecordsList<Record> newData = (RecordsList<Record>) SerializationUtils.deserialize(bytes);
                 this.data = newData;
         }
@@ -141,7 +131,7 @@ public class DataPacket extends LockedPacket {
             this.data = new RecordsList<Record> ();
         }
         
-        this.session.addData(this.key, this.dataType, this.data);
+        this.session.addData(this.getKey(), this.dataType, this.data);
     }
 
     @Override

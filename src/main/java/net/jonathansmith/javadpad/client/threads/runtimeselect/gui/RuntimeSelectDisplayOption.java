@@ -48,6 +48,7 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
         this.runtimeSelectToolbar.setUser.addActionListener(this);
         this.runtimeSelectToolbar.setExperiment.addActionListener(this);
         this.runtimeSelectToolbar.setBatch.addActionListener(this);
+        this.runtimeSelectToolbar.shutdown.addActionListener(this);
     }
     
     @Override
@@ -110,12 +111,8 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
             client.setRuntime(ClientRuntimeThread.EXPERIMENT);
         }
         
-//        else if (evt.getSource() == this.runtimeSelectToolbar.setBatch) {
-//            client.setRuntime(ClientRuntimeThread.BATCH_SELECT);
-//        }
-//        
-//        else if (evt.getSource() == this.runtimeSelectToolbar.addData) {
-//            client.setRuntime(ClientRuntimeThread.LOAD_AND_PROCESS);
-//        }
+        else if (evt.getSource() == this.runtimeSelectToolbar.shutdown) {
+            client.saveAndShutdown();
+        }
     }
 }
