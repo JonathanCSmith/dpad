@@ -75,7 +75,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
     
     private void setCorePanels(JPanel panel, JPanel toolbar) {
         int dividerLocation = this.displaySplitPane.getDividerLocation();
-        this.displaySplitPane.setLeftComponent(panel);
+        this.displayScroll.setViewportView(panel);
         this.toolbarSplitPane.setLeftComponent(toolbar);
         this.displaySplitPane.setDividerLocation(dividerLocation);
     }
@@ -173,6 +173,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
         displaySplitPane = new JSplitPane();
         textScroll = new JScrollPane();
         textArea = new JTextArea();
+        displayScroll = new JScrollPane();
 
         headerSplitPane.setDividerLocation(70);
         headerSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -222,6 +223,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
         textScroll.setViewportView(textArea);
 
         displaySplitPane.setRightComponent(textScroll);
+        displaySplitPane.setLeftComponent(displayScroll);
 
         toolbarSplitPane.setRightComponent(displaySplitPane);
 
@@ -240,6 +242,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
     }// </editor-fold>//GEN-END:initComponents
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public JScrollPane displayScroll;
     public JSplitPane displaySplitPane;
     public JPanel headerPanel;
     public JSplitPane headerSplitPane;

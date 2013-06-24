@@ -17,6 +17,9 @@
 package net.jonathansmith.javadpad.server.gui;
 
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import java.util.EventObject;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -146,6 +149,11 @@ public class ServerGUI extends TabbedGUI {
         jLabel1.setText("DPAD Server:");
 
         jButton1.setText("Shutdown");
+        jButton1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -181,6 +189,10 @@ public class ServerGUI extends TabbedGUI {
             .addComponent(jSplitPane1)
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.engine.saveAndShutdown();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JButton jButton1;

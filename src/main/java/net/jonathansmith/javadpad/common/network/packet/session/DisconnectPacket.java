@@ -58,17 +58,14 @@ public class DisconnectPacket extends LockedPacket {
     }
 
     @Override
-    public int getNumberOfPayloads() {
-        return 2;
+    public int getNumberOfLockedPayloads() {
+        return 1;
     }
 
     @Override
-    public int getPayloadSize(int payloadNumber) {
+    public int getLockedPayloadSize(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-                return this.key.getBytes().length;
-                
-            case 1:
                 return 1;
                 
             default:
@@ -77,12 +74,9 @@ public class DisconnectPacket extends LockedPacket {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber) {
+    public byte[] writeLockedPayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-                return this.key.getBytes();
-                
-            case 1:
                 byte[] out = new byte[1];
                 if (!this.kicked) {
                     out[0] = 0;
@@ -100,13 +94,9 @@ public class DisconnectPacket extends LockedPacket {
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes) {
+    public void parseLockedPayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
-                this.key = new String(bytes);
-                return;
-                
-            case 1:
                 if (bytes[0] == 0) {
                     this.kicked = false;
                 }
@@ -114,7 +104,6 @@ public class DisconnectPacket extends LockedPacket {
                 else {
                     this.kicked = true;
                 }
-                return;
         }
     }
 

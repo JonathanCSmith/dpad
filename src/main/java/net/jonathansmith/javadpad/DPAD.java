@@ -223,6 +223,12 @@ public class DPAD extends Thread {
             ex.printStackTrace();
         }
         
-        Runtime.getRuntime().halt(1);
+        if (dpad.hasError) {
+            Runtime.getRuntime().halt(1);
+        }
+        
+        else {
+            Runtime.getRuntime().halt(0);
+        }
     }
 }

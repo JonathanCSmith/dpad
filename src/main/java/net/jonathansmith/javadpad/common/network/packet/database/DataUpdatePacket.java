@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
+import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
@@ -90,34 +90,31 @@ public class DataUpdatePacket extends LockedPacket {
     }
 
     @Override
-    public int getNumberOfPayloads() {
-        return 5;
+    public int getNumberOfLockedPayloads() {
+        return 4;
     }
 
     @Override
-    public int getPayloadSize(int payloadNumber) {
+    public int getLockedPayloadSize(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-                return this.key.getBytes().length;
-                
-            case 1:
                 return 1;
                 
-            case 2:
+            case 1:
                 if (this.serializedChanges == null) {
                     return 0;
                 }
                 
                 return this.serializedChanges.length;
                 
-            case 3:
+            case 2:
                 if (this.serializedDeletions == null) {
                     return 0;
                 }
                 
                 return this.serializedDeletions.length;
                 
-            case 4:
+            case 3:
                 if (this.serializedAdditions == null) {
                     return 0;
                 }
@@ -130,23 +127,20 @@ public class DataUpdatePacket extends LockedPacket {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber) {
+    public byte[] writeLockedPayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-                return this.key.getBytes();
-                
-            case 1:
                 byte[] out = new byte[1];
                 out[0] = (byte) this.dataType.ordinal();
                 return out;
                 
-            case 2:
+            case 1:
                 return this.serializedChanges;
                 
-            case 3:
+            case 2:
                 return this.serializedDeletions;
                 
-            case 4:
+            case 3:
                 return this.serializedAdditions;
                 
             default:
@@ -155,25 +149,21 @@ public class DataUpdatePacket extends LockedPacket {
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes) {
+    public void parseLockedPayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
-                this.key = new String(bytes);
-                break;
-                
-            case 1:
                 this.dataType = SessionData.values()[bytes[0]];
                 break;
                 
-            case 2:
+            case 1:
                 this.changes = (LinkedHashMap<Integer, Record>) SerializationUtils.deserialize(bytes);
                 break;
                 
-            case 3:
+            case 2:
                 this.deletions = (LinkedList<Integer>) SerializationUtils.deserialize(bytes);
                 break;
                 
-            case 4:
+            case 3:
                 this.additions = (RecordsList<Record>) SerializationUtils.deserialize(bytes);
                 break;
         }
@@ -194,7 +184,7 @@ public class DataUpdatePacket extends LockedPacket {
         }
         
         RecordsTransform transform = new RecordsTransform(this.changes, this.deletions, this.additions);
-        this.session.updateData(this.key, this.dataType, transform);
+        this.session.updateData(this.getKey(), this.dataType, transform);
     }
 
     @Override
