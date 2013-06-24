@@ -35,6 +35,9 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
     private int paramCount;
     private int paramSize;
     private int frameRead = 0;
+    private int largePayloadFrame = 0;
+    private byte[] largePayloadStoredInformation;
+    private byte[] largePayloadBuffer = new byte[8192];
     private Packet packet;
  
     public CommonDecoder() {
@@ -48,6 +51,10 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
         this.paramSize = 0;
         this.frameRead = -1;
         this.packet = null;
+        
+        // Large
+        this.largePayloadFrame = 0;
+        this.largePayloadStoredInformation = null;
     }
 
     @Override
@@ -96,12 +103,18 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 }
  
             case PARAM_VALUE:
-                try {
-                    byte[] currentPayload = new byte[this.paramSize];
-                    buffer.readBytes(currentPayload);
-                    this.packet.parsePayload(this.frameRead, currentPayload);
-                    this.frameRead++;
+                if (this.paramSize <= 8192) {
+                    try {
+                        byte[] currentPayload = new byte[this.paramSize];
+                        buffer.readBytes(currentPayload);
+                        this.packet.parsePayload(this.frameRead, currentPayload);
+                    }
 
+                    catch (Exception e) {
+                        throw new DecoderException("Packet: " + this.packet.getClass().toString() + " is having issues when decoding! Payload number was: " + this.frameRead, e);
+                    }
+ 
+                    this.frameRead++;
                     if (this.frameRead >= this.paramCount) {
                         return this.finishedDecoding(new PacketMessage(this.packet, this.priority));
                     }
@@ -111,10 +124,38 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                     }
                 }
                 
-                catch (Exception e) {
-                    throw new DecoderException("Packet: " + this.packet.getClass().toString() + " is having issues when decoding! Payload number was: " + this.frameRead, e);
+                else {
+                    this.largePayloadStoredInformation = new byte[this.paramSize];
+                    this.largePayloadFrame = 1;
+                    buffer.readBytes(this.largePayloadBuffer);
+                    System.arraycopy(this.largePayloadBuffer, 0, this.largePayloadStoredInformation, 0, 8192);
+                    
+                    return this.continueDecoding(DecodingState.PARAM_VALUE_CONTINUED);
                 }
- 
+                
+            case PARAM_VALUE_CONTINUED:
+                if ((this.largePayloadFrame +  1) * 8192 < this.paramSize) {
+                    buffer.readBytes(this.largePayloadBuffer);
+                    System.arraycopy(this.largePayloadBuffer, 0, this.largePayloadStoredInformation, this.largePayloadFrame * 8192, 8192);
+                    this.largePayloadFrame++;
+                    return this.continueDecoding(DecodingState.PARAM_VALUE_CONTINUED);
+                }
+                
+                else {
+                    byte[] finalChunk = new byte[this.paramSize - (this.largePayloadFrame * 8192)];
+                    buffer.readBytes(finalChunk);
+                    System.arraycopy(finalChunk, 0, this.largePayloadStoredInformation, this.largePayloadFrame * 8192, finalChunk.length);
+                    this.packet.parsePayload(this.frameRead, this.largePayloadStoredInformation);
+                    
+                    if (this.frameRead >= this.paramCount) {
+                        return this.finishedDecoding(new PacketMessage(this.packet, this.priority));
+                    }
+
+                    else {
+                        return this.continueDecoding(DecodingState.PARAM_SIZE);
+                    }
+                }
+                
             default:
                 throw new IllegalStateException("Unknown state: " + currentState);
         }
@@ -127,6 +168,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
         PRIORITY,
         PARAM_COUNT,
         PARAM_SIZE,
-        PARAM_VALUE
+        PARAM_VALUE,
+        PARAM_VALUE_CONTINUED;
     }
 }
