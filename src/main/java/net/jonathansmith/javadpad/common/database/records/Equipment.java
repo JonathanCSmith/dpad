@@ -18,7 +18,6 @@ package net.jonathansmith.javadpad.common.database.records;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -35,20 +34,8 @@ public class Equipment extends Record {
     private String equipmentUUID;
     private String name;
     private String description;
-    private String author;
-    private String organization;
     
     public Equipment() {}
-    
-    @Id
-    @Column(name = "UUID", updatable = false, unique = true, nullable = false)
-    public String getUUID() {
-        return this.uuid;
-    }
-    
-    public void setUUID(String uuid) {
-        this.uuid = uuid;
-    }
     
     @Column(name = "EquipmentUUID", updatable = false, unique = true, nullable = false)
     public String getEquipmentUUID() {
@@ -77,24 +64,6 @@ public class Equipment extends Record {
         this.description = description;
     }
     
-    @Column(name = "Author")
-    public String getAuthor() {
-        return this.author;
-    }
-    
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-    
-    @Column(name = "Organization")
-    public String getOrganization() {
-        return this.organization;
-    }
-    
-    public void setOrganization(String organization) {
-        this.organization = organization;
-    }
-    
     @Override
     public boolean equals(Object o) {
         if (o instanceof Equipment) {
@@ -102,9 +71,7 @@ public class Equipment extends Record {
             if (this.getUUID().contentEquals(e.getUUID()) 
                 && this.getName().contentEquals(e.getName()) 
                     && this.getDescription().contentEquals(e.getDescription()) 
-                    && this.getAuthor().contentEquals(e.getAuthor()) 
-                    && this.getEquipmentUUID().contentEquals(e.getEquipmentUUID()) 
-                    && this.getOrganization().contentEquals(e.getOrganization())) {
+                    && this.getEquipmentUUID().contentEquals(e.getEquipmentUUID())) {
                 return true;
             }
             

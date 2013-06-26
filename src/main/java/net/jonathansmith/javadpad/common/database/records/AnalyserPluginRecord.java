@@ -16,20 +16,13 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
-import net.jonathansmith.javadpad.common.database.DataSet;
-import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.PluginRecord;
 
 /**
  *
  * @author Jon
  */
-@Entity
-@Table(name = "AnalysedData", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
-public class AnalysedDataSet extends Record implements DataSet {
+public class AnalyserPluginRecord extends PluginRecord {
 
     @Override
     public boolean equals(Object o) {

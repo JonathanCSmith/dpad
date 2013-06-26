@@ -22,5 +22,6 @@ package net.jonathansmith.javadpad.common.network.session;
  */
 public enum DatabaseRecord {
     USER,
-    EXPERIMENT;
+    EXPERIMENT,
+    PLUGIN;
 }

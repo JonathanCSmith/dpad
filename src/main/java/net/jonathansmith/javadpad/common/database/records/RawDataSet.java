@@ -18,7 +18,6 @@ package net.jonathansmith.javadpad.common.database.records;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -44,16 +43,6 @@ public class RawDataSet extends Record implements DataSet {
     
     public RawDataSet() {
         super();
-    }
-    
-    @Id
-    @Column(name = "UUID", updatable = false, unique = true, nullable = false)
-    public String getUUID() {
-        return this.uuid;
-    }
-    
-    public void setUUID(String uuid) {
-        this.uuid = uuid;
     }
     
     @Column(name = "Data")

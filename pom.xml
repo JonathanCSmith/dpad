@@ -109,7 +109,6 @@
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
       <version>4.3.0</version>
-      <type>jar</type>
     </dependency>
     <dependency>
       <groupId>org.apache.felix</groupId>

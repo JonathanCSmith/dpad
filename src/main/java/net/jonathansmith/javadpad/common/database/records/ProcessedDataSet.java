@@ -16,9 +16,7 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -32,16 +30,6 @@ import net.jonathansmith.javadpad.common.database.Record;
 @Entity
 @Table(name = "ProcessedData", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class ProcessedDataSet extends Record implements DataSet {
-    
-    @Id
-    @Column(name = "UUID", updatable = false, unique = true, nullable = false)
-    public String getUUID() {
-        return this.uuid;
-    }
-    
-    public void setUUID(String uuid) {
-        this.uuid = uuid;
-    }
 
     @Override
     public boolean equals(Object o) {

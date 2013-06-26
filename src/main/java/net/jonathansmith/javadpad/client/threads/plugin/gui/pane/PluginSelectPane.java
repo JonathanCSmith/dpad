@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.threads.experiment.gui.pane;
+package net.jonathansmith.javadpad.client.threads.plugin.gui.pane;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -41,12 +41,12 @@ import org.jdesktop.layout.LayoutStyle;
  *
  * @author jonathansmith
  */
-public class ExistingExperimentPane extends ExistingRecordPane {
+public class PluginSelectPane extends ExistingRecordPane {
     
     /**
      * Creates new form ExistingExperimentPane
      */
-    public ExistingExperimentPane() {
+    public PluginSelectPane() {
         initComponents();
         this.jList1.getSelectionModel().addListSelectionListener(new ListSelection());
     }
@@ -72,20 +72,20 @@ public class ExistingExperimentPane extends ExistingRecordPane {
 
     @Override
     public void insertRecords(RecordsList<Record> data) {
-        ((ExperimentListModel) this.jList1.getModel()).setData(data);
+        ((PluginListModel) this.jList1.getModel()).setData(data);
         this.jList1.repaint();
     }
     
     @Override
     public void clearRecords() {
-        ((ExperimentListModel) this.jList1.getModel()).clearData();
+        ((PluginListModel) this.jList1.getModel()).clearData();
         this.jList1.repaint();
     }
 
     @Override
     public Record getSelectedRecord() {
         int rowNum = this.jList1.getSelectedIndex();
-        return ((ExperimentListModel) this.jList1.getModel()).getData(rowNum);
+        return ((PluginListModel) this.jList1.getModel()).getData(rowNum);
     }
 
     /**
@@ -121,7 +121,7 @@ public class ExistingExperimentPane extends ExistingRecordPane {
         jTextArea1.setPreferredSize(new Dimension(50, 80));
         jScrollPane1.setViewportView(jTextArea1);
 
-        jList1.setModel(new ExperimentListModel());
+        jList1.setModel(new PluginListModel());
         jList1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jScrollPane2.setViewportView(jList1);
 
@@ -182,7 +182,7 @@ public class ExistingExperimentPane extends ExistingRecordPane {
                 ListSelectionModel model = (ListSelectionModel) evt.getSource();
                 int index = evt.getFirstIndex();
                 if (model.isSelectedIndex(index)) {
-                    String desc = ((ExperimentListModel) jList1.getModel()).getDescription(index);
+                    String desc = ((PluginListModel) jList1.getModel()).getInformation(index);
                     jTextArea2.setText(desc);
                 }
         }
