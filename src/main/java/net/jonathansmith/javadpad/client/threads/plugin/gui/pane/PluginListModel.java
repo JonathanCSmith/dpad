@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 jonathansmith
+ * Copyright (C) 2013 Jon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,59 +14,59 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.threads.experiment.gui.pane;
+package net.jonathansmith.javadpad.client.threads.plugin.gui.pane;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
 
+import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
  *
- * @author jonathansmith
+ * @author Jon
  */
-public class ExperimentListModel extends AbstractListModel {
+public class PluginListModel extends AbstractListModel {
     
-    public List<Experiment> experiments = new ArrayList<Experiment> () ;
-
+    public List<PluginRecord> plugins = new ArrayList<PluginRecord> ();
+    
     public int getSize() {
-        return this.experiments.size();
+        return this.plugins.size();
     }
     
-    public void addElement(Experiment experiment) {
-        this.experiments.add(experiment);
-        this.fireIntervalAdded(this, this.experiments.size() - 1, this.experiments.size() - 1);
+    public void addElement(PluginRecord plugin) {
+        this.plugins.add(plugin);
+        this.fireIntervalAdded(this, this.plugins.size() - 1, this.plugins.size() - 1);
     }
-
+    
     public Object getElementAt(int i) {
-        Experiment experiment = this.experiments.get(i);
-        return experiment.getName();
+        PluginRecord plugin = this.plugins.get(i);
+        return plugin.getName();
     }
     
-    public String getDescription(int i) {
-        Experiment experiment = this.experiments.get(i);
-        return experiment.getDescription();
+    public String getInformation(int i) {
+        PluginRecord plugin = this.plugins.get(i);
+        return plugin.getDescription() + "/n Version: " + plugin.getVersion() + "/n Author:" + plugin.getAuthor() + "/n Organisation: " + plugin.getOrganization();
     }
     
-    public Experiment getData(int i) {
-        return this.experiments.get(i);
+    public PluginRecord getData(int i) {
+        return this.plugins.get(i);
     }
     
     public void setData(RecordsList<Record> list) {
-        this.experiments.clear();
+        this.plugins.clear();
         
         for (Record data : list) {
-            if (data instanceof Experiment) {
-                this.addElement((Experiment) data);
+            if (data instanceof PluginRecord) {
+                this.addElement((PluginRecord) data);
             }
         }
     }
     
     public void clearData() {
-        this.experiments.clear();
+        this.plugins.clear();
     }
 }

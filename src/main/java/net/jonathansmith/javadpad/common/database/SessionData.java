@@ -28,7 +28,9 @@ public enum SessionData {
     USER(DatabaseRecord.USER, QueryType.SINGLE),
     
     USER_EXPERIMENTS(DatabaseRecord.EXPERIMENT, QueryType.SESSION_SPECIFIC),
-    EXPERIMENT(DatabaseRecord.EXPERIMENT, QueryType.SINGLE);
+    EXPERIMENT(DatabaseRecord.EXPERIMENT, QueryType.SINGLE), 
+    
+    PLUGIN(DatabaseRecord.PLUGIN, QueryType.SINGLE);
     
     private final DatabaseRecord recordType;
     private final QueryType queryType;

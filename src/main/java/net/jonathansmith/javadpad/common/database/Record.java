@@ -20,15 +20,30 @@ import java.io.Serializable;
 
 import java.util.UUID;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+
 import net.jonathansmith.javadpad.common.util.database.IdGenerator;
 
 /**
  *
  * @author Jon
  */
+@MappedSuperclass
 public abstract class Record implements Serializable {
     
-    public String uuid = IdGenerator.createId();
+    private String uuid = IdGenerator.createId();
+    
+    @Id
+    @Column(name = "UUID")
+    public String getUUID() {
+        return this.uuid;
+    }
+    
+    public void setUUID(String uuid) {
+        this.uuid = uuid;
+    }
     
     @Override
     public abstract boolean equals(Object o);

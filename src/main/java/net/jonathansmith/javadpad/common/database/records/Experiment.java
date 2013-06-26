@@ -20,7 +20,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -44,16 +43,6 @@ public class Experiment extends Record {
     private Set<AnalysedDataSet> analysedData;
     
     public Experiment() {}
-    
-    @Id
-    @Column(name = "UUID", updatable = false, unique = true, nullable = false)
-    public String getUUID() {
-        return this.uuid;
-    }
-    
-    public void setUUID(String uuid) {
-        this.uuid = uuid;
-    }
     
     @Column(name = "Name")
     public String getName() {

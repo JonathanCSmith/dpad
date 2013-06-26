@@ -14,25 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.database.records;
+package net.jonathansmith.javadpad.common.plugins;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
-import net.jonathansmith.javadpad.common.database.DataSet;
-import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.PluginRecord;
 
 /**
  *
  * @author Jon
  */
-@Entity
-@Table(name = "AnalysedData", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
-public class AnalysedDataSet extends Record implements DataSet {
+public class LoaderPlugin implements Plugin {
 
-    @Override
-    public boolean equals(Object o) {
+    public PluginRecord getPluginRecord() {
+        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+    }
+    
+    public void start() {
+        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+    }
+
+    public void stop() {
         throw new UnsupportedOperationException("Not supported yet."); // TODO:
     }
 }

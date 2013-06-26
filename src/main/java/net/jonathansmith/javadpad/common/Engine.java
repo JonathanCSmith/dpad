@@ -110,7 +110,7 @@ public abstract class Engine extends Thread {
         this.gui.init();
         this.gui.run();
         this.fileSystem.init();
-        this.manager = new PluginManager(this.fileSystem.getPluginDirectory().getAbsolutePath());
+        this.manager = new PluginManager(this.fileSystem.getPluginDirectory().getAbsolutePath(), this);
     }
     
     public boolean isRunning() {

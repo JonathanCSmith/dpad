@@ -22,7 +22,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import java.util.EventObject;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -54,8 +53,6 @@ import net.jonathansmith.javadpad.server.database.recordsaccess.QueryType;
  */
 public class RecordsDisplayOption extends DisplayOption implements ActionListener, MouseListener, ChangeListener {
     
-    private final CopyOnWriteArrayList<ChangeListener> listeners;
-    
     public final DatabaseRecord recordType;
     public final CurrentRecordPane currentRecordPane;
     public final NewRecordPane newRecordPane;
@@ -65,8 +62,6 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     private WaitForRecordsDialog dialog = null;
     
     public RecordsDisplayOption(DatabaseRecord type, CurrentRecordPane curr, NewRecordPane n, ExistingRecordPane exist, String title) {
-        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
-        
         this.recordType = type;
         this.currentRecordPane = curr;
         this.newRecordPane = n;
@@ -184,10 +179,6 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (this.dialog != null) {
-            return;
-        }
-    
         if (evt.getSource() == this.toolbar.newRecord) {
             this.newRecordButton();
         }
@@ -211,10 +202,6 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
         
     @Override
     public void mouseClicked(MouseEvent me) {
-        if (this.dialog != null) {
-            return;
-        }
-        
         if (me.getClickCount() == 2) {
             this.submitExistingRecordButton();
         }

@@ -16,23 +16,43 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import net.jonathansmith.javadpad.common.database.DataSet;
-import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.PluginRecord;
 
 /**
  *
  * @author Jon
  */
 @Entity
-@Table(name = "AnalysedData", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
-public class AnalysedDataSet extends Record implements DataSet {
+@Table(name = "LoaderPlugin", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
+public class LoaderPluginRecord extends PluginRecord {
 
+    private Equipment equipment;
+    
+    @Column(name = "Equipment")
+    public Equipment getEquipment() {
+        return this.equipment;
+    }
+    
+    public void setEquipment(Equipment equipment) {
+        this.equipment = equipment;
+    }
+    
     @Override
     public boolean equals(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+        if (super.equals(o)) {
+            if (o instanceof LoaderPluginRecord) {
+                LoaderPluginRecord p = (LoaderPluginRecord) o;
+                if (this.getEquipment().equals(p.getEquipment())) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 }
