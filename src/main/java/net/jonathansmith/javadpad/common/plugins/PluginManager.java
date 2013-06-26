@@ -76,7 +76,7 @@ public class PluginManager {
     
     private Map<String, String> buildOSGiConfigs() {
         Map<String, String> config = new HashMap<String, String> ();
-        config.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, "net.jonathansmith");
+        config.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, "net.jonathansmith.javadpad");
         config.put(Constants.FRAMEWORK_STORAGE, this.path);
         config.put(Constants.FRAMEWORK_STORAGE_CLEAN, "true");
         return config;
@@ -150,18 +150,10 @@ public class PluginManager {
         this.allPlugins.putAll(confirmedPlugins);
     }
     
-    public RecordsList<Record> getLocalPluginRecordList(boolean type) {
+    public RecordsList<Record> getLocalPluginRecordList() {
         RecordsList<Record> list = new RecordsList<Record> ();
-        if (!type) {
-            for (Bundle plugin : this.cachedLoaders.values()) {
-                list.add(((LoaderPlugin) plugin).getPluginRecord());
-            }
-        }
-        
-        else {
-            for (Bundle plugin : this.cachedAnalysers.values()) {
-                list.add(((AnalyserPlugin) plugin).getPluginRecord());
-            }
+        for (Bundle bundle : this.allPlugins.keySet()) {
+            list.add(((Plugin) bundle).getPluginRecord());
         }
         
         return list;
@@ -258,10 +250,10 @@ public class PluginManager {
         }
     }
     
-    public void addOrUpdatePlugin(PluginRecord plugin, String currentPath) {
-        Bundle b = this.getBundle(plugin.getName());
+    public void addOrUpdatePlugin(String name, String currentPath) {
+        Bundle b = this.getBundle(name);
         File currentFile = new File(currentPath);
-        File newFile = new File(this.path + "//" + plugin.getName() + ".jar");
+        File newFile = new File(this.path + "//" + name + ".jar");
         if (!currentFile.exists() || !currentFile.isFile()) {
             currentFile.delete();
             return;
@@ -281,6 +273,7 @@ public class PluginManager {
             try {
                 b.uninstall();
                 FileUtils.copyFile(currentFile, newFile);
+                this.context.installBundle(newFile.getAbsolutePath());
             } 
             
             catch (BundleException ex) {

@@ -47,29 +47,20 @@ public class PluginSelectToolbar extends JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        findLoaders = new JButton();
-        findAnalysers = new JButton();
+        addPlugin = new JButton();
         back = new JButton();
 
         setMaximumSize(new Dimension(120, 32767));
         setMinimumSize(new Dimension(120, 0));
         setPreferredSize(new Dimension(120, 300));
 
-        findLoaders.setText("Select Loader");
-        findLoaders.setToolTipText("Choose a loading plugin to upload");
-        findLoaders.setBorder(null);
-        findLoaders.setMargin(new Insets(2, 8, 2, 8));
-        findLoaders.setMaximumSize(new Dimension(105, 23));
-        findLoaders.setMinimumSize(new Dimension(105, 23));
-        findLoaders.setPreferredSize(new Dimension(105, 23));
-
-        findAnalysers.setText("Select Analyser");
-        findAnalysers.setToolTipText("Choose an anlyser plugin to upload");
-        findAnalysers.setBorder(null);
-        findAnalysers.setMargin(new Insets(2, 8, 2, 8));
-        findAnalysers.setMaximumSize(new Dimension(105, 23));
-        findAnalysers.setMinimumSize(new Dimension(105, 23));
-        findAnalysers.setPreferredSize(new Dimension(105, 23));
+        addPlugin.setText("Add Plugin");
+        addPlugin.setToolTipText("Choose a loading plugin to upload");
+        addPlugin.setBorder(null);
+        addPlugin.setMargin(new Insets(2, 8, 2, 8));
+        addPlugin.setMaximumSize(new Dimension(105, 23));
+        addPlugin.setMinimumSize(new Dimension(105, 23));
+        addPlugin.setPreferredSize(new Dimension(105, 23));
 
         back.setText("Back");
         back.setToolTipText("Return to previous screen");
@@ -80,33 +71,32 @@ public class PluginSelectToolbar extends JPanel {
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(findLoaders, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                    .addComponent(findAnalysers, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                    .addComponent(back, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(addPlugin, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                .addGap(5, 5, 5))
+            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(5, 5, 5)
+                .addComponent(back, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(5, 5, 5))
         );
 
-        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {back, findAnalysers, findLoaders});
+        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {addPlugin, back});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(findLoaders, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
-                .addComponent(findAnalysers, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                .addComponent(addPlugin, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
                 .addComponent(back)
-                .addContainerGap(221, Short.MAX_VALUE))
+                .addContainerGap(244, Short.MAX_VALUE))
         );
 
-        layout.linkSize(SwingConstants.VERTICAL, new Component[] {back, findAnalysers, findLoaders});
+        layout.linkSize(SwingConstants.VERTICAL, new Component[] {addPlugin, back});
 
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    public JButton addPlugin;
     public JButton back;
-    public JButton findAnalysers;
-    public JButton findLoaders;
     // End of variables declaration//GEN-END:variables
 }
