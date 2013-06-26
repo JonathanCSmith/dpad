@@ -79,6 +79,36 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         this.toolbar.addDisplayOptionListener(this);
     }
     
+    
+    
+//    public void submitSelectedPlugin() {
+//        Record selection = this.pluginSelectPane.getSelectedRecord();
+//        if (selection != null && selection instanceof PluginRecord) {
+//            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, DatabaseRecord.PLUGIN, selection);
+//            this.session.lockAndSendPacket(PacketPriority.HIGH, p);
+//            
+//            this.dialog = new WaitForRecordsDialog(new JFrame(), true);
+//            this.dialog.addListener(this);
+//            
+//            SwingUtilities.invokeLater(new Runnable() {
+//                @Override
+//                public void run() {
+//                    dialog.setVisible(true);
+//                }
+//            });
+//            
+//            this.localVersion = (PluginRecord) selection;
+//            this.pluginSelectPane.clearRecords();
+//            this.engine.getGUI().validateState();
+//        }
+//        
+//        else {
+//            this.engine.info("Record was incomplete or invalid");
+//            this.pluginSelectPane.clearRecords();
+//        }
+//    }
+    
+    
     @Override
     public void validateState() {
         throw new UnsupportedOperationException("Not supported yet."); // TODO:

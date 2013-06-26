@@ -18,21 +18,23 @@ package net.jonathansmith.javadpad.client.threads.plugin.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+
+import java.io.File;
 
 import java.util.EventObject;
 
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.dialogs.PopupDialog;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
-import net.jonathansmith.javadpad.client.threads.plugin.gui.pane.PluginSelectPane;
+import net.jonathansmith.javadpad.client.threads.plugin.gui.pane.PluginDisplayPane;
 import net.jonathansmith.javadpad.client.threads.plugin.gui.toolbar.PluginSelectToolbar;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
@@ -52,9 +54,9 @@ import net.jonathansmith.javadpad.common.util.database.RecordsList;
  *
  * @author Jon
  */
-public class PluginUploadDisplayOption extends DisplayOption implements ActionListener, MouseListener, ChangeListener {
+public class PluginUploadDisplayOption extends DisplayOption implements ActionListener, ChangeListener {
 
-    public PluginSelectPane pluginSelectPane;
+    public PluginDisplayPane pluginSelectPane;
     public PluginSelectToolbar pluginSelectToolbar;
     
     private WaitForRecordsDialog dialog = null;
@@ -62,56 +64,65 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
     
     public PluginUploadDisplayOption() {
         super();
-        this.pluginSelectPane = new PluginSelectPane();
+        this.pluginSelectPane = new PluginDisplayPane();
         this.pluginSelectToolbar = new PluginSelectToolbar();
         this.currentPanel = this.pluginSelectPane;
         this.currentToolbar = this.pluginSelectToolbar;
         
-        this.pluginSelectToolbar.findLoaders.addActionListener(this);
-        this.pluginSelectToolbar.findAnalysers.addActionListener(this);
+        this.pluginSelectToolbar.addPlugin.addActionListener(this);
         this.pluginSelectToolbar.back.addActionListener(this);
-        this.pluginSelectPane.jList1.addMouseListener(this);
-        this.pluginSelectPane.submit.addActionListener(this);
     }
     
-    public void displayLoaders() {
-        this.displayPlugins(false);
-    }
-    
-    public void displayAnalysers() {
-        this.displayPlugins(true);
-    }
-    
-    public void displayPlugins(boolean type) {
-        PluginManager manager = this.engine.getPluginManager();
-        RecordsList<Record> list = manager.getLocalPluginRecordList(type);
-        this.pluginSelectPane.insertRecords(list);
-    }
-    
-    public void submitSelectedPlugin() {
-        Record selection = this.pluginSelectPane.getSelectedRecord();
-        if (selection != null && selection instanceof PluginRecord) {
-            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, DatabaseRecord.PLUGIN, selection);
-            this.session.lockAndSendPacket(PacketPriority.HIGH, p);
+    public void addPlugin() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Please select your plugin");
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                if (f.isDirectory()) {
+                    return true;
+                }
+
+                return !f.getName().toLowerCase().endsWith(".zip") ? f.getName().toLowerCase().endsWith(".jar") : true;
+            }
+
+            @Override
+            public String getDescription() {
+                return "*.jar || *.zip";
+            }
+        });
+        
+        int outcome = chooser.showOpenDialog(this.engine.getGUI());
+        File filepath;
+        if (outcome == JFileChooser.APPROVE_OPTION) {
+            filepath = chooser.getSelectedFile();
+
+            String name = filepath.getName().substring(0, filepath.getName().length() - 5);
+            PluginManager manager = this.engine.getPluginManager();
+            manager.addOrUpdatePlugin(name, filepath.getAbsolutePath());
+            PluginRecord newPlugin = manager.getLocalPluginRecord(name);
+            if (newPlugin == null) {
+                this.engine.warn("There was an error injecting your plugin");
+                return;
+            }
             
+            this.pluginSelectPane.setChosenPlugin(newPlugin);
+            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, DatabaseRecord.PLUGIN, newPlugin);
+            this.session.lockAndSendPacket(PacketPriority.HIGH, p);
+
             this.dialog = new WaitForRecordsDialog(new JFrame(), true);
             this.dialog.addListener(this);
-            
+
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                     dialog.setVisible(true);
                 }
             });
-            
-            this.localVersion = (PluginRecord) selection;
-            this.pluginSelectPane.clearRecords();
+
+            this.localVersion = (PluginRecord) newPlugin;
             this.engine.getGUI().validateState();
-        }
-        
-        else {
-            this.engine.info("Record was incomplete or invalid");
-            this.pluginSelectPane.clearRecords();
         }
     }
     
@@ -133,41 +144,14 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
             return;
         }
         
-        if (evt.getSource() == this.pluginSelectToolbar.findLoaders) {
-            this.displayLoaders();
-        }
-        
-        else if (evt.getSource() == this.pluginSelectToolbar.findAnalysers) {
-            this.displayAnalysers();
+        if (evt.getSource() == this.pluginSelectToolbar.addPlugin) {
+            this.addPlugin();
         }
         
         else if (evt.getSource() == this.pluginSelectToolbar.back) {
             this.engine.sendQuitToRuntimeThread("User called back", false);
         }
-        
-        else if (evt.getSource() == this.pluginSelectPane.submit) {
-            this.submitSelectedPlugin();
-        }
     }
-
-    @Override
-    public void mouseClicked(MouseEvent me) {
-        if (me.getClickCount() == 2) {
-            this.submitSelectedPlugin();
-        }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent me) {}
-
-    @Override
-    public void mouseReleased(MouseEvent me) {}
-
-    @Override
-    public void mouseEntered(MouseEvent me) {}
-
-    @Override
-    public void mouseExited(MouseEvent me) {}
 
     @Override
     public void changeEventReceived(EventObject event) {
@@ -219,7 +203,6 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
                 }
             });
             
-            this.pluginSelectPane.clearRecords();
             this.setCurrentView(this.pluginSelectPane);
             this.engine.getGUI().validateState();
         }
