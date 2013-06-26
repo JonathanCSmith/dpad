@@ -27,7 +27,7 @@ import net.jonathansmith.javadpad.client.threads.startup.gui.StartupDisplayOptio
 import net.jonathansmith.javadpad.client.threads.user.gui.pane.CurrentUserPane;
 import net.jonathansmith.javadpad.client.threads.user.gui.pane.ExistingUserPane;
 import net.jonathansmith.javadpad.client.threads.user.gui.pane.NewUserPane;
-import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.threads.RunnableThread;
 import net.jonathansmith.javadpad.common.threads.RuntimeThread;
 

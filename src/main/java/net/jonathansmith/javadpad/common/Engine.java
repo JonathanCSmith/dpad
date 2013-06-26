@@ -92,6 +92,10 @@ public abstract class Engine extends Thread {
         this.fileSystem = fileSystem;
     }
     
+    public PluginManager getPluginManager() {
+        return this.manager;
+    }
+    
     public boolean isLoggerSetup() {
         return this.loggerIsSetup;
     }

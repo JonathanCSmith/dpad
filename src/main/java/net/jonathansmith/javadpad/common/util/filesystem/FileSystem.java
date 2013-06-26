@@ -90,6 +90,10 @@ public class FileSystem {
             successful &= this.getPluginDirectory().mkdir();
         }
         
+        if (successful && !this.getUpdateDirectory().exists()) {
+            successful &= this.getUpdateDirectory().mkdir();
+        }
+        
         if (!successful) {
             throw new URISyntaxException("Could not build file structure", "ALL");
         }
@@ -105,6 +109,10 @@ public class FileSystem {
         }
         
         return new File(this.parentDir, "Database");
+    }
+
+    public File getUpdateDirectory() {
+        return new File(this.parentDir, "Updates");
     }
     
     public File getPluginDirectory() {

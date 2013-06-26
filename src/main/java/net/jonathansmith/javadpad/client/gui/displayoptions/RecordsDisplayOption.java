@@ -33,8 +33,8 @@ import net.jonathansmith.javadpad.client.gui.displayoptions.pane.ExistingRecordP
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.NewRecordPane;
 import net.jonathansmith.javadpad.client.gui.displayoptions.toolbar.RecordToolbar;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
@@ -43,7 +43,7 @@ import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.NewRecordPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
-import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.database.recordsaccess.QueryType;
 
@@ -98,7 +98,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
 
             if (data == null) {
                 this.dialog = new WaitForRecordsDialog(new JFrame(), true);
-                dialog.addListener(this);
+                this.dialog.addListener(this);
 
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
