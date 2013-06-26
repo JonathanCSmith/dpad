@@ -30,6 +30,8 @@ import net.jonathansmith.javadpad.common.database.Record;
 @Entity
 @Table(name = "ProcessedData", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class ProcessedDataSet extends Record implements DataSet {
+    
+    // TODO: plugin that processed
 
     @Override
     public boolean equals(Object o) {

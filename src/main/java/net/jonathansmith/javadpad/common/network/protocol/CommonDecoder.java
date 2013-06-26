@@ -20,6 +20,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
+import net.jonathansmith.javadpad.common.network.packet.LargePayloadPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.util.logging.exceptions.DecoderException;
@@ -33,7 +34,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
     private int type;
     private PacketPriority priority;
     private int paramCount;
-    private int paramSize;
+    private double paramSize;
     private int frameRead = 0;
     private int largePayloadFrame = 0;
     private byte[] largePayloadStoredInformation;
@@ -83,7 +84,14 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 }
  
             case PARAM_SIZE:
-                this.paramSize = buffer.readInt();
+                if (this.packet instanceof LargePayloadPacket && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead)) {
+                    this.paramSize = buffer.readDouble();
+                }
+                
+                else {
+                    this.paramSize = buffer.readInt();
+                }
+                
                 if (this.paramSize == 0) {
                     this.frameRead++;
                     if (this.frameRead >= this.paramCount) {
@@ -105,7 +113,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
             case PARAM_VALUE:
                 if (this.paramSize <= 8192) {
                     try {
-                        byte[] currentPayload = new byte[this.paramSize];
+                        byte[] currentPayload = new byte[(int) this.paramSize];
                         buffer.readBytes(currentPayload);
                         this.packet.parsePayload(this.frameRead, currentPayload);
                     }
@@ -124,8 +132,16 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                     }
                 }
                 
+                else if (this.packet instanceof LargePayloadPacket) {
+                    this.largePayloadFrame = 1;
+                    buffer.readBytes(this.largePayloadBuffer);
+                    ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead, this.largePayloadBuffer, 0);
+                
+                    return this.continueDecoding(DecodingState.PARAM_VALUE_CONTINUED);
+                }
+                
                 else {
-                    this.largePayloadStoredInformation = new byte[this.paramSize];
+                    this.largePayloadStoredInformation = new byte[(int) this.paramSize];
                     this.largePayloadFrame = 1;
                     buffer.readBytes(this.largePayloadBuffer);
                     System.arraycopy(this.largePayloadBuffer, 0, this.largePayloadStoredInformation, 0, 8192);
@@ -136,17 +152,33 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
             case PARAM_VALUE_CONTINUED:
                 if ((this.largePayloadFrame +  1) * 8192 < this.paramSize) {
                     buffer.readBytes(this.largePayloadBuffer);
-                    System.arraycopy(this.largePayloadBuffer, 0, this.largePayloadStoredInformation, this.largePayloadFrame * 8192, 8192);
+                    
+                    if (this.packet instanceof LargePayloadPacket) {
+                        ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead, this.largePayloadBuffer, this.largePayloadFrame);
+                    }
+                    
+                    else {
+                        System.arraycopy(this.largePayloadBuffer, 0, this.largePayloadStoredInformation, this.largePayloadFrame * 8192, 8192);
+                    }
+                    
                     this.largePayloadFrame++;
                     return this.continueDecoding(DecodingState.PARAM_VALUE_CONTINUED);
                 }
                 
                 else {
-                    byte[] finalChunk = new byte[this.paramSize - (this.largePayloadFrame * 8192)];
+                    byte[] finalChunk = new byte[(int) this.paramSize - (this.largePayloadFrame * 8192)];
                     buffer.readBytes(finalChunk);
-                    System.arraycopy(finalChunk, 0, this.largePayloadStoredInformation, this.largePayloadFrame * 8192, finalChunk.length);
-                    this.packet.parsePayload(this.frameRead, this.largePayloadStoredInformation);
                     
+                    if (this.packet instanceof LargePayloadPacket) {
+                        ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead, this.largePayloadBuffer, this.largePayloadFrame - 1);
+                        ((LargePayloadPacket) this.packet).finishReading();
+                    }
+                    
+                    else {
+                        System.arraycopy(finalChunk, 0, this.largePayloadStoredInformation, (this.largePayloadFrame - 1) * 8192, finalChunk.length);
+                        this.packet.parsePayload(this.frameRead, this.largePayloadStoredInformation);
+                    }
+                        
                     if (this.frameRead >= this.paramCount) {
                         return this.finishedDecoding(new PacketMessage(this.packet, this.priority));
                     }

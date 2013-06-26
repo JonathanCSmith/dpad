@@ -19,9 +19,9 @@ package net.jonathansmith.javadpad.common.network.packet.session;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
-import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -37,7 +37,7 @@ public class SetSessionDataPacket extends LockedPacket {
     private static int id;
     
     private DatabaseRecord type;
-    private Record data;
+    private Record data = null;
     private byte[] serializedData;
     
     public SetSessionDataPacket() {
@@ -49,7 +49,9 @@ public class SetSessionDataPacket extends LockedPacket {
         this.type = type;
         this.data = record;
         
-        this.serializeData();
+        if (record != null) {
+            this.serializeData();
+        }
     }
     
     private void serializeData() {
@@ -80,7 +82,7 @@ public class SetSessionDataPacket extends LockedPacket {
                 return 1;
                 
             case 1:
-                return this.serializedData.length;
+                return this.data != null ? this.serializedData.length : 0;
                 
             default:
                 return 0;
@@ -96,7 +98,7 @@ public class SetSessionDataPacket extends LockedPacket {
                 return out;
                 
             case 1:
-                return this.serializedData;
+                return this.data != null ? this.serializedData : null;
                 
             default:
                 return null;

@@ -28,6 +28,7 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
+import net.jonathansmith.javadpad.common.network.packet.LargePayloadPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 
@@ -53,7 +54,13 @@ public class CommonEncoder implements ChannelDownstreamHandler {
             Channels.write(ctx, e.getFuture(), header, e.getRemoteAddress());
             
             for (int i = 0; i < p.getNumberOfPayloads(); i++) {
-                this.writePayload(ctx, e.getFuture(), e.getRemoteAddress(), p, i);
+                if (p instanceof LargePayloadPacket && ((LargePayloadPacket) p).isPayloadLarge(i)) {
+                    this.writePayloadSlowly(ctx, e.getFuture(), e.getRemoteAddress(), (LargePayloadPacket) p, i);
+                }
+                
+                else {
+                    this.writePayload(ctx, e.getFuture(), e.getRemoteAddress(), p, i);
+                }
             }
         } else {
             ctx.sendDownstream(evt);
@@ -98,8 +105,36 @@ public class CommonEncoder implements ChannelDownstreamHandler {
             int finalChunkSize = payloadSize - length;
             byte[] finalChunk = new byte[finalChunkSize];
             System.arraycopy(payload, length, finalChunk, 0, finalChunkSize);
-            buff.writeBytes(finalChunk);
-            Channels.write(ctx, f, buff, address);
+            ChannelBuffer rem = ChannelBuffers.buffer(finalChunkSize);
+            rem.writeBytes(finalChunk);
+            Channels.write(ctx, f, rem, address);
         }
+    }
+
+    protected void writePayloadSlowly(ChannelHandlerContext ctx, ChannelFuture f, SocketAddress address, LargePayloadPacket p, int payloadNumber) {
+        double payloadSize = p.getLargePayloadSize(payloadNumber);
+        int wholeChunks = (int) Math.floor(payloadSize / (double) 8192);
+        double finalChunkSize = payloadSize - (wholeChunks * 8192);
+        ChannelBuffer buff = ChannelBuffers.buffer(8192);
+        byte[] chunk = new byte[8192];
+        byte[] finalChunk = new byte[(int) finalChunkSize];
+        
+        ChannelBuffer sizeBuff = ChannelBuffers.buffer(8);
+        sizeBuff.writeDouble(payloadSize);
+        Channels.write(ctx, f, sizeBuff, address);
+        
+        for (int i = 0; i < wholeChunks; i++) {
+            p.writeLargePayloadFragment(payloadNumber, chunk, i);
+            buff.writeBytes(chunk);
+            Channels.write(ctx, f, buff, address);
+            buff.clear();
+        }
+        
+        p.writeLargePayloadFragment(payloadNumber, finalChunk, wholeChunks + 1);
+        ChannelBuffer rem = ChannelBuffers.buffer((int) finalChunkSize);
+        rem.writeBytes(finalChunk);
+        Channels.write(ctx, f, rem, address);
+        
+        p.finishWriting();
     }
 }

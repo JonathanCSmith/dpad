@@ -27,9 +27,9 @@ import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.DataSet;
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
-import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
@@ -112,7 +112,7 @@ public abstract class Session implements ChangeSender {
         }
     }
     
-    // Network handlers
+    // Network handlerssss
     public void addPacketToSend(PacketPriority priority, Packet p) {
         this.outgoing.addPacket(priority, p);
     }

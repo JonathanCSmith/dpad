@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.database;
+package net.jonathansmith.javadpad.common.network.session;
 
-import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.server.database.recordsaccess.QueryType;
 
 /**

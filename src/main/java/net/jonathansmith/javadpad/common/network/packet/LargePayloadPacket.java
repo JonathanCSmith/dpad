@@ -14,14 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.network.session;
+package net.jonathansmith.javadpad.common.network.packet;
 
 /**
  *
  * @author Jon
  */
-public enum DatabaseRecord {
-    USER,
-    EXPERIMENT,
-    PLUGIN;
+public interface LargePayloadPacket {
+    
+    public abstract boolean isPayloadLarge(int payloadNumber);
+    
+    public abstract double getLargePayloadSize(int payloadNumber);
+    
+    public abstract byte[] writeLargePayloadFragment(int payloadNumber, byte[] providedChunk, int chunkNumber);
+    
+    public abstract void finishWriting();
+    
+    public abstract void processLargePayloadFragment(int payloadNumber, byte[] providedChunk, int chunkNumber);
+    
+    public abstract void finishReading();
+
+    public boolean isHealthy();
 }

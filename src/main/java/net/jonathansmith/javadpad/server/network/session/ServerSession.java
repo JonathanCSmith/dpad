@@ -29,9 +29,10 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
+import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
-import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
@@ -43,10 +44,12 @@ import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRespon
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.DisconnectPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
-import net.jonathansmith.javadpad.common.network.session.DatabaseRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
+import net.jonathansmith.javadpad.common.plugins.PluginManager;
 import net.jonathansmith.javadpad.common.security.SecurityHandler;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.Server;
@@ -251,6 +254,47 @@ public final class ServerSession extends Session {
                 
                 this.setExperiment((Experiment) data);
                 break;
+                
+            case PLUGIN:
+                if (!(data instanceof PluginRecord)) {
+                    return;
+                }
+                
+                PluginRecord plugin = (PluginRecord) data;
+                PluginManager manager = this.engine.getPluginManager();
+                PluginRecord local = manager.getLocalPluginRecord(plugin.getName());
+                if (local == null) {
+                    LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.PLUGIN, null);
+                    this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+                }
+                
+                else {
+                    switch(manager.compareVersions(local, plugin)) {
+                        // Local is newer
+                        case -1:
+                            LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.PLUGIN, local);
+                            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+                            
+                            String pluginPath = this.engine.getPluginManager().getPluginPath(local.getName());
+                            LockedPacket p2 = new PluginTransferPacket(this.engine, this, local, pluginPath);
+                            this.lockAndSendPacket(PacketPriority.MEDIUM, p2);
+                            break;
+                            
+                        // Same
+                        case 0:
+                            LockedPacket p3 = new SetSessionDataPacket(this.engine, this, DatabaseRecord.PLUGIN, local);
+                            this.lockAndSendPacket(PacketPriority.MEDIUM, p3);
+                            break;
+                            
+                        // Client is newer
+                        case 1:
+                            LockedPacket p4 = new SetSessionDataPacket(this.engine, this, DatabaseRecord.PLUGIN, null);
+                            this.lockAndSendPacket(PacketPriority.MEDIUM, p4);
+                            break;
+                            
+                        default:
+                    }
+                }
         }
     }
     

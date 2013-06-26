@@ -23,17 +23,29 @@ import java.awt.event.MouseListener;
 
 import java.util.EventObject;
 
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import net.jonathansmith.javadpad.client.Client;
+import net.jonathansmith.javadpad.client.gui.dialogs.PopupDialog;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.plugin.gui.pane.PluginSelectPane;
 import net.jonathansmith.javadpad.client.threads.plugin.gui.toolbar.PluginSelectToolbar;
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
+import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.SessionData;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
+import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
+import net.jonathansmith.javadpad.common.plugins.PluginManager;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
@@ -46,6 +58,7 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
     public PluginSelectToolbar pluginSelectToolbar;
     
     private WaitForRecordsDialog dialog = null;
+    private PluginRecord localVersion = null;
     
     public PluginUploadDisplayOption() {
         super();
@@ -70,14 +83,36 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
     }
     
     public void displayPlugins(boolean type) {
-        // Poll OSGI for plugins of type
-        // Build list
-        // Insert to display
+        PluginManager manager = this.engine.getPluginManager();
+        RecordsList<Record> list = manager.getLocalPluginRecordList(type);
+        this.pluginSelectPane.insertRecords(list);
     }
     
     public void submitSelectedPlugin() {
-        // Send plugin record to server
-        // Begin waiting for whether the server requires a copy
+        Record selection = this.pluginSelectPane.getSelectedRecord();
+        if (selection != null && selection instanceof PluginRecord) {
+            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, DatabaseRecord.PLUGIN, selection);
+            this.session.lockAndSendPacket(PacketPriority.HIGH, p);
+            
+            this.dialog = new WaitForRecordsDialog(new JFrame(), true);
+            this.dialog.addListener(this);
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    dialog.setVisible(true);
+                }
+            });
+            
+            this.localVersion = (PluginRecord) selection;
+            this.pluginSelectPane.clearRecords();
+            this.engine.getGUI().validateState();
+        }
+        
+        else {
+            this.engine.info("Record was incomplete or invalid");
+            this.pluginSelectPane.clearRecords();
+        }
     }
     
     @Override
@@ -157,9 +192,36 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
             this.dialog.dispose();
             this.dialog = null;
             
-            // If data is upload request - upload
-            // If serverside is newer - post info, including that current ver will be updated when used
-            // Otherwise server side already has
+            final JDialog popupDialog;
+            if (data.isEmpty() || data.getFirst() == null) {
+                String pluginPath = this.engine.getPluginManager().getPluginPath(this.localVersion.getName());
+                LockedPacket p = new PluginTransferPacket(this.engine, this.session, this.localVersion, pluginPath);
+                this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
+                
+                popupDialog = new PopupDialog(new JFrame(), "Uploading plugin to server, it is advised not to use this plugin for some time");
+                // TODO: progressbar + blocking?
+                // OR Asynchronous + popup inform when done
+            }
+            
+            else if (this.localVersion.equals(data.getFirst())) {
+                popupDialog = new PopupDialog(new JFrame(), "Server already has this plugin, you can use immediately");
+            }
+            
+            else {
+                popupDialog = new PopupDialog(new JFrame(), "Server has a newer version of this plugin, downloading now, it is advised not to use this plugin for some time");
+                // TODO: progressbar + blocking?
+                // OR Asynchronous + popup inform when done
+            }
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    popupDialog.setVisible(true);
+                }
+            });
+            
+            this.pluginSelectPane.clearRecords();
+            this.setCurrentView(this.pluginSelectPane);
+            this.engine.getGUI().validateState();
         }
     }
 }

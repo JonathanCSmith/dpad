@@ -18,10 +18,10 @@ package net.jonathansmith.javadpad.common.plugins;
 
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -33,8 +33,11 @@ import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.database.PluginRecord;
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
-import sun.misc.JarFilter;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -47,9 +50,9 @@ public class PluginManager {
     private final Engine engine;
     private final Framework framework;
     private final BundleContext context;
-    private final List<Bundle> allPlugins = new LinkedList<Bundle> ();
-    private final Map<String, LoaderPlugin> cachedLoaders = new HashMap<String, LoaderPlugin> ();
-    private final Map<String, AnalyserPlugin> cachedAnalysers = new HashMap<String, AnalyserPlugin> ();
+    private final Map<Bundle, String> allPlugins = new HashMap<Bundle, String> ();
+    private final Map<String, Bundle> cachedLoaders = new HashMap<String, Bundle> ();
+    private final Map<String, Bundle> cachedAnalysers = new HashMap<String, Bundle> ();
     
     public PluginManager(String pluginsPath, Engine engine) {
         this.path = pluginsPath;
@@ -74,6 +77,8 @@ public class PluginManager {
     private Map<String, String> buildOSGiConfigs() {
         Map<String, String> config = new HashMap<String, String> ();
         config.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA, "net.jonathansmith");
+        config.put(Constants.FRAMEWORK_STORAGE, this.path);
+        config.put(Constants.FRAMEWORK_STORAGE_CLEAN, "true");
         return config;
     }
     
@@ -84,10 +89,15 @@ public class PluginManager {
             return;
         }
         
-        String[] jars = dir.list(new JarFilter());
+        String[] jars = dir.list(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return !name.toLowerCase().endsWith(".zip") ? name.toLowerCase().endsWith(".jar") : true;
+            }
+        });
         for (String pluginFileName : jars) {
             try {
-                this.allPlugins.add(this.context.installBundle(this.path + "//" + pluginFileName));
+                this.allPlugins.put(this.context.installBundle(this.path + "//" + pluginFileName), this.path + "//" + pluginFileName);
             } 
             
             catch (BundleException ex) {
@@ -95,15 +105,16 @@ public class PluginManager {
             }
         }
         
-        List<Bundle> confirmedPlugins = new LinkedList<Bundle> ();
-        for (Bundle plugin : this.allPlugins) {
-            if (!(plugin instanceof Plugin)) {
+        Map<Bundle, String> confirmedPlugins = new HashMap<Bundle, String> ();
+        for (Bundle plugin : this.allPlugins.keySet()) {
+            if (!(plugin instanceof LoaderPlugin) && !(plugin instanceof AnalyserPlugin)) {
                 try {
                     plugin.uninstall();
                 } 
                 
                 catch (BundleException ex) {
-                    this.engine.warn("Could not load: " + plugin.getSymbolicName() + " as it does not implement Plugin");
+                    this.engine.warn("Could not load: " + plugin.getSymbolicName() + " as it does not implement a known derivative of plugin");
+                    continue;
                 }
             }
             
@@ -112,23 +123,175 @@ public class PluginManager {
                 String name = p.getPluginRecord().getName();
                 
                 if (p instanceof LoaderPlugin) {
-                    this.cachedLoaders.put(name, (LoaderPlugin) p);
+                    // TODO:
+                    // 1) If contains name already
+                    // 2) Compare versions
+                    // 3) Load only highest
+                    // 4) Flag older for deletion?
+                    
+                    this.cachedLoaders.put(name, plugin);
                 }
                 
                 else if (p instanceof AnalyserPlugin) {
-                    this.cachedAnalysers.put(name, (AnalyserPlugin) p);
-                }
-                
-                else {
-                    this.engine.warn("Could not load: " + name + " as it does not conform to our two known plugin types");
-                    continue;
+                    // TODO:
+                    // 1) If contains name already
+                    // 2) Compare versions
+                    // 3) Load only highest
+                    // 4) Flag older for deletion?
+                    
+                    this.cachedAnalysers.put(name, plugin);
                 }
                     
-                confirmedPlugins.add(plugin);
+                confirmedPlugins.put(plugin, this.allPlugins.get(plugin));
             }
         }
         
         this.allPlugins.clear();
-        this.allPlugins.addAll(confirmedPlugins);
+        this.allPlugins.putAll(confirmedPlugins);
+    }
+    
+    public RecordsList<Record> getLocalPluginRecordList(boolean type) {
+        RecordsList<Record> list = new RecordsList<Record> ();
+        if (!type) {
+            for (Bundle plugin : this.cachedLoaders.values()) {
+                list.add(((LoaderPlugin) plugin).getPluginRecord());
+            }
+        }
+        
+        else {
+            for (Bundle plugin : this.cachedAnalysers.values()) {
+                list.add(((AnalyserPlugin) plugin).getPluginRecord());
+            }
+        }
+        
+        return list;
+    }
+    
+    public String getPluginPath(String name) {
+        Bundle b = this.getBundle(name);
+        if (b == null) {
+            return null;
+        }
+        
+        return this.allPlugins.get(b);
+    }
+    
+    public PluginRecord getLocalPluginRecord(String name) {
+        Bundle b = this.getBundle(name);
+        if (b == null) {
+            return null;
+        }
+        
+        return ((Plugin) b).getPluginRecord();
+    }
+    
+    public Bundle getBundle(String name) {
+        Bundle b;
+        if (this.cachedLoaders.containsKey(name)) {
+            b = this.cachedLoaders.get(name);
+        }
+        
+        else if (this.cachedAnalysers.containsKey(name)) {
+            b = this.cachedAnalysers.get(name);
+        }
+        
+        else {
+            return null;
+        }
+        
+        return b;
+    }
+    
+    public int compareVersions(PluginRecord r1, PluginRecord r2) {
+        String[] versionSet1 = r1.getVersion().split(".");
+        int[] versionValues1 = new int[versionSet1.length];
+        for (int i = 0; i < versionSet1.length; i++) {
+            versionValues1[i] = Integer.parseInt(versionSet1[i]);
+        }
+        
+        String[] versionSet2 = r2.getVersion().split(".");
+        int[] versionValues2 = new int[versionSet2.length];
+        for (int i = 0; i < versionSet2.length; i++) {
+            versionValues2[i] = Integer.parseInt(versionSet2[i]);
+        }
+        
+        if (versionValues1.length > versionValues2.length) {
+            for (int i = 0; i < versionValues1.length; i++) {
+                if (versionValues1[i] > versionValues2[i]) {
+                    return -1;
+                }
+                
+                else if (versionValues2[i] > versionValues1[i]) {
+                    return 1;
+                }
+            }
+            
+            return -1;
+        }
+        
+        else if (versionValues2.length > versionValues1.length) {
+            for (int i = 0; i < versionValues2.length; i++) {
+                if (versionValues2[i] > versionValues1[i]) {
+                    return 1;
+                }
+                
+                else if (versionValues1[i] > versionValues2[i]) {
+                    return -1;
+                }
+            }
+            
+            return 1;
+        }
+        
+        else {
+            for (int i = 0; i < versionValues1.length; i++) {
+                if (versionValues1[i] > versionValues2[i]) {
+                    return -1;
+                }
+                
+                else if (versionValues2[i] > versionValues1[i]) {
+                    return 1;
+                }
+            }
+            
+            return 0;
+        }
+    }
+    
+    public void addOrUpdatePlugin(PluginRecord plugin, String currentPath) {
+        Bundle b = this.getBundle(plugin.getName());
+        File currentFile = new File(currentPath);
+        File newFile = new File(this.path + "//" + plugin.getName() + ".jar");
+        if (!currentFile.exists() || !currentFile.isFile()) {
+            currentFile.delete();
+            return;
+        }
+        
+        if (b == null) {
+            try {
+                FileUtils.copyFile(currentFile, newFile);
+            } 
+            
+            catch (IOException ex) {
+                this.engine.warn("Error moving file, ");
+            }
+        }
+        
+        else {
+            try {
+                b.uninstall();
+                FileUtils.copyFile(currentFile, newFile);
+            } 
+            
+            catch (BundleException ex) {
+                this.engine.warn("Could not uninstal existing plugin: " + b.getSymbolicName());
+            } 
+            
+            catch (IOException ex) {
+                this.engine.warn("Could not delete existing plugin: " + b.getSymbolicName());
+            }
+        }
+        
+        currentFile.delete();
     }
 }

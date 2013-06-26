@@ -19,7 +19,7 @@ package net.jonathansmith.javadpad.common.network.packet.database;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.SessionData;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;

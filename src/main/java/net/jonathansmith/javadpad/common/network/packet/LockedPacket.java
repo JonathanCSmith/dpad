@@ -25,7 +25,7 @@ import net.jonathansmith.javadpad.common.network.session.Session;
  *
  * @author Jon
  */
-public abstract class LockedPacket extends Packet{
+public abstract class LockedPacket extends Packet {
     
     private final AtomicBoolean lock = new AtomicBoolean(false);
     

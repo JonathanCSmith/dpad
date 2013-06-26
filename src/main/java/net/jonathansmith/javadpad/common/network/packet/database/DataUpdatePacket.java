@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
-import net.jonathansmith.javadpad.common.database.SessionData;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
