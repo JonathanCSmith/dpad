@@ -17,11 +17,10 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
-              <EmptySpace min="5" pref="5" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="experimentDescription1" linkSize="2" min="-2" max="-2" attributes="0"/>
-                  <Component id="experimentDescription2" linkSize="2" min="-2" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
                       <Component id="jLabel3" max="32767" attributes="0"/>
                       <Component id="jLabel1" linkSize="2" pref="113" max="32767" attributes="0"/>
                       <Component id="jLabel2" linkSize="2" max="32767" attributes="0"/>
@@ -29,13 +28,12 @@
               </Group>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" linkSize="4" alignment="0" min="-2" pref="279" max="-2" attributes="0"/>
-                  <Component id="numberOfObserved" linkSize="4" alignment="0" min="-2" pref="279" max="-2" attributes="0"/>
-                  <Component id="numberOfSamples" linkSize="4" alignment="0" min="-2" pref="279" max="-2" attributes="0"/>
-                  <Component id="equipmentName" linkSize="4" alignment="0" min="-2" pref="279" max="-2" attributes="0"/>
-                  <Component id="pluginName" linkSize="4" alignment="0" min="-2" pref="279" max="-2" attributes="0"/>
+                  <Component id="numberOfObserved" linkSize="5" alignment="0" min="-2" pref="283" max="-2" attributes="0"/>
+                  <Component id="jScrollPane2" linkSize="5" alignment="0" min="-2" pref="283" max="-2" attributes="0"/>
+                  <Component id="equipmentName" linkSize="5" alignment="0" min="-2" pref="283" max="-2" attributes="0"/>
+                  <Component id="pluginName" linkSize="5" alignment="0" min="-2" pref="283" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -54,20 +52,15 @@
               </Group>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" min="-2" pref="115" max="-2" attributes="0"/>
-                  <Component id="jLabel3" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jScrollPane2" min="-2" pref="113" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="numberOfObserved" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="experimentDescription1" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="numberOfSamples" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="experimentDescription2" alignment="0" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace pref="23" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -92,19 +85,6 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="experimentDescription1">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Observed Properties:"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="numberOfSamples">
-      <Properties>
-        <Property name="editable" type="boolean" value="false"/>
-        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-          <Color blue="ff" green="ff" red="ff" type="rgb"/>
-        </Property>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="experimentDescription2">
       <Properties>
         <Property name="text" type="java.lang.String" value="Samples:"/>
       </Properties>
@@ -131,22 +111,17 @@
         <Property name="text" type="java.lang.String" value="Files:"/>
       </Properties>
     </Component>
-    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+    <Container class="javax.swing.JScrollPane" name="jScrollPane2">
       <AuxValues>
         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
       </AuxValues>
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JTable" name="files">
+        <Component class="javax.swing.JList" name="jList1">
           <Properties>
-            <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="4" rowCount="4">
-                <Column editable="true" title="Title 1" type="java.lang.Object"/>
-                <Column editable="true" title="Title 2" type="java.lang.Object"/>
-                <Column editable="true" title="Title 3" type="java.lang.Object"/>
-                <Column editable="true" title="Title 4" type="java.lang.Object"/>
-              </Table>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+              <Connection code="new DefaultListModel()" type="code"/>
             </Property>
           </Properties>
         </Component>

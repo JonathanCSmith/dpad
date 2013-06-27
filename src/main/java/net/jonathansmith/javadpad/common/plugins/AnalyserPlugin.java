@@ -16,23 +16,10 @@
  */
 package net.jonathansmith.javadpad.common.plugins;
 
-import net.jonathansmith.javadpad.common.database.PluginRecord;
-
 /**
  *
  * @author Jon
  */
-public class AnalyserPlugin implements Plugin {
-
-    public PluginRecord getPluginRecord() {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
-    }
+public interface AnalyserPlugin extends Plugin {
     
-    public void start() {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
-    }
-
-    public void stop() {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
-    }
 }

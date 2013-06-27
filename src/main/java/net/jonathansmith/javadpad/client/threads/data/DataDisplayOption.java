@@ -132,11 +132,8 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         }
         
         else if (this.currentPanel == this.addDataDisplay) {
-            Record record = this.engine.getSession().getKeySessionData(DatabaseRecord.PLUGIN);
-            this.addDataDisplay.setCurrentData(record);
-            
             // TODO: is this all we need?
-            record = this.engine.getSession().getKeySessionData(DatabaseRecord.CURRENT_DATASET);
+            Record record = this.engine.getSession().getKeySessionData(DatabaseRecord.CURRENT_DATASET);
             this.addDataDisplay.setCurrentData(record);
         }
     }

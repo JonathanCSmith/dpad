@@ -55,7 +55,7 @@ class OutgoingServerNetworkThread extends NetworkThread {
                 }
                 
                 catch (InterruptedException ex) {
-                    // TODO: Do I need to handle this? Why should it happen?
+                    // Do I need to handle this? Why should it happen?
                 }
             }
             
