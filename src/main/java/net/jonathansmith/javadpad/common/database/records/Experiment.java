@@ -38,9 +38,8 @@ public class Experiment extends Record {
     private String name;
     private String description;
     
-    private Set<RawDataSet> loadedData;
-    private Set<ProcessedDataSet> processedData;
-    private Set<AnalysedDataSet> analysedData;
+    private Set<LoaderDataSet> loadedData;
+    private Set<AnalyserDataSet> analysedData;
     
     public Experiment() {}
     
@@ -64,65 +63,43 @@ public class Experiment extends Record {
     
     @Column(name = "RawData")
     @OneToMany(orphanRemoval = true)
-    public Set<RawDataSet> getLoadedData() {
+    public Set<LoaderDataSet> getLoadedData() {
         return this.loadedData;
     }
     
-    public void setLoadedData(Set<RawDataSet> data) {
+    public void setLoadedData(Set<LoaderDataSet> data) {
         this.loadedData = data;
     }
     
-    public void addLoadedData(RawDataSet data) {
+    public void addLoadedData(LoaderDataSet data) {
         if (!this.loadedData.contains(data)) {
             this.loadedData.add(data);
         }
     }
     
-    public void removeLoadedData(RawDataSet data) {
+    public void removeLoadedData(LoaderDataSet data) {
         if (this.loadedData.contains(data)) {
             this.loadedData.remove(data);
         }
     }
     
-    @Column(name = "ProcessedData")
-    @OneToMany(orphanRemoval = true)
-    public Set<ProcessedDataSet> getProcessedData() {
-        return this.processedData;
-    }
-    
-    public void setProcessedData(Set<ProcessedDataSet> data) {
-        this.processedData = data;
-    }
-    
-    public void addProcessedData(ProcessedDataSet data) {
-        if (!this.processedData.contains(data)) {
-            this.processedData.add(data);
-        }
-    }
-    
-    public void removeProcessedData(ProcessedDataSet data) {
-        if (this.processedData.contains(data)) {
-            this.processedData.remove(data);
-        }
-    }
-    
     @Column(name = "AnalysedData")
     @OneToMany(orphanRemoval = true)
-    public Set<AnalysedDataSet> getAnalysedData() {
+    public Set<AnalyserDataSet> getAnalyserData() {
         return this.analysedData;
     }
     
-    public void setAnalysedData(Set<AnalysedDataSet> data) {
+    public void setAnalyserData(Set<AnalyserDataSet> data) {
         this.analysedData = data;
     }
     
-    public void addAnalysedData(AnalysedDataSet data) {
+    public void addAnalyserData(AnalyserDataSet data) {
         if (!this.analysedData.contains(data)) {
             this.analysedData.add(data);
         }
     }
     
-    public void removeAnalysedData(AnalysedDataSet data) {
+    public void removeAnalyserData(AnalyserDataSet data) {
         if (this.analysedData.contains(data)) {
             this.analysedData.remove(data);
         }
@@ -133,8 +110,7 @@ public class Experiment extends Record {
         if (o instanceof Experiment) {
             Experiment e = (Experiment) o;
             if (this.getLoadedData().equals(e.getLoadedData())
-                && this.getProcessedData().equals(e.getProcessedData())
-                    && this.getAnalysedData().equals(e.getAnalysedData())
+                && this.getAnalyserData().equals(e.getAnalyserData())
                     && this.getDescription().contentEquals(e.getDescription())
                     && this.getName().contentEquals(e.getName())
                     && this.getUUID().contentEquals(e.getUUID())) {

@@ -45,12 +45,12 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.records.AnalysedDataSet;
+import net.jonathansmith.javadpad.common.database.records.AnalyserDataSet;
 import net.jonathansmith.javadpad.common.database.records.DataType;
 import net.jonathansmith.javadpad.common.database.records.Equipment;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.ProcessedDataSet;
-import net.jonathansmith.javadpad.common.database.records.RawDataSet;
+import net.jonathansmith.javadpad.common.database.records.LoaderDataSet;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
@@ -265,11 +265,11 @@ public class Server extends Engine {
     }
     
     private Configuration addMappings(Configuration config) {
-        config.addAnnotatedClass(AnalysedDataSet.class);
+        config.addAnnotatedClass(AnalyserDataSet.class);
         config.addAnnotatedClass(ProcessedDataSet.class);
         config.addAnnotatedClass(Equipment.class);
         config.addAnnotatedClass(DataType.class);
-        config.addAnnotatedClass(RawDataSet.class);
+        config.addAnnotatedClass(LoaderDataSet.class);
         config.addAnnotatedClass(Experiment.class);
         config.addAnnotatedClass(User.class);
         return config;

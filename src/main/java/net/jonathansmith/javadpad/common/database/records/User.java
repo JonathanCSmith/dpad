@@ -42,6 +42,7 @@ public class User extends Record {
     private char[] password;
     private int experimentNumber;
     private Set<Experiment> experiments;
+    private Set<Template> templates;
     
     public User() {}
     
@@ -122,6 +123,20 @@ public class User extends Record {
             this.experiments.remove(experiment);
             this.experimentNumber--;
         }
+    }
+    
+    @Column(name = "Templates")
+    @OneToMany(orphanRemoval = true)
+    public Set<Template> getTemplates() {
+        return this.templates;
+    }
+    
+    public void setTemplates(Set<Template> temp) {
+        this.templates = temp;
+    }
+    
+    public void addTemplate(Template temp) {
+        this.templates.add(temp);
     }
     
     @Override

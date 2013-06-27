@@ -155,6 +155,11 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
 
     @Override
     public void changeEventReceived(EventObject event) {
+        if (this.dialog == null) {
+            return; // We are not waiting for anything!
+        }
+        
+        
         if (event instanceof ModalCloseEvent) {
             ModalCloseEvent evt = (ModalCloseEvent) event;
             if (evt.getWasForcedClosed()) {
@@ -163,48 +168,48 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
         }
         
         else if (event instanceof DataArriveEvent) {
-            if (this.dialog == null) {
-                return; // Not waiting
-            }
-            
-            RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.PLUGIN);
-            if (data == null) {
-                return;
-            }
-            
-            this.dialog.maskCloseEvent();
-            this.dialog.dispose();
-            this.dialog = null;
-            
-            final JDialog popupDialog;
-            if (data.isEmpty() || data.getFirst() == null) {
-                String pluginPath = this.engine.getPluginManager().getPluginPath(this.localVersion.getName());
-                LockedPacket p = new PluginTransferPacket(this.engine, this.session, this.localVersion, pluginPath);
-                this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
-                
-                popupDialog = new PopupDialog(new JFrame(), "Uploading plugin to server, it is advised not to use this plugin for some time");
-                // TODO: progressbar + blocking?
-                // OR Asynchronous + popup inform when done
-            }
-            
-            else if (this.localVersion.equals(data.getFirst())) {
-                popupDialog = new PopupDialog(new JFrame(), "Server already has this plugin, you can use immediately");
-            }
-            
-            else {
-                popupDialog = new PopupDialog(new JFrame(), "Server has a newer version of this plugin, downloading now, it is advised not to use this plugin for some time");
-                // TODO: progressbar + blocking?
-                // OR Asynchronous + popup inform when done
-            }
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    popupDialog.setVisible(true);
+            DataArriveEvent evt = (DataArriveEvent) event;
+            if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN)) {
+                RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.PLUGIN);
+                if (data == null) {
+                    return;
                 }
-            });
-            
-            this.setCurrentView(this.pluginSelectPane);
-            this.engine.getGUI().validateState();
+
+                this.dialog.maskCloseEvent();
+                this.dialog.dispose();
+                this.dialog = null;
+
+                final JDialog popupDialog;
+                if (data.isEmpty() || data.getFirst() == null) {
+                    String pluginPath = this.engine.getPluginManager().getPluginPath(this.localVersion.getName());
+                    LockedPacket p = new PluginTransferPacket(this.engine, this.session, this.localVersion, pluginPath);
+                    this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
+
+                    popupDialog = new PopupDialog(new JFrame(), "Uploading plugin to server, it is advised not to use this plugin for some time");
+                    // TODO: progressbar + blocking?
+                    // OR Asynchronous + popup inform when done
+                }
+
+                else if (this.localVersion.equals(data.getFirst())) {
+                    popupDialog = new PopupDialog(new JFrame(), "Server already has this plugin, you can use immediately");
+                }
+
+                else {
+                    popupDialog = new PopupDialog(new JFrame(), "Server has a newer version of this plugin, downloading now, it is advised not to use this plugin for some time");
+                    // TODO: progressbar + blocking?
+                    // OR Asynchronous + popup inform when done
+                }
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        popupDialog.setVisible(true);
+                    }
+                });
+
+                this.setCurrentView(this.pluginSelectPane);
+                this.engine.getGUI().validateState();
+            }
         }
     }
 }
