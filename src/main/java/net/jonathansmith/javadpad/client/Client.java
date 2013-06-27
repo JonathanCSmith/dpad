@@ -101,8 +101,10 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
     }
 
     public void sendQuitToRuntimeThread(String message, boolean error) {
-        // TODO: shutdown on threads
-        
+        RunnableThread thread = this.getRuntime().getThread();
+        if (thread != null) {
+            thread.shutdown(error);
+        }
         this.setRuntime(ClientRuntimeThread.RUNTIME_SELECT);
     }
     
@@ -150,7 +152,6 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
         this.setRuntime(ClientRuntimeThread.STARTUP);
         
         // TODO: Config?
-        // TODO: Connection pool
         // TODO: Default properties
         
         this.info("Beginning network initialisation");

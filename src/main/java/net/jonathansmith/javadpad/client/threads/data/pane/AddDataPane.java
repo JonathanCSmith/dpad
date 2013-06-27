@@ -19,18 +19,18 @@ package net.jonathansmith.javadpad.client.threads.data.pane;
 import java.awt.Color;
 import java.awt.Component;
 
+import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
 
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.records.LoaderDataSet;
+import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
 
 /**
  *
@@ -47,7 +47,19 @@ public class AddDataPane extends CurrentRecordPane {
     
     @Override
     public void setCurrentData(Record record) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+        if (record instanceof LoaderDataSet) {
+            LoaderDataSet l = (LoaderDataSet) record;
+            this.pluginName.setText(l.getPluginInfo().getName());
+            this.equipmentName.setText(((LoaderPluginRecord) l.getPluginInfo()).getEquipment().getName());
+            DefaultListModel list = (DefaultListModel) this.jList1.getModel();
+            list.removeAllElements();
+            
+            for (String file : l.getSourceFiles()) {
+                list.addElement(file);
+            }
+            
+            this.numberOfObserved.setText(l.getData().size() + " samples in this dataset");
+        }
     }
 
     /**
@@ -63,13 +75,11 @@ public class AddDataPane extends CurrentRecordPane {
         jLabel2 = new JLabel();
         pluginName = new JTextField();
         experimentDescription1 = new JLabel();
-        numberOfSamples = new JTextField();
-        experimentDescription2 = new JLabel();
         numberOfObserved = new JTextField();
         equipmentName = new JTextField();
         jLabel3 = new JLabel();
-        jScrollPane1 = new JScrollPane();
-        files = new JTable();
+        jScrollPane2 = new JScrollPane();
+        jList1 = new JList();
 
         jLabel1.setText("Plugin Name:");
 
@@ -78,12 +88,7 @@ public class AddDataPane extends CurrentRecordPane {
         pluginName.setEditable(false);
         pluginName.setBackground(new Color(255, 255, 255));
 
-        experimentDescription1.setText("Observed Properties:");
-
-        numberOfSamples.setEditable(false);
-        numberOfSamples.setBackground(new Color(255, 255, 255));
-
-        experimentDescription2.setText("Samples:");
+        experimentDescription1.setText("Samples:");
 
         numberOfObserved.setEditable(false);
         numberOfObserved.setBackground(new Color(255, 255, 255));
@@ -94,18 +99,8 @@ public class AddDataPane extends CurrentRecordPane {
 
         jLabel3.setText("Files:");
 
-        files.setModel(new DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane1.setViewportView(files);
+        jList1.setModel(new DefaultListModel());
+        jScrollPane2.setViewportView(jList1);
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
@@ -115,24 +110,22 @@ public class AddDataPane extends CurrentRecordPane {
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(experimentDescription1)
-                    .addComponent(experimentDescription2)
                     .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                         .addComponent(jLabel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel1, GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
                         .addComponent(jLabel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(numberOfObserved, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(numberOfSamples, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(equipmentName, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pluginName, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(numberOfObserved, GroupLayout.PREFERRED_SIZE, 283, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 283, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(equipmentName, GroupLayout.PREFERRED_SIZE, 283, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(pluginName, GroupLayout.PREFERRED_SIZE, 283, GroupLayout.PREFERRED_SIZE))
+                .addGap(5, 5, 5))
         );
 
-        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {experimentDescription1, experimentDescription2, jLabel1, jLabel2});
+        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {experimentDescription1, jLabel1, jLabel2});
 
-        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {equipmentName, jScrollPane1, numberOfObserved, numberOfSamples, pluginName});
+        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {equipmentName, jScrollPane2, numberOfObserved, pluginName});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -147,31 +140,25 @@ public class AddDataPane extends CurrentRecordPane {
                     .addComponent(equipmentName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel3)
+                    .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE))
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(numberOfObserved, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(experimentDescription1))
-                .addGap(5, 5, 5)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(numberOfSamples, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(experimentDescription2))
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addGap(48, 48, 48))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JTextField equipmentName;
     private JLabel experimentDescription1;
-    private JLabel experimentDescription2;
-    private JTable files;
     private JLabel jLabel1;
     private JLabel jLabel2;
     private JLabel jLabel3;
-    private JScrollPane jScrollPane1;
+    private JList jList1;
+    private JScrollPane jScrollPane2;
     private JTextField numberOfObserved;
-    private JTextField numberOfSamples;
     private JTextField pluginName;
     // End of variables declaration//GEN-END:variables
 }
