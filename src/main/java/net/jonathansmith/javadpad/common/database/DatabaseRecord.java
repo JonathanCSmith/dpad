@@ -23,5 +23,6 @@ package net.jonathansmith.javadpad.common.database;
 public enum DatabaseRecord {
     USER,
     EXPERIMENT,
-    PLUGIN;
+    PLUGIN,
+    CURRENT_DATASET;
 }

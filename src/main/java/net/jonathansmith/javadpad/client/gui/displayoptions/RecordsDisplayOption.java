@@ -93,7 +93,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     
     public void loadRecordButton() {
         if (this.getCurrentView() != this.existingRecordPane) {
-            SessionData dataType = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SESSION_SPECIFIC);
+            SessionData dataType = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION);
             RecordsList<Record> data = this.engine.getSession().checkoutData(dataType);
 
             if (data == null) {
@@ -221,6 +221,10 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     
     @Override
     public void changeEventReceived(EventObject event) {
+        if (this.dialog == null) {
+            return; // We are not waiting for anything!
+        }
+        
         if (event instanceof ModalCloseEvent) {
             ModalCloseEvent evt = (ModalCloseEvent) event;
             if (evt.getWasForcedClosed()) {
@@ -228,24 +232,24 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
             }
         }
         
-        // TODO: session data change listener!
+        // TODO: listen for session data changes so we can instantly update the
+        // main display panel
             
         else if (event instanceof DataArriveEvent) {
-            if (this.dialog == null) {
-                return; // We are not waiting for anything!
-            }
-            
-            RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SESSION_SPECIFIC));
-            if (data == null) {
-                return; // TODO: Verify if there is a better way of handling this, don't want packet spam tho
-            }
+            DataArriveEvent evt = (DataArriveEvent) event;
+            if (((SessionData) evt.getSource()).equals(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION))) {
+                RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION));
+                if (data == null) {
+                    return; // TODO: Verify if there is a better way of handling this, don't want packet spam tho
+                }
 
-            this.dialog.maskCloseEvent();
-            this.dialog.dispose();
-            this.dialog = null;
-            this.setCurrentView(this.existingRecordPane);
-            this.existingRecordPane.insertRecords(data);
-            this.engine.getGUI().validateState();
+                this.dialog.maskCloseEvent();
+                this.dialog.dispose();
+                this.dialog = null;
+                this.setCurrentView(this.existingRecordPane);
+                this.existingRecordPane.insertRecords(data);
+                this.engine.getGUI().validateState();
+            }
         }
     }
 }

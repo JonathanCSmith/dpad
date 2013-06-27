@@ -16,8 +16,11 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
@@ -32,14 +35,25 @@ import net.jonathansmith.javadpad.common.database.PluginRecord;
 public class LoaderPluginRecord extends PluginRecord {
 
     private Equipment equipment;
+    private Set<String> fileExtensions;
     
     @Column(name = "Equipment")
+    @ManyToOne
     public Equipment getEquipment() {
         return this.equipment;
     }
     
     public void setEquipment(Equipment equipment) {
         this.equipment = equipment;
+    }
+    
+    @Column(name = "Extensions")
+    public Set<String> getAllowedExtensions() {
+        return this.fileExtensions;
+    }
+    
+    public void setAllowedExtensions(Set<String> ext) {
+        this.fileExtensions = ext;
     }
     
     @Override

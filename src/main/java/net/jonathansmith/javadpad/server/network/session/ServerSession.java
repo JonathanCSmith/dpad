@@ -335,6 +335,9 @@ public final class ServerSession extends Session {
                 
                 return new RecordsList<Record> ();
                 
+            case ALL_PLUGINS:
+                return this.engine.getPluginManager().getLocalPluginRecordList();
+                
             default:
                 return null;
         }

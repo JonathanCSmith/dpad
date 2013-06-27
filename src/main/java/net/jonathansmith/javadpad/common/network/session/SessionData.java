@@ -24,13 +24,14 @@ import net.jonathansmith.javadpad.server.database.recordsaccess.QueryType;
  * @author Jon
  */
 public enum SessionData {
-    ALL_USERS(DatabaseRecord.USER, QueryType.SESSION_SPECIFIC),
+    ALL_USERS(DatabaseRecord.USER, QueryType.ALL_AVAILABLE_TO_SESSION),
     USER(DatabaseRecord.USER, QueryType.SINGLE),
     
-    USER_EXPERIMENTS(DatabaseRecord.EXPERIMENT, QueryType.SESSION_SPECIFIC),
+    USER_EXPERIMENTS(DatabaseRecord.EXPERIMENT, QueryType.ALL_AVAILABLE_TO_SESSION),
     EXPERIMENT(DatabaseRecord.EXPERIMENT, QueryType.SINGLE), 
     
-    PLUGIN(DatabaseRecord.PLUGIN, QueryType.SINGLE);
+    PLUGIN(DatabaseRecord.PLUGIN, QueryType.SINGLE), 
+    ALL_PLUGINS(DatabaseRecord.PLUGIN, QueryType.ALL_AVAILABLE_TO_SESSION);
     
     private final DatabaseRecord recordType;
     private final QueryType queryType;

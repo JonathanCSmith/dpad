@@ -16,10 +16,47 @@
  */
 package net.jonathansmith.javadpad.common.database;
 
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+
 /**
  *
  * @author Jon
  */
-public interface DataSet {
+@MappedSuperclass
+public abstract class DataSet extends Record {
     
+    private boolean serverSidePerformed;
+    private PluginRecord plugin;
+    
+    @Column(name = "Processed")
+    public boolean getHasBeenProcessed() {
+        return this.serverSidePerformed;
+    }
+    
+    public void setHasBeenProcessed(boolean value) {
+        this.serverSidePerformed = value;
+    }
+    
+    @Column(name = "Plugin")
+    public PluginRecord getPluginInfo() {
+        return this.plugin;
+    }
+    
+    public void setPluginInfo(PluginRecord record) {
+        this.plugin = record;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof DataSet) {
+            DataSet d = (DataSet) o;
+            if (this.getHasBeenProcessed() == d.getHasBeenProcessed()
+                && this.getPluginInfo().equals(d.getPluginInfo())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }

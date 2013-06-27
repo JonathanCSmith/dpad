@@ -22,5 +22,5 @@ package net.jonathansmith.javadpad.server.database.recordsaccess;
  */
 public enum QueryType {
     SINGLE,
-    SESSION_SPECIFIC;
+    ALL_AVAILABLE_TO_SESSION;
 }

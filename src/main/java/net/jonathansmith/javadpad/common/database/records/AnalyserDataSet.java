@@ -21,17 +21,14 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import net.jonathansmith.javadpad.common.database.DataSet;
-import net.jonathansmith.javadpad.common.database.Record;
 
 /**
  *
  * @author Jon
  */
 @Entity
-@Table(name = "ProcessedData", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
-public class ProcessedDataSet extends Record implements DataSet {
-    
-    // TODO: plugin that processed
+@Table(name = "AnalysedData", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
+public class AnalyserDataSet extends DataSet {
 
     @Override
     public boolean equals(Object o) {
