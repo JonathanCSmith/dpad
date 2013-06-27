@@ -25,8 +25,9 @@ import java.util.EventObject;
 
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
-import net.jonathansmith.javadpad.client.gui.displayoptions.pane.ExistingRecordPane;
-import net.jonathansmith.javadpad.client.gui.displayoptions.pane.NewRecordPane;
+import net.jonathansmith.javadpad.client.threads.data.pane.AddDataPane;
+import net.jonathansmith.javadpad.client.threads.data.pane.DataPane;
+import net.jonathansmith.javadpad.client.threads.data.toolbar.AddDataToolbar;
 import net.jonathansmith.javadpad.client.threads.data.toolbar.DataToolbar;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.ChangeSender;
@@ -37,27 +38,21 @@ import net.jonathansmith.javadpad.common.events.ChangeSender;
  */
 public class DataDisplayOption extends DisplayOption implements ActionListener, MouseListener, ChangeListener, ChangeSender {
 
+    // Main
     public CurrentRecordPane currentInformationPane;
-    public NewRecordPane newBatchPane;
-    public ExistingRecordPane existingBatchPane;
-    public NewRecordPane newDataPane;
-    public ExistingRecordPane existingDataPane;
-    //public PluginDefferedPane processingPane; Might not be the way to do this, as plugins may have multiple panes and toolbars
-    //public PluginDefferedPane analysingPane;
-    
     public DataToolbar toolbar;
+    
+    // AddData
+    public CurrentRecordPane addDataDisplay;
+    public AddDataToolbar addDataToolbar;
     
     public DataDisplayOption() {
         super();
-//        this.currentInformationPane = new CurrentDataInformationPane();
-//        this.newBatchPane = new NewBatchPane();
-//        this.existingBatchPane = new ExistingBatchPane();
-//        this.newDataPane = new NewDataPane();
-//        this.existingDataPane = new ExistingDataPane();
-        //this.processingPane = new ProcessDataPane();
-        //this.analysingPane = new AnalyseDataPane();
-        
+        this.currentInformationPane = new DataPane();
         this.toolbar = new DataToolbar();
+        
+        this.addDataDisplay = new AddDataPane();
+        this.addDataToolbar = new AddDataToolbar();
         
         this.addListeners();
         
@@ -66,16 +61,6 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
     }
     
     private void addListeners() {
-        this.newBatchPane.addDisplayOptionListener(this);
-        this.newBatchPane.addDisplayOptionMouseListener(this);
-        this.existingBatchPane.addDisplayOptionListener(this);
-        this.existingBatchPane.addDisplayOptionMouseListener(this);
-        
-        this.newDataPane.addDisplayOptionListener(this);
-        this.newDataPane.addDisplayOptionMouseListener(this);
-        this.existingDataPane.addDisplayOptionListener(this);
-        this.existingDataPane.addDisplayOptionMouseListener(this);
-        
         this.toolbar.addDisplayOptionListener(this);
     }
     
@@ -114,8 +99,14 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         throw new UnsupportedOperationException("Not supported yet."); // TODO:
     }
 
-    public void actionPerformed(ActionEvent ae) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+    public void actionPerformed(ActionEvent evt) {
+        if (evt.getSource() == this.toolbar.addData) {
+            if (this.currentPanel != this.addDataDisplay) {
+                this.setCurrentView(this.addDataDisplay);
+                this.setCurrentToolbar(this.addDataToolbar);
+                this.engine.getGUI().validateState();
+            }
+        }
     }
 
     public void mouseClicked(MouseEvent me) {

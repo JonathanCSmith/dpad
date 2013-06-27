@@ -74,6 +74,7 @@ public class PluginDisplayPane extends JPanel {
 
         jLabel2.setText("Description:");
 
+        descriptionField.setEditable(false);
         descriptionField.setColumns(20);
         descriptionField.setRows(5);
         jScrollPane1.setViewportView(descriptionField);
@@ -83,6 +84,14 @@ public class PluginDisplayPane extends JPanel {
         jLabel4.setText("Author:");
 
         jLabel5.setText("Organization:");
+
+        organizationField.setEditable(false);
+
+        authorField.setEditable(false);
+
+        versionField.setEditable(false);
+
+        nameField.setEditable(false);
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);

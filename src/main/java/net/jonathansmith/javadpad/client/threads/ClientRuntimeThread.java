@@ -19,9 +19,11 @@ package net.jonathansmith.javadpad.client.threads;
 
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.gui.displayoptions.RecordsDisplayOption;
+import net.jonathansmith.javadpad.client.threads.data.DataDisplayOption;
 import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.CurrentExperimentPane;
 import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.ExistingExperimentPane;
 import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.NewExperimentPane;
+import net.jonathansmith.javadpad.client.threads.plugin.gui.PluginUploadDisplayOption;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.RuntimeSelectDisplayOption;
 import net.jonathansmith.javadpad.client.threads.startup.gui.StartupDisplayOption;
 import net.jonathansmith.javadpad.client.threads.user.gui.pane.CurrentUserPane;
@@ -40,7 +42,9 @@ public enum ClientRuntimeThread implements RuntimeThread {
     STARTUP(false, true, new StartupDisplayOption(), null),
     RUNTIME_SELECT(false, true, new RuntimeSelectDisplayOption(), null),
     USER(false, true, new RecordsDisplayOption(DatabaseRecord.USER, new CurrentUserPane(), new NewUserPane(), new ExistingUserPane(), "User toolbar:"), null),
-    EXPERIMENT(false, true, new RecordsDisplayOption(DatabaseRecord.EXPERIMENT, new CurrentExperimentPane(), new NewExperimentPane(), new ExistingExperimentPane(), "Experiment toolbar:"), null);
+    EXPERIMENT(false, true, new RecordsDisplayOption(DatabaseRecord.EXPERIMENT, new CurrentExperimentPane(), new NewExperimentPane(), new ExistingExperimentPane(), "Experiment toolbar:"), null),
+    DATA(true, true, new DataDisplayOption(), /**new DataThread()**/ null),
+    ADD_PLUGIN(false, true, new PluginUploadDisplayOption(), null);
     
     private final boolean runnable;
     private final boolean displayable;
