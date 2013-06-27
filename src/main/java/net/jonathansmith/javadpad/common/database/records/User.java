@@ -42,7 +42,8 @@ public class User extends Record {
     private char[] password;
     private int experimentNumber;
     private Set<Experiment> experiments;
-    private Set<Template> templates;
+    private Set<Template> datasetTemplates;
+    private Set<Sample> sampleTemplates;
     
     public User() {}
     
@@ -125,18 +126,32 @@ public class User extends Record {
         }
     }
     
-    @Column(name = "Templates")
+    @Column(name = "DatasetTemplates")
     @OneToMany(orphanRemoval = true)
-    public Set<Template> getTemplates() {
-        return this.templates;
+    public Set<Template> getDatasetTemplates() {
+        return this.datasetTemplates;
     }
     
-    public void setTemplates(Set<Template> temp) {
-        this.templates = temp;
+    public void setDatasetTemplates(Set<Template> temp) {
+        this.datasetTemplates = temp;
     }
     
-    public void addTemplate(Template temp) {
-        this.templates.add(temp);
+    public void addDatasetTemplate(Template temp) {
+        this.datasetTemplates.add(temp);
+    }
+    
+    @Column(name = "SampleTemplates")
+    @OneToMany(orphanRemoval = true)
+    public Set<Sample> getSampleTemplates() {
+        return this.sampleTemplates;
+    }
+    
+    public void setSampleTemplates(Set<Sample> set) {
+        this.sampleTemplates = set;
+    }
+    
+    public void addSampleTemplate(Sample sam) {
+        this.sampleTemplates.add(sam);
     }
     
     @Override
@@ -148,11 +163,11 @@ public class User extends Record {
                     && this.getLastName().contentEquals(u.getLastName())
                     && Arrays.equals(this.getPassword(), u.getPassword())
                     && this.getUUID().contentEquals(u.getUUID())
-                    && this.getUsername().contentEquals(u.getUsername())) {
+                    && this.getUsername().contentEquals(u.getUsername())
+                    && this.getDatasetTemplates().equals(u.getDatasetTemplates())
+                    && this.getSampleTemplates().equals(u.getSampleTemplates())) {
                 return true;
             }
-            
-            return false;
         }
         
         return false;

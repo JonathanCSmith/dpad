@@ -16,10 +16,60 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
+import net.jonathansmith.javadpad.common.database.Record;
+
 /**
  *
  * @author Jon
  */
-public class Sample {
+@Entity
+@Table(name = "Sample", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
+public class Sample extends Record {
     
+    private String name;
+    private Set<String> conditions;
+    
+    public Sample() {}
+    
+    @Column(name = "Name")
+    public String getName() {
+        return this.name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    @Column(name = "Conditions")
+    public Set<String> getConditions() {
+        return this.conditions;
+    }
+    
+    public void setConditions(Set<String> condition) {
+        this.conditions = condition;
+    }
+    
+    public void addCondition(String condition) {
+        this.conditions.add(condition);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Sample) {
+            Sample s = (Sample) o;
+            if (this.getName().contentEquals(s.getName())
+                && this.getConditions().equals(s.getConditions())) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }

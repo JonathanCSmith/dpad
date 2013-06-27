@@ -16,6 +16,7 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -23,8 +24,6 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
-import org.bouncycastle.util.Arrays;
 
 import net.jonathansmith.javadpad.common.database.Record;
 
@@ -90,7 +89,7 @@ public class Template extends Record {
             if (this.getSamples().equals(t.getSamples())
                 && this.getHasTimes() == t.getHasTimes()) {
                 if (this.getHasTimes()) {
-                    if (Arrays.areEqual(this.getTimes(), t.getTimes())) {
+                    if (Arrays.equals(this.getTimes(), t.getTimes())) {
                         return true;
                     }
                 }

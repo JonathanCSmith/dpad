@@ -16,13 +16,13 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import java.util.Arrays;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-
-import org.bouncycastle.util.Arrays;
 
 import net.jonathansmith.javadpad.common.database.Record;
 
@@ -72,8 +72,8 @@ public class TimeCourseData extends Record {
     public boolean equals (Object o) {
         if (o instanceof TimeCourseData) {
             TimeCourseData t = (TimeCourseData) o;
-            if (Arrays.areEqual(this.getValues(), t.getValues())
-                && Arrays.areEqual(this.getTimes(), t.getTimes())
+            if (Arrays.equals(this.getValues(), t.getValues())
+                && Arrays.equals(this.getTimes(), t.getTimes())
                     && this.getDataType().equals(t.getDataType())) {
                 return true;
             }
