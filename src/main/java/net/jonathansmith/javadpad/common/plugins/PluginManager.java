@@ -95,6 +95,7 @@ public class PluginManager {
                 return !name.toLowerCase().endsWith(".zip") ? name.toLowerCase().endsWith(".jar") : true;
             }
         });
+        
         for (String pluginFileName : jars) {
             try {
                 this.allPlugins.put(this.context.installBundle(this.path + "//" + pluginFileName), this.path + "//" + pluginFileName);

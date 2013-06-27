@@ -47,7 +47,7 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
         
         this.runtimeSelectToolbar.setUser.addActionListener(this);
         this.runtimeSelectToolbar.setExperiment.addActionListener(this);
-        this.runtimeSelectToolbar.setBatch.addActionListener(this);
+        this.runtimeSelectToolbar.setData.addActionListener(this);
         this.runtimeSelectToolbar.shutdown.addActionListener(this);
     }
     
@@ -59,20 +59,20 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
         if (session.getState() != NetworkThreadState.RUNNING) {
             this.runtimeSelectToolbar.setUser.setEnabled(false);
             this.runtimeSelectToolbar.setExperiment.setEnabled(false);
-            this.runtimeSelectToolbar.setBatch.setEnabled(false);
+            this.runtimeSelectToolbar.setData.setEnabled(false);
             return;
         }
         
         if (session.getUser() == null) {
             this.runtimeSelectToolbar.setUser.setEnabled(true);
             this.runtimeSelectToolbar.setExperiment.setEnabled(false);
-            this.runtimeSelectToolbar.setBatch.setEnabled(false);
+            this.runtimeSelectToolbar.setData.setEnabled(false);
         }
         
         else if (session.getExperiment() == null) {
             this.runtimeSelectToolbar.setUser.setEnabled(true);
             this.runtimeSelectToolbar.setExperiment.setEnabled(true);
-            this.runtimeSelectToolbar.setBatch.setEnabled(false);
+            this.runtimeSelectToolbar.setData.setEnabled(false);
         }
         
         if (this.currentPanel == this.runtimeSelectPane) {
@@ -109,6 +109,14 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
         
         else if (evt.getSource() == this.runtimeSelectToolbar.setExperiment) {
             client.setRuntime(ClientRuntimeThread.EXPERIMENT);
+        }
+        
+        else if (evt.getSource() == this.runtimeSelectToolbar.setData) {
+            client.setRuntime(ClientRuntimeThread.DATA);
+        }
+        
+        else if (evt.getSource() == this.runtimeSelectToolbar.addPlugin) {
+            client.setRuntime(ClientRuntimeThread.ADD_PLUGIN);
         }
         
         else if (evt.getSource() == this.runtimeSelectToolbar.shutdown) {

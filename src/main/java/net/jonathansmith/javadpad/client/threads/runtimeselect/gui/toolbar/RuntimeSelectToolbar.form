@@ -32,8 +32,8 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="setUser" linkSize="1" alignment="0" pref="105" max="32767" attributes="0"/>
                   <Component id="setExperiment" linkSize="1" alignment="0" pref="105" max="32767" attributes="0"/>
-                  <Component id="setBatch" linkSize="1" alignment="0" max="32767" attributes="0"/>
-                  <Component id="addData" linkSize="1" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
+                  <Component id="setData" linkSize="1" alignment="0" max="32767" attributes="0"/>
+                  <Component id="addPlugin" linkSize="1" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
                   <Component id="shutdown" linkSize="1" alignment="0" min="-2" pref="105" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -47,9 +47,9 @@
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Component id="setExperiment" linkSize="2" min="-2" pref="23" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Component id="setBatch" linkSize="2" min="-2" max="-2" attributes="0"/>
+              <Component id="setData" linkSize="2" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Component id="addData" linkSize="2" min="-2" max="-2" attributes="0"/>
+              <Component id="addPlugin" linkSize="2" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Component id="shutdown" linkSize="2" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="165" max="32767" attributes="0"/>
@@ -106,17 +106,17 @@
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JButton" name="setBatch">
+    <Component class="javax.swing.JButton" name="setData">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Set Data"/>
+        <Property name="text" type="java.lang.String" value="Data"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JButton" name="addData">
+    <Component class="javax.swing.JButton" name="addPlugin">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Upload Plugin"/>
+        <Property name="text" type="java.lang.String" value="Add Plugin"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>

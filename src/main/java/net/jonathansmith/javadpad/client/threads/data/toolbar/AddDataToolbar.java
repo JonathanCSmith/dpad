@@ -30,15 +30,15 @@ import org.jdesktop.layout.GroupLayout;
  *
  * @author jonathansmith
  */
-public class DataToolbar extends JPanel {
+public class AddDataToolbar extends JPanel {
 
-    public DataToolbar() {
+    public AddDataToolbar() {
         initComponents();
     }
 
     public void addDisplayOptionListener(ActionListener listener) {
-        this.addData.addActionListener(listener);
-        this.loadData.addActionListener(listener);
+        this.setPlugin.addActionListener(listener);
+        this.addFiles.addActionListener(listener);
     }
     
     /**
@@ -51,10 +51,10 @@ public class DataToolbar extends JPanel {
     private void initComponents() {
 
         jLabel1 = new JLabel();
-        addData = new JButton();
-        loadData = new JButton();
-        analyseData = new JButton();
-        viewAnalysed = new JButton();
+        setPlugin = new JButton();
+        addFiles = new JButton();
+        run = new JButton();
+        submit = new JButton();
         back = new JButton();
 
         setMaximumSize(new Dimension(120, 32767));
@@ -62,13 +62,13 @@ public class DataToolbar extends JPanel {
 
         jLabel1.setText("Data Toolbar:");
 
-        addData.setText("Add New Data");
+        setPlugin.setText("Set Plugin");
 
-        loadData.setText("View Data");
+        addFiles.setText("Add FIles");
 
-        analyseData.setText("Analyse Data");
+        run.setText("Run");
 
-        viewAnalysed.setText("View Analysed");
+        submit.setText("Submit");
 
         back.setText("Back");
 
@@ -81,44 +81,44 @@ public class DataToolbar extends JPanel {
                     .add(layout.createSequentialGroup()
                         .add(5, 5, 5)
                         .add(layout.createParallelGroup(GroupLayout.CENTER)
-                            .add(viewAnalysed, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-                            .add(analyseData, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(loadData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                            .add(addData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                            .add(submit, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
+                            .add(run, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(addFiles, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                            .add(setPlugin, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
                             .add(back, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)))
                     .add(jLabel1))
                 .add(5, 5, 5))
         );
 
-        layout.linkSize(new Component[] {addData, analyseData, back, loadData, viewAnalysed}, GroupLayout.HORIZONTAL);
+        layout.linkSize(new Component[] {addFiles, back, run, setPlugin, submit}, GroupLayout.HORIZONTAL);
 
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(jLabel1)
                 .add(5, 5, 5)
-                .add(addData)
+                .add(setPlugin)
                 .add(5, 5, 5)
-                .add(loadData)
+                .add(addFiles)
                 .add(5, 5, 5)
-                .add(analyseData)
+                .add(run)
                 .add(5, 5, 5)
-                .add(viewAnalysed)
+                .add(submit)
                 .add(5, 5, 5)
                 .add(back)
                 .add(0, 116, Short.MAX_VALUE))
         );
 
-        layout.linkSize(new Component[] {addData, analyseData, back, loadData, viewAnalysed}, GroupLayout.VERTICAL);
+        layout.linkSize(new Component[] {addFiles, back, run, setPlugin, submit}, GroupLayout.VERTICAL);
 
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public JButton addData;
-    public JButton analyseData;
+    public JButton addFiles;
     public JButton back;
     private JLabel jLabel1;
-    public JButton loadData;
-    public JButton viewAnalysed;
+    public JButton run;
+    public JButton setPlugin;
+    public JButton submit;
     // End of variables declaration//GEN-END:variables
 }

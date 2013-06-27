@@ -16,14 +16,7 @@
  */
 package net.jonathansmith.javadpad.client.threads.runtimeselect.gui.toolbar;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Insets;
-
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 /**
  *
@@ -47,79 +40,79 @@ public class RuntimeSelectToolbar extends JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setUser = new JButton();
-        setExperiment = new JButton();
-        setBatch = new JButton();
-        addData = new JButton();
-        shutdown = new JButton();
+        setUser = new javax.swing.JButton();
+        setExperiment = new javax.swing.JButton();
+        setData = new javax.swing.JButton();
+        addPlugin = new javax.swing.JButton();
+        shutdown = new javax.swing.JButton();
 
-        setMaximumSize(new Dimension(120, 32767));
-        setMinimumSize(new Dimension(120, 0));
-        setPreferredSize(new Dimension(120, 300));
+        setMaximumSize(new java.awt.Dimension(120, 32767));
+        setMinimumSize(new java.awt.Dimension(120, 0));
+        setPreferredSize(new java.awt.Dimension(120, 300));
 
         setUser.setText("Set User");
         setUser.setToolTipText("Set the current user, either by creating or loading one in the datase");
         setUser.setBorder(null);
-        setUser.setMargin(new Insets(2, 8, 2, 8));
-        setUser.setMaximumSize(new Dimension(105, 23));
-        setUser.setMinimumSize(new Dimension(105, 23));
-        setUser.setPreferredSize(new Dimension(105, 23));
+        setUser.setMargin(new java.awt.Insets(2, 8, 2, 8));
+        setUser.setMaximumSize(new java.awt.Dimension(105, 23));
+        setUser.setMinimumSize(new java.awt.Dimension(105, 23));
+        setUser.setPreferredSize(new java.awt.Dimension(105, 23));
 
         setExperiment.setText("Set Experiment");
         setExperiment.setToolTipText("Create a new experiment");
         setExperiment.setBorder(null);
-        setExperiment.setMargin(new Insets(2, 8, 2, 8));
-        setExperiment.setMaximumSize(new Dimension(105, 23));
-        setExperiment.setMinimumSize(new Dimension(105, 23));
-        setExperiment.setPreferredSize(new Dimension(105, 23));
+        setExperiment.setMargin(new java.awt.Insets(2, 8, 2, 8));
+        setExperiment.setMaximumSize(new java.awt.Dimension(105, 23));
+        setExperiment.setMinimumSize(new java.awt.Dimension(105, 23));
+        setExperiment.setPreferredSize(new java.awt.Dimension(105, 23));
 
-        setBatch.setText("Set Data");
+        setData.setText("Data");
 
-        addData.setText("Upload Plugin");
+        addPlugin.setText("Add Plugin");
 
         shutdown.setText("Shutdown");
 
-        GroupLayout layout = new GroupLayout(this);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(setUser, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                    .addComponent(setExperiment, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                    .addComponent(setBatch, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(addData, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(shutdown, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(setUser, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                    .addComponent(setExperiment, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                    .addComponent(setData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(addPlugin, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(shutdown, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {addData, setBatch, setExperiment, setUser, shutdown});
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {addPlugin, setData, setExperiment, setUser, shutdown});
 
         layout.setVerticalGroup(
-            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(setUser, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                .addComponent(setUser, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
-                .addComponent(setExperiment, GroupLayout.PREFERRED_SIZE, 23, GroupLayout.PREFERRED_SIZE)
+                .addComponent(setExperiment, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(5, 5, 5)
-                .addComponent(setBatch)
+                .addComponent(setData)
                 .addGap(5, 5, 5)
-                .addComponent(addData)
+                .addComponent(addPlugin)
                 .addGap(5, 5, 5)
                 .addComponent(shutdown)
                 .addContainerGap(165, Short.MAX_VALUE))
         );
 
-        layout.linkSize(SwingConstants.VERTICAL, new Component[] {addData, setBatch, setExperiment, setUser, shutdown});
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {addPlugin, setData, setExperiment, setUser, shutdown});
 
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public JButton addData;
-    public JButton setBatch;
-    public JButton setExperiment;
-    public JButton setUser;
-    public JButton shutdown;
+    public javax.swing.JButton addPlugin;
+    public javax.swing.JButton setData;
+    public javax.swing.JButton setExperiment;
+    public javax.swing.JButton setUser;
+    public javax.swing.JButton shutdown;
     // End of variables declaration//GEN-END:variables
 }

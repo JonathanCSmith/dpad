@@ -29,10 +29,10 @@
                   <Group type="102" attributes="0">
                       <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="2" attributes="0">
-                          <Component id="viewAnalysed" linkSize="3" alignment="2" min="-2" pref="110" max="-2" attributes="0"/>
-                          <Component id="analyseData" linkSize="3" alignment="2" max="32767" attributes="0"/>
-                          <Component id="loadData" linkSize="3" alignment="2" pref="115" max="32767" attributes="0"/>
-                          <Component id="addData" linkSize="3" alignment="2" pref="115" max="32767" attributes="0"/>
+                          <Component id="submit" linkSize="3" alignment="2" min="-2" pref="110" max="-2" attributes="0"/>
+                          <Component id="run" linkSize="3" alignment="2" max="32767" attributes="0"/>
+                          <Component id="addFiles" linkSize="3" alignment="2" pref="115" max="32767" attributes="0"/>
+                          <Component id="setPlugin" linkSize="3" alignment="2" pref="115" max="32767" attributes="0"/>
                           <Component id="back" linkSize="3" alignment="2" min="-2" pref="110" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -47,13 +47,13 @@
           <Group type="102" alignment="0" attributes="0">
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Component id="addData" linkSize="2" min="-2" max="-2" attributes="0"/>
+              <Component id="setPlugin" linkSize="2" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Component id="loadData" linkSize="2" min="-2" max="-2" attributes="0"/>
+              <Component id="addFiles" linkSize="2" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Component id="analyseData" linkSize="2" min="-2" max="-2" attributes="0"/>
+              <Component id="run" linkSize="2" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-              <Component id="viewAnalysed" linkSize="2" min="-2" max="-2" attributes="0"/>
+              <Component id="submit" linkSize="2" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
               <Component id="back" linkSize="2" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="0" pref="116" max="32767" attributes="0"/>
@@ -67,33 +67,33 @@
         <Property name="text" type="java.lang.String" value="Data Toolbar:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="addData">
+    <Component class="javax.swing.JButton" name="setPlugin">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Add New Data"/>
+        <Property name="text" type="java.lang.String" value="Set Plugin"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JButton" name="loadData">
+    <Component class="javax.swing.JButton" name="addFiles">
       <Properties>
-        <Property name="text" type="java.lang.String" value="View Data"/>
+        <Property name="text" type="java.lang.String" value="Add FIles"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JButton" name="analyseData">
+    <Component class="javax.swing.JButton" name="run">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Analyse Data"/>
+        <Property name="text" type="java.lang.String" value="Run"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
     </Component>
-    <Component class="javax.swing.JButton" name="viewAnalysed">
+    <Component class="javax.swing.JButton" name="submit">
       <Properties>
-        <Property name="text" type="java.lang.String" value="View Analysed"/>
+        <Property name="text" type="java.lang.String" value="Submit"/>
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
