@@ -44,6 +44,7 @@ import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRespon
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.PluginStatusPacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.DisconnectPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
@@ -72,6 +73,7 @@ public final class ServerSession extends Session {
     private byte[] token;
     private String hash;
     private boolean disconnectExpected = false;
+    private boolean pluginExpected = false;
     
     public ServerSession(Engine eng, Channel channel) {
         super(eng, channel);
@@ -272,8 +274,10 @@ public final class ServerSession extends Session {
                     switch(manager.compareVersions(local, plugin)) {
                         // Local is newer
                         case -1:
-                            LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.PLUGIN, local);
+                            LockedPacket p = new PluginStatusPacket(this.engine, this, -1);
                             this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+                            
+                            this.setPlugin(local);
                             
                             String pluginPath = this.engine.getPluginManager().getPluginPath(local.getName());
                             LockedPacket p2 = new PluginTransferPacket(this.engine, this, local, pluginPath);
@@ -282,14 +286,18 @@ public final class ServerSession extends Session {
                             
                         // Same
                         case 0:
-                            LockedPacket p3 = new SetSessionDataPacket(this.engine, this, DatabaseRecord.PLUGIN, local);
+                            LockedPacket p3 = new PluginStatusPacket(this.engine, this, 0);
                             this.lockAndSendPacket(PacketPriority.MEDIUM, p3);
+                            
+                            this.setPlugin(local);
                             break;
                             
                         // Client is newer
                         case 1:
-                            LockedPacket p4 = new SetSessionDataPacket(this.engine, this, DatabaseRecord.PLUGIN, null);
+                            LockedPacket p4 = new PluginStatusPacket(this.engine, this, 1);
                             this.lockAndSendPacket(PacketPriority.MEDIUM, p4);
+                            
+                            this.setPlugin(plugin);
                             break;
                             
                         default:
@@ -310,6 +318,14 @@ public final class ServerSession extends Session {
         super.setExperiment(experiment);
         LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.EXPERIMENT, (Record) experiment);
         this.lockAndSendPacket(PacketPriority.HIGH, p);
+    }
+    
+    public void setPlugin(PluginRecord plugin) {
+        RecordsList<Record> plugins = new RecordsList<Record> ();
+        plugins.add(plugin);
+        this.addData(this.getSessionID(), SessionData.PLUGIN, plugins);
+        LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.PLUGIN, (Record) plugin);
+        this.lockAndSendPacket(PacketPriority.LOW, p);
     }
 
     // Database

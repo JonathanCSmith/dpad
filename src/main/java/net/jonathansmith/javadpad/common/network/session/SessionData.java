@@ -31,7 +31,9 @@ public enum SessionData {
     EXPERIMENT(DatabaseRecord.EXPERIMENT, QueryType.SINGLE), 
     
     PLUGIN(DatabaseRecord.PLUGIN, QueryType.SINGLE), 
-    ALL_PLUGINS(DatabaseRecord.PLUGIN, QueryType.ALL_AVAILABLE_TO_SESSION);
+    ALL_PLUGINS(DatabaseRecord.PLUGIN, QueryType.ALL_AVAILABLE_TO_SESSION),
+    
+    PLUGIN_STATUS(null, null);
     
     private final DatabaseRecord recordType;
     private final QueryType queryType;

@@ -40,6 +40,7 @@ import net.jonathansmith.javadpad.client.threads.data.toolbar.DataToolbar;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
@@ -47,6 +48,7 @@ import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
@@ -132,7 +134,6 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         }
         
         else if (this.currentPanel == this.addDataDisplay) {
-            // TODO: is this all we need?
             Record record = this.engine.getSession().getKeySessionData(DatabaseRecord.CURRENT_DATASET);
             this.addDataDisplay.setCurrentData(record);
         }
@@ -243,17 +244,24 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
                     }
                 }
                 
+                RecordsList<Record> finalList = new RecordsList<Record> ();
+                for (Record record : local) {
+                    if (record instanceof LoaderPluginRecord) {
+                        finalList.add(record);
+                    }
+                }
+                
                 // TODO: name and version check?
                 
                 this.pluginSelectPane.clearRecords();
-                this.pluginSelectPane.insertRecords(local);
+                this.pluginSelectPane.insertRecords(finalList);
                 this.setCurrentView(this.pluginSelectPane);
                 this.engine.getGUI().validateState();
             }
             
-            else if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN)) {
+            else if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN_STATUS)) {
                 RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.PLUGIN);
-                if (data == null) {
+                if (data == null || !(data.getFirst() instanceof IntegerRecord)) {
                     return;
                 }
                 
@@ -261,8 +269,9 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
                 this.dialog.dispose();
                 this.dialog = null;
                 
+                IntegerRecord res = (IntegerRecord) data.getFirst();
                 final JDialog popupDialog;
-                if (data.isEmpty() || data.getFirst() == null) {
+                if (res.getValue() == 1) {
                     String pluginPath = this.engine.getPluginManager().getPluginPath(this.localVersion.getName());
                     LockedPacket p = new PluginTransferPacket(this.engine, this.session, this.localVersion, pluginPath);
                     this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
@@ -270,9 +279,10 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
                     popupDialog = new PopupDialog(new JFrame(), "Uploading plugin to server, it is advised not to use this plugin for some time");
                     // TODO: progressbar + blocking?
                     // OR Asynchronous + popup inform when done
+                    // TODO: set session data!
                 }
 
-                else if (this.localVersion.equals(data.getFirst())) {
+                else if (res.getValue() == 0) {
                     popupDialog = new PopupDialog(new JFrame(), "Server already has this plugin, you can use immediately");
                 }
 
@@ -288,8 +298,6 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
                         popupDialog.setVisible(true);
                     }
                 });
-                
-                // TODO: Append session data, work out how we are going to do this
 
                 this.setCurrentView(this.addDataDisplay);
                 this.engine.getGUI().validateState();

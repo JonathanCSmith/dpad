@@ -44,6 +44,7 @@ import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
@@ -169,9 +170,9 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
         
         else if (event instanceof DataArriveEvent) {
             DataArriveEvent evt = (DataArriveEvent) event;
-            if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN)) {
+            if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN_STATUS)) {
                 RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.PLUGIN);
-                if (data == null) {
+                if (data == null || !(data.getFirst() instanceof IntegerRecord)) {
                     return;
                 }
 
@@ -179,8 +180,9 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
                 this.dialog.dispose();
                 this.dialog = null;
 
+                IntegerRecord res = (IntegerRecord) data.getFirst();
                 final JDialog popupDialog;
-                if (data.isEmpty() || data.getFirst() == null) {
+                if (res.getValue() == 1) {
                     String pluginPath = this.engine.getPluginManager().getPluginPath(this.localVersion.getName());
                     LockedPacket p = new PluginTransferPacket(this.engine, this.session, this.localVersion, pluginPath);
                     this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
@@ -190,7 +192,7 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
                     // OR Asynchronous + popup inform when done
                 }
 
-                else if (this.localVersion.equals(data.getFirst())) {
+                else if (res.getValue() == 0) {
                     popupDialog = new PopupDialog(new JFrame(), "Server already has this plugin, you can use immediately");
                 }
 
