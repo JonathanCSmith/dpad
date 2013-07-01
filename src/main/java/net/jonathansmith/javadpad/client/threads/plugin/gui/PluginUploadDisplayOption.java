@@ -36,7 +36,6 @@ import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.plugin.gui.pane.PluginDisplayPane;
 import net.jonathansmith.javadpad.client.threads.plugin.gui.toolbar.PluginSelectToolbar;
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
@@ -46,7 +45,7 @@ import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
-import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.plugins.PluginManager;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
@@ -109,7 +108,7 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
             }
             
             this.pluginSelectPane.setChosenPlugin(newPlugin);
-            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, DatabaseRecord.PLUGIN, newPlugin);
+            LockedPacket p = new PluginUploadRequestPacket(this.engine, this.session, (byte) 0, newPlugin);
             this.session.lockAndSendPacket(PacketPriority.HIGH, p);
 
             this.dialog = new WaitForRecordsDialog(new JFrame(), true);

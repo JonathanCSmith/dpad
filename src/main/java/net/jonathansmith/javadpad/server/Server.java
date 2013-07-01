@@ -45,12 +45,12 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.records.AnalyserDataSet;
+import net.jonathansmith.javadpad.common.database.records.AnalyserDataset;
 import net.jonathansmith.javadpad.common.database.records.AnalyserPluginRecord;
 import net.jonathansmith.javadpad.common.database.records.DataType;
 import net.jonathansmith.javadpad.common.database.records.Equipment;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.common.database.records.LoaderDataSet;
+import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
 import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
 import net.jonathansmith.javadpad.common.database.records.Sample;
 import net.jonathansmith.javadpad.common.database.records.Template;
@@ -62,7 +62,7 @@ import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
 import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
-import net.jonathansmith.javadpad.server.database.recordsaccess.DatabaseManager;
+import net.jonathansmith.javadpad.server.database.recordaccess.DatabaseManager;
 import net.jonathansmith.javadpad.server.gui.ServerGUI;
 import net.jonathansmith.javadpad.server.network.session.SessionRegistry;
 
@@ -269,12 +269,12 @@ public class Server extends Engine {
     }
     
     private Configuration addMappings(Configuration config) {
-        config.addAnnotatedClass(AnalyserDataSet.class);
+        config.addAnnotatedClass(AnalyserDataset.class);
         config.addAnnotatedClass(AnalyserPluginRecord.class);
         config.addAnnotatedClass(DataType.class);
         config.addAnnotatedClass(Equipment.class);
         config.addAnnotatedClass(Experiment.class);
-        config.addAnnotatedClass(LoaderDataSet.class);
+        config.addAnnotatedClass(LoaderDataset.class);
         config.addAnnotatedClass(LoaderPluginRecord.class);
         config.addAnnotatedClass(Sample.class);
         config.addAnnotatedClass(Template.class);

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.recordsaccess.equipment;
+package net.jonathansmith.javadpad.server.database.recordaccess.equipment;
 
 import javax.persistence.NonUniqueResultException;
 
@@ -22,7 +22,7 @@ import org.hibernate.HibernateException;
 
 import net.jonathansmith.javadpad.common.database.records.Equipment;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
-import net.jonathansmith.javadpad.server.database.recordsaccess.GenericManager;
+import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
 
 /**
  *

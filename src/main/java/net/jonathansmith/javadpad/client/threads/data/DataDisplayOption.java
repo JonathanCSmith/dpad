@@ -40,6 +40,7 @@ import net.jonathansmith.javadpad.client.threads.data.toolbar.DataToolbar;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
 import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
@@ -48,6 +49,7 @@ import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.database.NewRecordPacket;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
@@ -144,6 +146,9 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         if (evt.getSource() == this.toolbar.addData) {
             if (this.currentPanel != this.addDataDisplay) {
                 // Create new Loader Data Set
+                LoaderDataset data = new LoaderDataset();
+                Packet p = new NewRecordPacket(this.engine, this.session, DatabaseRecord.CURRENT_DATASET, data);
+                this.session.addPacketToSend(PacketPriority.MEDIUM, p);
                 
                 this.setCurrentView(this.addDataDisplay);
                 this.setCurrentToolbar(this.addDataToolbar);
@@ -230,8 +235,6 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         else if (event instanceof DataArriveEvent) {
             DataArriveEvent evt = (DataArriveEvent) event;
             if (((SessionData) evt.getSource()).equals(SessionData.ALL_PLUGINS)) {
-                // TODO: Only need LOADER plugins here... - just cycle and remove? would allow us to check versions too....
-                
                 RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.ALL_PLUGINS);
                 if (data == null) {
                     return;
@@ -279,6 +282,7 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
                     popupDialog = new PopupDialog(new JFrame(), "Uploading plugin to server, it is advised not to use this plugin for some time");
                     // TODO: progressbar + blocking?
                     // OR Asynchronous + popup inform when done
+                    
                     // TODO: set session data!
                 }
 

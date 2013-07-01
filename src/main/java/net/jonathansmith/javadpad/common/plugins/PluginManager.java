@@ -195,7 +195,7 @@ public class PluginManager {
         return b;
     }
     
-    public int compareVersions(PluginRecord r1, PluginRecord r2) {
+    public byte compareVersions(PluginRecord r1, PluginRecord r2) {
         String[] versionSet1 = r1.getVersion().split(".");
         int[] versionValues1 = new int[versionSet1.length];
         for (int i = 0; i < versionSet1.length; i++) {

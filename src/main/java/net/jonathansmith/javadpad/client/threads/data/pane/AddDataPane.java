@@ -29,7 +29,7 @@ import javax.swing.SwingConstants;
 
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.records.LoaderDataSet;
+import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
 import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
 
 /**
@@ -47,8 +47,8 @@ public class AddDataPane extends CurrentRecordPane {
     
     @Override
     public void setCurrentData(Record record) {
-        if (record instanceof LoaderDataSet) {
-            LoaderDataSet l = (LoaderDataSet) record;
+        if (record instanceof LoaderDataset) {
+            LoaderDataset l = (LoaderDataset) record;
             this.pluginName.setText(l.getPluginInfo().getName());
             this.equipmentName.setText(((LoaderPluginRecord) l.getPluginInfo()).getEquipment().getName());
             DefaultListModel list = (DefaultListModel) this.jList1.getModel();

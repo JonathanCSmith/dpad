@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.recordsaccess;
+package net.jonathansmith.javadpad.server.database.recordaccess;
 
 import java.io.Serializable;
 

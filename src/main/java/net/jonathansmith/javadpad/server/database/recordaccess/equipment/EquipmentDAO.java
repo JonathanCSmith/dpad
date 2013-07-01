@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.recordsaccess.equipment;
+package net.jonathansmith.javadpad.server.database.recordaccess.equipment;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 
 import net.jonathansmith.javadpad.common.database.records.Equipment;
-import net.jonathansmith.javadpad.server.database.recordsaccess.GenericDAO;
+import net.jonathansmith.javadpad.server.database.recordaccess.GenericDAO;
 
 /**
  *

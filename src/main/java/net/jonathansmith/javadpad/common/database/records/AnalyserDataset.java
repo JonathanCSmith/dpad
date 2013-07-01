@@ -20,7 +20,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import net.jonathansmith.javadpad.common.database.DataSet;
+import net.jonathansmith.javadpad.common.database.Dataset;
 
 /**
  *
@@ -28,7 +28,7 @@ import net.jonathansmith.javadpad.common.database.DataSet;
  */
 @Entity
 @Table(name = "AnalysedData", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
-public class AnalyserDataSet extends DataSet {
+public class AnalyserDataset extends Dataset {
 
     @Override
     public boolean equals(Object o) {

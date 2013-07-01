@@ -25,7 +25,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import net.jonathansmith.javadpad.common.database.DataSet;
+import net.jonathansmith.javadpad.common.database.Dataset;
 
 /**
  *
@@ -33,13 +33,13 @@ import net.jonathansmith.javadpad.common.database.DataSet;
  */
 @Entity
 @Table(name = "LoaderDataSet", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
-public class LoaderDataSet extends DataSet {
+public class LoaderDataset extends Dataset {
     
     private Set<String> fileNames;
     private Template template;
     private Set<TimeCourseData> dataValues;
     
-    public LoaderDataSet() {
+    public LoaderDataset() {
         super();
     }
     
@@ -85,8 +85,8 @@ public class LoaderDataSet extends DataSet {
     @Override
     public boolean equals(Object o) {
         if (super.equals(o)) {
-            if (o instanceof LoaderDataSet) {
-                LoaderDataSet l = (LoaderDataSet) o;
+            if (o instanceof LoaderDataset) {
+                LoaderDataset l = (LoaderDataset) o;
                 if (this.getSourceFiles().equals(l.getSourceFiles())
                     && this.getSampleOrder().equals(l.getSampleOrder())
                         && this.getData().equals(l.getData())) {
