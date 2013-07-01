@@ -21,10 +21,12 @@ import java.awt.Component;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
@@ -61,6 +63,13 @@ public class AddDataPane extends CurrentRecordPane {
             this.numberOfObserved.setText(l.getData().size() + " samples in this dataset");
         }
     }
+    
+    public void removeSelected() {
+        int loc = this.jList1.getSelectedIndex();
+        if (loc != -1) {
+            ((DefaultListModel) this.jList1.getModel()).removeElementAt(loc);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -80,6 +89,7 @@ public class AddDataPane extends CurrentRecordPane {
         jLabel3 = new JLabel();
         jScrollPane2 = new JScrollPane();
         jList1 = new JList();
+        removeFiles = new JButton();
 
         jLabel1.setText("Plugin Name:");
 
@@ -100,32 +110,39 @@ public class AddDataPane extends CurrentRecordPane {
         jLabel3.setText("Files:");
 
         jList1.setModel(new DefaultListModel());
+        jList1.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jScrollPane2.setViewportView(jList1);
+
+        removeFiles.setText("Remove Selected");
 
         GroupLayout layout = new GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(5, 5, 5)
+                .addComponent(experimentDescription1)
+                .addGap(5, 5, 5)
+                .addComponent(numberOfObserved, GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
+                .addGap(5, 5, 5))
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(experimentDescription1)
-                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jLabel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel1, GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
-                        .addComponent(jLabel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(5, 5, 5)
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(numberOfObserved, GroupLayout.PREFERRED_SIZE, 283, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 283, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(equipmentName, GroupLayout.PREFERRED_SIZE, 283, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(pluginName, GroupLayout.PREFERRED_SIZE, 283, GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                    .addComponent(removeFiles)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel3, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel1, GroupLayout.DEFAULT_SIZE, 113, Short.MAX_VALUE)
+                            .addComponent(jLabel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(5, 5, 5)
+                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2)
+                            .addComponent(equipmentName)
+                            .addComponent(pluginName))))
                 .addGap(5, 5, 5))
         );
 
         layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {experimentDescription1, jLabel1, jLabel2});
-
-        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {equipmentName, jScrollPane2, numberOfObserved, pluginName});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -143,10 +160,12 @@ public class AddDataPane extends CurrentRecordPane {
                     .addComponent(jLabel3)
                     .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE))
                 .addGap(5, 5, 5)
+                .addComponent(removeFiles)
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(numberOfObserved, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(experimentDescription1))
-                .addGap(48, 48, 48))
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -160,5 +179,6 @@ public class AddDataPane extends CurrentRecordPane {
     private JScrollPane jScrollPane2;
     private JTextField numberOfObserved;
     private JTextField pluginName;
+    public JButton removeFiles;
     // End of variables declaration//GEN-END:variables
 }

@@ -38,6 +38,7 @@ import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPack
 import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
 import net.jonathansmith.javadpad.common.network.packet.database.NewRecordPacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.util.PlatformConverter;
 import net.jonathansmith.javadpad.server.Server;
@@ -134,6 +135,7 @@ public class DPAD extends Thread {
         Packet.addPacket(DataUpdatePacket.class);
         Packet.addPacket(NewRecordPacket.class);
         Packet.addPacket(SetSessionDataPacket.class);
+        Packet.addPacket(PluginUploadRequestPacket.class);
         Packet.addPacket(PluginTransferPacket.class);
     }
     

@@ -24,11 +24,11 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
 import javax.swing.SwingConstants;
 
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.database.records.Experiment;
 
 /**
  *
@@ -45,7 +45,14 @@ public class DataPane extends CurrentRecordPane {
     
     @Override
     public void setCurrentData(Record record) {
-        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+        // TODO: Display based on current data type?
+        if (record instanceof Experiment) {
+            Experiment exp = (Experiment) record;
+            this.experimentName.setText(exp.getName());
+            this.experimentDescription.setText(exp.getDescription());
+            this.numberOfLoaded.setText(String.valueOf(exp.getLoadedData().size()));
+            this.numberOfAnalysed.setText(String.valueOf(exp.getAnalyserData().size()));
+        }
     }
 
     /**
@@ -97,27 +104,24 @@ public class DataPane extends CurrentRecordPane {
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(experimentDescription2)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(numberOfAnalysed, GroupLayout.PREFERRED_SIZE, 274, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(5, 5, 5)
+                        .addComponent(numberOfAnalysed, GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(experimentName, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE))
+                        .addGap(5, 5, 5)
+                        .addComponent(experimentName, GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE))
+                        .addGap(5, 5, 5)
+                        .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(experimentDescription1)
-                        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(numberOfLoaded, GroupLayout.PREFERRED_SIZE, 279, GroupLayout.PREFERRED_SIZE)))
+                        .addGap(5, 5, 5)
+                        .addComponent(numberOfLoaded, GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)))
                 .addGap(5, 5, 5))
         );
 
         layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {experimentDescription1, experimentDescription2, jLabel1, jLabel2});
-
-        layout.linkSize(SwingConstants.HORIZONTAL, new Component[] {experimentName, jScrollPane1, numberOfAnalysed, numberOfLoaded});
 
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -130,7 +134,7 @@ public class DataPane extends CurrentRecordPane {
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
                     .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGap(4, 4, 4)
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(numberOfLoaded, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(experimentDescription1))
@@ -138,7 +142,7 @@ public class DataPane extends CurrentRecordPane {
                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                     .addComponent(numberOfAnalysed, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                     .addComponent(experimentDescription2))
-                .addContainerGap(93, Short.MAX_VALUE))
+                .addContainerGap(92, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 

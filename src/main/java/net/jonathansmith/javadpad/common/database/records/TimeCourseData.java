@@ -58,7 +58,6 @@ public class TimeCourseData extends Record {
         this.times = time;
     }
     
-    @Column(name = "DataType")
     @ManyToOne
     public DataType getDataType() {
         return this.type;

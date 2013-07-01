@@ -16,9 +16,11 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -35,9 +37,8 @@ import net.jonathansmith.javadpad.common.database.PluginRecord;
 public class LoaderPluginRecord extends PluginRecord {
 
     private Equipment equipment;
-    private Set<String> fileExtensions;
+    private Set<String> fileExtensions = new HashSet<String> ();
     
-    @Column(name = "Equipment")
     @ManyToOne
     public Equipment getEquipment() {
         return this.equipment;
@@ -48,6 +49,7 @@ public class LoaderPluginRecord extends PluginRecord {
     }
     
     @Column(name = "Extensions")
+    @ElementCollection
     public Set<String> getAllowedExtensions() {
         return this.fileExtensions;
     }

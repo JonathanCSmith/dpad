@@ -16,9 +16,11 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -35,15 +37,16 @@ import net.jonathansmith.javadpad.common.database.Dataset;
 @Table(name = "LoaderDataSet", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class LoaderDataset extends Dataset {
     
-    private Set<String> fileNames;
+    private Set<String> fileNames = new HashSet<String> ();
     private Template template;
-    private Set<TimeCourseData> dataValues;
+    private Set<TimeCourseData> dataValues = new HashSet<TimeCourseData> ();
     
     public LoaderDataset() {
         super();
     }
     
     @Column(name = "SourceFiles")
+    @ElementCollection
     public Set<String> getSourceFiles() {
         return this.fileNames;
     }
@@ -58,7 +61,6 @@ public class LoaderDataset extends Dataset {
         }
     }
     
-    @Column(name = "Template")
     @ManyToOne
     public Template getSampleOrder() {
         return this.template;

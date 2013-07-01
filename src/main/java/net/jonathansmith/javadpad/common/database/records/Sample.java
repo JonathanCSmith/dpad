@@ -16,9 +16,11 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -34,7 +36,7 @@ import net.jonathansmith.javadpad.common.database.Record;
 public class Sample extends Record {
     
     private String name;
-    private Set<String> conditions;
+    private Set<String> conditions = new HashSet<String> ();
     
     public Sample() {}
     
@@ -48,6 +50,7 @@ public class Sample extends Record {
     }
     
     @Column(name = "Conditions")
+    @ElementCollection
     public Set<String> getConditions() {
         return this.conditions;
     }

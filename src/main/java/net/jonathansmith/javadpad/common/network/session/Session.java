@@ -177,8 +177,6 @@ public abstract class Session implements ChangeSender {
         this.sessionData.clear();
     }
     
-    public abstract void uploadPayload(SessionData dataType, Record payload);
-    
     // Core session properties - what the ui will interact with
     public abstract void setKeySessionData(String key, DatabaseRecord type, Record data);
     
