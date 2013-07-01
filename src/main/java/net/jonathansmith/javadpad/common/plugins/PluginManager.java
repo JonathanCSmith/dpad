@@ -61,7 +61,6 @@ public class PluginManager {
         FrameworkFactory frameworkFactory = ServiceLoader.load(FrameworkFactory.class).iterator().next();
         Map<String, String> config = this.buildOSGiConfigs();
         this.framework = frameworkFactory.newFramework(config);
-        this.context = framework.getBundleContext();
         
         try {
             this.framework.start();
@@ -71,6 +70,7 @@ public class PluginManager {
             this.engine.forceShutdown("Plugin framework could not be started", new RuntimeException("PluginManager failure"));
         }
         
+        this.context = framework.getBundleContext();
         this.loadLocalPlugins();
     }
     
@@ -251,41 +251,50 @@ public class PluginManager {
         }
     }
     
-    public void addOrUpdatePlugin(String name, String currentPath) {
+    public void addOrUpdatePlugin(String name, String currentPath, boolean shouldClear) {
         Bundle b = this.getBundle(name);
         File currentFile = new File(currentPath);
-        File newFile = new File(this.path + "//" + name + ".jar");
         if (!currentFile.exists() || !currentFile.isFile()) {
-            currentFile.delete();
             return;
         }
         
-        if (b == null) {
-            try {
-                FileUtils.copyFile(currentFile, newFile);
-            } 
-            
-            catch (IOException ex) {
-                this.engine.warn("Error moving file, ");
-            }
-        }
-        
-        else {
+        if (b != null) {
             try {
                 b.uninstall();
-                FileUtils.copyFile(currentFile, newFile);
-                this.context.installBundle(newFile.getAbsolutePath());
             } 
             
             catch (BundleException ex) {
                 this.engine.warn("Could not uninstal existing plugin: " + b.getSymbolicName());
-            } 
-            
-            catch (IOException ex) {
-                this.engine.warn("Could not delete existing plugin: " + b.getSymbolicName());
             }
         }
         
-        currentFile.delete();
+        try {
+            File newFile = new File(this.path + "\\" + name + ".jar");
+            FileUtils.copyFile(currentFile, newFile);
+            Bundle nb = this.context.installBundle("file:" + newFile.getAbsolutePath());
+            this.allPlugins.put(nb, newFile.getAbsolutePath());
+            
+            if (nb instanceof LoaderPlugin) {
+                LoaderPlugin l = (LoaderPlugin) nb;
+                this.cachedLoaders.put(l.getPluginRecord().getName(), nb);
+            }
+            
+            else if (nb instanceof AnalyserPlugin) {
+                AnalyserPlugin a = (AnalyserPlugin) nb;
+                this.cachedAnalysers.put(a.getPluginRecord().getName(), nb);
+            }
+        } 
+
+        catch (BundleException ex) {
+            this.engine.warn("Could not install plugin: " + b.getSymbolicName(), ex);
+        } 
+
+        catch (IOException ex) {
+            this.engine.warn("Could not copy plugin: " + b.getSymbolicName(), ex);
+        }
+        
+        if (shouldClear) {
+            currentFile.delete();
+        }
     }
 }

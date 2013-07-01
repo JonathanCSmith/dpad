@@ -17,6 +17,7 @@
 package net.jonathansmith.javadpad.common.database.records;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -35,7 +36,7 @@ import net.jonathansmith.javadpad.common.database.Record;
 @Table(name = "Template", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class Template extends Record {
     
-    private Set<Sample> samples;
+    private Set<Sample> samples = new HashSet<Sample> ();
     private boolean areTimesTemplated;
     private int[] times;
     

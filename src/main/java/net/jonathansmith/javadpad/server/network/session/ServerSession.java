@@ -240,7 +240,6 @@ public final class ServerSession extends Session {
         return dataUpdate;
     }
     
-    @Override
     public void uploadPayload(SessionData dataType, Record payload) {
         if (dataType == SessionData.PLUGIN) {
             if (payload instanceof PluginRecord) {

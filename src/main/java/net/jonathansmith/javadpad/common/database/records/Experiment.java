@@ -16,10 +16,12 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -38,8 +40,8 @@ public class Experiment extends Record {
     private String name;
     private String description;
     
-    private Set<LoaderDataset> loadedData;
-    private Set<AnalyserDataset> analysedData;
+    private Set<LoaderDataset> loadedData = new HashSet<LoaderDataset> ();
+    private Set<AnalyserDataset> analysedData = new HashSet<AnalyserDataset> ();
     
     public Experiment() {}
     
@@ -62,7 +64,7 @@ public class Experiment extends Record {
     }
     
     @Column(name = "RawData")
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     public Set<LoaderDataset> getLoadedData() {
         return this.loadedData;
     }
@@ -84,7 +86,7 @@ public class Experiment extends Record {
     }
     
     @Column(name = "AnalysedData")
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
     public Set<AnalyserDataset> getAnalyserData() {
         return this.analysedData;
     }

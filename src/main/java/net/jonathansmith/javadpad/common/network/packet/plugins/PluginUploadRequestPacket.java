@@ -26,6 +26,7 @@ import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerReco
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -132,7 +133,7 @@ public class PluginUploadRequestPacket extends LockedPacket {
 
     @Override
     public void handleServerSide() {
-        this.session.uploadPayload(SessionData.PLUGIN, this.record);
+        ((ServerSession) this.session).uploadPayload(SessionData.PLUGIN, this.record);
     }
 
     @Override

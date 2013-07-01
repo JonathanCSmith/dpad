@@ -81,6 +81,10 @@ public class ExistingUserPane extends ExistingRecordPane {
     @Override
     public Record getSelectedRecord() {
         int rowNum = this.jTable1.getSelectedRow();
+        if (rowNum == -1) {
+            return null;
+        }
+        
         return ((UserTableModel) this.jTable1.getModel()).getData(rowNum);
     }
 

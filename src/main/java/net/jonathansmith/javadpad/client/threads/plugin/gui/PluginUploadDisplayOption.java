@@ -98,9 +98,9 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
         if (outcome == JFileChooser.APPROVE_OPTION) {
             filepath = chooser.getSelectedFile();
 
-            String name = filepath.getName().substring(0, filepath.getName().length() - 5);
+            String name = filepath.getName().substring(0, filepath.getName().length() - 4);
             PluginManager manager = this.engine.getPluginManager();
-            manager.addOrUpdatePlugin(name, filepath.getAbsolutePath());
+            manager.addOrUpdatePlugin(name, filepath.getAbsolutePath(), false);
             PluginRecord newPlugin = manager.getLocalPluginRecord(name);
             if (newPlugin == null) {
                 this.engine.warn("There was an error injecting your plugin");

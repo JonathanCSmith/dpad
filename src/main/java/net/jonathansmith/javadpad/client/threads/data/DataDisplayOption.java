@@ -21,17 +21,24 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.io.File;
+
 import java.util.EventObject;
+import java.util.Set;
 
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileFilter;
 
+import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.dialogs.PopupDialog;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.ExistingRecordPane;
+import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.data.pane.AddDataPane;
 import net.jonathansmith.javadpad.client.threads.data.pane.DataPane;
 import net.jonathansmith.javadpad.client.threads.data.pane.PluginSelectPane;
@@ -99,6 +106,12 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         
         this.pluginSelectPane.addDisplayOptionListener(this);
         this.pluginSelectPane.addDisplayOptionMouseListener(this);
+    }
+    
+    @Override
+    public void setEngine(Client engine, ClientSession session) {
+        super.setEngine(engine, session);
+        this.session.addListener(this);
     }
     
     public void submitSelectedPlugin() {
@@ -185,6 +198,53 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             }
         }
         
+        else if (evt.getSource() == this.addDataToolbar.addFiles) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Please select your data");
+            chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            final Set<String> ext = ((LoaderPluginRecord) this.session.getCurrentData().getPluginInfo()).getAllowedExtensions();
+            chooser.setFileFilter(new FileFilter() {
+                @Override
+                public boolean accept(File f) {
+                    if (f.isDirectory()) {
+                        return true;
+                    }
+                    
+                    String name = f.getName().toLowerCase();
+                    for (String ex : ext) {
+                        if (name.endsWith(ex)) {
+                            return true;
+                        }
+                    }
+                    
+                    return false;
+                }
+                
+                @Override
+                public String getDescription() {
+                    return "plugin specific file filter";
+                }
+            });
+            
+            int outcome = chooser.showOpenDialog(this.engine.getGUI());
+            File[] files;
+            if (outcome == JFileChooser.APPROVE_OPTION) {
+                files = chooser.getSelectedFiles();
+                
+                LoaderDataset data = (LoaderDataset) this.session.getCurrentData();
+                for (File f : files) {
+                    data.addSourceFile(f.getAbsolutePath());
+                }
+            }
+            
+            this.engine.getGUI().validateState();
+            
+        }
+        
+        else if (evt.getSource() == ((AddDataPane) this.addDataDisplay).removeFiles) {
+            ((AddDataPane) this.addDataDisplay).removeSelected();
+        }
+        
         else if (evt.getSource() == this.addDataToolbar.back) {
             if (this.currentPanel != this.addDataDisplay) {
                 this.setCurrentView(this.addDataDisplay);
@@ -239,6 +299,10 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
                 if (data == null) {
                     return;
                 }
+                
+                this.dialog.maskCloseEvent();
+                this.dialog.dispose();
+                this.dialog = null;
                 
                 RecordsList<Record> local = this.engine.getPluginManager().getLocalPluginRecordList();
                 for (Record record : data) {

@@ -85,6 +85,10 @@ public class PluginSelectPane extends ExistingRecordPane {
     @Override
     public Record getSelectedRecord() {
         int rowNum = this.jList1.getSelectedIndex();
+        if (rowNum == -1) {
+            return null;
+        }
+        
         return ((PluginListModel) this.jList1.getModel()).getData(rowNum);
     }
 

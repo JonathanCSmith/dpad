@@ -85,6 +85,10 @@ public class ExistingExperimentPane extends ExistingRecordPane {
     @Override
     public Record getSelectedRecord() {
         int rowNum = this.jList1.getSelectedIndex();
+        if (rowNum == -1) {
+            return null;
+        }
+        
         return ((ExperimentListModel) this.jList1.getModel()).getData(rowNum);
     }
 

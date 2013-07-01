@@ -17,6 +17,7 @@
 package net.jonathansmith.javadpad.common.database.records;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -41,9 +42,9 @@ public class User extends Record {
     private String lastName;
     private char[] password;
     private int experimentNumber;
-    private Set<Experiment> experiments;
-    private Set<Template> datasetTemplates;
-    private Set<Sample> sampleTemplates;
+    private Set<Experiment> experiments = new HashSet<Experiment> ();
+    private Set<Template> datasetTemplates = new HashSet<Template> ();
+    private Set<Sample> sampleTemplates = new HashSet<Sample> ();
     
     public User() {}
     

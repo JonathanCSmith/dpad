@@ -48,6 +48,7 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
         this.runtimeSelectToolbar.setUser.addActionListener(this);
         this.runtimeSelectToolbar.setExperiment.addActionListener(this);
         this.runtimeSelectToolbar.setData.addActionListener(this);
+        this.runtimeSelectToolbar.addPlugin.addActionListener(this);
         this.runtimeSelectToolbar.shutdown.addActionListener(this);
     }
     
@@ -73,6 +74,12 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
             this.runtimeSelectToolbar.setUser.setEnabled(true);
             this.runtimeSelectToolbar.setExperiment.setEnabled(true);
             this.runtimeSelectToolbar.setData.setEnabled(false);
+        }
+        
+        else {
+            this.runtimeSelectToolbar.setUser.setEnabled(true);
+            this.runtimeSelectToolbar.setExperiment.setEnabled(true);
+            this.runtimeSelectToolbar.setData.setEnabled(true);
         }
         
         if (this.currentPanel == this.runtimeSelectPane) {
