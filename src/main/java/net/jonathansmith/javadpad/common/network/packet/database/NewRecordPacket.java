@@ -19,9 +19,9 @@ package net.jonathansmith.javadpad.common.network.packet.database;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
@@ -130,5 +130,4 @@ public class NewRecordPacket extends Packet {
     public String toString() {
         return "New record packet containing records of type: " + this.type.toString().toLowerCase();
     }
-    
 }

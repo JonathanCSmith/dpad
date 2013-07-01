@@ -24,9 +24,9 @@ import javax.persistence.MappedSuperclass;
  * @author Jon
  */
 @MappedSuperclass
-public abstract class DataSet extends Record {
+public abstract class Dataset extends Record {
     
-    private boolean serverSidePerformed;
+    private boolean serverSidePerformed = false;
     private PluginRecord plugin;
     
     @Column(name = "Processed")
@@ -49,8 +49,8 @@ public abstract class DataSet extends Record {
     
     @Override
     public boolean equals(Object o) {
-        if (o instanceof DataSet) {
-            DataSet d = (DataSet) o;
+        if (o instanceof Dataset) {
+            Dataset d = (Dataset) o;
             if (this.getHasBeenProcessed() == d.getHasBeenProcessed()
                 && this.getPluginInfo().equals(d.getPluginInfo())) {
                 return true;

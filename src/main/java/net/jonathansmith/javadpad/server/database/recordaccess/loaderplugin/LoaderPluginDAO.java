@@ -14,24 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.recordsaccess.user;
+package net.jonathansmith.javadpad.server.database.recordaccess.loaderplugin;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import net.jonathansmith.javadpad.common.database.records.User;
-import net.jonathansmith.javadpad.server.database.recordsaccess.GenericDAO;
+import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
+import net.jonathansmith.javadpad.server.database.recordaccess.GenericDAO;
 
 /**
  *
  * @author Jon
  */
-public class UserDAO extends GenericDAO<User, String> {
-    
-    public User findByName(Session sess, String username) {
-        String sql = "SELECT p FROM User p WHERE p.name :name";
+public class LoaderPluginDAO extends GenericDAO<LoaderPluginRecord, String> {
+
+    public LoaderPluginRecord findByName(Session sess, String username) {
+        String sql = "SELECT p FROM LoaderPluginRecord p WHERE p.Name :name";
         Query query = sess.createQuery(sql).setParameter("name", username);
-        User user = findOne(query);
-        return user;
+        LoaderPluginRecord plugin = findOne(query);
+        return plugin;
     }
 }

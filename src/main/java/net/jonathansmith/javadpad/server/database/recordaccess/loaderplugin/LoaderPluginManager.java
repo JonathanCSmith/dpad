@@ -14,41 +14,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.recordsaccess.user;
+package net.jonathansmith.javadpad.server.database.recordaccess.loaderplugin;
 
 import javax.persistence.NonUniqueResultException;
 
 import org.hibernate.HibernateException;
 
-import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
-import net.jonathansmith.javadpad.server.database.recordsaccess.GenericManager;
+import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
 
 /**
  *
  * @author Jon
  */
-public class UserManager extends GenericManager<User> {
+public class LoaderPluginManager extends GenericManager<LoaderPluginRecord> {
     
-    private static UserManager instance;
+    private static LoaderPluginManager instance = null;
     
-    private UserManager() {
-        super(new UserDAO(), User.class);
+    private LoaderPluginManager() {
+        super(new LoaderPluginDAO(), LoaderPluginRecord.class);
     }
     
-    public static UserManager getInstance() {
+    public static LoaderPluginManager getInstance() {
         if (instance == null) {
-            instance = new UserManager();
+            instance = new LoaderPluginManager();
         }
         
         return instance;
     }
     
-    public User findUserByUsername(DatabaseConnection connection, String name) {
-        User user = null;
+    public LoaderPluginRecord findPluginByName(DatabaseConnection connection, String name) {
+        LoaderPluginRecord plugin = null;
         try {
             connection.beginTransaction();
-            user = this.getDAO().findByName(connection.getSession(), name);
+            plugin = this.getDAO().findByName(connection.getSession(), name);
             connection.commitTransaction();
             
         } catch (NonUniqueResultException ex) {
@@ -57,11 +57,11 @@ public class UserManager extends GenericManager<User> {
             this.engine.error("Database access error", ex);
         }
         
-        return user;
+        return plugin;
     }
     
     @Override
-    public UserDAO getDAO() {
-        return (UserDAO) this.dao;
+    public LoaderPluginDAO getDAO() {
+        return (LoaderPluginDAO) this.dao;
     }
 }

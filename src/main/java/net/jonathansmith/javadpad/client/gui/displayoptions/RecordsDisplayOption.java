@@ -45,7 +45,7 @@ import net.jonathansmith.javadpad.common.network.packet.database.NewRecordPacket
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
-import net.jonathansmith.javadpad.server.database.recordsaccess.QueryType;
+import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
 
 /**
  *

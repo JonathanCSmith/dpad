@@ -17,7 +17,7 @@
 package net.jonathansmith.javadpad.common.network.session;
 
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
-import net.jonathansmith.javadpad.server.database.recordsaccess.QueryType;
+import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
 
 /**
  * NOTE! Current implementation of db packets limits the data types to 256!

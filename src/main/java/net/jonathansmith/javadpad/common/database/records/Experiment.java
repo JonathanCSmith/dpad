@@ -38,8 +38,8 @@ public class Experiment extends Record {
     private String name;
     private String description;
     
-    private Set<LoaderDataSet> loadedData;
-    private Set<AnalyserDataSet> analysedData;
+    private Set<LoaderDataset> loadedData;
+    private Set<AnalyserDataset> analysedData;
     
     public Experiment() {}
     
@@ -63,21 +63,21 @@ public class Experiment extends Record {
     
     @Column(name = "RawData")
     @OneToMany(orphanRemoval = true)
-    public Set<LoaderDataSet> getLoadedData() {
+    public Set<LoaderDataset> getLoadedData() {
         return this.loadedData;
     }
     
-    public void setLoadedData(Set<LoaderDataSet> data) {
+    public void setLoadedData(Set<LoaderDataset> data) {
         this.loadedData = data;
     }
     
-    public void addLoadedData(LoaderDataSet data) {
+    public void addLoadedData(LoaderDataset data) {
         if (!this.loadedData.contains(data)) {
             this.loadedData.add(data);
         }
     }
     
-    public void removeLoadedData(LoaderDataSet data) {
+    public void removeLoadedData(LoaderDataset data) {
         if (this.loadedData.contains(data)) {
             this.loadedData.remove(data);
         }
@@ -85,21 +85,21 @@ public class Experiment extends Record {
     
     @Column(name = "AnalysedData")
     @OneToMany(orphanRemoval = true)
-    public Set<AnalyserDataSet> getAnalyserData() {
+    public Set<AnalyserDataset> getAnalyserData() {
         return this.analysedData;
     }
     
-    public void setAnalyserData(Set<AnalyserDataSet> data) {
+    public void setAnalyserData(Set<AnalyserDataset> data) {
         this.analysedData = data;
     }
     
-    public void addAnalyserData(AnalyserDataSet data) {
+    public void addAnalyserData(AnalyserDataset data) {
         if (!this.analysedData.contains(data)) {
             this.analysedData.add(data);
         }
     }
     
-    public void removeAnalyserData(AnalyserDataSet data) {
+    public void removeAnalyserData(AnalyserDataset data) {
         if (this.analysedData.contains(data)) {
             this.analysedData.remove(data);
         }

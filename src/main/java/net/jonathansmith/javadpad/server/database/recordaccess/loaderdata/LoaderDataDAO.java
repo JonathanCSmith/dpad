@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.recordsaccess.experiment;
+package net.jonathansmith.javadpad.server.database.recordaccess.loaderdata;
 
-import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.server.database.recordsaccess.GenericDAO;
+import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
+import net.jonathansmith.javadpad.server.database.recordaccess.GenericDAO;
 
 /**
  *
  * @author Jon
  */
-public class ExperimentDAO extends GenericDAO<Experiment, String> {
-}
+public class LoaderDataDAO extends GenericDAO<LoaderDataset, String> {}

@@ -26,8 +26,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.DataSet;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
+import net.jonathansmith.javadpad.common.database.Dataset;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
@@ -73,7 +73,7 @@ public abstract class Session implements ChangeSender {
     private String serverKey;
     private User user;
     private Experiment experiment;
-    private DataSet currentData;
+    private Dataset currentData;
     
     public Session(Engine eng, Channel channel) {
         this.engine = eng;
@@ -177,6 +177,8 @@ public abstract class Session implements ChangeSender {
         this.sessionData.clear();
     }
     
+    public abstract void uploadPayload(SessionData dataType, Record payload);
+    
     // Core session properties - what the ui will interact with
     public abstract void setKeySessionData(String key, DatabaseRecord type, Record data);
     
@@ -210,11 +212,11 @@ public abstract class Session implements ChangeSender {
         this.experiment = experiment;
     }
     
-    public DataSet getCurrentData() {
+    public Dataset getCurrentData() {
         return this.currentData;
     }
     
-    protected void setCurrentData(DataSet data) {
+    protected void setCurrentData(Dataset data) {
         this.currentData = data;
     }
     

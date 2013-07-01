@@ -14,33 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.server.database.recordsaccess.experiment;
+package net.jonathansmith.javadpad.server.database.recordaccess.loaderdata;
 
-import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.server.database.recordsaccess.GenericManager;
+import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
+import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
 
 /**
  *
  * @author Jon
  */
-public class ExperimentManager extends GenericManager<Experiment> {
+public class LoaderDataManager extends GenericManager<LoaderDataset> {
     
-    private static ExperimentManager instance = null;
+    private static LoaderDataManager instance = null;
     
-    private ExperimentManager() {
-        super(new ExperimentDAO(), Experiment.class);
+    private LoaderDataManager() {
+        super(new LoaderDataDAO(), LoaderDataset.class);
     }
     
-    public static ExperimentManager getInstance() {
+    public static LoaderDataManager getInstance() {
         if (instance == null) {
-            instance = new ExperimentManager();
+            instance = new LoaderDataManager();
         }
         
         return instance;
     }
     
     @Override
-    public ExperimentDAO getDAO() {
-        return (ExperimentDAO) this.dao;
+    public LoaderDataDAO getDAO() {
+        return (LoaderDataDAO) this.dao;
     }
 }
