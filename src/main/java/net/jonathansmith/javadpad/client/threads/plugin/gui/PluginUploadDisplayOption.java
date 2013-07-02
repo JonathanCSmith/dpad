@@ -47,7 +47,7 @@ import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerReco
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
-import net.jonathansmith.javadpad.common.plugins.PluginManager;
+import net.jonathansmith.javadpad.common.plugins.PluginManagerHandler;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
@@ -99,9 +99,9 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
             filepath = chooser.getSelectedFile();
 
             String name = filepath.getName().substring(0, filepath.getName().length() - 4);
-            PluginManager manager = this.engine.getPluginManager();
-            manager.addOrUpdatePlugin(name, filepath.getAbsolutePath(), false);
-            PluginRecord newPlugin = manager.getLocalPluginRecord(name);
+            PluginManagerHandler manager = this.engine.getPluginManager();
+            manager.addPluginFile(filepath);
+            PluginRecord newPlugin = manager.getPluginRecord(name);
             if (newPlugin == null) {
                 this.engine.warn("There was an error injecting your plugin");
                 return;

@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
-import net.jonathansmith.javadpad.common.plugins.PluginManager;
+import net.jonathansmith.javadpad.common.plugins.PluginManagerHandler;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 
 /**
@@ -45,7 +45,7 @@ public abstract class Engine extends Thread {
     
     private Logger logger = null;
     private FileSystem fileSystem = null;
-    private PluginManager manager;
+    private PluginManagerHandler manager;
     private boolean loggerIsSetup;
     
     public Engine(DPAD main, Platform platform, String hostName, int portNumber) {
@@ -92,7 +92,7 @@ public abstract class Engine extends Thread {
         this.fileSystem = fileSystem;
     }
     
-    public PluginManager getPluginManager() {
+    public PluginManagerHandler getPluginManager() {
         return this.manager;
     }
     
@@ -114,7 +114,8 @@ public abstract class Engine extends Thread {
         this.gui.init();
         this.gui.run();
         this.fileSystem.init();
-        this.manager = new PluginManager(this.fileSystem.getPluginDirectory().getAbsolutePath(), this);
+        this.manager = new PluginManagerHandler(this.fileSystem.getPluginDirectory().getAbsolutePath(), this.fileSystem.getUpdateDirectory().getAbsolutePath(), this);
+        this.manager.start();
     }
     
     public boolean isRunning() {

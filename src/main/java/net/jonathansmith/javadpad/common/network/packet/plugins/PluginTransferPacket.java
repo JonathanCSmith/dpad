@@ -184,12 +184,12 @@ public class PluginTransferPacket extends LockedPacket implements LargePayloadPa
     
     @Override
     public void handleClientSide() {
-        this.engine.getPluginManager().addOrUpdatePlugin(this.plugin.getName(), this.path, true);
+        this.engine.getPluginManager().addPluginFile(new File(this.path));
     }
 
     @Override
     public void handleServerSide() {
-        this.engine.getPluginManager().addOrUpdatePlugin(this.plugin.getName(), this.path, true);
+        this.engine.getPluginManager().addPluginFile(new File(this.path));
     }
     
     @Override

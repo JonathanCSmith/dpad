@@ -20,6 +20,6 @@ package net.jonathansmith.javadpad.common.plugins;
  *
  * @author Jon
  */
-public interface AnalyserPlugin extends Plugin {
+public interface AnalyserPlugin extends DPADPlugin {
     
 }
