@@ -20,6 +20,6 @@ package net.jonathansmith.javadpad.common.plugins;
  *
  * @author Jon
  */
-public interface LoaderPlugin extends Plugin {
+public interface LoaderPlugin extends DPADPlugin {
     
 }

@@ -224,6 +224,7 @@ public class Server extends Engine {
     @Override
     public void saveAndShutdown() {
         // TODO: worker threads shutdown
+        this.getPluginManager().shutdown(false);
         this.sessionRegistry.shutdownSessions(false);
         
         this.info("Shuttdown called on: " + this.platform.toString());
@@ -233,6 +234,7 @@ public class Server extends Engine {
     @Override
     public void forceShutdown(String cause, Throwable ex) {
         // TODO: worker threads force shutdown
+        this.getPluginManager().shutdown(true);
         this.sessionRegistry.shutdownSessions(true);
         
         this.error(cause, ex);

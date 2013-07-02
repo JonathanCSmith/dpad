@@ -54,7 +54,7 @@ import net.jonathansmith.javadpad.common.network.packet.session.DisconnectPacket
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
-import net.jonathansmith.javadpad.common.plugins.PluginManager;
+import net.jonathansmith.javadpad.common.plugins.PluginManagerHandler;
 import net.jonathansmith.javadpad.common.security.SecurityHandler;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.Server;
@@ -336,8 +336,8 @@ public final class ServerSession extends Session {
                 
                 return new RecordsList<Record> ();
                 
-            case ALL_PLUGINS:
-                return this.engine.getPluginManager().getLocalPluginRecordList();
+            case ALL_LOADER_PLUGINS:
+                return this.engine.getPluginManager().getLoaderPluginRecordList();
                 
             default:
                 return null;
@@ -456,8 +456,8 @@ public final class ServerSession extends Session {
     }
     
     private void handleNewPluginRequest(boolean sessionSet, PluginRecord plugin) {
-        PluginManager manager = this.engine.getPluginManager();
-        PluginRecord local = manager.getLocalPluginRecord(plugin.getName());
+        PluginManagerHandler manager = this.engine.getPluginManager();
+        PluginRecord local = manager.getPluginRecord(plugin.getName());
         PluginRecord decision;
         
         if (local == null) {

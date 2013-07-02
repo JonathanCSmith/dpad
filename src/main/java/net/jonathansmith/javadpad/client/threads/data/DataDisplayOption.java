@@ -183,7 +183,7 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         // AddData
         else if (evt.getSource() == this.addDataToolbar.setPlugin) {
             if (this.currentPanel != this.pluginSelectPane) {
-                Packet p = new DataRequestPacket(this.engine, this.session, SessionData.ALL_PLUGINS);
+                Packet p = new DataRequestPacket(this.engine, this.session, SessionData.ALL_LOADER_PLUGINS);
                 this.session.addPacketToSend(PacketPriority.HIGH, p);
                 
                 this.dialog = new WaitForRecordsDialog(new JFrame(), true);
@@ -238,7 +238,6 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             }
             
             this.engine.getGUI().validateState();
-            
         }
         
         else if (evt.getSource() == ((AddDataPane) this.addDataDisplay).removeFiles) {
@@ -294,8 +293,8 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         
         else if (event instanceof DataArriveEvent) {
             DataArriveEvent evt = (DataArriveEvent) event;
-            if (((SessionData) evt.getSource()).equals(SessionData.ALL_PLUGINS)) {
-                RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.ALL_PLUGINS);
+            if (((SessionData) evt.getSource()).equals(SessionData.ALL_LOADER_PLUGINS)) {
+                RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.ALL_LOADER_PLUGINS);
                 if (data == null) {
                     return;
                 }
@@ -304,7 +303,7 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
                 this.dialog.dispose();
                 this.dialog = null;
                 
-                RecordsList<Record> local = this.engine.getPluginManager().getLocalPluginRecordList();
+                RecordsList<Record> local = this.engine.getPluginManager().getLoaderPluginRecordList();
                 for (Record record : data) {
                     if (!local.contains(record)) {
                         local.add(record);
