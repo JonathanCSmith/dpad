@@ -150,6 +150,15 @@ public class DPAD extends Thread {
         
         while (!this.hasError && this.running) {
             try {
+                boolean runnings = false;
+                for (Engine engine : this.runningEngines) {
+                    runnings |= engine.isRunning();
+                }
+                
+                if (!runnings) {
+                    this.running = false;
+                }
+                
                 Thread.sleep(100);
                 
             } catch (InterruptedException ex) {
@@ -172,12 +181,12 @@ public class DPAD extends Thread {
         }
         
         for (Engine engine : this.runningEngines) {
-            if (engine.isViable()) {
+            if (engine.isViable() && engine.isRunning()) {
                 engine.saveAndShutdown();
             }
             
             else {
-                if (!engine.isRunning()) {
+                if (engine.isRunning()) {
                     engine.forceShutdown("Shutdown by main", null);
                 }
             }

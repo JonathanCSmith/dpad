@@ -201,9 +201,9 @@ public class Server extends Engine {
             }
         }
         
-        if (this.errored) {
-            this.main.setErrored("Error in server main thread", null);
-        }
+//        if (this.errored) {
+//            this.main.setErrored("Error in server main thread", null);
+//        }
         
         this.finish();
     }

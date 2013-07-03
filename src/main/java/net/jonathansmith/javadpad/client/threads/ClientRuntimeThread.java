@@ -43,7 +43,7 @@ public enum ClientRuntimeThread implements RuntimeThread {
     RUNTIME_SELECT(false, true, new RuntimeSelectDisplayOption(), null),
     USER(false, true, new RecordsDisplayOption(DatabaseRecord.USER, new CurrentUserPane(), new NewUserPane(), new ExistingUserPane(), "User toolbar:"), null),
     EXPERIMENT(false, true, new RecordsDisplayOption(DatabaseRecord.EXPERIMENT, new CurrentExperimentPane(), new NewExperimentPane(), new ExistingExperimentPane(), "Experiment toolbar:"), null),
-    DATA(true, true, new DataDisplayOption(), /**new DataThread()**/ null),
+    DATA(false /**true**/, true, new DataDisplayOption(), /**new DataThread()**/ null),
     ADD_PLUGIN(false, true, new PluginUploadDisplayOption(), null);
     
     private final boolean runnable;
