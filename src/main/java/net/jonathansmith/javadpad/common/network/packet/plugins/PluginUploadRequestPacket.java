@@ -118,9 +118,11 @@ public class PluginUploadRequestPacket extends LockedPacket {
         switch (payloadNumber) {
             case 0:
                 this.status = bytes[0];
+                break;
                 
             case 1:
                 this.record = (PluginRecord) SerializationUtils.deserialize(bytes);
+                break;
         }
     }
 

@@ -225,9 +225,9 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
             }
         }
         
-        if (this.errored) {
-            this.main.setErrored("Error in client main thread", null);
-        }
+//        if (this.errored) {
+//            this.main.setErrored("Error in client main thread", null);
+//        }
         
         // No leaks
         this.listeners.clear();

@@ -78,10 +78,19 @@ public class PluginManagerHandler extends Thread {
     }
     
     @Override
+    public void start() {
+        this.isAlive = true;
+        super.start();
+    }
+    
+    @Override
     public void run() {
         while (isAlive) {
-            while (!pendingUpdates || pluginCheckedOut) {
+            while (isAlive && (!pendingUpdates || pluginCheckedOut)) {
                 try {
+                    if (!isAlive) {
+                        break;
+                    }
                     Thread.sleep(100);
                 }
                 
@@ -90,14 +99,16 @@ public class PluginManagerHandler extends Thread {
                 }
             }
             
-            this.snapshot();
-            this.utils.shutdown();
-            this.manager.shutdown();
-            this.relocatePendings();
-            this.manager = PluginManagerFactory.createPluginManager(this.props);
-            this.utils = new PluginManagerUtil(this.manager);
-            this.loadPlugins();
-            this.snapshot();
+            if (isAlive) {
+                this.snapshot();
+                this.utils.shutdown();
+                this.manager.shutdown();
+                this.relocatePendings();
+                this.manager = PluginManagerFactory.createPluginManager(this.props);
+                this.utils = new PluginManagerUtil(this.manager);
+                this.loadPlugins();
+                this.snapshot();
+            }
         }
         
         this.utils.shutdown();
@@ -107,13 +118,13 @@ public class PluginManagerHandler extends Thread {
     public void addPluginFile(File plugin) {
         if (plugin.isFile() && plugin.getName().toLowerCase().endsWith(".jar")) {
             try {
-                File newFile = new File(this.pluginDir + "\\" + plugin.getName());
+                File newFile = new File(this.updateDir + "\\" + plugin.getName());
                 FileUtils.copyFile(plugin, newFile);
                 this.pendingUpdates = true;
             }
             
             catch (IOException ex) {
-                this.engine.warn("Could not update plugin: " + plugin.getName());
+                this.engine.warn("Could not update plugin: " + plugin.getName(), ex);
             }
         }
     }
@@ -248,6 +259,7 @@ public class PluginManagerHandler extends Thread {
             }
         });
         
+        boolean successful = true;
         for (File updatePlugin : jars) {
             try {
                 File newFile = new File(this.pluginDir + "\\" + updatePlugin.getName());
@@ -256,8 +268,13 @@ public class PluginManagerHandler extends Thread {
             }
             
             catch (IOException ex) {
+                successful = false;
                 this.engine.warn("Could not update plugin: " + updatePlugin.getName());
             }
+        }
+        
+        if (successful) {
+            this.pendingUpdates = false;
         }
     }
     
