@@ -23,6 +23,8 @@ import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -39,16 +41,18 @@ public class NewSessionDataPacket extends LockedPacket {
     
     private DatabaseRecord type;
     private Record data;
+    private boolean pullsFocus;
     private byte[] serializedData;
     
     public NewSessionDataPacket() {
         super();
     }
     
-    public NewSessionDataPacket(Engine engine, Session session, DatabaseRecord dataType, Record data) {
+    public NewSessionDataPacket(Engine engine, Session session, DatabaseRecord dataType, Record data, boolean pullsFocus) {
         super(engine, session);
         this.type = dataType;
         this.data = data;
+        this.pullsFocus = pullsFocus;
         
         this.serializeData();
     }
@@ -71,16 +75,17 @@ public class NewSessionDataPacket extends LockedPacket {
 
     @Override
     public int getNumberOfLockedPayloads() {
-        return 2;
+        return 3;
     }
 
     @Override
     public int getLockedPayloadSize(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
+            case 1:
                 return 1;
                 
-            case 1:
+            case 2:
                 return this.serializedData.length;
                 
             default:
@@ -97,6 +102,15 @@ public class NewSessionDataPacket extends LockedPacket {
                 return out;
                 
             case 1:
+                if (this.pullsFocus) {
+                    return new byte[] {1};
+                }
+                
+                else {
+                    return new byte[] {0};
+                }
+                
+            case 2:
                 return this.serializedData;
                 
             default:
@@ -112,6 +126,15 @@ public class NewSessionDataPacket extends LockedPacket {
                 return;
                 
             case 1:
+                if (bytes[0] == 0) {
+                    this.pullsFocus = false;
+                }
+                
+                else {
+                    this.pullsFocus = true;
+                }
+                
+            case 2:
                 this.data = (Record) SerializationUtils.deserialize(bytes);
         }
     }
@@ -123,6 +146,12 @@ public class NewSessionDataPacket extends LockedPacket {
     public void handleServerSide() {
         if (this.data != null) {
             ((ServerSession) this.session).addDatabaseRecord(this.getKey(), this.type, this.data);
+        }
+        
+        if (this.pullsFocus) {
+            RecordsList<Record> out = new RecordsList<Record> ();
+            out.add(this.data);
+            ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out);
         }
     }
 

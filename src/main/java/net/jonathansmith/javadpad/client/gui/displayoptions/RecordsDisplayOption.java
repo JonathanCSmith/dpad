@@ -134,7 +134,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     public void submitNewRecordButton() {
         Record record = this.newRecordPane.buildNewlySubmittedRecord();
         if (record != null) {
-            Packet p = new NewSessionDataPacket(this.engine, this.session, this.recordType, record);
+            Packet p = new NewSessionDataPacket(this.engine, this.session, this.recordType, record, true);
             this.session.addPacketToSend(PacketPriority.HIGH, p);
             this.newRecordPane.clearInfo();
         }
@@ -156,7 +156,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
 
         else {
             RecordsList<Record> list = new RecordsList<Record> ();
-            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE), list);
+            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE), list, true);
             this.session.lockAndSendPacket(PacketPriority.HIGH, p);
         }
 

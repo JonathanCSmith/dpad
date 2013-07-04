@@ -35,6 +35,8 @@ public enum SessionData {
     
     PLUGIN_STATUS(null, null),
     
+    LOADER_DATA(DatabaseRecord.LOADER_DATA, QueryType.SINGLE),
+    
     FOCUS(null, null);
     
     private final DatabaseRecord recordType;

@@ -57,10 +57,11 @@ import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
-import net.jonathansmith.javadpad.common.network.packet.session.NewSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.NewSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.SetSessionFocusPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
@@ -125,7 +126,7 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             RecordsList<Record> list = new RecordsList<Record> ();
             list.add(selection);
             
-            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(DatabaseRecord.LOADER_PLUGIN, QueryType.SINGLE), list);
+            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(DatabaseRecord.LOADER_PLUGIN, QueryType.SINGLE), list, false);
             this.session.lockAndSendPacket(PacketPriority.HIGH, p);
             
             this.dialog = new WaitForRecordsDialog(new JFrame(), true);
@@ -158,6 +159,8 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             }
             
             this.currentInformationPane.setCurrentData(list.getFirst());
+            LockedPacket p = new SetSessionFocusPacket(this.engine, this.session, SessionData.EXPERIMENT);
+            this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
         }
         
         else if (this.currentPanel == this.addDataDisplay) {
@@ -167,6 +170,9 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             }
             
             this.addDataDisplay.setCurrentData(list.getFirst());
+            
+            LockedPacket p = new SetSessionFocusPacket(this.engine, this.session, SessionData.LOADER_DATA);
+            this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
         }
     }
 
@@ -176,7 +182,7 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             if (this.currentPanel != this.addDataDisplay) {
                 // Create new Loader Data Set
                 LoaderDataset data = new LoaderDataset();
-                Packet p = new NewSessionDataPacket(this.engine, this.session, DatabaseRecord.CURRENT_DATASET, data);
+                Packet p = new NewSessionDataPacket(this.engine, this.session, DatabaseRecord.CURRENT_DATASET, data, true);
                 this.session.addPacketToSend(PacketPriority.MEDIUM, p);
                 
                 this.setCurrentView(this.addDataDisplay);
