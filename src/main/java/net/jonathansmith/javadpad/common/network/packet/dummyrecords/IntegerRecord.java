@@ -16,6 +16,7 @@
  */
 package net.jonathansmith.javadpad.common.network.packet.dummyrecords;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 
 /**
@@ -32,6 +33,14 @@ public class IntegerRecord extends Record {
     
     public int getValue() {
         return this.integer;
+    }
+
+    @Override
+    public void addToChildren(Record record) {}
+
+    @Override
+    public DatabaseRecord getType() {
+        return null;
     }
     
     @Override

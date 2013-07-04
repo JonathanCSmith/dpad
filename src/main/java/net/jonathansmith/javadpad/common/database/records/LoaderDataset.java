@@ -27,7 +27,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Dataset;
+import net.jonathansmith.javadpad.common.database.Record;
 
 /**
  *
@@ -82,6 +84,18 @@ public class LoaderDataset extends Dataset {
     
     public void addData(TimeCourseData data) {
         this.dataValues.add(data);
+    }
+
+    @Override
+    public void addToChildren(Record record) {
+        if (record instanceof TimeCourseData) {
+            this.addData((TimeCourseData) record);
+        }
+    }
+
+    @Override
+    public DatabaseRecord getType() {
+        return DatabaseRecord.LOADER_DATA;
     }
     
     @Override

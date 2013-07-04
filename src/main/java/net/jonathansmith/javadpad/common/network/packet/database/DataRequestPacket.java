@@ -19,16 +19,18 @@ package net.jonathansmith.javadpad.common.network.packet.database;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.network.session.SessionData;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 /**
  *
  * @author Jon
  */
-public class DataRequestPacket extends Packet {
+public class DataRequestPacket extends LockedPacket {
     
     private static final AtomicBoolean lock = new AtomicBoolean(false);
     
@@ -58,25 +60,31 @@ public class DataRequestPacket extends Packet {
     }
 
     @Override
-    public int getNumberOfPayloads() {
+    public int getNumberOfLockedPayloads() {
         return 1;
     }
 
     @Override
-    public int getPayloadSize(int payloadNumber) {
-        return 1;
+    public int getLockedPayloadSize(int payloadNumber) {
+        return payloadNumber == 0 ? 1 : 0;
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber) {
-        byte[] returnVal = new byte[1];
-        returnVal[0] = (byte) this.dataType.ordinal();
-        return returnVal;
+    public byte[] writeLockedPayload(int payloadNumber) {
+        if (payloadNumber == 0) {
+            byte[] returnVal = new byte[1];
+            returnVal[0] = (byte) this.dataType.ordinal();
+            return returnVal;
+        }
+        
+        return null;
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes) {
-        this.dataType = SessionData.values()[bytes[0]];
+    public void parseLockedPayload(int payloadNumber, byte[] bytes) {
+        if (payloadNumber == 0) {
+            this.dataType = SessionData.values()[bytes[0]];
+        }
     }
 
     @Override
@@ -84,7 +92,7 @@ public class DataRequestPacket extends Packet {
 
     @Override
     public void handleServerSide() {
-        ((ServerSession) this.session).checkoutData(this.dataType);
+        RecordsList<Record> list = ((ServerSession) this.session).checkoutSessionData(this.getKey(), this.dataType);
     }
 
     @Override

@@ -26,6 +26,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 
 /**
@@ -81,6 +82,18 @@ public class Template extends Record {
     public void addSampleWithTime(Sample sample, int time) {
         this.addSample(sample);
         this.addTime(time);
+    }
+
+    @Override
+    public void addToChildren(Record record) {
+        if (record instanceof Sample) {
+            this.addSample((Sample) record);
+        }
+    }
+
+    @Override
+    public DatabaseRecord getType() {
+        return DatabaseRecord.TEMPLATE;
     }
     
     @Override

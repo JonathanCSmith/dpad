@@ -26,6 +26,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 
 
@@ -41,7 +42,6 @@ public class User extends Record {
     private String firstName;
     private String lastName;
     private char[] password;
-    private int experimentNumber;
     private Set<Experiment> experiments = new HashSet<Experiment> ();
     private Set<Template> datasetTemplates = new HashSet<Template> ();
     private Set<Sample> sampleTemplates = new HashSet<Sample> ();
@@ -91,15 +91,6 @@ public class User extends Record {
         this.password = password;
     }
     
-    @Column(name = "ExperimentNumber")
-    public int getNumberOfExperiments() {
-        return this.experimentNumber;
-    }
-    
-    public void setNumberOfExperiments(int i) {
-        this.experimentNumber = i;
-    }
-    
     @Column(name = "Experiments")
     @OneToMany(orphanRemoval = true)
     public Set<Experiment> getExperiments() {
@@ -108,7 +99,6 @@ public class User extends Record {
     
     public void setExperiments(Set<Experiment> experiments) {
         this.experiments = experiments;
-        this.setNumberOfExperiments(this.experiments.size());
     }
     
     public void addExperiment(Experiment experiment) {
@@ -117,14 +107,6 @@ public class User extends Record {
         }
         
         this.experiments.add(experiment);
-        this.experimentNumber++;
-    }
-    
-    public void removeExperiment(Experiment experiment) {
-        if (this.experiments.contains(experiment)) {
-            this.experiments.remove(experiment);
-            this.experimentNumber--;
-        }
     }
     
     @Column(name = "DatasetTemplates")
@@ -153,6 +135,26 @@ public class User extends Record {
     
     public void addSampleTemplate(Sample sam) {
         this.sampleTemplates.add(sam);
+    }
+
+    @Override
+    public void addToChildren(Record record) {
+        if (record instanceof Experiment) {
+            this.addExperiment((Experiment) record);
+        }
+        
+        else if (record instanceof Template) {
+            this.addDatasetTemplate((Template) record);
+        }
+        
+        else if (record instanceof Sample) {
+            this.addSampleTemplate((Sample) record);
+        }
+    }
+
+    @Override
+    public DatabaseRecord getType() {
+        return DatabaseRecord.USER;
     }
     
     @Override

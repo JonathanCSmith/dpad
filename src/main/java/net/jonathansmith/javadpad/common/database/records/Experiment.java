@@ -26,6 +26,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 
 
@@ -105,6 +106,22 @@ public class Experiment extends Record {
         if (this.analysedData.contains(data)) {
             this.analysedData.remove(data);
         }
+    }
+
+    @Override
+    public void addToChildren(Record record) {
+        if (record instanceof LoaderDataset) {
+            this.addLoadedData((LoaderDataset) record);
+        }
+        
+        else if (record instanceof AnalyserDataset) {
+            this.addAnalyserData((AnalyserDataset) record);
+        }
+    }
+
+    @Override
+    public DatabaseRecord getType() {
+        return DatabaseRecord.EXPERIMENT;
     }
    
     @Override

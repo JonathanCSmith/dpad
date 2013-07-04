@@ -16,13 +16,43 @@
  */
 package net.jonathansmith.javadpad.common.database;
 
+import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
+import net.jonathansmith.javadpad.server.database.recordaccess.experiment.ExperimentManager;
+import net.jonathansmith.javadpad.server.database.recordaccess.loaderplugin.LoaderPluginManager;
+import net.jonathansmith.javadpad.server.database.recordaccess.user.UserManager;
+
 /**
  *
  * @author Jon
  */
 public enum DatabaseRecord {
-    USER,
-    EXPERIMENT,
-    PLUGIN,
-    CURRENT_DATASET;
+    // TODO:
+    DATA_TYPE(null),
+    EQUIPMENT(null),
+    
+    EXPERIMENT(ExperimentManager.getInstance()),
+    
+    // TODO:
+    LOADER_DATA(null),
+    
+    LOADER_PLUGIN(LoaderPluginManager.getInstance()),
+    
+    // TODO:
+    SAMPLE(null),
+    TEMPLATE(null),
+    TIME_COURSE_DATA(null),
+    
+    USER(UserManager.getInstance()),
+    
+    CURRENT_DATASET(null);
+    
+    private final GenericManager manager;
+    
+    private DatabaseRecord(GenericManager manager) {
+        this.manager = manager;
+    }
+    
+    public GenericManager getManager() {
+        return this.manager;
+    }
 }

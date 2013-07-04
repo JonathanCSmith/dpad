@@ -18,11 +18,14 @@ package net.jonathansmith.javadpad.common.network.packet.session;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -36,20 +39,20 @@ public class SetSessionDataPacket extends LockedPacket {
     
     private static int id;
     
-    private DatabaseRecord type;
-    private Record data = null;
+    private SessionData type;
+    private RecordsList<Record> data = null;
     private byte[] serializedData;
     
     public SetSessionDataPacket() {
         super();
     }
     
-    public SetSessionDataPacket(Engine engine, Session session, DatabaseRecord type, Record record) {
+    public SetSessionDataPacket(Engine engine, Session session, SessionData type, RecordsList<Record> data) {
         super(engine, session);
         this.type = type;
-        this.data = record;
+        this.data = data;
         
-        if (record != null) {
+        if (data != null) {
             this.serializeData();
         }
     }
@@ -109,22 +112,22 @@ public class SetSessionDataPacket extends LockedPacket {
     public void parseLockedPayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
-                this.type = DatabaseRecord.values()[bytes[0]];
+                this.type = SessionData.values()[bytes[0]];
                 return;
                 
             case 1:
-                this.data = (Record) SerializationUtils.deserialize(bytes);
+                this.data = (RecordsList<Record>) SerializationUtils.deserialize(bytes);
         }
     }
 
     @Override
     public void handleClientSide() {
-        this.session.setKeySessionData(this.getKey(), this.type, this.data);
+        ((ClientSession) this.session).setSessionData(this.getKey(), this.type, this.data);
     }
 
     @Override
     public void handleServerSide() {
-        this.session.setKeySessionData(this.getKey(), this.type, this.data);
+        ((ServerSession) this.session).setSessionData(this.getKey(), this.type, this.data);
     }
 
     @Override

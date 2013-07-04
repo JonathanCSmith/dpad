@@ -41,7 +41,7 @@ import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.packet.database.NewRecordPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.NewSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
@@ -94,7 +94,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     public void loadRecordButton() {
         if (this.getCurrentView() != this.existingRecordPane) {
             SessionData dataType = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION);
-            RecordsList<Record> data = this.engine.getSession().checkoutData(dataType);
+            RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), dataType);
 
             if (data == null) {
                 this.dialog = new WaitForRecordsDialog(new JFrame(), true);
@@ -134,8 +134,8 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     public void submitNewRecordButton() {
         Record record = this.newRecordPane.buildNewlySubmittedRecord();
         if (record != null) {
-            Packet p = new NewRecordPacket(this.engine, this.engine.getSession(), this.recordType, record);
-            this.engine.getSession().addPacketToSend(PacketPriority.HIGH, p);
+            Packet p = new NewSessionDataPacket(this.engine, this.session, this.recordType, record);
+            this.session.addPacketToSend(PacketPriority.HIGH, p);
             this.newRecordPane.clearInfo();
         }
 
@@ -155,8 +155,9 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
         }
 
         else {
-            LockedPacket p = new SetSessionDataPacket(this.engine, this.engine.getSession(), this.recordType, record);
-            this.engine.getSession().lockAndSendPacket(PacketPriority.HIGH, p);
+            RecordsList<Record> list = new RecordsList<Record> ();
+            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE), list);
+            this.session.lockAndSendPacket(PacketPriority.HIGH, p);
         }
 
         this.setCurrentView(this.currentRecordPane);
@@ -172,8 +173,12 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     @Override
     public void validateState() {
         if (this.currentPanel == this.currentRecordPane) {
-            Record record = this.engine.getSession().getKeySessionData(this.recordType);
-            this.currentRecordPane.setCurrentData(record);
+            RecordsList<Record> list = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE));
+            if (list == null || list.isEmpty()) {
+                return;
+            }
+            
+            this.currentRecordPane.setCurrentData(list.getFirst());
         }
     }
     
@@ -238,7 +243,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
         else if (event instanceof DataArriveEvent) {
             DataArriveEvent evt = (DataArriveEvent) event;
             if (((SessionData) evt.getSource()).equals(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION))) {
-                RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION));
+                RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION));
                 if (data == null) {
                     return; // TODO: Verify if there is a better way of handling this, don't want packet spam tho
                 }

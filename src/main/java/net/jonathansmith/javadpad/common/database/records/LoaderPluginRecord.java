@@ -26,7 +26,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
+import net.jonathansmith.javadpad.common.database.Record;
 
 /**
  *
@@ -56,6 +58,14 @@ public class LoaderPluginRecord extends PluginRecord {
     
     public void setAllowedExtensions(Set<String> ext) {
         this.fileExtensions = ext;
+    }
+
+    @Override
+    public void addToChildren(Record record) {}
+
+    @Override
+    public DatabaseRecord getType() {
+        return DatabaseRecord.LOADER_PLUGIN;
     }
     
     @Override

@@ -24,6 +24,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 
 /**
@@ -65,6 +66,14 @@ public class TimeCourseData extends Record {
     
     public void setDataType(DataType type) {
         this.type = type;
+    }
+
+    @Override
+    public void addToChildren(Record record) {}
+
+    @Override
+    public DatabaseRecord getType() {
+        return DatabaseRecord.TIME_COURSE_DATA;
     }
     
     @Override

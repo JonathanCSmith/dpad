@@ -18,11 +18,12 @@ package net.jonathansmith.javadpad.common.network.packet.database;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -131,7 +132,7 @@ public class DataPacket extends LockedPacket {
             this.data = new RecordsList<Record> ();
         }
         
-        this.session.addData(this.getKey(), this.dataType, this.data);
+        ((ClientSession) this.session).setSessionData(this.getKey(), this.dataType, this.data);
     }
 
     @Override

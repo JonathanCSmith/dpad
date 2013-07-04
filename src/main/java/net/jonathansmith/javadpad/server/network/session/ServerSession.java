@@ -30,13 +30,10 @@ import org.bouncycastle.crypto.params.ParametersWithIV;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
-import net.jonathansmith.javadpad.common.database.Dataset;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
-import net.jonathansmith.javadpad.common.database.records.AnalyserDataset;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
 import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
@@ -59,8 +56,8 @@ import net.jonathansmith.javadpad.common.security.SecurityHandler;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.Server;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
-import net.jonathansmith.javadpad.server.database.recordaccess.experiment.ExperimentManager;
-import net.jonathansmith.javadpad.server.database.recordaccess.loaderdata.LoaderDataManager;
+import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
+import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
 import net.jonathansmith.javadpad.server.database.recordaccess.loaderplugin.LoaderPluginManager;
 import net.jonathansmith.javadpad.server.database.recordaccess.user.UserManager;
 
@@ -87,7 +84,10 @@ public final class ServerSession extends Session {
         this.outgoing = new OutgoingServerNetworkThread(eng, this, this.getSessionID());
         this.start();
         this.setServerKey(this.getSessionID());
-        connection = ((Server) this.engine).getSessionConnection();
+        this.connection = ((Server) this.engine).getSessionConnection();
+        
+        // TODO: Add all plugins (separately!) to the session data
+        // TODO: listen for changes! < EVNT THREAD
     }
     
     @Override
@@ -194,222 +194,6 @@ public final class ServerSession extends Session {
     public String getSha1Hash() {
         return this.hash;
     }
-
-    // Session data
-    @Override
-    public void addData(String key, SessionData dataType, RecordsList<Record> data) {
-        if (this.addSessionData(key, dataType, data)) {
-            this.fireChange(new DataArriveEvent(dataType));
-        }
-    }
-
-    @Override
-    public void updateData(String key, SessionData dataType, RecordsTransform data) {
-        RecordsList<Record> oldData = this.checkoutSessionData(dataType);
-        if (oldData == null) {
-            return;
-        }
-        
-        RecordsList<Record> dataUpdate = data.transform(oldData);
-        if (this.addSessionData(this.getSessionID(), dataType, dataUpdate)) {
-            RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
-            LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
-            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
-        }
-    }
-
-    @Override
-    public RecordsList<Record> checkoutData(SessionData dataType) {
-        RecordsList<Record> oldData = this.checkoutSessionData(dataType);
-        RecordsList<Record> dataUpdate = this.requestData(dataType);
-        if (this.addSessionData(this.getSessionID(), dataType, dataUpdate)) {
-            if (oldData != null) {
-                RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
-                if (transform != null) {
-                    LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
-                    this.lockAndSendPacket(PacketPriority.MEDIUM, p);
-                }
-            }
-            
-            else {
-                LockedPacket p = new DataPacket(this.engine, this, dataType, dataUpdate);
-                this.lockAndSendPacket(PacketPriority.MEDIUM, p);
-            }
-        }
-        
-        return dataUpdate;
-    }
-    
-    public void uploadPayload(SessionData dataType, Record payload) {
-        if (dataType == SessionData.PLUGIN) {
-            if (payload instanceof PluginRecord) {
-                this.handleNewPluginRequest(false, (PluginRecord) payload);
-            }
-        }
-    }
-    
-    @Override
-    public void setKeySessionData(String key, DatabaseRecord type, Record data) {
-        if (!key.contentEquals(this.getSessionID())) {
-            return;
-        }
-        
-        switch (type) {
-            case USER:
-                if (!(data instanceof User)) {
-                    return;
-                }
-                
-                this.setUser((User) data);
-                break;
-                
-            case EXPERIMENT:
-                if (!(data instanceof Experiment)) {
-                    return;
-                }
-                
-                this.setExperiment((Experiment) data);
-                break;
-                
-            case PLUGIN:
-                if (!(data instanceof PluginRecord)) {
-                    return;
-                }
-                
-                this.handleNewPluginRequest(true, (PluginRecord) data);
-                break;
-        }
-    }
-    
-    @Override
-    public void setUser(User user) {
-        super.setUser(user);
-        LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.USER, (Record) user);
-        this.lockAndSendPacket(PacketPriority.HIGH, p);
-    }
-    
-    @Override
-    public void setExperiment(Experiment experiment) {
-        super.setExperiment(experiment);
-        LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.EXPERIMENT, (Record) experiment);
-        this.lockAndSendPacket(PacketPriority.HIGH, p);
-    }
-    
-    public void setPlugin(PluginRecord plugin) {
-        Dataset data = this.getCurrentData();
-        if (data != null) {
-            data.setPluginInfo(plugin);
-            
-            if (data instanceof LoaderDataset) {
-                LoaderDataManager.getInstance().save(this.connection, (LoaderDataset) data);
-            }
-            
-            else {
-                // TODO:
-            }
-        }
-        
-        LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.CURRENT_DATASET, (Record) data);
-        this.lockAndSendPacket(PacketPriority.MEDIUM, p);
-    }
-
-    // Database
-    public RecordsList<Record> requestData(SessionData dataType) {
-        switch (dataType) {
-            case ALL_USERS:
-                return UserManager.getInstance().loadAll(this.connection);
-                
-            case USER_EXPERIMENTS:
-                User user = this.getUser();
-                if (user != null) {
-                    Set<Experiment> experiments = user.getExperiments();
-                    
-                    if (!experiments.isEmpty()) {
-                        RecordsList<Record> out = new RecordsList<Record> ();
-                        for (Experiment exp : experiments) {
-                            out.add(exp);
-                        }
-                        
-                        return out;
-                    }
-                }
-                
-                return new RecordsList<Record> ();
-                
-            case ALL_LOADER_PLUGINS:
-                return this.engine.getPluginManager().getLoaderPluginRecordList();
-                
-            default:
-                return null;
-        }
-    }
-    
-    public void submitNewRecord(DatabaseRecord type, Record record) {
-        switch (type) {
-            case USER:
-                if (!(record instanceof User)) {
-                    return;
-                }
-                
-                UserManager.getInstance().saveNew(this.connection, (User) record);
-                this.setKeySessionData(this.getSessionID(), DatabaseRecord.USER, record);
-                break;
-                
-            case EXPERIMENT:
-                if (!(record instanceof Experiment)) {
-                    return;
-                }
-                
-                ExperimentManager.getInstance().saveNew(this.connection, (Experiment) record);
-                this.setKeySessionData(this.getSessionID(), DatabaseRecord.EXPERIMENT, record);
-                
-                User user = this.getUser();
-                user.addExperiment((Experiment) record);
-                UserManager.getInstance().save(this.connection, user);
-                break;
-                
-            case CURRENT_DATASET:
-                if (record instanceof LoaderDataset) {
-                    LoaderDataManager.getInstance().saveNew(this.connection, (LoaderDataset) record);
-                    this.setKeySessionData(this.getSessionID(), DatabaseRecord.CURRENT_DATASET, record);
-                    
-                    Experiment exp = this.getExperiment();
-                    exp.addLoadedData((LoaderDataset) record);
-                    ExperimentManager.getInstance().save(this.connection, exp);
-                }
-                
-                else if (record instanceof AnalyserDataset) {
-                    
-                }
-                
-                break;
-        }
-    }
-    
-    // Runtime
-    /*
-     * Used to disconnect the client without affecting the server. Needs to be
-     * available
-     */
-    @Override
-    public void disconnect(boolean force) {
-        if (!this.disconnectExpected) {
-            LockedPacket p = new DisconnectPacket(this.engine, this, force);
-            this.lockAndSendPacket(PacketPriority.CRITICAL, p);
-        }
-        
-        this.incoming.shutdown(force);
-        this.outgoing.shutdown(force);
-        
-        this.connection.closeConnection();
-        if (this.channel.isConnected()) {
-            this.channel.disconnect();
-        }
-    }
-    
-    public void setDisconnectExpected() {
-        this.disconnectExpected = true;
-    }
     
     private void sha1Hash(Object[] input) {
         try {
@@ -455,7 +239,92 @@ public final class ServerSession extends Session {
         }
     }
     
-    private void handleNewPluginRequest(boolean sessionSet, PluginRecord plugin) {
+//    public void uploadPayload(SessionData dataType, Record payload) {
+//        if (dataType == SessionData.PLUGIN) {
+//            if (payload instanceof PluginRecord) {
+//                this.handleNewPluginRequest(false, (PluginRecord) payload);
+//            }
+//        }
+//    }
+//    
+//    @Override
+//    public void setKeySessionData(String key, DatabaseRecord type, Record data) {
+//        if (!key.contentEquals(this.getSessionID())) {
+//            return;
+//        }
+//        
+//        switch (type) {
+//            case USER:
+//                if (!(data instanceof User)) {
+//                    return;
+//                }
+//                
+//                this.setUser((User) data);
+//                break;
+//                
+//            case EXPERIMENT:
+//                if (!(data instanceof Experiment)) {
+//                    return;
+//                }
+//                
+//                this.setExperiment((Experiment) data);
+//                break;
+//                
+//            case PLUGIN:
+//                if (!(data instanceof PluginRecord)) {
+//                    return;
+//                }
+//                
+//                this.handleNewPluginRequest(true, (PluginRecord) data);
+//                break;
+//        }
+//    }
+//    
+//    public void setPlugin(PluginRecord plugin) {
+//        Dataset data = this.getCurrentData();
+//        if (data != null) {
+//            data.setPluginInfo(plugin);
+//            
+//            if (data instanceof LoaderDataset) {
+//                LoaderDataManager.getInstance().save(this.connection, (LoaderDataset) data);
+//            }
+//            
+//            else {
+//                // TODO:
+//            }
+//        }
+//        
+//        LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.CURRENT_DATASET, (Record) data);
+//        this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+//    }
+    
+    /**
+     * Used to disconnect the client without affecting the server. Needs to be
+     * available
+     * 
+     * @param force 
+     */
+    @Override
+    public void disconnect(boolean force) {
+        if (!this.disconnectExpected) {
+            LockedPacket p = new DisconnectPacket(this.engine, this, force);
+            this.lockAndSendPacket(PacketPriority.CRITICAL, p);
+        }
+        
+        this.incoming.shutdown(force);
+        this.outgoing.shutdown(force);
+        
+        this.connection.closeConnection();
+        if (this.channel.isConnected()) {
+            this.channel.disconnect();
+        }
+    }
+    
+    public void setDisconnectExpected() {
+        this.disconnectExpected = true;
+    }
+    
+    public void handleNewPluginRequest(boolean sessionSet, PluginRecord plugin) {
         PluginManagerHandler manager = this.engine.getPluginManager();
         PluginRecord local = manager.getPluginRecord(plugin.getName());
         PluginRecord decision;
@@ -519,7 +388,245 @@ public final class ServerSession extends Session {
         }
         
         if (sessionSet) {
-            this.setPlugin(decision);
+            RecordsList<Record> list = new RecordsList<Record> ();
+            list.add(decision);
+            this.setSessionData(this.getSessionID(), SessionData.PLUGIN, list);
         }
+    }
+    
+    /**
+     * Sets the session data if sever key is correct, automatically updates the
+     * client
+     * 
+     * @param soureKey
+     * @param dataType
+     * @param data
+     * @return whether the data set was successful
+     */
+    @Override
+    public boolean setSessionData(String soureKey, SessionData dataType, RecordsList<Record> data) {
+        if (super.setSessionData(soureKey, dataType, data)) {
+            this.fireChange(new DataArriveEvent(dataType)); // TODO: Fix events
+            LockedPacket p = new SetSessionDataPacket(this.engine, this, dataType, data);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Updates the session data, client should only update if from server
+     * 
+     * @param sourceKey
+     * @param data 
+     */
+    @Override
+    public void updateSessionData(String sourceKey, SessionData dataType, RecordsTransform data) {
+        RecordsList<Record> oldData = this.checkoutSessionData(sourceKey, dataType);
+        if (oldData == null) {
+            return;
+        }
+        
+        RecordsList<Record> dataUpdate = data.transform(oldData);
+        if (this.setSessionData(this.getSessionID(), dataType, dataUpdate)) {
+            // TODO: fire update session data
+        
+            RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
+            LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+        }
+    }
+    
+    /**
+     * Checks out session specific data, this will poll the database and be
+     * preferred, so all pending updates must be submitted before checking out
+     * again
+     * 
+     * @param sourceKey
+     * @param dataType
+     * @return list of records found, may be empty! 
+     */
+    @Override
+    public RecordsList<Record> checkoutSessionData(String sourceKey, SessionData dataType) {
+        if (dataType.getRecordType() == null) {
+            RecordsList<Record> returnData = super.checkoutSessionData(sourceKey, dataType);
+            LockedPacket p = new DataPacket(this.engine, this, dataType, returnData);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            return returnData;
+        }
+        
+        RecordsList<Record> oldData = super.checkoutSessionData(sourceKey, dataType);
+        RecordsList<Record> dataUpdate = this.checkoutDatabaseRecords(dataType);
+        if (dataUpdate != null && this.setSessionData(this.getSessionID(), dataType, dataUpdate)) {
+            if (oldData != null) {
+                RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
+                if (transform != null) {
+                    LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
+                    this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+                }
+            }
+            
+            else {
+                LockedPacket p = new DataPacket(this.engine, this, dataType, dataUpdate);
+                this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            }
+        }
+        
+        return dataUpdate;
+    }
+    
+    /**
+     * Softly checks out any session data from the data map, the key ensures the
+     * correct side is querying this and no packets will be sent
+     * 
+     * @param dataType
+     * @return 
+     */
+    public RecordsList<Record> softlyCheckoutSessionData(SessionData dataType) {
+        if (dataType.getRecordType() == null) {
+            return super.checkoutSessionData(this.getSessionID(), dataType);
+        }
+        
+        else {
+            RecordsList<Record> dbData = this.checkoutDatabaseRecords(dataType);
+            if (this.setSessionData(this.getSessionID(), dataType, dbData)) {
+                return dbData;
+            }
+            
+            else {
+                return super.checkoutSessionData(this.getSessionID(), dataType);
+            }
+        }
+    }
+    
+    /**
+     * Used to add an new record to the database
+     * 
+     * @param record 
+     */
+    public void addDatabaseRecord(String key, DatabaseRecord recordType, Record record) {
+        if (!this.isServerKey(key) || record == null) {
+            return;
+        }
+        
+        RecordsList<Record> focusList = this.checkoutSessionData(this.getSessionID(), SessionData.FOCUS);
+        if (focusList != null) {
+            Record focus = focusList.getFirst();
+            focus.addToChildren(record);
+            
+            DatabaseRecord type = focus.getType();
+            if (type != null) {
+                GenericManager parentManager = type.getManager();
+                parentManager.save(this.connection, focus);
+            }
+        }
+        
+        GenericManager manager = recordType.getManager();
+        manager.saveNew(this.connection, record);
+        RecordsList<Record> list = new RecordsList<Record> ();
+        list.add(record);
+        this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(recordType, QueryType.SINGLE), list);
+    }
+    
+    /**
+     * Used to update an existing record from the database
+     * 
+     * @param record 
+     */
+    protected void updateDatabaseRecord(Record record) {
+        if (record == null) {
+            return;
+        }
+        
+        RecordsList<Record> focusList = this.checkoutSessionData(this.getSessionID(), SessionData.FOCUS);
+        if (focusList != null) {
+            Record focus = focusList.getFirst();
+            focus.addToChildren(record);
+            
+            DatabaseRecord type = focus.getType();
+            if (type != null) {
+                GenericManager parentManager = type.getManager();
+                parentManager.save(this.connection, focus);
+            }
+        }
+        
+        GenericManager manager = record.getType().getManager();
+        manager.save(this.connection, record);
+        RecordsList<Record> list = new RecordsList<Record> ();
+        list.add(record);
+        this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(record.getType(), QueryType.SINGLE), list);
+    }
+    
+    /**
+     * Used to pull a set of records from the database based on a provided query
+     * 
+     * @param dataType
+     * @return a list of results that may be null if none were found
+     */
+    private RecordsList<Record> checkoutDatabaseRecords(SessionData dataType) {
+        if (dataType.getRecordType() == null) {
+            return null;
+        }
+        
+        if (dataType.getQueryType() == QueryType.SINGLE) {
+            RecordsList<Record> list = super.checkoutSessionData(this.getSessionID(), dataType);
+            if (list == null || list.isEmpty()) {
+                return null;
+            }
+            
+            Record value = this.checkoutDatabaseRecord(dataType.getRecordType(), list.getFirst().getUUID());
+            RecordsList<Record> out = new RecordsList<Record> ();
+            out.add(value);
+            return out;
+        }
+        
+        switch (dataType) {
+            case ALL_USERS:
+                return UserManager.getInstance().loadAll(this.connection);
+                
+            case USER_EXPERIMENTS:
+                RecordsList<Record> list = this.softlyCheckoutSessionData(SessionData.getSessionDataFromDatabaseRecordAndQuery(DatabaseRecord.USER, QueryType.SINGLE));
+                if (list == null || list.isEmpty()) {
+                    return null;
+                }
+                
+                Record record = list.getFirst();
+                if (!(record instanceof User)) {
+                    return null;
+                }
+                
+                User user = (User) record;
+                Set<Experiment> experiments = user.getExperiments();
+
+                if (!experiments.isEmpty()) {
+                    RecordsList<Record> out = new RecordsList<Record> ();
+                    for (Experiment exp : experiments) {
+                        out.add(exp);
+                    }
+
+                    return out;
+                }
+                
+                return new RecordsList<Record> ();
+                
+            case ALL_LOADER_PLUGINS:
+                return this.engine.getPluginManager().getLoaderPluginRecordList();
+                
+            default:
+                return null;
+        }
+    }
+    
+    /**
+     * Used to pull a record from the database based on the given key attribute
+     * 
+     * @param recordType
+     * @return a record of type requested, may be null if no record was found
+     */
+    private Record checkoutDatabaseRecord(DatabaseRecord recordType, String attribute) {
+        GenericManager manager = recordType.getManager();
+        Record out = manager.findByID(this.connection, attribute);
+        return out;
     }
 }
