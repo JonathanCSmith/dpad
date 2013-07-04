@@ -37,8 +37,8 @@ public class GenericDAO<T extends Record, ID extends Serializable> {
         sess.saveOrUpdate(entity);
     }
     
-    public void merge(Session sess, T entity) {
-        sess.merge(entity);
+    public T merge(Session sess, T entity) {
+        return (T) sess.merge(entity);
     }
     
     public void delete(Session sess, T entity) {

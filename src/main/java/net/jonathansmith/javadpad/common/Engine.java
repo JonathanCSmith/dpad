@@ -25,7 +25,8 @@ import net.jonathansmith.javadpad.common.plugins.PluginManagerHandler;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 
 /**
- *
+ * Common backbone for the application
+ * 
  * @author jonathansmith
  */
 public abstract class Engine extends Thread {
@@ -211,6 +212,12 @@ public abstract class Engine extends Thread {
         }
     }
     
+    /**
+     * Side aware engine getter
+     * Mostly provides access to logs
+     * 
+     * @return 
+     */
     public static Engine getEngine() {
         return instance;
     }

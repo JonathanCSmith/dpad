@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
-import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -184,7 +184,7 @@ public class DataUpdatePacket extends LockedPacket {
         }
         
         RecordsTransform transform = new RecordsTransform(this.changes, this.deletions, this.additions);
-        this.session.updateData(this.getKey(), this.dataType, transform);
+        this.session.updateSessionData(this.getKey(), this.dataType, transform);
     }
 
     @Override

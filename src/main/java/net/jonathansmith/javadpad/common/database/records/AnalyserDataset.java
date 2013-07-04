@@ -20,7 +20,9 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Dataset;
+import net.jonathansmith.javadpad.common.database.Record;
 
 /**
  *
@@ -29,6 +31,16 @@ import net.jonathansmith.javadpad.common.database.Dataset;
 @Entity
 @Table(name = "AnalysedData", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class AnalyserDataset extends Dataset {
+
+    @Override
+    public void addToChildren(Record record) {
+        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+    }
+
+    @Override
+    public DatabaseRecord getType() {
+        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+    }
 
     @Override
     public boolean equals(Object o) {

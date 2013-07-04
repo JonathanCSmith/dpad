@@ -25,6 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 
 /**
@@ -61,6 +62,14 @@ public class Sample extends Record {
     
     public void addCondition(String condition) {
         this.conditions.add(condition);
+    }
+
+    @Override
+    public void addToChildren(Record record) {}
+
+    @Override
+    public DatabaseRecord getType() {
+        return DatabaseRecord.SAMPLE;
     }
     
     @Override

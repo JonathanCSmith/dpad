@@ -19,15 +19,16 @@ package net.jonathansmith.javadpad.client.threads.runtimeselect.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
-import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.pane.RuntimeSelectPane;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.toolbar.RuntimeSelectToolbar;
+import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
+import net.jonathansmith.javadpad.common.network.session.SessionData;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
  *
@@ -54,23 +55,41 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
     
     @Override
     public void validateState() {
-        Client client = (Client) this.engine;
-        ClientSession session = client.getSession();
+        User user;
+        RecordsList<Record> list = this.session.softlyCheckoutSessionData(SessionData.USER);
+        if (list == null || list.isEmpty() || !(list.getFirst() instanceof User)) {
+            user = null;
+        }
         
-        if (session.getState() != NetworkThreadState.RUNNING) {
+        else {
+            user = (User) list.getFirst();
+        }
+        
+        Experiment experiment;
+        list = this.session.softlyCheckoutSessionData(SessionData.EXPERIMENT);
+        if (list == null || list.isEmpty() || !(list.getFirst() instanceof Experiment)) {
+            experiment = null;
+        }
+        
+        else {
+            experiment = (Experiment) list.getFirst();
+        }
+        
+        
+        if (this.session.getState() != NetworkThreadState.RUNNING) {
             this.runtimeSelectToolbar.setUser.setEnabled(false);
             this.runtimeSelectToolbar.setExperiment.setEnabled(false);
             this.runtimeSelectToolbar.setData.setEnabled(false);
             return;
         }
         
-        if (session.getUser() == null) {
+        if (user == null) {
             this.runtimeSelectToolbar.setUser.setEnabled(true);
             this.runtimeSelectToolbar.setExperiment.setEnabled(false);
             this.runtimeSelectToolbar.setData.setEnabled(false);
         }
         
-        else if (session.getExperiment() == null) {
+        else if (experiment == null) {
             this.runtimeSelectToolbar.setUser.setEnabled(true);
             this.runtimeSelectToolbar.setExperiment.setEnabled(true);
             this.runtimeSelectToolbar.setData.setEnabled(false);
@@ -83,19 +102,10 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
         }
         
         if (this.currentPanel == this.runtimeSelectPane) {
-            User user = session.getUser();
-            
             if (user != null) {
                 this.runtimeSelectPane.usernameField.setText(user.getUsername());
-                
-                Experiment experiment = session.getExperiment();
-                
                 if (experiment != null) {
                     this.runtimeSelectPane.experimentField.setText(experiment.getName());
-                }
-                
-                else {
-                    this.runtimeSelectPane.experimentField.setText("");
                 }
             }
             
@@ -107,27 +117,24 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
     }
 
     public void actionPerformed(ActionEvent evt) {
-        Client client = (Client) this.engine;
-        ClientSession session = client.getSession();
-        
         if (evt.getSource() == this.runtimeSelectToolbar.setUser) {
-            client.setRuntime(ClientRuntimeThread.USER);
+            this.engine.setRuntime(ClientRuntimeThread.USER);
         }
         
         else if (evt.getSource() == this.runtimeSelectToolbar.setExperiment) {
-            client.setRuntime(ClientRuntimeThread.EXPERIMENT);
+            this.engine.setRuntime(ClientRuntimeThread.EXPERIMENT);
         }
         
         else if (evt.getSource() == this.runtimeSelectToolbar.setData) {
-            client.setRuntime(ClientRuntimeThread.DATA);
+            this.engine.setRuntime(ClientRuntimeThread.DATA);
         }
         
         else if (evt.getSource() == this.runtimeSelectToolbar.addPlugin) {
-            client.setRuntime(ClientRuntimeThread.ADD_PLUGIN);
+            this.engine.setRuntime(ClientRuntimeThread.ADD_PLUGIN);
         }
         
         else if (evt.getSource() == this.runtimeSelectToolbar.shutdown) {
-            client.saveAndShutdown();
+            this.engine.saveAndShutdown();
         }
     }
 }

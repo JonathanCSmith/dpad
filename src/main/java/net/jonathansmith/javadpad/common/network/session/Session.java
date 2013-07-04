@@ -26,12 +26,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
-import net.jonathansmith.javadpad.common.database.Dataset;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
-import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.ChangeSender;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
@@ -71,9 +67,6 @@ public abstract class Session implements ChangeSender {
     
     private NetworkThreadState state = NetworkThreadState.EXCHANGING_HANDSHAKE;
     private String serverKey;
-    private User user;
-    private Experiment experiment;
-    private Dataset currentData;
     
     public Session(Engine eng, Channel channel) {
         this.engine = eng;
@@ -82,7 +75,7 @@ public abstract class Session implements ChangeSender {
     }
 
     // Core properties
-    protected final String getSessionID() {
+    public final String getSessionID() {
         return this.id;
     }
     
@@ -94,6 +87,17 @@ public abstract class Session implements ChangeSender {
     public abstract void handleEncryptionKeyResponse(EncryptionKeyResponsePacket p, boolean isReply);
     
     public abstract void handleSessionKey(EncryptedSessionKeyPacket p);
+    
+    // Session Data
+    protected final void setServerKey(String key) {
+        if (this.lock.compareAndSet(false, true)) {
+            this.serverKey = key;
+        }
+    }
+    
+    protected final boolean isServerKey(String key) {
+        return key.contentEquals(this.serverKey);
+    }
     
     public final NetworkThreadState getState() {
         return this.state;
@@ -112,7 +116,7 @@ public abstract class Session implements ChangeSender {
         }
     }
     
-    // Network handlerssss
+    // Network handlers
     public void addPacketToSend(PacketPriority priority, Packet p) {
         this.outgoing.addPacket(priority, p);
     }
@@ -129,93 +133,9 @@ public abstract class Session implements ChangeSender {
         this.channel.write(pm);
     }
     
-    // Session Data
-    protected final void setServerKey(String key) {
-        if (this.lock.compareAndSet(false, true)) {
-            this.serverKey = key;
-        }
-    }
-    
-    protected final boolean isServerKey(String key) {
-        return key.contentEquals(this.serverKey);
-    }
-    
     public final void lockAndSendPacket(PacketPriority priority, LockedPacket packet) {
         packet.lockPacket(this.serverKey);
         this.addPacketToSend(priority, packet);
-    }
-    
-    public abstract void addData(String key, SessionData dataType, RecordsList<Record> data);
-    
-    public abstract void updateData(String key, SessionData dataType, RecordsTransform data);
-    
-    public abstract RecordsList<Record> checkoutData(SessionData dataType);
-    
-    // Locked read writers of session data
-    protected final boolean addSessionData(String key, SessionData dataType, RecordsList<Record> data) {
-        if (dataType == null) {
-            return false;
-        }
-        
-        if (key.contentEquals(this.serverKey)) {
-            this.sessionData.put(dataType, data);
-            return true;
-        }
-        
-        return false;
-    }
-    
-    protected final RecordsList<Record> checkoutSessionData(SessionData dataType) {
-        if (dataType == null) {
-            return null;
-        }
-        
-        return this.sessionData.get(dataType);
-    }
-    
-    protected final void clearSessionData() {
-        this.sessionData.clear();
-    }
-    
-    // Core session properties - what the ui will interact with
-    public abstract void setKeySessionData(String key, DatabaseRecord type, Record data);
-    
-    // TODO: Any better? consolidate switch block with database accessors????
-    public Record getKeySessionData(DatabaseRecord type) {
-        switch (type) {
-            case USER:
-                return this.getUser();
-                
-            case EXPERIMENT:
-                return this.getExperiment();
-                
-            default:
-                return null;
-        }
-    }
-    
-    public User getUser() {
-        return this.user;
-    }
-    
-    protected void setUser(User user) {
-        this.user = user;
-    }
-    
-    public Experiment getExperiment() {
-        return this.experiment;
-    }
-    
-    protected void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-    
-    public Dataset getCurrentData() {
-        return this.currentData;
-    }
-    
-    protected void setCurrentData(Dataset data) {
-        this.currentData = data;
     }
     
     // Functional methods
@@ -245,6 +165,70 @@ public abstract class Session implements ChangeSender {
     public void fireChange(EventObject event) {
         for (ChangeListener listener : this.listeners) {
             listener.changeEventReceived(event);
+        }
+    }
+    
+    /**
+     * Sets the session data under the assumption that the new data is always
+     * correct
+     * 
+     * @param sourceKey
+     * @param data
+     * @return whether the set was successful or not
+     */
+    protected boolean setSessionData(String sourceKey, SessionData dataType, RecordsList<Record> data) {
+        if (sourceKey.contentEquals(this.serverKey)) {
+            this.sessionData.put(dataType, data);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Updates the session data
+     * 
+     * @param sourceKey
+     * @param data 
+     */
+    public abstract void updateSessionData(String sourceKey, SessionData dataType, RecordsTransform data);
+    
+    /**
+     * Check out session data from the data map, checks the key against itself
+     * (Server should never ask for client data and client should request
+     * through the session)
+     * 
+     * @param key
+     * @param dataType
+     * @return A list of records that may be null if no session data was present
+     */
+    public RecordsList<Record> checkoutSessionData(String sourceKey, SessionData dataType) {
+        if (sourceKey.contentEquals(this.getSessionID())) {
+            if (this.sessionData.containsKey(dataType)) {
+                return this.sessionData.get(dataType);
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Softly checks out any session data from the data map, the key ensures the
+     * correct side is querying this and no packets will be sent
+     * 
+     * @param dataType
+     * @return 
+     */
+    public abstract RecordsList<Record> softlyCheckoutSessionData(SessionData dataType);
+    
+    /**
+     * Clears the session data if they have ownership
+     * 
+     * @param key 
+     */
+    protected final void clearSessionData(String key) {
+        if (key.contentEquals(this.getSessionID())) {
+            this.sessionData.clear();
         }
     }
 }

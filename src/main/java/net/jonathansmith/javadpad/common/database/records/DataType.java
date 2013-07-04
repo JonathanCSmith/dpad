@@ -21,6 +21,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 
 /**
@@ -52,6 +53,14 @@ public class DataType extends Record {
     
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public void addToChildren(Record record) {}
+
+    @Override
+    public DatabaseRecord getType() {
+        return DatabaseRecord.DATA_TYPE;
     }
     
     @Override

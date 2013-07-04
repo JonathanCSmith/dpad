@@ -45,6 +45,10 @@ public abstract class Record implements Serializable {
         this.uuid = uuid;
     }
     
+    public abstract void addToChildren(Record record);
+    
+    public abstract DatabaseRecord getType();
+    
     @Override
     public abstract boolean equals(Object o);
 

@@ -45,6 +45,7 @@ import net.jonathansmith.javadpad.client.threads.data.pane.PluginSelectPane;
 import net.jonathansmith.javadpad.client.threads.data.toolbar.AddDataToolbar;
 import net.jonathansmith.javadpad.client.threads.data.toolbar.DataToolbar;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
+import net.jonathansmith.javadpad.common.database.Dataset;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
@@ -56,12 +57,13 @@ import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
-import net.jonathansmith.javadpad.common.network.packet.database.NewRecordPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.NewSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
 
 /**
  *
@@ -69,6 +71,9 @@ import net.jonathansmith.javadpad.common.util.database.RecordsList;
  */
 public class DataDisplayOption extends DisplayOption implements ActionListener, MouseListener, ChangeListener {
 
+    // TODO: Move this to separate display option logic, that way we only need
+    // to poll focus for this specific pane
+    
     private WaitForRecordsDialog dialog = null;
     
     // Main
@@ -117,7 +122,10 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
     public void submitSelectedPlugin() {
         Record selection = this.pluginSelectPane.getSelectedRecord();
         if (selection != null && selection instanceof PluginRecord) {
-            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, DatabaseRecord.PLUGIN, selection);
+            RecordsList<Record> list = new RecordsList<Record> ();
+            list.add(selection);
+            
+            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(DatabaseRecord.LOADER_PLUGIN, QueryType.SINGLE), list);
             this.session.lockAndSendPacket(PacketPriority.HIGH, p);
             
             this.dialog = new WaitForRecordsDialog(new JFrame(), true);
@@ -144,13 +152,21 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
     @Override
     public void validateState() {
         if (this.currentPanel == this.currentInformationPane) {
-            Record record = this.engine.getSession().getKeySessionData(DatabaseRecord.EXPERIMENT);
-            this.currentInformationPane.setCurrentData(record);
+            RecordsList<Record> list = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.EXPERIMENT);
+            if (list == null || list.isEmpty()) {
+                return;
+            }
+            
+            this.currentInformationPane.setCurrentData(list.getFirst());
         }
         
         else if (this.currentPanel == this.addDataDisplay) {
-            Record record = this.engine.getSession().getKeySessionData(DatabaseRecord.CURRENT_DATASET);
-            this.addDataDisplay.setCurrentData(record);
+            RecordsList<Record> list = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.FOCUS);
+            if (list == null || list.isEmpty()) {
+                return;
+            }
+            
+            this.addDataDisplay.setCurrentData(list.getFirst());
         }
     }
 
@@ -160,7 +176,7 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             if (this.currentPanel != this.addDataDisplay) {
                 // Create new Loader Data Set
                 LoaderDataset data = new LoaderDataset();
-                Packet p = new NewRecordPacket(this.engine, this.session, DatabaseRecord.CURRENT_DATASET, data);
+                Packet p = new NewSessionDataPacket(this.engine, this.session, DatabaseRecord.CURRENT_DATASET, data);
                 this.session.addPacketToSend(PacketPriority.MEDIUM, p);
                 
                 this.setCurrentView(this.addDataDisplay);
@@ -202,7 +218,19 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             JFileChooser chooser = new JFileChooser();
             chooser.setDialogTitle("Please select your data");
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            final Set<String> ext = ((LoaderPluginRecord) this.session.getCurrentData().getPluginInfo()).getAllowedExtensions();
+            RecordsList<Record> list = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.FOCUS);
+            if (list == null || list.isEmpty()) {
+                return;
+            }
+            
+            Record record = list.getFirst();
+            if (!(record instanceof Dataset)) {
+                return;
+            }
+            
+            Dataset data = (Dataset) record;
+            
+            final Set<String> ext = ((LoaderPluginRecord) data.getPluginInfo()).getAllowedExtensions();
             chooser.setFileFilter(new FileFilter() {
                 @Override
                 public boolean accept(File f) {
@@ -231,9 +259,19 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             if (outcome == JFileChooser.APPROVE_OPTION) {
                 files = chooser.getSelectedFiles();
                 
-                LoaderDataset data = (LoaderDataset) this.session.getCurrentData();
+                RecordsList<Record> lister = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.FOCUS);
+                if (lister == null || lister.isEmpty()) {
+                    return;
+                }
+
+                Record recorder = lister.getFirst();
+                if (!(record instanceof LoaderDataset)) {
+                    return;
+                }
+
+                LoaderDataset dataer = (LoaderDataset) recorder;
                 for (File f : files) {
-                    data.addSourceFile(f.getAbsolutePath());
+                    dataer.addSourceFile(f.getAbsolutePath());
                 }
             }
             
@@ -294,7 +332,7 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         else if (event instanceof DataArriveEvent) {
             DataArriveEvent evt = (DataArriveEvent) event;
             if (((SessionData) evt.getSource()).equals(SessionData.ALL_LOADER_PLUGINS)) {
-                RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.ALL_LOADER_PLUGINS);
+                RecordsList<Record> data = this.engine.getSession().checkoutSessionData(this.session.getSessionID(), SessionData.ALL_LOADER_PLUGINS);
                 if (data == null) {
                     return;
                 }
@@ -326,7 +364,7 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             }
             
             else if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN_STATUS)) {
-                RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.PLUGIN);
+                RecordsList<Record> data = this.engine.getSession().checkoutSessionData(this.session.getSessionID(), SessionData.PLUGIN);
                 if (data == null || !(data.getFirst() instanceof IntegerRecord)) {
                     return;
                 }

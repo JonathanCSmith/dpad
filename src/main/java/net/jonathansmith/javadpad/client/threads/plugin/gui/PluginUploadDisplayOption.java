@@ -170,7 +170,7 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
         else if (event instanceof DataArriveEvent) {
             DataArriveEvent evt = (DataArriveEvent) event;
             if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN_STATUS)) {
-                RecordsList<Record> data = this.engine.getSession().checkoutData(SessionData.PLUGIN);
+                RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.PLUGIN);
                 if (data == null || !(data.getFirst() instanceof IntegerRecord)) {
                     return;
                 }

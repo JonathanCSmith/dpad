@@ -18,6 +18,7 @@ package net.jonathansmith.javadpad.common.network.packet.plugins;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
@@ -26,7 +27,6 @@ import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerReco
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
-import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -130,12 +130,13 @@ public class PluginUploadRequestPacket extends LockedPacket {
     public void handleClientSide() {
         RecordsList<Record> data = new RecordsList<Record> ();
         data.add(new IntegerRecord(this.status));
-        this.session.addData(this.getKey(), SessionData.PLUGIN_STATUS, data);
+        ((ClientSession) this.session).setSessionData(this.getKey(), SessionData.PLUGIN_STATUS, data);
     }
 
     @Override
     public void handleServerSide() {
-        ((ServerSession) this.session).uploadPayload(SessionData.PLUGIN, this.record);
+        //((ServerSession) this.session).uploadPlugin(SessionData.PLUGIN, this.record);
+        // TODO: Fix the above method and load the file
     }
 
     @Override

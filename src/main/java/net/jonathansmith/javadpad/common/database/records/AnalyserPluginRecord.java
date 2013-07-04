@@ -16,13 +16,25 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
+import net.jonathansmith.javadpad.common.database.Record;
 
 /**
  *
  * @author Jon
  */
 public class AnalyserPluginRecord extends PluginRecord {
+
+    @Override
+    public void addToChildren(Record record) {
+        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+    }
+
+    @Override
+    public DatabaseRecord getType() {
+        throw new UnsupportedOperationException("Not supported yet."); // TODO:
+    }
 
     @Override
     public boolean equals(Object o) {

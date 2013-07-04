@@ -58,6 +58,7 @@ public abstract class GenericManager<T extends Record> {
         boolean success = false;
         try {
             connection.beginTransaction();
+            input = (T) this.dao.merge(connection.getSession(), input);
             this.dao.save(connection.getSession(), input);
             connection.commitTransaction();
             success = true;

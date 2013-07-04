@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.network.packet.database;
+package net.jonathansmith.javadpad.common.network.packet.session;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
@@ -31,7 +31,7 @@ import org.apache.commons.lang3.SerializationUtils;
  *
  * @author Jon
  */
-public class NewRecordPacket extends Packet {
+public class NewSessionDataPacket extends LockedPacket {
     
     private static final AtomicBoolean lock = new AtomicBoolean(false);
 
@@ -41,11 +41,11 @@ public class NewRecordPacket extends Packet {
     private Record data;
     private byte[] serializedData;
     
-    public NewRecordPacket() {
+    public NewSessionDataPacket() {
         super();
     }
     
-    public NewRecordPacket(Engine engine, Session session, DatabaseRecord dataType, Record data) {
+    public NewSessionDataPacket(Engine engine, Session session, DatabaseRecord dataType, Record data) {
         super(engine, session);
         this.type = dataType;
         this.data = data;
@@ -70,12 +70,12 @@ public class NewRecordPacket extends Packet {
     }
 
     @Override
-    public int getNumberOfPayloads() {
+    public int getNumberOfLockedPayloads() {
         return 2;
     }
 
     @Override
-    public int getPayloadSize(int payloadNumber) {
+    public int getLockedPayloadSize(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
                 return 1;
@@ -89,7 +89,7 @@ public class NewRecordPacket extends Packet {
     }
 
     @Override
-    public byte[] writePayload(int payloadNumber) {
+    public byte[] writeLockedPayload(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
                 byte[] out = new byte[1];
@@ -105,7 +105,7 @@ public class NewRecordPacket extends Packet {
     }
 
     @Override
-    public void parsePayload(int payloadNumber, byte[] bytes) {
+    public void parseLockedPayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
                 this.type = DatabaseRecord.values()[bytes[0]];
@@ -122,7 +122,7 @@ public class NewRecordPacket extends Packet {
     @Override
     public void handleServerSide() {
         if (this.data != null) {
-            ((ServerSession) this.session).submitNewRecord(this.type, this.data);
+            ((ServerSession) this.session).addDatabaseRecord(this.getKey(), this.type, this.data);
         }
     }
 
