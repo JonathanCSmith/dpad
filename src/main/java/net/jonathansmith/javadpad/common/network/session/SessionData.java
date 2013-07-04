@@ -32,7 +32,7 @@ public enum SessionData {
     
     PLUGIN(DatabaseRecord.LOADER_PLUGIN, QueryType.SINGLE), 
     ALL_LOADER_PLUGINS(DatabaseRecord.LOADER_PLUGIN, QueryType.ALL_AVAILABLE_TO_SESSION),
-    
+    ALL_ANALYSER_PLUGINS(DatabaseRecord.ANALYSER_PLUGIN, QueryType.ALL_AVAILABLE_TO_SESSION),
     PLUGIN_STATUS(null, null),
     
     LOADER_DATA(DatabaseRecord.LOADER_DATA, QueryType.SINGLE),
