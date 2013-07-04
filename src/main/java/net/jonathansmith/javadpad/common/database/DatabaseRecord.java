@@ -27,6 +27,7 @@ import net.jonathansmith.javadpad.server.database.recordaccess.user.UserManager;
  */
 public enum DatabaseRecord {
     // TODO:
+    ANALYSER_PLUGIN(null),
     DATA_TYPE(null),
     EQUIPMENT(null),
     
