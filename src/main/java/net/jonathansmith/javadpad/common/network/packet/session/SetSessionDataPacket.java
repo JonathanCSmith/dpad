@@ -41,16 +41,18 @@ public class SetSessionDataPacket extends LockedPacket {
     
     private SessionData type;
     private RecordsList<Record> data = null;
+    private boolean pullsFocus;
     private byte[] serializedData;
     
     public SetSessionDataPacket() {
         super();
     }
     
-    public SetSessionDataPacket(Engine engine, Session session, SessionData type, RecordsList<Record> data) {
+    public SetSessionDataPacket(Engine engine, Session session, SessionData type, RecordsList<Record> data, boolean pullsFocus) {
         super(engine, session);
         this.type = type;
         this.data = data;
+        this.pullsFocus = pullsFocus;
         
         if (data != null) {
             this.serializeData();
@@ -75,16 +77,17 @@ public class SetSessionDataPacket extends LockedPacket {
 
     @Override
     public int getNumberOfLockedPayloads() {
-        return 2;
+        return 3;
     }
 
     @Override
     public int getLockedPayloadSize(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
+            case 1:
                 return 1;
                 
-            case 1:
+            case 2:
                 return this.data != null ? this.serializedData.length : 0;
                 
             default:
@@ -101,6 +104,15 @@ public class SetSessionDataPacket extends LockedPacket {
                 return out;
                 
             case 1:
+                if (this.pullsFocus) {
+                    return new byte[] {1};
+                }
+                
+                else {
+                    return new byte[] {0};
+                }
+                
+            case 2:
                 return this.data != null ? this.serializedData : null;
                 
             default:
@@ -116,6 +128,15 @@ public class SetSessionDataPacket extends LockedPacket {
                 return;
                 
             case 1:
+                if (bytes[0] == 0) {
+                    this.pullsFocus = false;
+                }
+                
+                else {
+                    this.pullsFocus = true;
+                }
+                
+            case 2:
                 this.data = (RecordsList<Record>) SerializationUtils.deserialize(bytes);
         }
     }
@@ -128,6 +149,10 @@ public class SetSessionDataPacket extends LockedPacket {
     @Override
     public void handleServerSide() {
         ((ServerSession) this.session).setSessionData(this.getKey(), this.type, this.data);
+        
+        if (this.pullsFocus) {
+            ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, this.data);
+        }
     }
 
     @Override

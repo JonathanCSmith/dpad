@@ -26,6 +26,9 @@ import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.toolbar.Runti
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
+import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
+import net.jonathansmith.javadpad.common.network.packet.session.SetSessionFocusPacket;
 import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
@@ -93,12 +96,18 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
             this.runtimeSelectToolbar.setUser.setEnabled(true);
             this.runtimeSelectToolbar.setExperiment.setEnabled(true);
             this.runtimeSelectToolbar.setData.setEnabled(false);
+            
+            LockedPacket p = new SetSessionFocusPacket(this.engine, this.session, SessionData.USER);
+            this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
         }
         
         else {
             this.runtimeSelectToolbar.setUser.setEnabled(true);
             this.runtimeSelectToolbar.setExperiment.setEnabled(true);
             this.runtimeSelectToolbar.setData.setEnabled(true);
+            
+            LockedPacket p = new SetSessionFocusPacket(this.engine, this.session, SessionData.EXPERIMENT);
+            this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
         }
         
         if (this.currentPanel == this.runtimeSelectPane) {

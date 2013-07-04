@@ -407,7 +407,7 @@ public final class ServerSession extends Session {
     public boolean setSessionData(String soureKey, SessionData dataType, RecordsList<Record> data) {
         if (super.setSessionData(soureKey, dataType, data)) {
             this.fireChange(new DataArriveEvent(dataType)); // TODO: Fix events
-            LockedPacket p = new SetSessionDataPacket(this.engine, this, dataType, data);
+            LockedPacket p = new SetSessionDataPacket(this.engine, this, dataType, data, false);
             this.lockAndSendPacket(PacketPriority.MEDIUM, p);
             return true;
         }

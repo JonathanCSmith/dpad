@@ -27,6 +27,7 @@ import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerReco
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -135,6 +136,7 @@ public class PluginUploadRequestPacket extends LockedPacket {
 
     @Override
     public void handleServerSide() {
+        ((ServerSession) this.session).handleNewPluginRequest(false, this.record);
         //((ServerSession) this.session).uploadPlugin(SessionData.PLUGIN, this.record);
         // TODO: Fix the above method and load the file
     }
