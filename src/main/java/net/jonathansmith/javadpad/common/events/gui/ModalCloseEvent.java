@@ -16,15 +16,15 @@
  */
 package net.jonathansmith.javadpad.common.events.gui;
 
-import java.util.EventObject;
-
 import javax.swing.JDialog;
+
+import net.jonathansmith.javadpad.common.events.DPADEvent;
 
 /**
  *
  * @author Jon
  */
-public class ModalCloseEvent extends EventObject {
+public class ModalCloseEvent extends DPADEvent {
     
     private final boolean forced;
     

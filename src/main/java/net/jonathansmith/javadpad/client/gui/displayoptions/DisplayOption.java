@@ -32,7 +32,21 @@ public abstract class DisplayOption {
     public Client engine;
     public ClientSession session;
     
+    private boolean bound = false;
+    
     public DisplayOption() {}
+    
+    public void bind() {
+        this.bound = true;
+    }
+    
+    public void unbind() {
+        this.bound = false;
+    }
+    
+    public boolean isBound() {
+        return this.bound;
+    }
     
     public void setEngine(Client engine, ClientSession session) {
         this.engine = engine;

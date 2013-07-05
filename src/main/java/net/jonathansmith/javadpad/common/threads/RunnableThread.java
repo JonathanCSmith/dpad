@@ -15,45 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.jonathansmith.javadpad.common.threads;
-
-import java.util.EventObject;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import net.jonathansmith.javadpad.common.events.ChangeListener;
-import net.jonathansmith.javadpad.common.events.ChangeSender;
-
 /**
  *
  * @author Jon
  */
-public abstract class RunnableThread extends Thread implements ChangeSender {
+public abstract class RunnableThread extends Thread {
     
-    private final CopyOnWriteArrayList<ChangeListener> listeners;
-    
-    public RunnableThread() {
-        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
-    }
-    
-    @Override
-    public void addListener(ChangeListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-        }
-    }
-    
-    @Override
-    public void removeListener(ChangeListener listener) {
-        if (this.listeners.contains(listener)) {
-            this.listeners.remove(listener);
-        }
-    }
-    
-    @Override
-    public void fireChange(EventObject event) {
-        for (ChangeListener listener : this.listeners) {
-            listener.changeEventReceived(event);
-        }
-    }
+    public RunnableThread() {}
     
     public abstract void init();
     

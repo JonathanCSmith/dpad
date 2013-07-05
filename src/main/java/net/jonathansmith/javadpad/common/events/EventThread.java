@@ -19,6 +19,7 @@ package net.jonathansmith.javadpad.common.events;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -29,7 +30,7 @@ import com.google.common.collect.Multimap;
  */
 public class EventThread extends Thread {
     
-    private Multimap<DPADEvent, ChangeListener> eventMap = ArrayListMultimap.create();
+    private Multimap<Class<? extends DPADEvent>, ChangeListener> eventMap = ArrayListMultimap.create();
     private List<DPADEvent> eventList = new LinkedList<DPADEvent> ();
     private boolean isAlive = false;
     
@@ -53,7 +54,9 @@ public class EventThread extends Thread {
             }
             
             else {
-                Collection<ChangeListener> listeners = this.eventMap.get(this.eventList.get(0));
+                DPADEvent event = this.eventList.get(0);
+                Class<? extends DPADEvent> eventClass = event.getClass();
+                Collection<ChangeListener> listeners = this.eventMap.get(eventClass);
                 for (ChangeListener listener : listeners) {
                     listener.changeEventReceived(this.eventList.get(0));
                 }
@@ -61,6 +64,9 @@ public class EventThread extends Thread {
                 this.eventList.remove(0);
             }
         }
+        
+        this.eventList.clear();
+        this.eventMap.clear();
     }
     
     public void shutdown(boolean force) {
@@ -71,11 +77,25 @@ public class EventThread extends Thread {
         this.isAlive = false;
     }
     
-    public void addListener(DPADEvent event, ChangeListener listener) {
-        this.eventMap.put(event, listener);
+    public void addListener(Class<? extends DPADEvent> clazz, ChangeListener listener) {
+        this.eventMap.put(clazz, listener);
     }
     
-    public void sendEvent(DPADEvent event) {
+    public void removeListener(ChangeListener listener) {
+        for (Entry entry : this.eventMap.entries()) {
+            if (entry.getValue().equals(listener)) {
+                this.eventMap.remove(entry.getKey(), listener);
+            }
+        }
+    }
+    
+    public void removeListenerFromEvent(Class<? extends DPADEvent> clazz, ChangeListener listener) {
+        if (this.eventMap.get(clazz).contains(listener)) {
+            this.eventMap.remove(clazz, listener);
+        }
+    }
+    
+    public void post(DPADEvent event) {
         this.eventList.add(event);
     }
 }

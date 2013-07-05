@@ -32,13 +32,11 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
-import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.dialogs.PopupDialog;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.ExistingRecordPane;
-import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.data.pane.AddDataPane;
 import net.jonathansmith.javadpad.client.threads.data.pane.DataPane;
 import net.jonathansmith.javadpad.client.threads.data.pane.PluginSelectPane;
@@ -52,6 +50,7 @@ import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
 import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
+import net.jonathansmith.javadpad.common.events.plugin.PluginArriveEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
@@ -59,10 +58,12 @@ import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.NewSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionFocusPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
+import net.jonathansmith.javadpad.common.plugins.PluginManagerHandler;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
 
@@ -113,41 +114,19 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         this.pluginSelectPane.addDisplayOptionListener(this);
         this.pluginSelectPane.addDisplayOptionMouseListener(this);
     }
-    
+
     @Override
-    public void setEngine(Client engine, ClientSession session) {
-        super.setEngine(engine, session);
-        this.session.addListener(this);
+    public void bind() {
+        super.bind();
+        this.engine.getEventThread().addListener(ModalCloseEvent.class, this);
+        this.engine.getEventThread().addListener(DataArriveEvent.class, this);
+        this.engine.getEventThread().addListener(PluginArriveEvent.class, this);
     }
-    
-    public void submitSelectedPlugin() {
-        Record selection = this.pluginSelectPane.getSelectedRecord();
-        if (selection != null && selection instanceof PluginRecord) {
-            RecordsList<Record> list = new RecordsList<Record> ();
-            list.add(selection);
-            
-            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(DatabaseRecord.LOADER_PLUGIN, QueryType.SINGLE), list, false);
-            this.session.lockAndSendPacket(PacketPriority.HIGH, p);
-            
-            this.dialog = new WaitForRecordsDialog(new JFrame(), true);
-            this.dialog.addListener(this);
-            
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    dialog.setVisible(true);
-                }
-            });
-            
-            this.localVersion = (PluginRecord) selection;
-            this.pluginSelectPane.clearRecords();
-            this.engine.getGUI().validateState();
-        }
-        
-        else {
-            this.engine.info("Record was incomplete or invalid");
-            this.pluginSelectPane.clearRecords();
-        }
+
+    @Override
+    public void unbind() {
+        this.engine.getEventThread().removeListener(this);
+        super.unbind();
     }
     
     @Override
@@ -202,14 +181,17 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             }
         }
         
+        else if (this.pluginSelectPane.isEventSourceSubmitButton(evt)) {
+            this.submitSelectedPlugin();
+        }
+        
         // AddData
         else if (evt.getSource() == this.addDataToolbar.setPlugin) {
             if (this.currentPanel != this.pluginSelectPane) {
                 Packet p = new DataRequestPacket(this.engine, this.session, SessionData.ALL_LOADER_PLUGINS);
                 this.session.addPacketToSend(PacketPriority.HIGH, p);
                 
-                this.dialog = new WaitForRecordsDialog(new JFrame(), true);
-                this.dialog.addListener(this);
+                this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
 
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -300,10 +282,6 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
                 this.engine.getGUI().validateState();
             }
         }
-        
-        else if (this.pluginSelectPane.isEventSourceSubmitButton(evt)) {
-            this.submitSelectedPlugin();
-        }
     }
 
     public void mouseClicked(MouseEvent me) {
@@ -324,13 +302,9 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
 
     // Listen for session events etc, forward to plugin
     public void changeEventReceived(EventObject event) {
-        if (this.dialog == null) {
-            return; // Not waiting for anything!
-        }
-        
         if (event instanceof ModalCloseEvent) {
             ModalCloseEvent evt = (ModalCloseEvent) event;
-            if (evt.getWasForcedClosed()) {
+            if (evt.getSource() == this.dialog && evt.getWasForcedClosed()) {
                 this.engine.forceShutdown("Early exit forced by user closing modal", null);
             }
         }
@@ -347,30 +321,14 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
                 this.dialog.dispose();
                 this.dialog = null;
                 
-                RecordsList<Record> local = this.engine.getPluginManager().getLoaderPluginRecordList();
-                for (Record record : data) {
-                    if (!local.contains(record)) {
-                        local.add(record);
-                    }
-                }
-                
-                RecordsList<Record> finalList = new RecordsList<Record> ();
-                for (Record record : local) {
-                    if (record instanceof LoaderPluginRecord) {
-                        finalList.add(record);
-                    }
-                }
-                
-                // TODO: name and version check?
-                
                 this.pluginSelectPane.clearRecords();
-                this.pluginSelectPane.insertRecords(finalList);
+                this.pluginSelectPane.insertRecords(data);
                 this.setCurrentView(this.pluginSelectPane);
                 this.engine.getGUI().validateState();
             }
             
             else if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN_STATUS)) {
-                RecordsList<Record> data = this.engine.getSession().checkoutSessionData(this.session.getSessionID(), SessionData.PLUGIN);
+                RecordsList<Record> data = this.engine.getSession().checkoutSessionData(this.session.getSessionID(), SessionData.PLUGIN_STATUS);
                 if (data == null || !(data.getFirst() instanceof IntegerRecord)) {
                     return;
                 }
@@ -413,6 +371,86 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
                 this.setCurrentView(this.addDataDisplay);
                 this.engine.getGUI().validateState();
             }
+            
+            else if (((SessionData) evt.getSource()).equals(SessionData.LOADER_PLUGIN)) {
+                RecordsList<Record> data = this.engine.getSession().checkoutSessionData(this.session.getSessionID(), SessionData.LOADER_PLUGIN);
+                if (data == null) {
+                    return;
+                }
+                
+                this.dialog.maskCloseEvent();
+                this.dialog.dispose();
+                this.dialog = null;
+                
+                this.pluginSelectPane.clearRecords();
+                this.pluginSelectPane.insertRecords(data);
+                this.setCurrentView(this.currentInformationPane);
+                this.setCurrentToolbar(this.toolbar);
+                this.engine.getGUI().validateState();
+            }
+        }
+            
+        else if (event instanceof PluginArriveEvent) {
+            RecordsList<Record> list = new RecordsList<Record> ();
+            list.add(this.localVersion);
+            LockedPacket p = new SetSessionDataPacket(this.engine, this.session, SessionData.LOADER_PLUGIN, list, false);
+            this.session.lockAndSendPacket(PacketPriority.HIGH, p);
+
+            this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    dialog.setVisible(true);
+                }
+            });
+        }
+    }
+    
+    private void submitSelectedPlugin() {
+        Record selection = this.pluginSelectPane.getSelectedRecord();
+        if (selection != null && selection instanceof PluginRecord) {
+            RecordsList<Record> list = new RecordsList<Record> ();
+            list.add(selection);
+            
+            // TODO: Get has plugin!
+            PluginManagerHandler manager = this.engine.getPluginManager();
+            if (manager.getLoaderPluginRecordList().contains(selection)) {
+                LockedPacket p = new SetSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(DatabaseRecord.LOADER_PLUGIN, QueryType.SINGLE), list, false);
+                this.session.lockAndSendPacket(PacketPriority.HIGH, p);
+
+                this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.setVisible(true);
+                    }
+                });
+            }
+            
+            else {
+                LockedPacket p = new PluginUploadRequestPacket(this.engine, this.session, (byte) 1, (PluginRecord) selection, false);
+                this.session.lockAndSendPacket(PacketPriority.HIGH, p);
+                
+                this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.setVisible(true);
+                    }
+                });
+            }
+            
+            this.localVersion = (PluginRecord) selection;
+            this.pluginSelectPane.clearRecords();
+            this.engine.getGUI().validateState();
+        }
+        
+        else {
+            this.engine.info("Record was incomplete or invalid");
+            this.pluginSelectPane.clearRecords();
         }
     }
 }

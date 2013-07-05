@@ -43,16 +43,18 @@ public class PluginUploadRequestPacket extends LockedPacket {
     
     private byte status;
     private PluginRecord record;
+    private boolean toServer;
     private byte[] data = null;
     
     public PluginUploadRequestPacket() {
         super();
     }
     
-    public PluginUploadRequestPacket(Engine engine, Session session, byte status, PluginRecord record) {
+    public PluginUploadRequestPacket(Engine engine, Session session, byte status, PluginRecord record, boolean toServer) {
         super(engine, session);
         this.status = status;
         this.record = record;
+        this.toServer = toServer;
         
         this.serializeData();
     }
@@ -80,10 +82,10 @@ public class PluginUploadRequestPacket extends LockedPacket {
     @Override
     public int getNumberOfLockedPayloads() {
         if (this.data == null) {
-            return 1;
+            return 2;
         }
         
-        return 2;
+        return 3;
     }
 
     @Override
@@ -94,6 +96,9 @@ public class PluginUploadRequestPacket extends LockedPacket {
                 
             case 1:
                 return this.data.length;
+                
+            case 2:
+                return 1;
                 
             default:
                 return 0;
@@ -108,6 +113,15 @@ public class PluginUploadRequestPacket extends LockedPacket {
                 
             case 1:
                 return this.data;
+                
+            case 2:
+                if (this.toServer) {
+                    return new byte[] {1};
+                }
+                
+                else {
+                    return new byte[] {0};
+                }
                 
             default:
                 return null;
@@ -124,21 +138,35 @@ public class PluginUploadRequestPacket extends LockedPacket {
             case 1:
                 this.record = (PluginRecord) SerializationUtils.deserialize(bytes);
                 break;
+                
+            case 2:
+                if (bytes[0] == 1) {
+                    this.toServer = true;
+                }
+                
+                else {
+                    this.toServer = false;
+                }
+                break;
         }
     }
 
     @Override
     public void handleClientSide() {
-        RecordsList<Record> data = new RecordsList<Record> ();
-        data.add(new IntegerRecord(this.status));
-        ((ClientSession) this.session).setSessionData(this.getKey(), SessionData.PLUGIN_STATUS, data);
+        if (toServer) {
+            RecordsList<Record> d = new RecordsList<Record> ();
+            d.add(new IntegerRecord(this.status));
+            ((ClientSession) this.session).setSessionData(this.getKey(), SessionData.PLUGIN_STATUS, d);
+        }
+        
+        else {
+            
+        }
     }
 
     @Override
     public void handleServerSide() {
-        ((ServerSession) this.session).handleNewPluginRequest(false, this.record);
-        //((ServerSession) this.session).uploadPlugin(SessionData.PLUGIN, this.record);
-        // TODO: Fix the above method and load the file
+        ((ServerSession) this.session).handleUploadPluginRequest(this.toServer, false, this.record);
     }
 
     @Override
