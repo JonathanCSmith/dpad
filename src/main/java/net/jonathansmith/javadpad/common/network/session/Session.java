@@ -17,10 +17,8 @@
 package net.jonathansmith.javadpad.common.network.session;
 
 import java.util.EnumMap;
-import java.util.EventObject;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.netty.channel.Channel;
@@ -28,8 +26,7 @@ import org.jboss.netty.channel.Channel;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.RecordsTransform;
-import net.jonathansmith.javadpad.common.events.ChangeListener;
-import net.jonathansmith.javadpad.common.events.ChangeSender;
+import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
@@ -44,7 +41,7 @@ import net.jonathansmith.javadpad.common.util.database.RecordsList;
  *
  * @author Jon
  */
-public abstract class Session implements ChangeSender {
+public abstract class Session {
     
     public enum NetworkThreadState {
         EXCHANGING_HANDSHAKE,
@@ -59,7 +56,6 @@ public abstract class Session implements ChangeSender {
     
     private final Random random = new Random();
     private final String id = Long.toString(random.nextLong(), 16).trim();
-    private final CopyOnWriteArrayList<ChangeListener> listeners;
     private final AtomicBoolean lock = new AtomicBoolean(false);
     
     public NetworkThread incoming;
@@ -71,7 +67,6 @@ public abstract class Session implements ChangeSender {
     public Session(Engine eng, Channel channel) {
         this.engine = eng;
         this.channel = channel;
-        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
     }
 
     // Core properties
@@ -146,26 +141,8 @@ public abstract class Session implements ChangeSender {
 
     public abstract void disconnect(boolean force);
     
-    // Change senders
-    @Override
-    public void addListener(ChangeListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-        }
-    }
-    
-    @Override
-    public void removeListener(ChangeListener listener) {
-        if (this.listeners.contains(listener)) {
-            this.listeners.remove(listener);
-        }
-    }
-    
-    @Override
-    public void fireChange(EventObject event) {
-        for (ChangeListener listener : this.listeners) {
-            listener.changeEventReceived(event);
-        }
+    public void fireChange(DPADEvent event) {
+        this.engine.getEventThread().post(event);
     }
     
     /**

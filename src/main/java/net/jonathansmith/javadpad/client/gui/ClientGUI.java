@@ -38,6 +38,7 @@ import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.events.gui.ContentChangedEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
@@ -62,6 +63,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
     public ClientGUI(Client client) {
         this.engine = client;
         this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
+        this.engine.getEventThread().addListener(ThreadChangeEvent.class, this);
     }
     
     public void validateState() {
@@ -151,7 +153,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
     }
 
     @Override
-    public void fireChange(EventObject event) {
+    public void fireChange(DPADEvent event) {
         for (ChangeListener listener : this.listeners) {
             listener.changeEventReceived(event);
         }

@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
+import net.jonathansmith.javadpad.common.events.plugin.PluginArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LargePayloadPacket;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
@@ -185,6 +186,8 @@ public class PluginTransferPacket extends LockedPacket implements LargePayloadPa
     @Override
     public void handleClientSide() {
         this.engine.getPluginManager().addPluginFile(new File(this.path));
+        
+        this.engine.getEventThread().post(new PluginArriveEvent());
     }
 
     @Override

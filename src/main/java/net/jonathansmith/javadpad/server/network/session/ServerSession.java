@@ -239,46 +239,6 @@ public final class ServerSession extends Session {
         }
     }
     
-//    public void uploadPayload(SessionData dataType, Record payload) {
-//        if (dataType == SessionData.PLUGIN) {
-//            if (payload instanceof PluginRecord) {
-//                this.handleNewPluginRequest(false, (PluginRecord) payload);
-//            }
-//        }
-//    }
-//    
-//    @Override
-//    public void setKeySessionData(String key, DatabaseRecord type, Record data) {
-//        if (!key.contentEquals(this.getSessionID())) {
-//            return;
-//        }
-//        
-//        switch (type) {
-//            case USER:
-//                if (!(data instanceof User)) {
-//                    return;
-//                }
-//                
-//                this.setUser((User) data);
-//                break;
-//                
-//            case EXPERIMENT:
-//                if (!(data instanceof Experiment)) {
-//                    return;
-//                }
-//                
-//                this.setExperiment((Experiment) data);
-//                break;
-//                
-//            case PLUGIN:
-//                if (!(data instanceof PluginRecord)) {
-//                    return;
-//                }
-//                
-//                this.handleNewPluginRequest(true, (PluginRecord) data);
-//                break;
-//        }
-//    }
 //    
 //    public void setPlugin(PluginRecord plugin) {
 //        Dataset data = this.getCurrentData();
@@ -324,13 +284,21 @@ public final class ServerSession extends Session {
         this.disconnectExpected = true;
     }
     
-    public void handleNewPluginRequest(boolean sessionSet, PluginRecord plugin) {
+    public void handleUploadPluginRequest(boolean toServer, boolean sessionSet, PluginRecord plugin) {
+        if (!toServer) {
+            String pluginPath = this.engine.getPluginManager().getPluginPath(plugin.getName());
+            LockedPacket p2 = new PluginTransferPacket(this.engine, this, plugin, pluginPath);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p2);
+            return;
+        }
+        
+        
         PluginManagerHandler manager = this.engine.getPluginManager();
         PluginRecord local = manager.getPluginRecord(plugin.getName());
         PluginRecord decision;
         
         if (local == null) {
-            LockedPacket p = new PluginUploadRequestPacket(this.engine, this, (byte) 1, null);
+            LockedPacket p = new PluginUploadRequestPacket(this.engine, this, (byte) 1, null, true);
             this.lockAndSendPacket(PacketPriority.MEDIUM, p);
 
             decision = plugin;
@@ -348,7 +316,7 @@ public final class ServerSession extends Session {
             byte status = manager.compareVersions(local, plugin);
             switch (status) {
                 case -1:
-                    LockedPacket p = new PluginUploadRequestPacket(this.engine, this, (byte) -1, null);
+                    LockedPacket p = new PluginUploadRequestPacket(this.engine, this, (byte) -1, null, true);
                     this.lockAndSendPacket(PacketPriority.MEDIUM, p);
 
                     decision = local;
@@ -359,14 +327,14 @@ public final class ServerSession extends Session {
                     break;
 
                 case 0:
-                    LockedPacket p3 = new PluginUploadRequestPacket(this.engine, this, (byte) 0, null);
+                    LockedPacket p3 = new PluginUploadRequestPacket(this.engine, this, (byte) 0, null, true);
                     this.lockAndSendPacket(PacketPriority.MEDIUM, p3);
 
                     decision = local;
                     break;
 
                 case 1:
-                    LockedPacket p4 = new PluginUploadRequestPacket(this.engine, this, (byte) 1, null);
+                    LockedPacket p4 = new PluginUploadRequestPacket(this.engine, this, (byte) 1, null, true);
                     this.lockAndSendPacket(PacketPriority.MEDIUM, p4);
 
                     decision = plugin;
@@ -390,7 +358,7 @@ public final class ServerSession extends Session {
         if (sessionSet) {
             RecordsList<Record> list = new RecordsList<Record> ();
             list.add(decision);
-            this.setSessionData(this.getSessionID(), SessionData.PLUGIN, list);
+            this.setSessionData(this.getSessionID(), SessionData.LOADER_PLUGIN, list);
         }
     }
     

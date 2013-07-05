@@ -14,19 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.events;
+package net.jonathansmith.javadpad.common.events.plugin;
 
-import java.util.EventObject;
+import net.jonathansmith.javadpad.common.events.DPADEvent;
 
 /**
  *
  * @author Jon
  */
-public interface ChangeSender {
+public class PluginArriveEvent extends DPADEvent {
     
-    public void addListener(ChangeListener listener);
-    
-    public void removeListener(ChangeListener listener);
-    
-    public void fireChange(EventObject event);
+    public PluginArriveEvent() {
+        super(null);
+    }
 }

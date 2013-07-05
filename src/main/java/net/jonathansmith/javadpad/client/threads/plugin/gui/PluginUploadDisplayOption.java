@@ -72,6 +72,19 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
         this.pluginSelectToolbar.addPlugin.addActionListener(this);
         this.pluginSelectToolbar.back.addActionListener(this);
     }
+
+    @Override
+    public void bind() {
+        super.bind();
+        this.engine.getEventThread().addListener(ModalCloseEvent.class, this);
+        this.engine.getEventThread().addListener(DataArriveEvent.class, this);
+    }
+
+    @Override
+    public void unbind() {
+        this.engine.getEventThread().removeListener(this);
+        super.unbind();
+    }
     
     public void addPlugin() {
         JFileChooser chooser = new JFileChooser();
@@ -108,11 +121,10 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
             }
             
             this.pluginSelectPane.setChosenPlugin(newPlugin);
-            LockedPacket p = new PluginUploadRequestPacket(this.engine, this.session, (byte) 0, newPlugin);
+            LockedPacket p = new PluginUploadRequestPacket(this.engine, this.session, (byte) 0, newPlugin, true);
             this.session.lockAndSendPacket(PacketPriority.HIGH, p);
 
-            this.dialog = new WaitForRecordsDialog(new JFrame(), true);
-            this.dialog.addListener(this);
+            this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
 
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -124,12 +136,6 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
             this.localVersion = (PluginRecord) newPlugin;
             this.engine.getGUI().validateState();
         }
-    }
-    
-    @Override
-    public void setEngine(Client engine, ClientSession session) {
-        super.setEngine(engine, session);
-        this.session.addListener(this);
     }
     
     @Override
@@ -155,14 +161,9 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
 
     @Override
     public void changeEventReceived(EventObject event) {
-        if (this.dialog == null) {
-            return; // We are not waiting for anything!
-        }
-        
-        
         if (event instanceof ModalCloseEvent) {
             ModalCloseEvent evt = (ModalCloseEvent) event;
-            if (evt.getWasForcedClosed()) {
+            if (evt.getSource() == this.dialog && evt.getWasForcedClosed()) {
                 this.engine.forceShutdown("Early exit forced by user closing modal", null);
             }
         }
@@ -170,7 +171,7 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
         else if (event instanceof DataArriveEvent) {
             DataArriveEvent evt = (DataArriveEvent) event;
             if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN_STATUS)) {
-                RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.PLUGIN);
+                RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.LOADER_PLUGIN);
                 if (data == null || !(data.getFirst() instanceof IntegerRecord)) {
                     return;
                 }

@@ -20,35 +20,32 @@ import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.util.EventObject;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import javax.swing.GroupLayout;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
-import net.jonathansmith.javadpad.common.events.ChangeListener;
-import net.jonathansmith.javadpad.common.events.ChangeSender;
+import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 
 /**
  *
  * @author Jon
  */
-public class WaitForRecordsDialog extends JDialog implements ChangeSender {
-
-    private final CopyOnWriteArrayList<ChangeListener> listeners;
+public class WaitForRecordsDialog extends JDialog {
+    
+    private final Engine engine;
     
     private boolean wasClosedProgrammatically = false;
     
     /**
      * Creates new form UserWaitDialog
      */
-    public WaitForRecordsDialog(java.awt.Frame parent, boolean modal) {
+    public WaitForRecordsDialog(java.awt.Frame parent, Engine engine, boolean modal) {
         super(parent, modal);
-        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
+        this.engine = engine;
         initComponents();
     }
     
@@ -56,25 +53,8 @@ public class WaitForRecordsDialog extends JDialog implements ChangeSender {
         this.wasClosedProgrammatically = true;
     }
 
-    @Override
-    public void addListener(ChangeListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-        }
-    }
-    
-    @Override
-    public void removeListener(ChangeListener listener) {
-        if (this.listeners.contains(listener)) {
-            this.listeners.remove(listener);
-        }
-    }
-
-    @Override
-    public void fireChange(EventObject event) {
-        for (ChangeListener listener : this.listeners) {
-            listener.changeEventReceived(event);
-        }
+    public void fireChange(DPADEvent event) {
+        this.engine.getEventThread().post(event);
     }
 
     /**

@@ -20,7 +20,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import java.util.EventObject;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,7 +42,7 @@ import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
-import net.jonathansmith.javadpad.common.events.ChangeSender;
+import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadShutdownEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
@@ -61,9 +60,7 @@ import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
  *
  * @author jonathansmith
  */
-public class Client extends Engine implements ChangeSender, ChangeListener {
-    
-    private final CopyOnWriteArrayList<ChangeListener> listeners;
+public class Client extends Engine implements ChangeListener {
     
     private ClientBootstrap bootstrap;
     private ClientSession session;
@@ -72,8 +69,6 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
     
     public Client(DPAD main, String host, int port) {
         super(main, Platform.CLIENT, host, port);
-        
-        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
         
         this.setGUI((TabbedGUI) new ClientGUI(this));
         this.setFileSystem(new FileSystem(this));
@@ -95,6 +90,9 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
     }
 
     public void setRuntime(ClientRuntimeThread thread) {
+        this.currentThread.getDisplay().unbind();
+        thread.getDisplay().bind();
+        
         ThreadChangeEvent evt = new ThreadChangeEvent(thread);
         this.currentThread = thread;
         this.fireChange(evt);
@@ -108,25 +106,8 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
         this.setRuntime(ClientRuntimeThread.RUNTIME_SELECT);
     }
     
-    @Override
-    public void addListener(ChangeListener listener) {
-        if (!listeners.contains(listener)) {
-            this.listeners.add(listener);
-        }
-    }
-    
-    @Override
-    public void removeListener(ChangeListener listener) {
-        if (listeners.contains(listener)) {
-            this.listeners.remove(listener);
-        }
-    }
-    
-    @Override
-    public void fireChange(EventObject evt) {
-        for(ChangeListener listener : this.listeners) {
-            listener.changeEventReceived(evt);
-        }
+    public void fireChange(DPADEvent evt) {
+        this.getEventThread().post(evt);
     }
 
     public void changeEventReceived(EventObject event) {
@@ -148,7 +129,6 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
         }
         
         this.setCompleteLogger(DPADLoggerFactory.getInstance().getLogger(this));
-        this.listeners.add(this.getGUI());
         this.setRuntime(ClientRuntimeThread.STARTUP);
         
         // TODO: Config?
@@ -187,6 +167,7 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
             return;
         }
         
+        this.getEventThread().addListener(ThreadShutdownEvent.class, this);
         this.debug("Client connected to server: " + this.hostName + ": " + this.portNumber);
         this.isAlive = true;
     }
@@ -210,7 +191,6 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
                 if (currentRuntime.isRunnable()) {
                     RunnableThread thread = currentRuntime.getThread();
                     thread.init();
-                    thread.addListener(this);
                     thread.start();
                     thread.join();
                 } 
@@ -230,7 +210,6 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
 //        }
         
         // No leaks
-        this.listeners.clear();
         this.finish();
     }
     
@@ -262,7 +241,8 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
 
     @Override
     public void saveAndShutdown() {
-        this.isAlive = false;
+        this.getEventThread().shutdown(false);
+        this.getPluginManager().shutdown(false);
         
         if (!this.disconnectExpected) {
             Packet p = new DisconnectPacket(this, this.session, false);
@@ -273,17 +253,19 @@ public class Client extends Engine implements ChangeSender, ChangeListener {
         this.sendQuitToRuntimeThread("Shutdown", false);
         
         this.info("Shutdown called on: " + this.platform.toString());
+        this.isAlive = false;
     }
 
     @Override
     public void forceShutdown(String message, Throwable ex) {
-        this.isAlive = false;
-        this.errored = true;
-        
+        this.getEventThread().shutdown(true);
+        this.getPluginManager().shutdown(true);
         this.session.disconnect(true);
         
         this.sendQuitToRuntimeThread(message, true);
         
         this.error(message, ex);
+        this.isAlive = false;
+        this.errored = true;
     }
 }

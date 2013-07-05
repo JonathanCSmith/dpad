@@ -26,13 +26,11 @@ import java.util.EventObject;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.ExistingRecordPane;
 import net.jonathansmith.javadpad.client.gui.displayoptions.pane.NewRecordPane;
 import net.jonathansmith.javadpad.client.gui.displayoptions.toolbar.RecordToolbar;
-import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.events.ChangeListener;
@@ -97,8 +95,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
             RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), dataType);
 
             if (data == null) {
-                this.dialog = new WaitForRecordsDialog(new JFrame(), true);
-                this.dialog.addListener(this);
+                this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
 
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -165,9 +162,16 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     }
     
     @Override
-    public void setEngine(Client engine, ClientSession session) {
-        super.setEngine(engine, session);
-        this.session.addListener(this);
+    public void bind() {
+        super.bind();
+        this.engine.getEventThread().addListener(ModalCloseEvent.class, this);
+        this.engine.getEventThread().addListener(DataArriveEvent.class, this);
+    }
+    
+    @Override
+    public void unbind() {
+        this.engine.getEventThread().removeListener(this);
+        super.unbind();
     }
     
     @Override
@@ -226,13 +230,9 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     
     @Override
     public void changeEventReceived(EventObject event) {
-        if (this.dialog == null) {
-            return; // We are not waiting for anything!
-        }
-        
         if (event instanceof ModalCloseEvent) {
             ModalCloseEvent evt = (ModalCloseEvent) event;
-            if (evt.getWasForcedClosed()) {
+            if (evt.getSource() == this.dialog && evt.getWasForcedClosed()) {
                 this.engine.forceShutdown("Early exit forced by user closing modal", null);
             }
         }

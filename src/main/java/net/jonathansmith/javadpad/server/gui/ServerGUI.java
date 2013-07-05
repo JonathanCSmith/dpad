@@ -20,7 +20,6 @@ package net.jonathansmith.javadpad.server.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import java.util.EventObject;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.GroupLayout;
@@ -35,6 +34,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.server.Server;
 
@@ -118,7 +118,7 @@ public class ServerGUI extends TabbedGUI {
     }
 
     @Override
-    public void fireChange(EventObject event) {
+    public void fireChange(DPADEvent event) {
         for (ChangeListener listener : this.listeners) {
             listener.changeEventReceived(event);
         }

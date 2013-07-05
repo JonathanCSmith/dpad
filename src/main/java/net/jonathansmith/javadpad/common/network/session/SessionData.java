@@ -30,7 +30,7 @@ public enum SessionData {
     USER_EXPERIMENTS(DatabaseRecord.EXPERIMENT, QueryType.ALL_AVAILABLE_TO_SESSION),
     EXPERIMENT(DatabaseRecord.EXPERIMENT, QueryType.SINGLE), 
     
-    PLUGIN(DatabaseRecord.LOADER_PLUGIN, QueryType.SINGLE), 
+    LOADER_PLUGIN(DatabaseRecord.LOADER_PLUGIN, QueryType.SINGLE), 
     ALL_LOADER_PLUGINS(DatabaseRecord.LOADER_PLUGIN, QueryType.ALL_AVAILABLE_TO_SESSION),
     ALL_ANALYSER_PLUGINS(DatabaseRecord.ANALYSER_PLUGIN, QueryType.ALL_AVAILABLE_TO_SESSION),
     PLUGIN_STATUS(null, null),
