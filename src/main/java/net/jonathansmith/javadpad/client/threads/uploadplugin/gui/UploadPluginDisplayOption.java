@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.threads.plugin.gui;
+package net.jonathansmith.javadpad.client.threads.uploadplugin.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,11 +34,11 @@ import net.jonathansmith.javadpad.client.gui.dialogs.PopupDialog;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
-import net.jonathansmith.javadpad.client.threads.plugin.gui.pane.PluginDisplayPane;
-import net.jonathansmith.javadpad.client.threads.plugin.gui.toolbar.PluginSelectToolbar;
+import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.pane.PluginDisplayPane;
+import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.toolbar.PluginSelectToolbar;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
@@ -54,7 +54,7 @@ import net.jonathansmith.javadpad.common.util.database.RecordsList;
  *
  * @author Jon
  */
-public class PluginUploadDisplayOption extends DisplayOption implements ActionListener, ChangeListener {
+public class UploadPluginDisplayOption extends DisplayOption implements ActionListener, EventListener {
 
     public PluginDisplayPane pluginSelectPane;
     public PluginSelectToolbar pluginSelectToolbar;
@@ -62,7 +62,7 @@ public class PluginUploadDisplayOption extends DisplayOption implements ActionLi
     private WaitForRecordsDialog dialog = null;
     private PluginRecord localVersion = null;
     
-    public PluginUploadDisplayOption() {
+    public UploadPluginDisplayOption() {
         super();
         this.pluginSelectPane = new PluginDisplayPane();
         this.pluginSelectToolbar = new PluginSelectToolbar();

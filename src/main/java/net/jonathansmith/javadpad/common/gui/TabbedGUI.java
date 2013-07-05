@@ -18,7 +18,7 @@ package net.jonathansmith.javadpad.common.gui;
 
 import javax.swing.JPanel;
 
-import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.util.logging.LogDisplay;
 
@@ -30,9 +30,9 @@ public abstract class TabbedGUI extends JPanel implements LogDisplay, Runnable {
 
     public abstract void init();
     
-    public abstract void addListener(ChangeListener listener);
+    public abstract void addListener(EventListener listener);
     
-    public abstract void removeListener(ChangeListener listener);
+    public abstract void removeListener(EventListener listener);
     
     public abstract void fireChange(DPADEvent event);
 }

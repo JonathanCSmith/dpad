@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.threads.plugin.gui.toolbar;
+package net.jonathansmith.javadpad.client.threads.uploadplugin.gui.toolbar;
 
 import java.awt.Component;
 import java.awt.Dimension;

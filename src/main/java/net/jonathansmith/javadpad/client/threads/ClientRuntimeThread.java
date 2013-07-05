@@ -23,9 +23,9 @@ import net.jonathansmith.javadpad.client.threads.data.DataDisplayOption;
 import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.CurrentExperimentPane;
 import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.ExistingExperimentPane;
 import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.NewExperimentPane;
-import net.jonathansmith.javadpad.client.threads.plugin.gui.PluginUploadDisplayOption;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.RuntimeSelectDisplayOption;
 import net.jonathansmith.javadpad.client.threads.startup.gui.StartupDisplayOption;
+import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.UploadPluginDisplayOption;
 import net.jonathansmith.javadpad.client.threads.user.gui.pane.CurrentUserPane;
 import net.jonathansmith.javadpad.client.threads.user.gui.pane.ExistingUserPane;
 import net.jonathansmith.javadpad.client.threads.user.gui.pane.NewUserPane;
@@ -44,7 +44,7 @@ public enum ClientRuntimeThread implements RuntimeThread {
     USER(false, true, new RecordsDisplayOption(DatabaseRecord.USER, new CurrentUserPane(), new NewUserPane(), new ExistingUserPane(), "User toolbar:"), null),
     EXPERIMENT(false, true, new RecordsDisplayOption(DatabaseRecord.EXPERIMENT, new CurrentExperimentPane(), new NewExperimentPane(), new ExistingExperimentPane(), "Experiment toolbar:"), null),
     DATA(false /**true**/, true, new DataDisplayOption(), /**new DataThread()**/ null),
-    ADD_PLUGIN(false, true, new PluginUploadDisplayOption(), null);
+    ADD_PLUGIN(false, true, new UploadPluginDisplayOption(), null);
     
     private final boolean runnable;
     private final boolean displayable;

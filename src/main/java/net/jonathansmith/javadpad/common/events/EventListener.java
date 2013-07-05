@@ -22,7 +22,7 @@ import java.util.EventObject;
  *
  * @author Jon
  */
-public interface ChangeListener {
+public interface EventListener {
     
     public void changeEventReceived(EventObject event);
 }
