@@ -41,7 +41,7 @@ import net.jonathansmith.javadpad.client.network.listeners.ClientConnectListener
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadShutdownEvent;
@@ -60,7 +60,7 @@ import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
  *
  * @author jonathansmith
  */
-public class Client extends Engine implements ChangeListener {
+public class Client extends Engine implements EventListener {
     
     private ClientBootstrap bootstrap;
     private ClientSession session;

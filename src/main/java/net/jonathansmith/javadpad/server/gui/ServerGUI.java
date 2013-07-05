@@ -33,7 +33,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.server.Server;
@@ -46,7 +46,7 @@ public class ServerGUI extends TabbedGUI {
 
     public final Server engine;
     
-    private final CopyOnWriteArrayList<ChangeListener> listeners;
+    private final CopyOnWriteArrayList<EventListener> listeners;
     
     private int[] textFieldLength = new int[1024];
     private int currentTextLength = 0;
@@ -56,7 +56,7 @@ public class ServerGUI extends TabbedGUI {
      */
     public ServerGUI(Server server) {
         this.engine = server;
-        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
+        this.listeners = new CopyOnWriteArrayList<EventListener> ();
     }
     
     @Override
@@ -104,14 +104,14 @@ public class ServerGUI extends TabbedGUI {
     }
     
     @Override
-    public void addListener(ChangeListener listener) {
+    public void addListener(EventListener listener) {
         if (!this.listeners.contains(listener)) {
             this.listeners.add(listener);
         }
     }
     
     @Override
-    public void removeListener(ChangeListener listener) {
+    public void removeListener(EventListener listener) {
         if (this.listeners.contains(listener)) {
             this.listeners.remove(listener);
         }
@@ -119,7 +119,7 @@ public class ServerGUI extends TabbedGUI {
 
     @Override
     public void fireChange(DPADEvent event) {
-        for (ChangeListener listener : this.listeners) {
+        for (EventListener listener : this.listeners) {
             listener.changeEventReceived(event);
         }
     }

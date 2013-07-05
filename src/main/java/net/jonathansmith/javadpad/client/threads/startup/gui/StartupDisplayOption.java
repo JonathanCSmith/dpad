@@ -16,8 +16,6 @@
  */
 package net.jonathansmith.javadpad.client.threads.startup.gui;
 
-import java.awt.event.ActionEvent;
-
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.startup.gui.pane.StartupPane;
 import net.jonathansmith.javadpad.client.threads.startup.gui.toolbar.StartupToolbar;
@@ -41,6 +39,4 @@ public class StartupDisplayOption extends DisplayOption {
 
     @Override
     public void validateState() {}
-
-    public void actionPerformed(ActionEvent ae) {}
 }

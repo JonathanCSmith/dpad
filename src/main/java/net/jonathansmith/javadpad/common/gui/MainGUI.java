@@ -36,7 +36,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import net.jonathansmith.javadpad.DPAD;
-import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ContentChangedEvent;
 
 import org.jdesktop.layout.GroupLayout;
@@ -46,7 +46,7 @@ import org.jdesktop.layout.LayoutStyle;
  *
  * @author jonathansmith
  */
-public class MainGUI extends JFrame implements Runnable, ChangeListener {
+public class MainGUI extends JFrame implements Runnable, EventListener {
 
     private final DPAD main;
     

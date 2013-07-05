@@ -33,7 +33,7 @@ import net.jonathansmith.javadpad.client.gui.displayoptions.pane.NewRecordPane;
 import net.jonathansmith.javadpad.client.gui.displayoptions.toolbar.RecordToolbar;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
@@ -49,7 +49,7 @@ import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
  *
  * @author Jon
  */
-public class RecordsDisplayOption extends DisplayOption implements ActionListener, MouseListener, ChangeListener {
+public class RecordsDisplayOption extends DisplayOption implements ActionListener, MouseListener, EventListener {
     
     public final DatabaseRecord recordType;
     public final CurrentRecordPane currentRecordPane;

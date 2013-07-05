@@ -37,7 +37,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
-import net.jonathansmith.javadpad.common.events.ChangeListener;
+import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.events.gui.ContentChangedEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
@@ -47,11 +47,11 @@ import net.jonathansmith.javadpad.common.gui.TabbedGUI;
  *
  * @author Jonathan Smith
  */
-public class ClientGUI extends TabbedGUI implements ChangeListener {
+public class ClientGUI extends TabbedGUI implements EventListener {
 
     public final Client engine;
     
-    private final CopyOnWriteArrayList<ChangeListener> listeners;
+    private final CopyOnWriteArrayList<EventListener> listeners;
     
     private ClientRuntimeThread currentRuntime;
     private int[] textFieldLength = new int[1024];
@@ -62,7 +62,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
      */
     public ClientGUI(Client client) {
         this.engine = client;
-        this.listeners = new CopyOnWriteArrayList<ChangeListener> ();
+        this.listeners = new CopyOnWriteArrayList<EventListener> ();
         this.engine.getEventThread().addListener(ThreadChangeEvent.class, this);
     }
     
@@ -139,14 +139,14 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
     }    
     
     @Override
-    public void addListener(ChangeListener listener) {
+    public void addListener(EventListener listener) {
         if (!this.listeners.contains(listener)) {
             this.listeners.add(listener);
         }
     }
     
     @Override
-    public void removeListener(ChangeListener listener) {
+    public void removeListener(EventListener listener) {
         if (this.listeners.contains(listener)) {
             this.listeners.remove(listener);
         }
@@ -154,7 +154,7 @@ public class ClientGUI extends TabbedGUI implements ChangeListener {
 
     @Override
     public void fireChange(DPADEvent event) {
-        for (ChangeListener listener : this.listeners) {
+        for (EventListener listener : this.listeners) {
             listener.changeEventReceived(event);
         }
     }

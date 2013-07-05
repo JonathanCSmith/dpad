@@ -30,7 +30,7 @@ import com.google.common.collect.Multimap;
  */
 public class EventThread extends Thread {
     
-    private Multimap<Class<? extends DPADEvent>, ChangeListener> eventMap = ArrayListMultimap.create();
+    private Multimap<Class<? extends DPADEvent>, EventListener> eventMap = ArrayListMultimap.create();
     private List<DPADEvent> eventList = new LinkedList<DPADEvent> ();
     private boolean isAlive = false;
     
@@ -56,8 +56,8 @@ public class EventThread extends Thread {
             else {
                 DPADEvent event = this.eventList.get(0);
                 Class<? extends DPADEvent> eventClass = event.getClass();
-                Collection<ChangeListener> listeners = this.eventMap.get(eventClass);
-                for (ChangeListener listener : listeners) {
+                Collection<EventListener> listeners = this.eventMap.get(eventClass);
+                for (EventListener listener : listeners) {
                     listener.changeEventReceived(this.eventList.get(0));
                 }
                 
@@ -77,11 +77,11 @@ public class EventThread extends Thread {
         this.isAlive = false;
     }
     
-    public void addListener(Class<? extends DPADEvent> clazz, ChangeListener listener) {
+    public void addListener(Class<? extends DPADEvent> clazz, EventListener listener) {
         this.eventMap.put(clazz, listener);
     }
     
-    public void removeListener(ChangeListener listener) {
+    public void removeListener(EventListener listener) {
         for (Entry entry : this.eventMap.entries()) {
             if (entry.getValue().equals(listener)) {
                 this.eventMap.remove(entry.getKey(), listener);
@@ -89,7 +89,7 @@ public class EventThread extends Thread {
         }
     }
     
-    public void removeListenerFromEvent(Class<? extends DPADEvent> clazz, ChangeListener listener) {
+    public void removeListenerFromEvent(Class<? extends DPADEvent> clazz, EventListener listener) {
         if (this.eventMap.get(clazz).contains(listener)) {
             this.eventMap.remove(clazz, listener);
         }
