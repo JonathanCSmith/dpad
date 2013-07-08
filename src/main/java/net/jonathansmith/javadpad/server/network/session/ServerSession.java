@@ -86,8 +86,8 @@ public final class ServerSession extends Session {
         this.setServerKey(this.getSessionID());
         this.connection = ((Server) this.engine).getSessionConnection();
         
-        this.setSessionData(this.getSessionID(), SessionData.ALL_LOADER_PLUGINS, this.engine.getPluginManager().getLoaderPluginRecordList());
-        this.setSessionData(this.getSessionID(), SessionData.ALL_ANALYSER_PLUGINS, this.engine.getPluginManager().getAnalyserPluginRecordList());
+        super.setSessionData(this.getSessionID(), SessionData.ALL_LOADER_PLUGINS, this.engine.getPluginManager().getLoaderPluginRecordList());
+        super.setSessionData(this.getSessionID(), SessionData.ALL_ANALYSER_PLUGINS, this.engine.getPluginManager().getAnalyserPluginRecordList());
     }
     
     @Override

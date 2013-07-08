@@ -51,8 +51,6 @@ public class ClientGUI extends TabbedGUI implements EventListener {
 
     public final Client engine;
     
-    private final CopyOnWriteArrayList<EventListener> listeners;
-    
     private ClientRuntimeThread currentRuntime;
     private int[] textFieldLength = new int[1024];
     private int currentTextLength = 0;
@@ -62,7 +60,6 @@ public class ClientGUI extends TabbedGUI implements EventListener {
      */
     public ClientGUI(Client client) {
         this.engine = client;
-        this.listeners = new CopyOnWriteArrayList<EventListener> ();
     }
     
     public void validateState() {
@@ -101,6 +98,7 @@ public class ClientGUI extends TabbedGUI implements EventListener {
             this.engine.error("Class not found when setting look and feel", ex);
         } 
         
+        this.engine.getEventThread().addListener(ThreadChangeEvent.class, this);
         this.initComponents();
     }
     
@@ -135,27 +133,10 @@ public class ClientGUI extends TabbedGUI implements EventListener {
                 this.validateState();
             }
         }
-    }    
-    
-    @Override
-    public void addListener(EventListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-        }
-    }
-    
-    @Override
-    public void removeListener(EventListener listener) {
-        if (this.listeners.contains(listener)) {
-            this.listeners.remove(listener);
-        }
     }
 
-    @Override
     public void fireChange(DPADEvent event) {
-        for (EventListener listener : this.listeners) {
-            listener.changeEventReceived(event);
-        }
+        this.engine.getEventThread().post(event);
     }
 
     /**

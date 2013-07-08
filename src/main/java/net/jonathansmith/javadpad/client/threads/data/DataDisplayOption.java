@@ -230,8 +230,8 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
         if (this.currentPanel != this.addDataDisplay) {
             // Create new Loader Data Set
             LoaderDataset data = new LoaderDataset();
-            Packet p = new NewSessionDataPacket(this.engine, this.session, DatabaseRecord.CURRENT_DATASET, data, true);
-            this.session.addPacketToSend(PacketPriority.MEDIUM, p);
+            LockedPacket p = new NewSessionDataPacket(this.engine, this.session, DatabaseRecord.CURRENT_DATASET, data, true);
+            this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
 
             this.setCurrentView(this.addDataDisplay);
             this.setCurrentToolbar(this.addDataToolbar);
