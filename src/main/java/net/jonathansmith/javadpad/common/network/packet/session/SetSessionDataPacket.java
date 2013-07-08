@@ -40,8 +40,8 @@ public class SetSessionDataPacket extends LockedPacket {
     private static int id;
     
     private SessionData type;
-    private RecordsList<Record> data = null;
     private boolean pullsFocus;
+    private RecordsList<Record> data = null;
     private byte[] serializedData;
     
     public SetSessionDataPacket() {
@@ -54,7 +54,7 @@ public class SetSessionDataPacket extends LockedPacket {
         this.data = data;
         this.pullsFocus = pullsFocus;
         
-        if (data != null) {
+        if (data != null || this.data.isEmpty()) {
             this.serializeData();
         }
     }
@@ -77,7 +77,13 @@ public class SetSessionDataPacket extends LockedPacket {
 
     @Override
     public int getNumberOfLockedPayloads() {
-        return 3;
+        if (this.data == null || this.data.isEmpty()) {
+            return 2;
+        }
+        
+        else {
+            return 3; 
+        }
     }
 
     @Override
@@ -88,7 +94,7 @@ public class SetSessionDataPacket extends LockedPacket {
                 return 1;
                 
             case 2:
-                return this.data != null ? this.serializedData.length : 0;
+                return (this.data != null || this.data.isEmpty()) ? this.serializedData.length : 0;
                 
             default:
                 return 0;
@@ -113,7 +119,7 @@ public class SetSessionDataPacket extends LockedPacket {
                 }
                 
             case 2:
-                return this.data != null ? this.serializedData : null;
+                return (this.data != null || this.data.isEmpty()) ? this.serializedData : null;
                 
             default:
                 return null;

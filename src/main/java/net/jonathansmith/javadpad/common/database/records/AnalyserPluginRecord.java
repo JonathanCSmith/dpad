@@ -16,6 +16,11 @@
  */
 package net.jonathansmith.javadpad.common.database.records;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
+
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
@@ -24,6 +29,8 @@ import net.jonathansmith.javadpad.common.database.Record;
  *
  * @author Jon
  */
+@Entity
+@Table(name = "AnalyserPlugin", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class AnalyserPluginRecord extends PluginRecord {
 
     @Override
@@ -32,6 +39,7 @@ public class AnalyserPluginRecord extends PluginRecord {
     }
 
     @Override
+    @Transient
     public DatabaseRecord getType() {
         throw new UnsupportedOperationException("Not supported yet."); // TODO:
     }

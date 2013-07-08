@@ -63,7 +63,6 @@ public class ClientGUI extends TabbedGUI implements EventListener {
     public ClientGUI(Client client) {
         this.engine = client;
         this.listeners = new CopyOnWriteArrayList<EventListener> ();
-        this.engine.getEventThread().addListener(ThreadChangeEvent.class, this);
     }
     
     public void validateState() {
