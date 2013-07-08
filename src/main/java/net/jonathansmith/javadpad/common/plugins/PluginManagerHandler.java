@@ -86,29 +86,25 @@ public class PluginManagerHandler extends Thread {
     @Override
     public void run() {
         while (isAlive) {
-            while (isAlive && (!pendingUpdates || pluginCheckedOut)) {
+            if (!pendingUpdates || pluginCheckedOut) {
                 try {
-                    if (!isAlive) {
-                        break;
-                    }
                     Thread.sleep(100);
+                    continue;
                 }
-                
+
                 catch (InterruptedException ex) {
                     this.engine.forceShutdown("The main plugin manager thread was interrupted", ex);
                 }
             }
             
-            if (isAlive) {
-                this.snapshot();
-                this.utils.shutdown();
-                this.manager.shutdown();
-                this.relocatePendings();
-                this.manager = PluginManagerFactory.createPluginManager(this.props);
-                this.utils = new PluginManagerUtil(this.manager);
-                this.loadPlugins();
-                this.snapshot();
-            }
+            this.snapshot();
+            this.utils.shutdown();
+            this.manager.shutdown();
+            this.relocatePendings();
+            this.manager = PluginManagerFactory.createPluginManager(this.props);
+            this.utils = new PluginManagerUtil(this.manager);
+            this.loadPlugins();
+            this.snapshot();
         }
         
         this.utils.shutdown();
