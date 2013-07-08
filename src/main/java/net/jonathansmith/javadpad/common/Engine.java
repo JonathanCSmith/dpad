@@ -118,13 +118,13 @@ public abstract class Engine extends Thread {
     }
     
     public void init() {
+        this.eventThread = new EventThread();
+        this.eventThread.start();
         this.gui.init();
         this.gui.run();
         this.fileSystem.init();
         this.manager = new PluginManagerHandler(this.fileSystem.getPluginDirectory().getAbsolutePath(), this.fileSystem.getUpdateDirectory().getAbsolutePath(), this);
         this.manager.start();
-        this.eventThread = new EventThread();
-        this.eventThread.start();
     }
     
     public boolean isRunning() {

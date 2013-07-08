@@ -85,7 +85,7 @@ public class MainGUI extends JFrame implements Runnable, EventListener {
     
     public void disposeOfStartupPane() {
         this.remove(this.startupPanel);
-        this.revalidate();
+        this.repaint();
     }
     
     public void addTab(String tabName, TabbedGUI tabContents) {
@@ -103,7 +103,7 @@ public class MainGUI extends JFrame implements Runnable, EventListener {
     @Override
     public void changeEventReceived(EventObject event) {
         if (event instanceof ContentChangedEvent) {
-            this.revalidate();
+            this.repaint();
         }
     }
 

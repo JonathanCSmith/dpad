@@ -90,8 +90,10 @@ public class Client extends Engine implements EventListener {
     }
 
     public void setRuntime(ClientRuntimeThread thread) {
-        this.currentThread.getDisplay().unbind();
-        thread.getDisplay().bind();
+        if (this.currentThread != null) {
+            this.currentThread.getDisplay().unbind();
+            thread.getDisplay().bind();
+        }
         
         ThreadChangeEvent evt = new ThreadChangeEvent(thread);
         this.currentThread = thread;

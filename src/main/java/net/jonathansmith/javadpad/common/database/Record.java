@@ -23,6 +23,7 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
 
 import net.jonathansmith.javadpad.common.util.database.IdGenerator;
 
@@ -47,6 +48,7 @@ public abstract class Record implements Serializable {
     
     public abstract void addToChildren(Record record);
     
+    @Transient
     public abstract DatabaseRecord getType();
     
     @Override

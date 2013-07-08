@@ -25,6 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
@@ -36,7 +37,7 @@ import net.jonathansmith.javadpad.common.database.Record;
  * @author Jon
  */
 @Entity
-@Table(name = "LoaderDataSet", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
+@Table(name = "LoaderDataset", uniqueConstraints = @UniqueConstraint(columnNames = "UUID"))
 public class LoaderDataset extends Dataset {
     
     private Set<String> fileNames = new HashSet<String> ();
@@ -94,6 +95,7 @@ public class LoaderDataset extends Dataset {
     }
 
     @Override
+    @Transient
     public DatabaseRecord getType() {
         return DatabaseRecord.LOADER_DATA;
     }

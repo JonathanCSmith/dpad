@@ -19,6 +19,7 @@ package net.jonathansmith.javadpad.common.database.records;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
@@ -59,6 +60,7 @@ public class DataType extends Record {
     public void addToChildren(Record record) {}
 
     @Override
+    @Transient
     public DatabaseRecord getType() {
         return DatabaseRecord.DATA_TYPE;
     }

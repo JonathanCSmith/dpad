@@ -22,6 +22,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
@@ -72,6 +73,7 @@ public class TimeCourseData extends Record {
     public void addToChildren(Record record) {}
 
     @Override
+    @Transient
     public DatabaseRecord getType() {
         return DatabaseRecord.TIME_COURSE_DATA;
     }

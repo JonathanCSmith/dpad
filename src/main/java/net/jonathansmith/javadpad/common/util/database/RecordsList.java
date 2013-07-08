@@ -26,6 +26,11 @@ import java.util.LinkedList;
 public class RecordsList<T> extends LinkedList<T> {
     
     @Override
+    public boolean isEmpty() {
+        return this.size() == 0;
+    }
+    
+    @Override
     public boolean contains(Object o) {
         Iterator iter = this.descendingIterator();
         while (iter.hasNext()) {
