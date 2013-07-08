@@ -54,7 +54,7 @@ public class SetSessionDataPacket extends LockedPacket {
         this.data = data;
         this.pullsFocus = pullsFocus;
         
-        if (data != null || this.data.isEmpty()) {
+        if (data != null && !this.data.isEmpty()) {
             this.serializeData();
         }
     }
@@ -94,7 +94,7 @@ public class SetSessionDataPacket extends LockedPacket {
                 return 1;
                 
             case 2:
-                return (this.data != null || this.data.isEmpty()) ? this.serializedData.length : 0;
+                return (this.data != null && !this.data.isEmpty()) ? this.serializedData.length : 0;
                 
             default:
                 return 0;
@@ -119,7 +119,7 @@ public class SetSessionDataPacket extends LockedPacket {
                 }
                 
             case 2:
-                return (this.data != null || this.data.isEmpty()) ? this.serializedData : null;
+                return (this.data != null && !this.data.isEmpty()) ? this.serializedData : null;
                 
             default:
                 return null;
@@ -141,9 +141,11 @@ public class SetSessionDataPacket extends LockedPacket {
                 else {
                     this.pullsFocus = true;
                 }
+                return;
                 
             case 2:
                 this.data = (RecordsList<Record>) SerializationUtils.deserialize(bytes);
+                return;
         }
     }
 

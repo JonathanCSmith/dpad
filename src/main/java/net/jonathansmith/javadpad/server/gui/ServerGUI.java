@@ -103,21 +103,6 @@ public class ServerGUI extends TabbedGUI {
         this.currentTextLength = (this.currentTextLength + 1) % 1024;
     }
     
-    @Override
-    public void addListener(EventListener listener) {
-        if (!this.listeners.contains(listener)) {
-            this.listeners.add(listener);
-        }
-    }
-    
-    @Override
-    public void removeListener(EventListener listener) {
-        if (this.listeners.contains(listener)) {
-            this.listeners.remove(listener);
-        }
-    }
-
-    @Override
     public void fireChange(DPADEvent event) {
         for (EventListener listener : this.listeners) {
             listener.changeEventReceived(event);

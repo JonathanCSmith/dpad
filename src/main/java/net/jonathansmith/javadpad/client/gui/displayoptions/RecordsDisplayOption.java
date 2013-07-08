@@ -131,8 +131,8 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     public void submitNewRecordButton() {
         Record record = this.newRecordPane.buildNewlySubmittedRecord();
         if (record != null) {
-            Packet p = new NewSessionDataPacket(this.engine, this.session, this.recordType, record, true);
-            this.session.addPacketToSend(PacketPriority.HIGH, p);
+            LockedPacket p = new NewSessionDataPacket(this.engine, this.session, this.recordType, record, true);
+            this.session.lockAndSendPacket(PacketPriority.HIGH, p);
             this.newRecordPane.clearInfo();
         }
 

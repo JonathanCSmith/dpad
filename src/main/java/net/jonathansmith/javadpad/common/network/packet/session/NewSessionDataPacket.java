@@ -54,7 +54,9 @@ public class NewSessionDataPacket extends LockedPacket {
         this.data = data;
         this.pullsFocus = pullsFocus;
         
-        this.serializeData();
+        if (this.data != null) {
+            this.serializeData();
+        }
     }
     
     private void serializeData() {
@@ -75,7 +77,13 @@ public class NewSessionDataPacket extends LockedPacket {
 
     @Override
     public int getNumberOfLockedPayloads() {
-        return 3;
+        if (this.data == null) {
+            return 2;
+        }
+        
+        else {
+            return 3;
+        }
     }
 
     @Override
@@ -86,7 +94,7 @@ public class NewSessionDataPacket extends LockedPacket {
                 return 1;
                 
             case 2:
-                return this.serializedData.length;
+                return this.data == null ? 0 : this.serializedData.length;
                 
             default:
                 return 0;
@@ -133,9 +141,11 @@ public class NewSessionDataPacket extends LockedPacket {
                 else {
                     this.pullsFocus = true;
                 }
+                return;
                 
             case 2:
                 this.data = (Record) SerializationUtils.deserialize(bytes);
+                return;
         }
     }
 

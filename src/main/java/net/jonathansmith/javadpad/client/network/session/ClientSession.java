@@ -166,7 +166,7 @@ public final class ClientSession extends Session {
     public boolean setSessionData(String soureKey, SessionData dataType, RecordsList<Record> data) {
         if (super.setSessionData(soureKey, dataType, data)) {
             this.sessionDataTimestamp.put(dataType, System.currentTimeMillis());
-            this.fireChange(new DataArriveEvent(dataType)); // TODO: Fix events
+            this.fireChange(new DataArriveEvent(dataType));
             return true;
         }
         
