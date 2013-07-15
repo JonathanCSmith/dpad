@@ -21,7 +21,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 
 import java.util.EventObject;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
@@ -37,8 +36,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
-import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ContentChangedEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;

@@ -103,7 +103,7 @@ public class MainGUI extends JFrame implements Runnable, EventListener {
     @Override
     public void changeEventReceived(EventObject event) {
         if (event instanceof ContentChangedEvent) {
-            this.repaint();
+            this.revalidate();
         }
     }
 
