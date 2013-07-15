@@ -16,6 +16,10 @@
  */
 package net.jonathansmith.javadpad.server.network.session;
 
+import java.math.BigInteger;
+
+import java.security.MessageDigest;
+
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -60,9 +64,6 @@ import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
 import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
 import net.jonathansmith.javadpad.server.database.recordaccess.loaderplugin.LoaderPluginManager;
 import net.jonathansmith.javadpad.server.database.recordaccess.user.UserManager;
-
-import java.math.BigInteger;
-import java.security.MessageDigest;
 
 /**
  *
@@ -478,6 +479,9 @@ public final class ServerSession extends Session {
             return;
         }
         
+        GenericManager manager = recordType.getManager();
+        manager.saveNew(this.connection, record);
+        
         RecordsList<Record> focusList = this.checkoutSessionData(this.getSessionID(), SessionData.FOCUS);
         if (focusList != null) {
             Record focus = focusList.getFirst();
@@ -490,8 +494,6 @@ public final class ServerSession extends Session {
             }
         }
         
-        GenericManager manager = recordType.getManager();
-        manager.saveNew(this.connection, record);
         RecordsList<Record> list = new RecordsList<Record> ();
         list.add(record);
         this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(recordType, QueryType.SINGLE), list);

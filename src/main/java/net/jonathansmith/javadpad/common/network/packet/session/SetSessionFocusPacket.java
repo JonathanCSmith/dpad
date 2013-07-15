@@ -85,13 +85,13 @@ public class SetSessionFocusPacket extends LockedPacket {
     @Override
     public void handleClientSide() {
         RecordsList<Record> list = this.session.checkoutSessionData(this.getKey(), this.dataType);
-        ((ClientSession) this.session).setSessionData(this.getKey(), this.dataType, list);
+        ((ClientSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, list);
     }
 
     @Override
     public void handleServerSide() {
         RecordsList<Record> list = this.session.checkoutSessionData(this.getKey(), this.dataType);
-        ((ServerSession) this.session).setSessionData(this.getKey(), this.dataType, list);
+        ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, list);
     }
 
     @Override

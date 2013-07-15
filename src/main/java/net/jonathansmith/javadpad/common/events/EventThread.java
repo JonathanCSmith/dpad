@@ -30,9 +30,16 @@ import com.google.common.collect.Multimap;
  */
 public class EventThread extends Thread {
     
-    private Multimap<Class<? extends DPADEvent>, EventListener> eventMap = ArrayListMultimap.create();
-    private List<DPADEvent> eventList = new LinkedList<DPADEvent> ();
+    private Multimap<Class<? extends DPADEvent>, EventListener> liveListenerMap = ArrayListMultimap.create();
+    private Multimap<Class<? extends DPADEvent>, EventListener> snapshottedListenerMap = ArrayListMultimap.create();
+    
+    private List<DPADEvent> pendingEventList = new LinkedList<DPADEvent> ();
+    private List<DPADEvent> liveEventList = new LinkedList<DPADEvent> ();
+    
     private boolean isAlive = false;
+    private boolean pendingListenerUpdates;
+    private boolean pendingEventUpdates;
+    private boolean isModifying;
     
     @Override
     public void start() {
@@ -43,7 +50,7 @@ public class EventThread extends Thread {
     @Override
     public void run() {
         while (isAlive) {
-            if (eventList.isEmpty()) {
+            if (liveEventList.isEmpty()) {
                 try {
                     Thread.sleep(100);
                 }
@@ -54,48 +61,80 @@ public class EventThread extends Thread {
             }
             
             else {
-                DPADEvent event = this.eventList.get(0);
-                Class<? extends DPADEvent> eventClass = event.getClass();
-                Collection<EventListener> listeners = this.eventMap.get(eventClass);
-                for (EventListener listener : listeners) {
-                    listener.changeEventReceived(this.eventList.get(0));
-                }
+                this.isModifying = true;
+                DPADEvent event = this.liveEventList.remove(0);
+                this.isModifying = false;
                 
-                this.eventList.remove(0);
+                Class<? extends DPADEvent> eventClass = event.getClass();
+                Collection<EventListener> listeners = this.snapshottedListenerMap.get(eventClass);
+                for (EventListener listener : listeners) {
+                    listener.changeEventReceived(event);
+                }
+            }
+            
+            if (pendingListenerUpdates) {
+                this.snapshottedListenerMap.clear();
+                this.snapshottedListenerMap.putAll(this.liveListenerMap);
+                this.pendingListenerUpdates = false;
+            }
+            
+            if (pendingEventUpdates) {
+                if (!this.isModifying) {
+                    this.liveEventList.addAll(this.pendingEventList);
+                    this.pendingEventList.clear();
+                    this.pendingEventUpdates = false;
+                }
             }
         }
         
-        this.eventList.clear();
-        this.eventMap.clear();
+        this.pendingEventList.clear();
+        this.liveListenerMap.clear();
+        this.liveEventList.clear();
+        this.snapshottedListenerMap.clear();
     }
     
     public void shutdown(boolean force) {
         if (force) {
-            this.eventList.clear();
+            this.pendingListenerUpdates = false;
+            this.liveEventList.clear();
         }
         
         this.isAlive = false;
     }
     
     public void addListener(Class<? extends DPADEvent> clazz, EventListener listener) {
-        this.eventMap.put(clazz, listener);
+        this.liveListenerMap.put(clazz, listener);
+        this.pendingListenerUpdates = true;
     }
     
     public void removeListener(EventListener listener) {
-        for (Entry entry : this.eventMap.entries()) {
+        this.liveListenerMap.removeAll(listener);
+        
+        List<Class> entries = new LinkedList<Class> ();
+        for (Entry entry : this.liveListenerMap.entries()) {
             if (entry.getValue().equals(listener)) {
-                this.eventMap.remove(entry.getKey(), listener);
+                entries.add((Class) entry.getKey());
             }
+        }
+        
+        for (Class entry : entries) {
+            this.liveListenerMap.remove(entry, listener);
+        }
+        
+        if (entries.size() > 0) {
+            this.pendingListenerUpdates = true;
         }
     }
     
     public void removeListenerFromEvent(Class<? extends DPADEvent> clazz, EventListener listener) {
-        if (this.eventMap.get(clazz).contains(listener)) {
-            this.eventMap.remove(clazz, listener);
+        if (this.liveListenerMap.get(clazz).contains(listener)) {
+            this.liveListenerMap.remove(clazz, listener);
+            this.pendingListenerUpdates = true;
         }
     }
     
     public void post(DPADEvent event) {
-        this.eventList.add(event);
+        this.pendingEventList.add(event);
+        this.pendingEventUpdates = true;
     }
 }

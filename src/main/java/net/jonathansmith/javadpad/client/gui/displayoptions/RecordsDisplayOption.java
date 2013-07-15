@@ -37,7 +37,6 @@ import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.session.NewSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
@@ -153,6 +152,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
 
         else {
             RecordsList<Record> list = new RecordsList<Record> ();
+            list.add(record);
             LockedPacket p = new SetSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE), list, true);
             this.session.lockAndSendPacket(PacketPriority.HIGH, p);
         }
@@ -244,7 +244,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
             DataArriveEvent evt = (DataArriveEvent) event;
             if (((SessionData) evt.getSource()).equals(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION))) {
                 RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION));
-                if (data == null) {
+                if (data == null || this.dialog == null) {
                     return; // TODO: Verify if there is a better way of handling this, don't want packet spam tho
                 }
 
@@ -253,6 +253,16 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
                 this.dialog = null;
                 this.setCurrentView(this.existingRecordPane);
                 this.existingRecordPane.insertRecords(data);
+                this.engine.getGUI().validateState();
+            }
+            
+            else if (((SessionData) evt.getSource()).equals(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE))) {
+                RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE));
+                if (data == null) {
+                    return;
+                }
+                
+                this.currentRecordPane.setCurrentData(data.getFirst());
                 this.engine.getGUI().validateState();
             }
         }
