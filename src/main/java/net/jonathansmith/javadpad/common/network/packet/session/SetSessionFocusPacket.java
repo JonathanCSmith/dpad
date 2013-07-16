@@ -22,6 +22,7 @@ import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
+import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
@@ -84,14 +85,16 @@ public class SetSessionFocusPacket extends LockedPacket {
 
     @Override
     public void handleClientSide() {
-        RecordsList<Record> list = this.session.checkoutSessionData(this.getKey(), this.dataType);
-        ((ClientSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, list);
+        RecordsList<Record> out = new RecordsList<Record> ();
+        out.add(new IntegerRecord(this.dataType.ordinal()));
+        ((ClientSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out);
     }
 
     @Override
     public void handleServerSide() {
-        RecordsList<Record> list = this.session.checkoutSessionData(this.getKey(), this.dataType);
-        ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, list);
+        RecordsList<Record> out = new RecordsList<Record> ();
+        out.add(new IntegerRecord(this.dataType.ordinal()));
+        ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out);
     }
 
     @Override

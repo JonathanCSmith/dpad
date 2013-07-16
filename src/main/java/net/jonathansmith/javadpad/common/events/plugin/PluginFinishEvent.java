@@ -14,21 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.plugins;
+package net.jonathansmith.javadpad.common.events.plugin;
 
-import net.xeoh.plugins.base.Plugin;
-
-import net.jonathansmith.javadpad.DPAD.Platform;
-import net.jonathansmith.javadpad.common.database.PluginRecord;
-import net.jonathansmith.javadpad.common.threads.RuntimeThread;
+import net.jonathansmith.javadpad.common.database.Dataset;
+import net.jonathansmith.javadpad.common.events.DPADEvent;
 
 /**
  *
  * @author Jon
  */
-public interface DPADPlugin extends Plugin {
+public class PluginFinishEvent extends DPADEvent {
     
-    public PluginRecord getPluginRecord();
-    
-    public RuntimeThread getRuntimeThread(Platform platform);
+    public PluginFinishEvent(Dataset data) {
+        super(data);
+    }
 }

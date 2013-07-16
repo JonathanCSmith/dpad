@@ -35,6 +35,7 @@ import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKey
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
+import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
@@ -143,6 +144,37 @@ public abstract class Session {
     
     public void fireChange(DPADEvent event) {
         this.engine.getEventThread().post(event);
+    }
+    
+    /**
+     * Checks out the focus of the current session, is always soft so as to not
+     * packet spam. Code should rigourously set focus
+     * 
+     * @return records list containing the current focus data, can be empty if no
+     * current focus
+     */
+    public final RecordsList<Record> getSessionFocusData() {
+        SessionData focusType = this.getSessionFocusType();
+        return this.checkoutSessionData(this.getSessionID(), focusType);
+    }
+    
+    /**
+     * Returns the current focus of the session, but contains no data
+     * 
+     * @return session data of the type that is currently focussed
+     */
+    public final SessionData getSessionFocusType() {
+        RecordsList<Record> focusList = this.checkoutSessionData(this.getSessionID(), SessionData.FOCUS);
+        if (focusList == null || focusList.isEmpty()) {
+            return null;
+        }
+        
+        Record focus = focusList.getFirst();
+        if (focus == null) {
+            return null;
+        }
+        
+        return SessionData.values()[((IntegerRecord) focus).getValue()];
     }
     
     /**

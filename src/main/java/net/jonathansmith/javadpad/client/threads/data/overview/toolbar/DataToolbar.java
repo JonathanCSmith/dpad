@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.threads.data.toolbar;
+package net.jonathansmith.javadpad.client.threads.data.overview.toolbar;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -30,15 +30,15 @@ import org.jdesktop.layout.GroupLayout;
  *
  * @author jonathansmith
  */
-public class AddDataToolbar extends JPanel {
+public class DataToolbar extends JPanel {
 
-    public AddDataToolbar() {
+    public DataToolbar() {
         initComponents();
     }
 
     public void addDisplayOptionListener(ActionListener listener) {
-        this.setPlugin.addActionListener(listener);
-        this.addFiles.addActionListener(listener);
+        this.addData.addActionListener(listener);
+        this.loadData.addActionListener(listener);
     }
     
     /**
@@ -51,10 +51,10 @@ public class AddDataToolbar extends JPanel {
     private void initComponents() {
 
         jLabel1 = new JLabel();
-        setPlugin = new JButton();
-        addFiles = new JButton();
-        run = new JButton();
-        submit = new JButton();
+        addData = new JButton();
+        loadData = new JButton();
+        analyseData = new JButton();
+        viewAnalysed = new JButton();
         back = new JButton();
 
         setMaximumSize(new Dimension(120, 32767));
@@ -62,13 +62,13 @@ public class AddDataToolbar extends JPanel {
 
         jLabel1.setText("Data Toolbar:");
 
-        setPlugin.setText("Set Plugin");
+        addData.setText("Add New Data");
 
-        addFiles.setText("Add FIles");
+        loadData.setText("View Data");
 
-        run.setText("Run");
+        analyseData.setText("Analyse Data");
 
-        submit.setText("Submit");
+        viewAnalysed.setText("View Analysed");
 
         back.setText("Back");
 
@@ -81,44 +81,44 @@ public class AddDataToolbar extends JPanel {
                     .add(layout.createSequentialGroup()
                         .add(5, 5, 5)
                         .add(layout.createParallelGroup(GroupLayout.CENTER)
-                            .add(submit, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
-                            .add(run, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .add(addFiles, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
-                            .add(setPlugin, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                            .add(viewAnalysed, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)
+                            .add(analyseData, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(loadData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
+                            .add(addData, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)
                             .add(back, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)))
                     .add(jLabel1))
                 .add(5, 5, 5))
         );
 
-        layout.linkSize(new Component[] {addFiles, back, run, setPlugin, submit}, GroupLayout.HORIZONTAL);
+        layout.linkSize(new Component[] {addData, analyseData, back, loadData, viewAnalysed}, GroupLayout.HORIZONTAL);
 
         layout.setVerticalGroup(
             layout.createParallelGroup(GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(jLabel1)
                 .add(5, 5, 5)
-                .add(setPlugin)
+                .add(addData)
                 .add(5, 5, 5)
-                .add(addFiles)
+                .add(loadData)
                 .add(5, 5, 5)
-                .add(run)
+                .add(analyseData)
                 .add(5, 5, 5)
-                .add(submit)
+                .add(viewAnalysed)
                 .add(5, 5, 5)
                 .add(back)
                 .add(0, 116, Short.MAX_VALUE))
         );
 
-        layout.linkSize(new Component[] {addFiles, back, run, setPlugin, submit}, GroupLayout.VERTICAL);
+        layout.linkSize(new Component[] {addData, analyseData, back, loadData, viewAnalysed}, GroupLayout.VERTICAL);
 
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public JButton addFiles;
+    public JButton addData;
+    public JButton analyseData;
     public JButton back;
     private JLabel jLabel1;
-    public JButton run;
-    public JButton setPlugin;
-    public JButton submit;
+    public JButton loadData;
+    public JButton viewAnalysed;
     // End of variables declaration//GEN-END:variables
 }

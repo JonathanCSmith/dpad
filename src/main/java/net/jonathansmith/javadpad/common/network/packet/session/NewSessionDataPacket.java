@@ -22,9 +22,11 @@ import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
+import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
 import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -160,7 +162,8 @@ public class NewSessionDataPacket extends LockedPacket {
         
         if (this.pullsFocus) {
             RecordsList<Record> out = new RecordsList<Record> ();
-            out.add(this.data);
+            SessionData focus = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.type, QueryType.SINGLE);
+            out.add(new IntegerRecord(focus.ordinal()));
             ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out);
         }
     }

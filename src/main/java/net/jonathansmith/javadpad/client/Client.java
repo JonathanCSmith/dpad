@@ -19,7 +19,6 @@ package net.jonathansmith.javadpad.client;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-import java.util.EventObject;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,8 +40,8 @@ import net.jonathansmith.javadpad.client.network.listeners.ClientConnectListener
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadShutdownEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
@@ -52,6 +51,7 @@ import net.jonathansmith.javadpad.common.network.packet.session.DisconnectPacket
 import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
 import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 import net.jonathansmith.javadpad.common.threads.RunnableThread;
+import net.jonathansmith.javadpad.common.threads.RuntimeThread;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
 import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
@@ -64,7 +64,7 @@ public class Client extends Engine implements EventListener {
     
     private ClientBootstrap bootstrap;
     private ClientSession session;
-    private ClientRuntimeThread currentThread;
+    private RuntimeThread currentThread;
     private boolean disconnectExpected = false;
     
     public Client(DPAD main, String host, int port) {
@@ -85,12 +85,16 @@ public class Client extends Engine implements EventListener {
         this.session = sess;
     }
     
-    public ClientRuntimeThread getRuntime() {
+    public RuntimeThread getRuntime() {
         return this.currentThread;
     }
 
-    public void setRuntime(ClientRuntimeThread thread) {
+    private void setRuntime(RuntimeThread thread) {
         if (this.currentThread != null) {
+            if (this.currentThread.isRunnable() && this.currentThread.getThread().isRunning()) {
+                return;
+            }
+            
             this.currentThread.getDisplay().unbind();
             thread.getDisplay().bind();
         }
@@ -99,20 +103,32 @@ public class Client extends Engine implements EventListener {
         this.currentThread = thread;
         this.fireChange(evt);
     }
-
-    public void sendQuitToRuntimeThread(String message, boolean error) {
-        RunnableThread thread = this.getRuntime().getThread();
-        if (thread != null) {
-            thread.shutdown(error);
+    
+    public void forceSetRuntime(RuntimeThread thread, boolean force) {
+        if (this.currentThread != null) {
+            if (this.currentThread.isRunnable() && this.currentThread.getThread().isRunning()) {
+                if (force) {
+                    this.currentThread.getThread().shutdown(force);
+                }
+                
+                else {
+                    return;
+                }
+            }
         }
-        this.setRuntime(ClientRuntimeThread.RUNTIME_SELECT);
+        
+        this.setRuntime(thread);
+    }
+
+    public void returnToDefaultRuntime(String message, boolean error) {
+        this.forceSetRuntime(ClientRuntimeThread.RUNTIME_SELECT, error);
     }
     
     public void fireChange(DPADEvent evt) {
         this.getEventThread().post(evt);
     }
 
-    public void changeEventReceived(EventObject event) {
+    public void changeEventReceived(DPADEvent event) {
         if (event instanceof ThreadShutdownEvent && event.getSource() == this.currentThread) {
             this.setRuntime(ClientRuntimeThread.RUNTIME_SELECT);
         }
@@ -189,10 +205,10 @@ public class Client extends Engine implements EventListener {
                     this.setRuntime(ClientRuntimeThread.RUNTIME_SELECT);
                 }
                 
-                ClientRuntimeThread currentRuntime = this.getRuntime();
+                RuntimeThread currentRuntime = this.getRuntime();
                 if (currentRuntime.isRunnable()) {
                     RunnableThread thread = currentRuntime.getThread();
-                    thread.init();
+                    thread.init(this.getEventThread());
                     thread.start();
                     thread.join();
                 } 
@@ -252,7 +268,7 @@ public class Client extends Engine implements EventListener {
         }
         this.session.disconnect(false);
         
-        this.sendQuitToRuntimeThread("Shutdown", false);
+        this.returnToDefaultRuntime("Shutdown", false);
         
         this.info("Shutdown called on: " + this.platform.toString());
         this.isAlive = false;
@@ -264,7 +280,7 @@ public class Client extends Engine implements EventListener {
         this.getPluginManager().shutdown(true);
         this.session.disconnect(true);
         
-        this.sendQuitToRuntimeThread(message, true);
+        this.returnToDefaultRuntime(message, true);
         
         this.error(message, ex);
         this.isAlive = false;

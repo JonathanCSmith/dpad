@@ -26,15 +26,25 @@ import javax.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class Dataset extends Record {
     
+    private boolean clientSidePerformed = false;
     private boolean serverSidePerformed = false;
     private PluginRecord plugin;
     
-    @Column(name = "Processed")
-    public boolean getHasBeenProcessed() {
+    @Column(name = "ClientProcessed")
+    public boolean getHasBeenClientProcessed() {
+        return this.clientSidePerformed;
+    }
+    
+    public void setHasBeenClientProcessed(boolean value) {
+        this.clientSidePerformed = value;
+    }
+    
+    @Column(name = "ServerProcessed")
+    public boolean getHasBeenServerProcessed() {
         return this.serverSidePerformed;
     }
     
-    public void setHasBeenProcessed(boolean value) {
+    public void setHasBeenServerProcessed(boolean value) {
         this.serverSidePerformed = value;
     }
     
@@ -51,7 +61,7 @@ public abstract class Dataset extends Record {
     public boolean equals(Object o) {
         if (o instanceof Dataset) {
             Dataset d = (Dataset) o;
-            if (this.getHasBeenProcessed() == d.getHasBeenProcessed()
+            if (this.getHasBeenServerProcessed() == d.getHasBeenServerProcessed()
                 && this.getPluginInfo().equals(d.getPluginInfo())) {
                 return true;
             }

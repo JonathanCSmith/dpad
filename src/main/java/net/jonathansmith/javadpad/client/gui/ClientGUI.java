@@ -20,7 +20,6 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 
-import java.util.EventObject;
 
 import javax.swing.GroupLayout;
 import javax.swing.JLabel;
@@ -124,7 +123,7 @@ public class ClientGUI extends TabbedGUI implements EventListener {
     }
     
     @Override
-    public void changeEventReceived(EventObject event) {
+    public void changeEventReceived(DPADEvent event) {
         if (event instanceof ThreadChangeEvent) {
             ClientRuntimeThread thread = (ClientRuntimeThread) event.getSource();
             if (this.currentRuntime != thread && thread.isDisplayable()) {
