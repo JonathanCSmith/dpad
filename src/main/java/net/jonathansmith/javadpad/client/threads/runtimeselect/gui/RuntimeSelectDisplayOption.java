@@ -127,19 +127,19 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
 
     public void actionPerformed(ActionEvent evt) {
         if (evt.getSource() == this.runtimeSelectToolbar.setUser) {
-            this.engine.setRuntime(ClientRuntimeThread.USER);
+            this.engine.forceSetRuntime(ClientRuntimeThread.USER, true);
         }
         
         else if (evt.getSource() == this.runtimeSelectToolbar.setExperiment) {
-            this.engine.setRuntime(ClientRuntimeThread.EXPERIMENT);
+            this.engine.forceSetRuntime(ClientRuntimeThread.EXPERIMENT, true);
         }
         
         else if (evt.getSource() == this.runtimeSelectToolbar.setData) {
-            this.engine.setRuntime(ClientRuntimeThread.DATA);
+            this.engine.forceSetRuntime(ClientRuntimeThread.DATA, true);
         }
         
         else if (evt.getSource() == this.runtimeSelectToolbar.addPlugin) {
-            this.engine.setRuntime(ClientRuntimeThread.ADD_PLUGIN);
+            this.engine.forceSetRuntime(ClientRuntimeThread.ADD_PLUGIN, true);
         }
         
         else if (evt.getSource() == this.runtimeSelectToolbar.shutdown) {

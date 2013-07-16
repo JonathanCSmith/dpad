@@ -21,8 +21,6 @@ import java.awt.event.ActionListener;
 
 import java.io.File;
 
-import java.util.EventObject;
-
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -38,6 +36,7 @@ import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.pane.PluginDis
 import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.toolbar.PluginSelectToolbar;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
@@ -155,12 +154,12 @@ public class UploadPluginDisplayOption extends DisplayOption implements ActionLi
         }
         
         else if (evt.getSource() == this.pluginSelectToolbar.back) {
-            this.engine.sendQuitToRuntimeThread("User called back", false);
+            this.engine.returnToDefaultRuntime("User called back", false);
         }
     }
 
     @Override
-    public void changeEventReceived(EventObject event) {
+    public void changeEventReceived(DPADEvent event) {
         if (event instanceof ModalCloseEvent) {
             ModalCloseEvent evt = (ModalCloseEvent) event;
             if (evt.getSource() == this.dialog && evt.getWasForcedClosed()) {
@@ -171,7 +170,7 @@ public class UploadPluginDisplayOption extends DisplayOption implements ActionLi
         else if (event instanceof DataArriveEvent) {
             DataArriveEvent evt = (DataArriveEvent) event;
             if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN_STATUS)) {
-                RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.LOADER_PLUGIN);
+                RecordsList<Record> data = this.session.softlyCheckoutSessionData(SessionData.LOADER_PLUGIN);
                 if (data == null || !(data.getFirst() instanceof IntegerRecord)) {
                     return;
                 }

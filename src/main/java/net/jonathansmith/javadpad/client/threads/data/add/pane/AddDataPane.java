@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.threads.data.pane;
+package net.jonathansmith.javadpad.client.threads.data.add.pane;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionListener;
 
 import javax.swing.DefaultListModel;
 import javax.swing.GroupLayout;
@@ -40,11 +41,21 @@ import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
  */
 public class AddDataPane extends CurrentRecordPane {
 
+    private LoaderDataset currentData = null;
+    
     /**
      * Creates new form ClientMainPane
      */
     public AddDataPane() {
         initComponents();
+    }
+    
+    public LoaderDataset getCurrentData() {
+        return this.currentData;
+    }
+    
+    public void addDisplayOptionListener(ActionListener listener) {
+        this.removeFiles.addActionListener(listener);
     }
     
     @Override
@@ -61,6 +72,8 @@ public class AddDataPane extends CurrentRecordPane {
             }
             
             this.numberOfObserved.setText(l.getData().size() + " samples in this dataset");
+            
+            this.currentData = l;
         }
     }
     

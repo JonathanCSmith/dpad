@@ -183,7 +183,7 @@ public final class ClientSession extends Session {
      */
     @Override
     public void updateSessionData(String sourceKey, SessionData dataType, RecordsTransform data) {
-        RecordsList<Record> currentData = this.checkoutSessionData(sourceKey, dataType);
+        RecordsList<Record> currentData = this.softlyCheckoutSessionData(dataType);
         if (currentData == null) {
             return;
         }

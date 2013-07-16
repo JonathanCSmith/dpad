@@ -19,7 +19,9 @@ package net.jonathansmith.javadpad.client.threads;
 
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.gui.displayoptions.RecordsDisplayOption;
-import net.jonathansmith.javadpad.client.threads.data.DataDisplayOption;
+import net.jonathansmith.javadpad.client.threads.data.add.AddDataDisplayOption;
+import net.jonathansmith.javadpad.client.threads.data.overview.DataDisplayOption;
+import net.jonathansmith.javadpad.client.threads.data.pluginselect.PluginDisplayOption;
 import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.CurrentExperimentPane;
 import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.ExistingExperimentPane;
 import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.NewExperimentPane;
@@ -39,33 +41,34 @@ import net.jonathansmith.javadpad.common.threads.RuntimeThread;
  * @author Jonathan Smith
  */
 public enum ClientRuntimeThread implements RuntimeThread {
-    STARTUP(false, true, new StartupDisplayOption(), null),
-    RUNTIME_SELECT(false, true, new RuntimeSelectDisplayOption(), null),
-    USER(false, true, new RecordsDisplayOption(DatabaseRecord.USER, new CurrentUserPane(), new NewUserPane(), new ExistingUserPane(), "User toolbar:"), null),
-    EXPERIMENT(false, true, new RecordsDisplayOption(DatabaseRecord.EXPERIMENT, new CurrentExperimentPane(), new NewExperimentPane(), new ExistingExperimentPane(), "Experiment toolbar:"), null),
-    DATA(false /**true**/, true, new DataDisplayOption(), /**new DataThread()**/ null),
-    ADD_PLUGIN(false, true, new UploadPluginDisplayOption(), null);
+    STARTUP(new StartupDisplayOption(), null),
+    RUNTIME_SELECT(new RuntimeSelectDisplayOption(), null),
+    USER(new RecordsDisplayOption(DatabaseRecord.USER, new CurrentUserPane(), new NewUserPane(), new ExistingUserPane(), "User toolbar:"), null),
+    EXPERIMENT(new RecordsDisplayOption(DatabaseRecord.EXPERIMENT, new CurrentExperimentPane(), new NewExperimentPane(), new ExistingExperimentPane(), "Experiment toolbar:"), null),
     
-    private final boolean runnable;
-    private final boolean displayable;
+    DATA(new DataDisplayOption(), null),
+    ADD_DATA(new AddDataDisplayOption(), null),
+    ANALYSE_DATA(null, null),
+    
+    ADD_PLUGIN(new UploadPluginDisplayOption(), null),
+    DISPLAY_PLUGINS(new PluginDisplayOption(), null);
+    
     private final DisplayOption display;
     private final RunnableThread thread;
     
-    private ClientRuntimeThread(boolean runnable, boolean displayable, DisplayOption display, RunnableThread thread) {
-        this.runnable = runnable;
-        this.displayable = displayable;
+    private ClientRuntimeThread(DisplayOption display, RunnableThread thread) {
         this.display = display;
         this.thread = thread;
     }
     
     @Override
     public boolean isRunnable() {
-        return this.runnable;
+        return this.thread != null;
     }
     
     @Override
     public boolean isDisplayable() {
-        return this.displayable;
+        return this.display != null;
     }
     
     @Override

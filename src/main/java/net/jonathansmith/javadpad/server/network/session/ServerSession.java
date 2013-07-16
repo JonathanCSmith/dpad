@@ -481,22 +481,10 @@ public final class ServerSession extends Session {
         
         GenericManager manager = recordType.getManager();
         manager.saveNew(this.connection, record);
-        
-        RecordsList<Record> focusList = this.checkoutSessionData(this.getSessionID(), SessionData.FOCUS);
-        if (focusList != null) {
-            Record focus = focusList.getFirst();
-            focus.addToChildren(record);
-            
-            DatabaseRecord type = focus.getType();
-            if (type != null) {
-                GenericManager parentManager = type.getManager();
-                parentManager.save(this.connection, focus);
-            }
-        }
-        
         RecordsList<Record> list = new RecordsList<Record> ();
         list.add(record);
         this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(recordType, QueryType.SINGLE), list);
+        this.updateParent(record);
     }
     
     /**
@@ -509,23 +497,27 @@ public final class ServerSession extends Session {
             return;
         }
         
-        RecordsList<Record> focusList = this.checkoutSessionData(this.getSessionID(), SessionData.FOCUS);
-        if (focusList != null) {
-            Record focus = focusList.getFirst();
-            focus.addToChildren(record);
-            
-            DatabaseRecord type = focus.getType();
-            if (type != null) {
-                GenericManager parentManager = type.getManager();
-                parentManager.save(this.connection, focus);
-            }
-        }
-        
         GenericManager manager = record.getType().getManager();
         manager.save(this.connection, record);
         RecordsList<Record> list = new RecordsList<Record> ();
         list.add(record);
         this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(record.getType(), QueryType.SINGLE), list);
+        this.updateParent(record);
+    }
+    
+    private void updateParent(Record record) {
+        RecordsList<Record> dataList = this.getSessionFocusData();
+        if (dataList == null || dataList.isEmpty()) {
+            return;
+        }
+        
+        Record data = dataList.getFirst();
+        DatabaseRecord type = data.getType();
+        if (type != null) {
+            data.addToChildren(record);
+            GenericManager parentManager = type.getManager();
+            parentManager.save(this.connection, data);
+        }
     }
     
     /**

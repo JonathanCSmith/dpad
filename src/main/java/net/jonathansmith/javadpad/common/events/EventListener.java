@@ -16,13 +16,11 @@
  */
 package net.jonathansmith.javadpad.common.events;
 
-import java.util.EventObject;
-
 /**
  *
  * @author Jon
  */
 public interface EventListener {
     
-    public void changeEventReceived(EventObject event);
+    public void changeEventReceived(DPADEvent event);
 }

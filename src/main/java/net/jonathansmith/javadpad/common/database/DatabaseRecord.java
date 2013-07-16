@@ -43,9 +43,7 @@ public enum DatabaseRecord {
     TEMPLATE(null),
     TIME_COURSE_DATA(null),
     
-    USER(UserManager.getInstance()),
-    
-    CURRENT_DATASET(null);
+    USER(UserManager.getInstance());
     
     private final GenericManager manager;
     

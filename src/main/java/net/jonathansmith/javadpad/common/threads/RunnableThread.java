@@ -15,15 +15,69 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package net.jonathansmith.javadpad.common.threads;
+
+import net.jonathansmith.javadpad.common.database.Dataset;
+import net.jonathansmith.javadpad.common.events.EventThread;
+import net.jonathansmith.javadpad.common.events.plugin.PluginFinishEvent;
+
 /**
  *
  * @author Jon
  */
 public abstract class RunnableThread extends Thread {
     
+    public EventThread eventThread;
+    
+    private boolean isAlive = false;
+    private boolean errored = false;
+    
     public RunnableThread() {}
     
-    public abstract void init();
+    public final void init(EventThread eventThread) {
+        this.eventThread = eventThread;
+        this.pluginInit();
+    }
     
-    public abstract void shutdown(boolean force);
+    public abstract void pluginInit();
+    
+    @Override
+    public void start() {
+        this.isAlive = true;
+        this.pluginStart();
+        super.start();
+    }
+    
+    public abstract void pluginStart();
+    
+    @Override
+    public void run() {
+        while (this.isAlive) {
+            this.pluginLoop();
+        }
+        
+        this.finish(this.errored);
+    }
+    
+    public abstract void pluginLoop();
+    
+    public abstract Dataset getPluginResult();
+    
+    public boolean isRunning() {
+        return this.isAlive;
+    }
+    
+    public void shutdown(boolean force) {
+        this.errored = force;
+        this.isAlive = false;
+    }
+    
+    private void finish(boolean errored) {
+        Dataset data = null;
+        if (!errored) {
+            data = this.getPluginResult();
+        }
+        
+        PluginFinishEvent evt = new PluginFinishEvent(data);
+        this.eventThread.post(evt);
+    }
 }
