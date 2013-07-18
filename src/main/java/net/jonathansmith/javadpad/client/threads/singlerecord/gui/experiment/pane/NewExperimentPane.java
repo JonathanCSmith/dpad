@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.threads.experiment.gui.pane;
+package net.jonathansmith.javadpad.client.threads.singlerecord.gui.experiment.pane;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -27,7 +27,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import net.jonathansmith.javadpad.client.gui.displayoptions.pane.NewRecordPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.NewRecordPane;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.records.Experiment;
 

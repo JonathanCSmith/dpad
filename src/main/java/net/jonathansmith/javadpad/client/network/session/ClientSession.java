@@ -39,7 +39,7 @@ import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKey
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
-import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.RequestSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.security.SecurityHandler;
@@ -211,7 +211,7 @@ public final class ClientSession extends Session {
             }
         }
         
-        LockedPacket p = new DataRequestPacket(this.engine, this, dataType);
+        LockedPacket p = new RequestSessionDataPacket(this.engine, this, dataType);
         this.lockAndSendPacket(PacketPriority.HIGH, p);
         return null;
     }

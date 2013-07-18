@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.gui.displayoptions;
+package net.jonathansmith.javadpad.client.threads.singlerecord.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -25,10 +25,11 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
-import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
-import net.jonathansmith.javadpad.client.gui.displayoptions.pane.ExistingRecordPane;
-import net.jonathansmith.javadpad.client.gui.displayoptions.pane.NewRecordPane;
-import net.jonathansmith.javadpad.client.gui.displayoptions.toolbar.RecordToolbar;
+import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.ExistingRecordPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.NewRecordPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.toolbar.RecordToolbar;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.events.DPADEvent;
@@ -37,7 +38,7 @@ import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.packet.session.NewSessionDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.database.NewDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionFocusPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
@@ -258,7 +259,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     private void submitNewRecordButton() {
         Record record = this.newRecordPane.buildNewlySubmittedRecord();
         if (record != null) {
-            LockedPacket p = new NewSessionDataPacket(this.engine, this.session, this.recordType, record, true);
+            LockedPacket p = new NewDataPacket(this.engine, this.session, record, true);
             this.session.lockAndSendPacket(PacketPriority.HIGH, p);
             this.newRecordPane.clearInfo();
         }

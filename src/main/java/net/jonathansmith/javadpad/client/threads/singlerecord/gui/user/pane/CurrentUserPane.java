@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.threads.user.gui.pane;
+package net.jonathansmith.javadpad.client.threads.singlerecord.gui.user.pane;
 
 import java.awt.Component;
 
 import javax.swing.JLabel;
 
-import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.database.records.User;
 

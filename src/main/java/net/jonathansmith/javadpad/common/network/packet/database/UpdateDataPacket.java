@@ -18,13 +18,15 @@ package net.jonathansmith.javadpad.common.network.packet.database;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
+import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
+import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -32,29 +34,27 @@ import org.apache.commons.lang3.SerializationUtils;
  *
  * @author Jon
  */
-public class DataPacket extends LockedPacket {
+public class UpdateDataPacket extends LockedPacket {
     
     private static final AtomicBoolean lock = new AtomicBoolean(false);
-
+    
     private static int id;
     
-    private SessionData dataType;
-    private RecordsList<Record> data;
+    private Record data;
+    private boolean pullsFocus;
     private byte[] serializedData;
     
-    public DataPacket() {
+    public UpdateDataPacket() {
         super();
     }
     
-    public DataPacket(Engine engine, Session session, SessionData dataType, RecordsList<Record> data) {
+    public UpdateDataPacket(Engine engine, Session session, Record record, boolean pullsFocus) {
         super(engine, session);
-        this.dataType = dataType;
-        this.data = data;
-        this.serializeData();
-    }
-    
-    private void serializeData() {
-        if (this.data == null || this.data.size() == 0) {
+        this.data = record;
+        this.pullsFocus = pullsFocus;
+        
+        if (this.data == null) {
+            this.engine.forceShutdown("Cannot update an existing record to null", null);
             return;
         }
         
@@ -65,20 +65,16 @@ public class DataPacket extends LockedPacket {
     public int getID() {
         return id;
     }
-
+    
     @Override
     public void setID(int newID) {
         if (lock.compareAndSet(false, true)) {
             id = newID;
         }
     }
-
+    
     @Override
     public int getNumberOfLockedPayloads() {
-        if (this.data == null || this.data.size() == 0) {
-            return 1;
-        }
-        
         return 2;
     }
 
@@ -99,10 +95,15 @@ public class DataPacket extends LockedPacket {
     @Override
     public byte[] writeLockedPayload(int payloadNumber) {
         switch (payloadNumber) {
+                
             case 0:
-                byte[] out = new byte[1];
-                out[0] = (byte) this.dataType.ordinal();
-                return out;
+                if (this.pullsFocus) {
+                    return new byte[] {1};
+                }
+                
+                else {
+                    return new byte[] {0};
+                }
                 
             case 1:
                 return this.serializedData;
@@ -116,39 +117,40 @@ public class DataPacket extends LockedPacket {
     public void parseLockedPayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
-                int val = (int) bytes[0];
-                this.dataType = SessionData.values()[val];
-                break;
+                if (bytes[0] == 0) {
+                    this.pullsFocus = false;
+                }
+                
+                else {
+                    this.pullsFocus = true;
+                }
+                return;
                 
             case 1:
-                RecordsList<Record> newData = (RecordsList<Record>) SerializationUtils.deserialize(bytes);
-                this.data = newData;
+                this.data = (Record) SerializationUtils.deserialize(bytes);
+                return;
         }
     }
 
     @Override
-    public void handleClientSide() {
-        if (this.data == null) {
-            this.data = new RecordsList<Record> ();
+    public void handleClientSide() {}
+
+    @Override
+    public void handleServerSide() {
+        if (this.data != null) {
+            ((ServerSession) this.session).updateDatabaseRecord(this.getKey(), this.data);
         }
         
-        ((ClientSession) this.session).setSessionData(this.getKey(), this.dataType, this.data);
+        if (this.pullsFocus) {
+            RecordsList<Record> out = new RecordsList<Record> ();
+            SessionData focus = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.data.getType(), QueryType.SINGLE);
+            out.add(new IntegerRecord(focus.ordinal()));
+            ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out);
+        }
     }
-
-    @Override
-    public void handleServerSide() {}
 
     @Override
     public String toString() {
-        int size;
-        if (this.data == null) {
-            size = 0;
-        }
-        
-        else {
-            size = this.data.size();
-        }
-        
-        return "Data packet containing: " + this.dataType.toString().toLowerCase() + " with " + size + " entries";
+        return "Update record packet containing records of type: " + this.data.getType().toString().toLowerCase();
     }
 }

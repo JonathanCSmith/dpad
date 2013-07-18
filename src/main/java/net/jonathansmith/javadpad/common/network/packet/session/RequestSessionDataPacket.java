@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.network.packet.database;
+package net.jonathansmith.javadpad.common.network.packet.session;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -30,7 +30,7 @@ import net.jonathansmith.javadpad.server.network.session.ServerSession;
  *
  * @author Jon
  */
-public class DataRequestPacket extends LockedPacket {
+public class RequestSessionDataPacket extends LockedPacket {
     
     private static final AtomicBoolean lock = new AtomicBoolean(false);
     
@@ -38,11 +38,11 @@ public class DataRequestPacket extends LockedPacket {
     
     private SessionData dataType;
     
-    public DataRequestPacket() {
+    public RequestSessionDataPacket() {
         super();
     }
     
-    public DataRequestPacket(Engine engine, Session session, SessionData dataType) {
+    public RequestSessionDataPacket(Engine engine, Session session, SessionData dataType) {
         super(engine, session);
         this.dataType = dataType;
     }

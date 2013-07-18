@@ -30,7 +30,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.jonathansmith.javadpad.client.gui.displayoptions.pane.ExistingRecordPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.ExistingRecordPane;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
