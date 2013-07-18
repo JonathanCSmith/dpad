@@ -33,14 +33,15 @@ import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKey
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
-import net.jonathansmith.javadpad.common.network.packet.session.SessionDataPacket;
-import net.jonathansmith.javadpad.common.network.packet.session.RequestSessionDataPacket;
-import net.jonathansmith.javadpad.common.network.packet.session.UpdateSessionDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.database.NewDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.database.UpdateDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
-import net.jonathansmith.javadpad.common.network.packet.database.NewDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.RequestSessionDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.SessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionFocusPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.UpdateSessionDataPacket;
 import net.jonathansmith.javadpad.common.util.PlatformConverter;
 import net.jonathansmith.javadpad.server.Server;
 
@@ -135,6 +136,7 @@ public class DPAD extends Thread {
         Packet.addPacket(RequestSessionDataPacket.class);
         Packet.addPacket(UpdateSessionDataPacket.class);
         Packet.addPacket(NewDataPacket.class);
+        Packet.addPacket(UpdateDataPacket.class);
         Packet.addPacket(SetSessionDataPacket.class);
         Packet.addPacket(SetSessionFocusPacket.class);
         Packet.addPacket(PluginUploadRequestPacket.class);
