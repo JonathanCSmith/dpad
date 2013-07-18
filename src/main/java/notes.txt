@@ -1,23 +1,32 @@
+********************************************************************************
+** MAIN PROGRESS LIST
+********************************************************************************
+
 1) List of things yet to do (volatile :D)
-- Add flags for loader stages, initial should be after client has processed
-- Build LoaderData DAO + Manager, set in Database Record
-- Finished is after server has processed
-- Would need a way to load from this...
-- Shading of buttons throughout
+- Forward client side processed data to server
+- Packet for initialising server side processing
+- Server side processing framework
+
 
 2) Test plugin (see constant notes 1)
 
--- TODO:
-If current focus is already what we desire, do not change! (Packet spam)
+********************************************************************************
+** UNORDERED TODOS
+********************************************************************************
 Add validate state to gui tick method
-USE SOFTLY CHECKOUT!
+Button shading
+Tooltips
+Centralise Gui
+Shutdown can edge case throw errors due to multiple channel shutdown calls
+Hibernate passworkd
+TODOS (lol)
+Lazy loading
 
+********************************************************************************
+** CONSTANT NOTES **
+********************************************************************************
 
-
-
-******************* CONSTANT NOTES *******************
 1)
-
 Testing plugin framework.
 
 On clean build, attempt to set plugin in new data - should return no plugins
@@ -28,3 +37,5 @@ Delete client side plugin and re-perform above step
 Verify:
 - Plugin is in client
 - Plugin is in server
+
+2)

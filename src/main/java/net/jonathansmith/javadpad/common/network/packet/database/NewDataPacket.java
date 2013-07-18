@@ -14,12 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.network.packet.session;
+package net.jonathansmith.javadpad.common.network.packet.database;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
@@ -35,33 +34,30 @@ import org.apache.commons.lang3.SerializationUtils;
  *
  * @author Jon
  */
-public class NewSessionDataPacket extends LockedPacket {
+public class NewDataPacket extends LockedPacket {
     
     private static final AtomicBoolean lock = new AtomicBoolean(false);
 
     private static int id;
     
-    private DatabaseRecord type;
     private Record data;
     private boolean pullsFocus;
     private byte[] serializedData;
     
-    public NewSessionDataPacket() {
+    public NewDataPacket() {
         super();
     }
     
-    public NewSessionDataPacket(Engine engine, Session session, DatabaseRecord dataType, Record data, boolean pullsFocus) {
+    public NewDataPacket(Engine engine, Session session, Record data, boolean pullsFocus) {
         super(engine, session);
-        this.type = dataType;
         this.data = data;
         this.pullsFocus = pullsFocus;
         
-        if (this.data != null) {
-            this.serializeData();
+        if (this.data == null) {
+            this.engine.forceShutdown("Cannot create a null record", null);
+            return;
         }
-    }
-    
-    private void serializeData() {
+        
         this.serializedData = SerializationUtils.serialize(this.data);
     }
     
@@ -79,24 +75,17 @@ public class NewSessionDataPacket extends LockedPacket {
 
     @Override
     public int getNumberOfLockedPayloads() {
-        if (this.data == null) {
-            return 2;
-        }
-        
-        else {
-            return 3;
-        }
+        return 2;
     }
 
     @Override
     public int getLockedPayloadSize(int payloadNumber) {
         switch (payloadNumber) {
             case 0:
-            case 1:
                 return 1;
                 
-            case 2:
-                return this.data == null ? 0 : this.serializedData.length;
+            case 1:
+                return this.serializedData.length;
                 
             default:
                 return 0;
@@ -106,12 +95,8 @@ public class NewSessionDataPacket extends LockedPacket {
     @Override
     public byte[] writeLockedPayload(int payloadNumber) {
         switch (payloadNumber) {
-            case 0:
-                byte[] out = new byte[1];
-                out[0] = (byte) this.type.ordinal();
-                return out;
                 
-            case 1:
+            case 0:
                 if (this.pullsFocus) {
                     return new byte[] {1};
                 }
@@ -120,7 +105,7 @@ public class NewSessionDataPacket extends LockedPacket {
                     return new byte[] {0};
                 }
                 
-            case 2:
+            case 1:
                 return this.serializedData;
                 
             default:
@@ -132,10 +117,6 @@ public class NewSessionDataPacket extends LockedPacket {
     public void parseLockedPayload(int payloadNumber, byte[] bytes) {
         switch (payloadNumber) {
             case 0:
-                this.type = DatabaseRecord.values()[bytes[0]];
-                return;
-                
-            case 1:
                 if (bytes[0] == 0) {
                     this.pullsFocus = false;
                 }
@@ -145,7 +126,7 @@ public class NewSessionDataPacket extends LockedPacket {
                 }
                 return;
                 
-            case 2:
+            case 1:
                 this.data = (Record) SerializationUtils.deserialize(bytes);
                 return;
         }
@@ -157,12 +138,12 @@ public class NewSessionDataPacket extends LockedPacket {
     @Override
     public void handleServerSide() {
         if (this.data != null) {
-            ((ServerSession) this.session).addDatabaseRecord(this.getKey(), this.type, this.data);
+            ((ServerSession) this.session).addDatabaseRecord(this.getKey(), this.data);
         }
         
         if (this.pullsFocus) {
             RecordsList<Record> out = new RecordsList<Record> ();
-            SessionData focus = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.type, QueryType.SINGLE);
+            SessionData focus = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.data.getType(), QueryType.SINGLE);
             out.add(new IntegerRecord(focus.ordinal()));
             ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out);
         }
@@ -170,6 +151,6 @@ public class NewSessionDataPacket extends LockedPacket {
 
     @Override
     public String toString() {
-        return "New record packet containing records of type: " + this.type.toString().toLowerCase();
+        return "New record packet containing records of type: " + this.data.getType().toString().toLowerCase();
     }
 }

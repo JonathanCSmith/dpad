@@ -24,7 +24,7 @@ import javax.swing.SwingUtilities;
 
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
-import net.jonathansmith.javadpad.client.gui.displayoptions.pane.CurrentRecordPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.client.threads.data.overview.pane.DataPane;
 import net.jonathansmith.javadpad.client.threads.data.overview.toolbar.DataToolbar;

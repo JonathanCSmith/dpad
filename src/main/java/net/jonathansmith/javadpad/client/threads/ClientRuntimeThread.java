@@ -18,19 +18,19 @@
 package net.jonathansmith.javadpad.client.threads;
 
 import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
-import net.jonathansmith.javadpad.client.gui.displayoptions.RecordsDisplayOption;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.RecordsDisplayOption;
 import net.jonathansmith.javadpad.client.threads.data.add.AddDataDisplayOption;
 import net.jonathansmith.javadpad.client.threads.data.overview.DataDisplayOption;
 import net.jonathansmith.javadpad.client.threads.data.pluginselect.PluginDisplayOption;
-import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.CurrentExperimentPane;
-import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.ExistingExperimentPane;
-import net.jonathansmith.javadpad.client.threads.experiment.gui.pane.NewExperimentPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.experiment.pane.CurrentExperimentPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.experiment.pane.ExistingExperimentPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.experiment.pane.NewExperimentPane;
 import net.jonathansmith.javadpad.client.threads.runtimeselect.gui.RuntimeSelectDisplayOption;
 import net.jonathansmith.javadpad.client.threads.startup.gui.StartupDisplayOption;
 import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.UploadPluginDisplayOption;
-import net.jonathansmith.javadpad.client.threads.user.gui.pane.CurrentUserPane;
-import net.jonathansmith.javadpad.client.threads.user.gui.pane.ExistingUserPane;
-import net.jonathansmith.javadpad.client.threads.user.gui.pane.NewUserPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.user.pane.CurrentUserPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.user.pane.ExistingUserPane;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.user.pane.NewUserPane;
 import net.jonathansmith.javadpad.common.database.DatabaseRecord;
 import net.jonathansmith.javadpad.common.threads.RunnableThread;
 import net.jonathansmith.javadpad.common.threads.RuntimeThread;

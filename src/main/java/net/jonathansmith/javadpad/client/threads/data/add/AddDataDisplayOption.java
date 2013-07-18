@@ -48,7 +48,8 @@ import net.jonathansmith.javadpad.common.events.plugin.PluginFinishEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.packet.session.NewSessionDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.database.NewDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.database.UpdateDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.plugins.DPADPlugin;
 import net.jonathansmith.javadpad.common.threads.RuntimeThread;
@@ -117,7 +118,7 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
         
         else {
             LoaderDataset newData = new LoaderDataset();
-            LockedPacket p = new NewSessionDataPacket(this.engine, this.session, DatabaseRecord.LOADER_DATA, newData, true);
+            LockedPacket p = new NewDataPacket(this.engine, this.session, newData, true);
             this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
             
             this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
@@ -327,7 +328,8 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
         }
         
         else {
-            LockedPacket p = new NewSessionDataPacket(this.engine, this.session, DatabaseRecord.LOADER_DATA, data, true);
+            /* TODO: Need to move away from new */
+            LockedPacket p = new UpdateDataPacket(this.engine, this.session, this.data, true);
             this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
             
             this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);

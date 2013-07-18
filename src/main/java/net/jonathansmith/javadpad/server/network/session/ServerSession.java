@@ -47,12 +47,12 @@ import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKey
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
-import net.jonathansmith.javadpad.common.network.packet.database.DataPacket;
-import net.jonathansmith.javadpad.common.network.packet.database.DataUpdatePacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.DisconnectPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.SessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.UpdateSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.plugins.PluginManagerHandler;
@@ -240,25 +240,6 @@ public final class ServerSession extends Session {
         }
     }
     
-//    
-//    public void setPlugin(PluginRecord plugin) {
-//        Dataset data = this.getCurrentData();
-//        if (data != null) {
-//            data.setPluginInfo(plugin);
-//            
-//            if (data instanceof LoaderDataset) {
-//                LoaderDataManager.getInstance().save(this.connection, (LoaderDataset) data);
-//            }
-//            
-//            else {
-//                // TODO:
-//            }
-//        }
-//        
-//        LockedPacket p = new SetSessionDataPacket(this.engine, this, DatabaseRecord.CURRENT_DATASET, (Record) data);
-//        this.lockAndSendPacket(PacketPriority.MEDIUM, p);
-//    }
-    
     /**
      * Used to disconnect the client without affecting the server. Needs to be
      * available
@@ -292,7 +273,6 @@ public final class ServerSession extends Session {
             this.lockAndSendPacket(PacketPriority.MEDIUM, p2);
             return;
         }
-        
         
         PluginManagerHandler manager = this.engine.getPluginManager();
         PluginRecord local = manager.getPluginRecord(plugin.getName());
@@ -402,7 +382,7 @@ public final class ServerSession extends Session {
             // TODO: fire update session data
         
             RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
-            LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
+            LockedPacket p = new UpdateSessionDataPacket(this.engine, this, dataType, transform);
             this.lockAndSendPacket(PacketPriority.MEDIUM, p);
         }
     }
@@ -420,7 +400,7 @@ public final class ServerSession extends Session {
     public RecordsList<Record> checkoutSessionData(String sourceKey, SessionData dataType) {
         if (dataType.getRecordType() == null) {
             RecordsList<Record> returnData = super.checkoutSessionData(sourceKey, dataType);
-            LockedPacket p = new DataPacket(this.engine, this, dataType, returnData);
+            LockedPacket p = new SessionDataPacket(this.engine, this, dataType, returnData);
             this.lockAndSendPacket(PacketPriority.MEDIUM, p);
             return returnData;
         }
@@ -431,13 +411,13 @@ public final class ServerSession extends Session {
             if (oldData != null) {
                 RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
                 if (transform != null) {
-                    LockedPacket p = new DataUpdatePacket(this.engine, this, dataType, transform);
+                    LockedPacket p = new UpdateSessionDataPacket(this.engine, this, dataType, transform);
                     this.lockAndSendPacket(PacketPriority.MEDIUM, p);
                 }
             }
             
             else {
-                LockedPacket p = new DataPacket(this.engine, this, dataType, dataUpdate);
+                LockedPacket p = new SessionDataPacket(this.engine, this, dataType, dataUpdate);
                 this.lockAndSendPacket(PacketPriority.MEDIUM, p);
             }
         }
@@ -474,16 +454,16 @@ public final class ServerSession extends Session {
      * 
      * @param record 
      */
-    public void addDatabaseRecord(String key, DatabaseRecord recordType, Record record) {
+    public void addDatabaseRecord(String key, Record record) {
         if (!this.isServerKey(key) || record == null) {
             return;
         }
         
-        GenericManager manager = recordType.getManager();
+        GenericManager manager = record.getType().getManager();
         manager.saveNew(this.connection, record);
         RecordsList<Record> list = new RecordsList<Record> ();
         list.add(record);
-        this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(recordType, QueryType.SINGLE), list);
+        this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(record.getType(), QueryType.SINGLE), list);
         this.updateParent(record);
     }
     
@@ -492,8 +472,8 @@ public final class ServerSession extends Session {
      * 
      * @param record 
      */
-    protected void updateDatabaseRecord(Record record) {
-        if (record == null) {
+    public void updateDatabaseRecord(String key, Record record) {
+        if (!this.isServerKey(key) || record == null) {
             return;
         }
         

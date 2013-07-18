@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.client.gui.displayoptions.pane;
+package net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,12 +23,13 @@ import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
 import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
  *
  * @author Jon
  */
-public abstract class NewRecordPane extends JPanel {
+public abstract class ExistingRecordPane extends JPanel {
     
     public abstract void addDisplayOptionListener(ActionListener listener);
     
@@ -36,7 +37,9 @@ public abstract class NewRecordPane extends JPanel {
     
     public abstract boolean isEventSourceSubmitButton(ActionEvent event);
     
-    public abstract Record buildNewlySubmittedRecord();
+    public abstract void insertRecords(RecordsList<Record> data);
     
-    public abstract void clearInfo();
+    public abstract void clearRecords();
+    
+    public abstract Record getSelectedRecord();
 }

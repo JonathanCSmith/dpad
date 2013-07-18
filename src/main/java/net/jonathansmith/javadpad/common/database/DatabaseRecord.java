@@ -18,6 +18,7 @@ package net.jonathansmith.javadpad.common.database;
 
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
 import net.jonathansmith.javadpad.server.database.recordaccess.experiment.ExperimentManager;
+import net.jonathansmith.javadpad.server.database.recordaccess.loaderdata.LoaderDataManager;
 import net.jonathansmith.javadpad.server.database.recordaccess.loaderplugin.LoaderPluginManager;
 import net.jonathansmith.javadpad.server.database.recordaccess.user.UserManager;
 
@@ -34,7 +35,7 @@ public enum DatabaseRecord {
     EXPERIMENT(ExperimentManager.getInstance()),
     
     // TODO:
-    LOADER_DATA(null),
+    LOADER_DATA(LoaderDataManager.getInstance()),
     
     LOADER_PLUGIN(LoaderPluginManager.getInstance()),
     

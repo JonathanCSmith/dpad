@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jonathansmith.javadpad.common.network.packet.database;
+package net.jonathansmith.javadpad.common.network.packet.session;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -34,7 +34,7 @@ import org.apache.commons.lang3.SerializationUtils;
  *
  * @author Jon
  */
-public class DataUpdatePacket extends LockedPacket {
+public class UpdateSessionDataPacket extends LockedPacket {
     
     private static final AtomicBoolean lock = new AtomicBoolean(false);
     
@@ -49,11 +49,11 @@ public class DataUpdatePacket extends LockedPacket {
     private byte[] serializedDeletions;
     private byte[] serializedAdditions;
     
-    public DataUpdatePacket() {
+    public UpdateSessionDataPacket() {
         super();
     }
     
-    public DataUpdatePacket(Engine engine, Session session, SessionData dataType, RecordsTransform transform) {
+    public UpdateSessionDataPacket(Engine engine, Session session, SessionData dataType, RecordsTransform transform) {
         super(engine, session);
         this.dataType = dataType;
         this.changes = transform.getChanges();
@@ -188,7 +188,22 @@ public class DataUpdatePacket extends LockedPacket {
     }
 
     @Override
-    public void handleServerSide() {}
+    public void handleServerSide() {
+        if (this.changes == null) {
+            this.changes = new LinkedHashMap<Integer, Record> ();
+        }
+        
+        if (this.deletions == null) {
+            this.deletions = new LinkedList<Integer> ();
+        }
+        
+        if (this.additions == null) {
+            this.additions = new RecordsList<Record> ();
+        }
+        
+        RecordsTransform transform = new RecordsTransform(this.changes, this.deletions, this.additions);
+        this.session.updateSessionData(this.getKey(), this.dataType, transform);
+    }
 
     @Override
     public String toString() {

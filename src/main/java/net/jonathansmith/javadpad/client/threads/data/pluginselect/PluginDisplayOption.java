@@ -43,7 +43,7 @@ import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.packet.database.DataRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.RequestSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
@@ -169,7 +169,7 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
     }
     
     private void displayAvailablePlugins() {
-        Packet p = new DataRequestPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.pluginType, QueryType.ALL_AVAILABLE_TO_SESSION));
+        Packet p = new RequestSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.pluginType, QueryType.ALL_AVAILABLE_TO_SESSION));
         this.session.addPacketToSend(PacketPriority.HIGH, p);
 
         this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
