@@ -35,7 +35,7 @@ import org.apache.commons.lang3.SerializationUtils;
  *
  * @author Jon
  */
-public class PluginUploadRequestPacket extends LockedPacket {
+public class UploadPluginRequestPacket extends LockedPacket {
     
     private static final AtomicBoolean lock = new AtomicBoolean(false);
     
@@ -46,11 +46,11 @@ public class PluginUploadRequestPacket extends LockedPacket {
     private boolean toServer;
     private byte[] data = null;
     
-    public PluginUploadRequestPacket() {
+    public UploadPluginRequestPacket() {
         super();
     }
     
-    public PluginUploadRequestPacket(Engine engine, Session session, byte status, PluginRecord record, boolean toServer) {
+    public UploadPluginRequestPacket(Engine engine, Session session, byte status, PluginRecord record, boolean toServer) {
         super(engine, session);
         this.status = status;
         this.record = record;

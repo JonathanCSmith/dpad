@@ -3,10 +3,8 @@
 ********************************************************************************
 
 1) List of things yet to do (volatile :D)
-- Forward client side processed data to server
-- Packet for initialising server side processing
-- Server side processing framework
-
+- Server side processing framework - should update and send the loader dataset
+- Client can wait for above
 
 2) Test plugin (see constant notes 1)
 

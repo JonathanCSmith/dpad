@@ -50,6 +50,8 @@ import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.NewDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.UpdateDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.RunLoaderPluginPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.plugins.DPADPlugin;
 import net.jonathansmith.javadpad.common.threads.RuntimeThread;
@@ -328,9 +330,13 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
         }
         
         else {
-            /* TODO: Need to move away from new */
             LockedPacket p = new UpdateDataPacket(this.engine, this.session, this.data, true);
             this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            
+            RecordsList<Record> list = new RecordsList<Record> ();
+            list.add(this.data);
+            LockedPacket p2 = new SetSessionDataPacket(this.engine, this.session, SessionData.LOADER_DATA, list, true);
+            this.session.lockAndSendPacket(PacketPriority.MEDIUM, p2);
             
             this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
 
@@ -344,8 +350,16 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
     }
     
     private void runPluginServerSide() {
-        // TODO: Send server run command
-        // TODO: get from focus, that way packet is generic for plugin types
-        // TODO: check focus, get plugin bind and run
+        LockedPacket p = new RunLoaderPluginPacket(this.engine, this.session, this.data.getPluginInfo(), this.data);
+        this.session.lockAndSendPacket(PacketPriority.HIGH, p);
+        
+        this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
+        
+        SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    dialog.setVisible(true);
+                }
+        });
     }
 }
