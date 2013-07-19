@@ -47,8 +47,8 @@ import net.jonathansmith.javadpad.common.network.packet.auth.EncryptedSessionKey
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyResponsePacket;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
-import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
-import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.DisconnectPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
@@ -269,7 +269,7 @@ public final class ServerSession extends Session {
     public void handleUploadPluginRequest(boolean toServer, boolean sessionSet, PluginRecord plugin) {
         if (!toServer) {
             String pluginPath = this.engine.getPluginManager().getPluginPath(plugin.getName());
-            LockedPacket p2 = new PluginTransferPacket(this.engine, this, plugin, pluginPath);
+            LockedPacket p2 = new UploadPluginPacket(this.engine, this, plugin, pluginPath);
             this.lockAndSendPacket(PacketPriority.MEDIUM, p2);
             return;
         }
@@ -279,7 +279,7 @@ public final class ServerSession extends Session {
         PluginRecord decision;
         
         if (local == null) {
-            LockedPacket p = new PluginUploadRequestPacket(this.engine, this, (byte) 1, null, true);
+            LockedPacket p = new UploadPluginRequestPacket(this.engine, this, (byte) 1, null, true);
             this.lockAndSendPacket(PacketPriority.MEDIUM, p);
 
             decision = plugin;
@@ -297,25 +297,25 @@ public final class ServerSession extends Session {
             byte status = manager.compareVersions(local, plugin);
             switch (status) {
                 case -1:
-                    LockedPacket p = new PluginUploadRequestPacket(this.engine, this, (byte) -1, null, true);
+                    LockedPacket p = new UploadPluginRequestPacket(this.engine, this, (byte) -1, null, true);
                     this.lockAndSendPacket(PacketPriority.MEDIUM, p);
 
                     decision = local;
 
                     String pluginPath = this.engine.getPluginManager().getPluginPath(local.getName());
-                    LockedPacket p2 = new PluginTransferPacket(this.engine, this, local, pluginPath);
+                    LockedPacket p2 = new UploadPluginPacket(this.engine, this, local, pluginPath);
                     this.lockAndSendPacket(PacketPriority.MEDIUM, p2);
                     break;
 
                 case 0:
-                    LockedPacket p3 = new PluginUploadRequestPacket(this.engine, this, (byte) 0, null, true);
+                    LockedPacket p3 = new UploadPluginRequestPacket(this.engine, this, (byte) 0, null, true);
                     this.lockAndSendPacket(PacketPriority.MEDIUM, p3);
 
                     decision = local;
                     break;
 
                 case 1:
-                    LockedPacket p4 = new PluginUploadRequestPacket(this.engine, this, (byte) 1, null, true);
+                    LockedPacket p4 = new UploadPluginRequestPacket(this.engine, this, (byte) 1, null, true);
                     this.lockAndSendPacket(PacketPriority.MEDIUM, p4);
 
                     decision = plugin;

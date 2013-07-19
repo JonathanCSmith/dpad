@@ -36,7 +36,7 @@ import org.apache.commons.lang3.SerializationUtils;
  *
  * @author Jon
  */
-public class PluginTransferPacket extends LockedPacket implements LargePayloadPacket {
+public class UploadPluginPacket extends LockedPacket implements LargePayloadPacket {
     
     private static final AtomicBoolean lock = new AtomicBoolean(false);
     
@@ -50,11 +50,11 @@ public class PluginTransferPacket extends LockedPacket implements LargePayloadPa
     private FileOutputStream fos = null;
     private boolean hasErrored = false;
     
-    public PluginTransferPacket() {
+    public UploadPluginPacket() {
         super();
     }
     
-    public PluginTransferPacket(Engine engine, Session session, PluginRecord record, String path) {
+    public UploadPluginPacket(Engine engine, Session session, PluginRecord record, String path) {
         super(engine, session);
         this.plugin = record;
         this.serializeData();

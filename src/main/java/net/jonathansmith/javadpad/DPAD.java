@@ -35,8 +35,9 @@ import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRespon
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.packet.database.NewDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.UpdateDataPacket;
-import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
-import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.RunLoaderPluginPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.RequestSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
@@ -139,8 +140,9 @@ public class DPAD extends Thread {
         Packet.addPacket(UpdateDataPacket.class);
         Packet.addPacket(SetSessionDataPacket.class);
         Packet.addPacket(SetSessionFocusPacket.class);
-        Packet.addPacket(PluginUploadRequestPacket.class);
-        Packet.addPacket(PluginTransferPacket.class);
+        Packet.addPacket(UploadPluginRequestPacket.class);
+        Packet.addPacket(UploadPluginPacket.class);
+        Packet.addPacket(RunLoaderPluginPacket.class);
     }
     
     @Override

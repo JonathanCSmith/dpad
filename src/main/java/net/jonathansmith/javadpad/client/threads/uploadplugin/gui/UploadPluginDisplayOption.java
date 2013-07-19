@@ -43,8 +43,8 @@ import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
-import net.jonathansmith.javadpad.common.network.packet.plugins.PluginTransferPacket;
-import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginRequestPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.plugins.PluginManagerHandler;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
@@ -120,7 +120,7 @@ public class UploadPluginDisplayOption extends DisplayOption implements ActionLi
             }
             
             this.pluginSelectPane.setChosenPlugin(newPlugin);
-            LockedPacket p = new PluginUploadRequestPacket(this.engine, this.session, (byte) 0, newPlugin, true);
+            LockedPacket p = new UploadPluginRequestPacket(this.engine, this.session, (byte) 0, newPlugin, true);
             this.session.lockAndSendPacket(PacketPriority.HIGH, p);
 
             this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
@@ -183,7 +183,7 @@ public class UploadPluginDisplayOption extends DisplayOption implements ActionLi
                 final JDialog popupDialog;
                 if (res.getValue() == 1) {
                     String pluginPath = this.engine.getPluginManager().getPluginPath(this.localVersion.getName());
-                    LockedPacket p = new PluginTransferPacket(this.engine, this.session, this.localVersion, pluginPath);
+                    LockedPacket p = new UploadPluginPacket(this.engine, this.session, this.localVersion, pluginPath);
                     this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
 
                     popupDialog = new PopupDialog(new JFrame(), "Uploading plugin to server, it is advised not to use this plugin for some time");

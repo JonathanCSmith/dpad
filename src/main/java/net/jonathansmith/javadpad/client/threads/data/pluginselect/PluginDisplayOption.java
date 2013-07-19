@@ -44,7 +44,7 @@ import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.session.RequestSessionDataPacket;
-import net.jonathansmith.javadpad.common.network.packet.plugins.PluginUploadRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.plugins.PluginManagerHandler;
@@ -222,7 +222,7 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
             
             // Otherwise default to server side, if local is newer, the user should have uploaded it!
             else {
-                LockedPacket p = new PluginUploadRequestPacket(this.engine, this.session, (byte) 1, (PluginRecord) selection, false);
+                LockedPacket p = new UploadPluginRequestPacket(this.engine, this.session, (byte) 1, (PluginRecord) selection, false);
                 this.session.lockAndSendPacket(PacketPriority.HIGH, p);
                 
                 this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
