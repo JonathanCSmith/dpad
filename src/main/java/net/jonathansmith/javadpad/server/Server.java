@@ -21,6 +21,7 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,6 +46,8 @@ import org.hibernate.service.ServiceRegistryBuilder;
 import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.DPAD.Platform;
 import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.common.database.Dataset;
+import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.records.AnalyserDataset;
 import net.jonathansmith.javadpad.common.database.records.AnalyserPluginRecord;
 import net.jonathansmith.javadpad.common.database.records.DataType;
@@ -56,27 +59,34 @@ import net.jonathansmith.javadpad.common.database.records.Sample;
 import net.jonathansmith.javadpad.common.database.records.Template;
 import net.jonathansmith.javadpad.common.database.records.TimeCourseData;
 import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.common.events.EventListener;
+import net.jonathansmith.javadpad.common.events.plugin.PluginFinishEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
+import net.jonathansmith.javadpad.common.threads.RunnableThread;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
 import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.recordaccess.DatabaseManager;
 import net.jonathansmith.javadpad.server.gui.ServerGUI;
+import net.jonathansmith.javadpad.server.network.session.ServerSession;
 import net.jonathansmith.javadpad.server.network.session.SessionRegistry;
 
 /**
  *
  * @author jonathansmith
  */
-public class Server extends Engine {
+public class Server extends Engine implements EventListener {
     
     private final ChannelGroup channelGroup;
     private final SessionRegistry sessionRegistry;
+    private final ConcurrentHashMap<PluginRecord, String> pluginMap = new ConcurrentHashMap<PluginRecord, String> ();
     
     private ServerBootstrap bootstrap;
     private DatabaseManager databaseManager;
+    private ExecutorService pluginThreadService;
     
     public Server(DPAD main, String host, int port) {
         super(main, Platform.SERVER, host, port);
@@ -186,6 +196,10 @@ public class Server extends Engine {
         
         this.info("Server bound to port: " + this.portNumber);
         this.channelGroup.add(acceptor);
+        
+        /* Executor Service */
+        this.pluginThreadService = Executors.newFixedThreadPool(5);
+        
         this.isAlive = true;
     }
 
@@ -208,6 +222,11 @@ public class Server extends Engine {
         this.finish();
     }
     
+    public void addWorkerThread(String sessionID, PluginRecord plugin, RunnableThread thread) {
+        this.pluginMap.put(plugin, sessionID);
+        this.pluginThreadService.submit(thread);
+    }
+    
     public void finish() {
         // Hibernate, bonecp shutdown TODO: verify this is all
         this.databaseManager.closeAll();
@@ -223,6 +242,10 @@ public class Server extends Engine {
 
     @Override
     public void saveAndShutdown() {
+        // Close up plugin thread pool
+        this.pluginThreadService.shutdown();
+        while (!this.pluginThreadService.isTerminated()) {}
+        
         // TODO: worker threads shutdown
         this.getEventThread().shutdown(false);
         this.getPluginManager().shutdown(false);
@@ -234,7 +257,9 @@ public class Server extends Engine {
 
     @Override
     public void forceShutdown(String cause, Throwable ex) {
-        // TODO: worker threads force shutdown
+        // Close up plugin thread pool
+        this.pluginThreadService.shutdownNow();
+        
         this.getEventThread().shutdown(true);
         this.getPluginManager().shutdown(true);
         this.sessionRegistry.shutdownSessions(true);
@@ -285,5 +310,17 @@ public class Server extends Engine {
         config.addAnnotatedClass(TimeCourseData.class);
         config.addAnnotatedClass(User.class);
         return config;
+    }
+
+    public void changeEventReceived(DPADEvent event) {
+        if (event instanceof PluginFinishEvent) {
+            PluginFinishEvent evt = (PluginFinishEvent) event;
+            Dataset data = (Dataset) evt.getSource();
+            PluginRecord record = (PluginRecord) evt.getRecord();
+            
+            String sessionID = this.pluginMap.remove(record);
+            ServerSession sess = (ServerSession) this.sessionRegistry.getSession(sessionID);
+            sess.softlyUpdateDatabaseRecord(sessionID, data);
+        }
     }
 }

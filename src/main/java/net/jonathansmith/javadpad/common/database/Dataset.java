@@ -27,6 +27,7 @@ import javax.persistence.MappedSuperclass;
 public abstract class Dataset extends Record {
     
     private boolean clientSidePerformed = false;
+    private boolean serverSideSubmitted = false;
     private boolean serverSidePerformed = false;
     private PluginRecord plugin;
     
@@ -37,6 +38,15 @@ public abstract class Dataset extends Record {
     
     public void setHasBeenClientProcessed(boolean value) {
         this.clientSidePerformed = value;
+    }
+    
+    @Column(name = "ServerSubmitted")
+    public boolean getHasBeenSubmittedToServer() {
+        return this.serverSideSubmitted;
+    }
+    
+    public void setHasBeenSubmittedToServer(boolean value) {
+        this.serverSideSubmitted = value;
     }
     
     @Column(name = "ServerProcessed")

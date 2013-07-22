@@ -17,7 +17,6 @@
 package net.jonathansmith.javadpad.server.network.session;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.jboss.netty.channel.Channel;
 
@@ -32,7 +31,7 @@ import net.jonathansmith.javadpad.common.network.session.Session;
  */
 public class SessionRegistry {
 
-    public final ConcurrentMap<ServerSession, Boolean> sessions = new ConcurrentHashMap<ServerSession, Boolean> ();
+    public final ConcurrentHashMap<String, ServerSession> sessions = new ConcurrentHashMap<String, ServerSession> ();
     public final Engine engine;
     
     public SessionRegistry(Engine eng) {
@@ -42,18 +41,27 @@ public class SessionRegistry {
     public Session addAndGetNewSession(Channel c) {
         int id = this.sessions.size();
         ServerSession session = new ServerSession(this.engine, c);
-        this.sessions.put(session, true);
+        String key = session.getSessionID();
+        this.sessions.put(key, session);
         return session;
+    }
+    
+    public Session getSession(String sessionID) {
+        if (this.sessions.containsKey(sessionID)) {
+            return this.sessions.get(sessionID);
+        }
+        
+        return null;
     }
 
     public void remove(ServerSession session) {
-        if (this.sessions.containsKey(session)) {
-            this.sessions.remove(session);
+        if (this.sessions.containsValue(session)) {
+            this.sessions.remove(session.getSessionID());
         }
     }
     
     public void shutdownSessions(boolean force) {
-        for (ServerSession session : this.sessions.keySet()) {
+        for (ServerSession session : this.sessions.values()) {
             session.disconnect(force);
         }
         
@@ -61,7 +69,7 @@ public class SessionRegistry {
     }
     
     public void sendPacketToAllSessions(PacketPriority priority, Packet packet) {
-        for (ServerSession session : this.sessions.keySet()) {
+        for (ServerSession session : this.sessions.values()) {
             session.addPacketToSend(priority, packet);
         }
     }

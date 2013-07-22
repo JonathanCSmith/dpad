@@ -18,11 +18,17 @@ package net.jonathansmith.javadpad.common.network.packet.plugins;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.jonathansmith.javadpad.DPAD;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
+import net.jonathansmith.javadpad.common.plugins.DPADPlugin;
+import net.jonathansmith.javadpad.common.threads.RunnableThread;
+import net.jonathansmith.javadpad.common.threads.RuntimeThread;
+import net.jonathansmith.javadpad.server.Server;
+import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -121,7 +127,16 @@ public class RunLoaderPluginPacket extends LockedPacket {
     
     @Override
     public void handleServerSide() {
-        // TODO: Hand off plugin to server (should not thread block) - server should update record and forward to client
+        DPADPlugin plugin = this.engine.getPluginManager().getPlugin(this.plugin.getName());
+        if (plugin != null) {
+            RuntimeThread serverThread = plugin.getRuntimeThread(DPAD.Platform.SERVER);
+            RunnableThread thread = serverThread.getThread();
+            thread.setPayload(this.target);
+            ((Server) this.engine).addWorkerThread(this.getKey(), this.plugin, thread);
+            
+            this.target.setHasBeenSubmittedToServer(true);
+            ((ServerSession) this.session).updateDatabaseRecord(this.getKey(), this.target);
+        }
     }
     
     @Override
