@@ -226,7 +226,7 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
             this.toolbar.submit.setEnabled(false);
         }
 
-        else if (!r.getHasBeenServerProcessed()) {
+        else if (!r.getHasBeenSubmittedToServer()) {
             this.toolbar.submit.setEnabled(true);
             this.toolbar.back.setEnabled(true);
 

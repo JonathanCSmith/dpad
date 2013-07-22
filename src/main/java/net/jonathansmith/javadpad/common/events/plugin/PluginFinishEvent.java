@@ -17,6 +17,7 @@
 package net.jonathansmith.javadpad.common.events.plugin;
 
 import net.jonathansmith.javadpad.common.database.Dataset;
+import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.events.DPADEvent;
 
 /**
@@ -25,7 +26,14 @@ import net.jonathansmith.javadpad.common.events.DPADEvent;
  */
 public class PluginFinishEvent extends DPADEvent {
     
-    public PluginFinishEvent(Dataset data) {
+    private final PluginRecord record;
+    
+    public PluginFinishEvent(Dataset data, PluginRecord plugin) {
         super(data);
+        this.record = plugin;
+    }
+    
+    public PluginRecord getRecord() {
+        return this.record;
     }
 }

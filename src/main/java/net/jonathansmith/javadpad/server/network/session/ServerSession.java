@@ -485,6 +485,16 @@ public final class ServerSession extends Session {
         this.updateParent(record);
     }
     
+    public void softlyUpdateDatabaseRecord(String key, Record record) {
+        if (!this.isServerKey(key) || record == null) {
+            return;
+        }
+        
+        GenericManager manager = record.getType().getManager();
+        manager.save(this.connection, record);
+        this.updateParent(record);
+    }
+    
     private void updateParent(Record record) {
         RecordsList<Record> dataList = this.getSessionFocusData();
         if (dataList == null || dataList.isEmpty()) {

@@ -4,6 +4,7 @@
 
 1) List of things yet to do (volatile :D)
 - Server side processing framework - should update and send the loader dataset
+- Event listen to plugin finish. Submit data;
 - Client can wait for above
 
 2) Test plugin (see constant notes 1)

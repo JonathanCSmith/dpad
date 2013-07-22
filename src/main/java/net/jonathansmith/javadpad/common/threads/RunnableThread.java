@@ -17,6 +17,7 @@
 package net.jonathansmith.javadpad.common.threads;
 
 import net.jonathansmith.javadpad.common.database.Dataset;
+import net.jonathansmith.javadpad.common.database.PluginRecord;
 import net.jonathansmith.javadpad.common.events.EventThread;
 import net.jonathansmith.javadpad.common.events.plugin.PluginFinishEvent;
 
@@ -27,6 +28,7 @@ import net.jonathansmith.javadpad.common.events.plugin.PluginFinishEvent;
 public abstract class RunnableThread extends Thread {
     
     public EventThread eventThread;
+    public Dataset payload;
     
     private boolean isAlive = false;
     private boolean errored = false;
@@ -62,6 +64,8 @@ public abstract class RunnableThread extends Thread {
     
     public abstract Dataset getPluginResult();
     
+    public abstract PluginRecord getPlugin();
+    
     public boolean isRunning() {
         return this.isAlive;
     }
@@ -71,13 +75,17 @@ public abstract class RunnableThread extends Thread {
         this.isAlive = false;
     }
     
+    public void setPayload(Dataset data) {
+        this.payload = data;
+    }
+    
     private void finish(boolean errored) {
         Dataset data = null;
         if (!errored) {
             data = this.getPluginResult();
         }
         
-        PluginFinishEvent evt = new PluginFinishEvent(data);
+        PluginFinishEvent evt = new PluginFinishEvent(data, this.getPlugin());
         this.eventThread.post(evt);
     }
 }
