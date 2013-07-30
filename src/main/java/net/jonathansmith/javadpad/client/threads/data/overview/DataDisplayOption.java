@@ -22,17 +22,17 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
-import net.jonathansmith.javadpad.common.gui.DisplayOption;
-import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
-import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
-import net.jonathansmith.javadpad.client.threads.data.overview.pane.DataPane;
-import net.jonathansmith.javadpad.client.threads.data.overview.toolbar.DataToolbar;
 import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.api.database.records.Experiment;
 import net.jonathansmith.javadpad.api.events.Event;
+import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
+import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
+import net.jonathansmith.javadpad.client.threads.data.overview.pane.DataPane;
+import net.jonathansmith.javadpad.client.threads.data.overview.toolbar.DataToolbar;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionFocusPacket;
@@ -80,15 +80,14 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
     
     @Override
     public void validateState() {
-        SessionData focus = this.session.getSessionFocusType();
+        SessionData focus = this.session.getFocus();
         if (focus != SessionData.EXPERIMENT) {
             LockedPacket p = new SetSessionFocusPacket(this.engine, this.session, SessionData.EXPERIMENT);
             this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
             
-            RecordsList<Record> exper = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.EXPERIMENT);
+            RecordsList<Record> exper = this.session.getSessionData(this.session.getSessionID(), SessionData.EXPERIMENT, true);
             if (exper == null || exper.isEmpty()) {
                 this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -122,15 +121,12 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
             SessionData arrivedType = (SessionData) event.getSource();
             
             if (arrivedType == SessionData.EXPERIMENT) {
-                RecordsList<Record> result = this.session.softlyCheckoutSessionData(arrivedType);
-                if (result == null || result.isEmpty() || !(result.getFirst() instanceof Experiment)) {
-                    return;
+                RecordsList<Record> result = this.session.getSessionData(this.session.getSessionID(), arrivedType, false);
+                if (result != null && !result.isEmpty() && result.getFirst() instanceof Experiment) {
+                    Experiment record = (Experiment) result.getFirst();
+                    this.currentInformationPane.setCurrentData(record);
+                    this.handleButtonStates(record);
                 }
-                
-                Experiment record = (Experiment) result.getFirst();
-                this.currentInformationPane.setCurrentData(record);
-                
-                this.handleButtonStates(record);
                 
                 if (this.dialog != null) {
                     this.dialog.maskCloseEvent();

@@ -18,8 +18,8 @@ package net.jonathansmith.javadpad.common.network.packet.database;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
@@ -138,14 +138,14 @@ public class UpdateDataPacket extends LockedPacket {
     @Override
     public void handleServerSide() {
         if (this.data != null) {
-            ((ServerSession) this.session).updateDatabaseRecord(this.getKey(), this.data);
+            ((ServerSession) this.session).updateDatabaseRecord(this.getKey(), this.data, true);
         }
         
         if (this.pullsFocus) {
             RecordsList<Record> out = new RecordsList<Record> ();
             SessionData focus = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.data.getType(), QueryType.SINGLE);
             out.add(new IntegerRecord(focus.ordinal()));
-            ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out);
+            ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out, true);
         }
     }
 

@@ -18,9 +18,9 @@ package net.jonathansmith.javadpad.common.network.packet.session;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
@@ -152,17 +152,25 @@ public class SetSessionDataPacket extends LockedPacket {
 
     @Override
     public void handleClientSide() {
+        if (this.data == null) {
+            this.data = new RecordsList<Record> ();
+        } 
+        
         ((ClientSession) this.session).setSessionData(this.getKey(), this.type, this.data);
     }
 
     @Override
     public void handleServerSide() {
-        ((ServerSession) this.session).setSessionData(this.getKey(), this.type, this.data);
+        if (this.data == null) {
+            this.data = new RecordsList<Record> ();
+        } 
+        
+        ((ServerSession) this.session).setSessionData(this.getKey(), this.type, this.data, true);
         
         if (this.pullsFocus) {
             RecordsList<Record> out = new RecordsList<Record> ();
             out.add(new IntegerRecord(this.type.ordinal()));
-            ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, this.data);
+            ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out, true);
         }
     }
 

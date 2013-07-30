@@ -20,13 +20,15 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.api.database.RecordsTransform;
+import net.jonathansmith.javadpad.client.network.session.ClientSession;
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.server.network.session.ServerSession;
 
 import org.apache.commons.lang3.SerializationUtils;
 
@@ -184,7 +186,7 @@ public class UpdateSessionDataPacket extends LockedPacket {
         }
         
         RecordsTransform transform = new RecordsTransform(this.changes, this.deletions, this.additions);
-        this.session.updateSessionData(this.getKey(), this.dataType, transform);
+        ((ClientSession) this.session).updateSessionData(this.getKey(), this.dataType, transform);
     }
 
     @Override
@@ -202,7 +204,7 @@ public class UpdateSessionDataPacket extends LockedPacket {
         }
         
         RecordsTransform transform = new RecordsTransform(this.changes, this.deletions, this.additions);
-        this.session.updateSessionData(this.getKey(), this.dataType, transform);
+        ((ServerSession) this.session).updateSessionData(this.getKey(), this.dataType, transform, true);
     }
 
     @Override

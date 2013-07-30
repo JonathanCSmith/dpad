@@ -24,11 +24,6 @@ import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
-import net.jonathansmith.javadpad.common.gui.DisplayOption;
-import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
-import net.jonathansmith.javadpad.client.threads.data.pluginselect.pane.PluginSelectPane;
-import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.toolbar.PluginSelectToolbar;
 import net.jonathansmith.javadpad.api.database.DatabaseRecord;
 import static net.jonathansmith.javadpad.api.database.DatabaseRecord.ANALYSER_PLUGIN;
 import static net.jonathansmith.javadpad.api.database.DatabaseRecord.LOADER_PLUGIN;
@@ -36,15 +31,20 @@ import net.jonathansmith.javadpad.api.database.Dataset;
 import net.jonathansmith.javadpad.api.database.PluginRecord;
 import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.api.events.Event;
+import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
+import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
+import net.jonathansmith.javadpad.client.threads.data.pluginselect.pane.PluginSelectPane;
+import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.toolbar.PluginSelectToolbar;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.plugin.PluginArriveEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
-import net.jonathansmith.javadpad.common.network.packet.session.RequestSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginRequestPacket;
+import net.jonathansmith.javadpad.common.network.packet.session.RequestSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.plugins.PluginManagerHandler;
@@ -173,7 +173,6 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
         this.session.addPacketToSend(PacketPriority.HIGH, p);
 
         this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -183,18 +182,16 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
     }
     
     private void insertAvailablePlugins() {
-        RecordsList<Record> data = this.engine.getSession().softlyCheckoutSessionData(SessionData.ALL_LOADER_PLUGINS);
-        if (data == null || data.isEmpty()) {
-            return;
+        RecordsList<Record> data = this.engine.getSession().getSessionData(this.session.getSessionID(), SessionData.ALL_LOADER_PLUGINS, false);
+        if (data != null && !data.isEmpty()) {
+            this.currentInformationPane.clearRecords();
+            this.currentInformationPane.insertRecords(data);
+            this.engine.getGUI().validateState();
         }
 
         this.dialog.maskCloseEvent();
         this.dialog.dispose();
         this.dialog = null;
-
-        this.currentInformationPane.clearRecords();
-        this.currentInformationPane.insertRecords(data);
-        this.engine.getGUI().validateState();
     }
     
     private void submitSelectedPlugin() {
@@ -211,7 +208,6 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
                 this.session.lockAndSendPacket(PacketPriority.HIGH, p);
 
                 this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -226,7 +222,6 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
                 this.session.lockAndSendPacket(PacketPriority.HIGH, p);
                 
                 this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-                
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -253,7 +248,6 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
         this.session.lockAndSendPacket(PacketPriority.HIGH, p);
 
         this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -263,17 +257,15 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
     }
     
     private void parseSubmittedPlugin() {
-        RecordsList<Record> data = this.engine.getSession().softlyCheckoutSessionData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.pluginType, QueryType.SINGLE));
-        if (data == null || data.isEmpty()) {
-            return;
+        RecordsList<Record> data = this.engine.getSession().getSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.pluginType, QueryType.SINGLE), false);
+        if (data != null && !data.isEmpty()) {
+            RecordsList<Record> focusList = this.session.getFocusData();
+            if (focusList != null && !focusList.isEmpty() && focusList.getFirst() instanceof Dataset) {
+                Dataset focus = (Dataset) focusList.getFirst();
+                focus.setPluginInfo((PluginRecord) data.getFirst());
+            }
         }
         
-        RecordsList<Record> focusList = this.session.getSessionFocusData();
-        if (focusList != null && !focusList.isEmpty() && focusList.getFirst() instanceof Dataset) {
-            Dataset focus = (Dataset) focusList.getFirst();
-            focus.setPluginInfo((PluginRecord) data.getFirst());
-        }
-
         this.dialog.maskCloseEvent();
         this.dialog.dispose();
         this.dialog = null;

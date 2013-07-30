@@ -18,8 +18,8 @@ package net.jonathansmith.javadpad.common.network.packet.session;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.session.Session;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
@@ -92,7 +92,7 @@ public class RequestSessionDataPacket extends LockedPacket {
 
     @Override
     public void handleServerSide() {
-        RecordsList<Record> list = ((ServerSession) this.session).checkoutSessionData(this.getKey(), this.dataType);
+        RecordsList<Record> list = ((ServerSession) this.session).getSessionData(this.getKey(), this.dataType, true, true);
     }
 
     @Override

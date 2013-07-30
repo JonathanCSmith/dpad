@@ -128,15 +128,15 @@ public class RunLoaderPluginPacket extends LockedPacket {
     
     @Override
     public void handleServerSide() {
-        IPlugin plugin = this.engine.getPluginManager().getPlugin(this.plugin.getName());
-        if (plugin != null) {
-            IRuntime serverThread = plugin.getRuntimeThread(Platform.SERVER, (ILogger) this.engine);
+        IPlugin plug = this.engine.getPluginManager().getPlugin(this.plugin.getName());
+        if (plug != null) {
+            IRuntime serverThread = plug.getRuntimeThread(Platform.SERVER, (ILogger) this.engine);
             IThread thread = serverThread.getThread();
             thread.setPayload(this.target);
             ((Server) this.engine).addWorkerThread(this.getKey(), this.plugin, thread);
             
             this.target.setHasBeenSubmittedToServer(true);
-            ((ServerSession) this.session).updateDatabaseRecord(this.getKey(), this.target);
+            ((ServerSession) this.session).updateDatabaseRecord(this.getKey(), this.target, true);
         }
     }
     

@@ -24,18 +24,18 @@ import java.awt.event.MouseListener;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
-import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.ExistingRecordPane;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.NewRecordPane;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.toolbar.RecordToolbar;
-import net.jonathansmith.javadpad.api.database.DatabaseRecord;
-import net.jonathansmith.javadpad.api.database.Record;
-import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.NewDataPacket;
@@ -97,15 +97,14 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     
     @Override
     public void validateState() {
-        SessionData focus = this.session.getSessionFocusType();
+        SessionData focus = this.session.getFocus();
         if (focus != SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE)) {
             LockedPacket p = new SetSessionFocusPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE));
             this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
             
-            RecordsList<Record> rcds = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE));
+            RecordsList<Record> rcds = this.session.getSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE), true);
             if (rcds == null || rcds.isEmpty()) {
                 this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
@@ -170,22 +169,17 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
                 this.engine.forceShutdown("Early exit forced by user closing modal", null);
             }
         }
-        
-        // TODO: listen for session data changes so we can instantly update the
-        // main display panel
             
         else if (evt instanceof DataArriveEvent) {
             DataArriveEvent event = (DataArriveEvent) evt;
             SessionData arriveType = (SessionData) event.getSource();
             if (arriveType == SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION) && this.currentPanel == this.existingRecordPane) {
-                RecordsList<Record> data = this.session.softlyCheckoutSessionData(SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION));
-                if (data == null || this.dialog == null) {
-                    return;
+                RecordsList<Record> data = this.session.getSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION), false);
+                if (data != null && this.dialog != null) {
+                    this.dialog.maskCloseEvent();
+                    this.dialog.dispose();
+                    this.dialog = null;
                 }
-                
-                this.dialog.maskCloseEvent();
-                this.dialog.dispose();
-                this.dialog = null;
                 
                 this.setCurrentView(this.existingRecordPane);
                 this.existingRecordPane.insertRecords(data);
@@ -193,13 +187,11 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
             }
             
             else if (arriveType == SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE)) {
-                RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE));
-                if (data == null) {
-                    return;
+                RecordsList<Record> data = this.session.getSessionData(this.session.getSessionID(), arriveType, false);
+                if (data != null && !data.isEmpty()) {
+                    this.currentRecordPane.setCurrentData(data.getFirst());
+                    this.engine.getGUI().validateState();
                 }
-                
-                this.currentRecordPane.setCurrentData(data.getFirst());
-                this.engine.getGUI().validateState();
                 
                 if (this.dialog != null) {
                     this.dialog.maskCloseEvent();
@@ -220,11 +212,10 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     private void loadRecordButton() {
         if (this.getCurrentView() != this.existingRecordPane) {
             SessionData dataType = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION);
-            RecordsList<Record> data = this.session.checkoutSessionData(this.session.getSessionID(), dataType);
+            RecordsList<Record> data = this.session.getSessionData(this.session.getSessionID(), dataType, true);
 
             if (data == null) {
                 this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {

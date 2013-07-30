@@ -88,8 +88,8 @@ public final class ServerSession extends Session {
         this.setServerKey(this.getSessionID());
         this.connection = ((Server) this.engine).getSessionConnection();
         
-        super.setSessionData(this.getSessionID(), SessionData.ALL_LOADER_PLUGINS, this.engine.getPluginManager().getLoaderPluginRecordList());
-        super.setSessionData(this.getSessionID(), SessionData.ALL_ANALYSER_PLUGINS, this.engine.getPluginManager().getAnalyserPluginRecordList());
+        super.setData(this.getSessionID(), SessionData.ALL_LOADER_PLUGINS, this.engine.getPluginManager().getLoaderPluginRecordList());
+        super.setData(this.getSessionID(), SessionData.ALL_ANALYSER_PLUGINS, this.engine.getPluginManager().getAnalyserPluginRecordList());
     }
     
     @Override
@@ -340,51 +340,7 @@ public final class ServerSession extends Session {
         if (sessionSet) {
             RecordsList<Record> list = new RecordsList<Record> ();
             list.add(decision);
-            this.setSessionData(this.getSessionID(), SessionData.LOADER_PLUGIN, list);
-        }
-    }
-    
-    /**
-     * Sets the session data if sever key is correct, automatically updates the
-     * client
-     * 
-     * @param soureKey
-     * @param dataType
-     * @param data
-     * @return whether the data set was successful
-     */
-    @Override
-    public boolean setSessionData(String soureKey, SessionData dataType, RecordsList<Record> data) {
-        if (super.setSessionData(soureKey, dataType, data)) {
-            this.fireChange(new DataArriveEvent(dataType)); // TODO: Fix events
-            LockedPacket p = new SetSessionDataPacket(this.engine, this, dataType, data, false);
-            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
-            return true;
-        }
-        
-        return false;
-    }
-    
-    /**
-     * Updates the session data, client should only update if from server
-     * 
-     * @param sourceKey
-     * @param data 
-     */
-    @Override
-    public void updateSessionData(String sourceKey, SessionData dataType, RecordsTransform data) {
-        RecordsList<Record> oldData = this.checkoutSessionData(sourceKey, dataType);
-        if (oldData == null) {
-            return;
-        }
-        
-        RecordsList<Record> dataUpdate = data.transform(oldData);
-        if (this.setSessionData(this.getSessionID(), dataType, dataUpdate)) {
-            // TODO: fire update session data
-        
-            RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
-            LockedPacket p = new UpdateSessionDataPacket(this.engine, this, dataType, transform);
-            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            this.setSessionData(this.getSessionID(), SessionData.LOADER_PLUGIN, list, true);
         }
     }
     
@@ -397,57 +353,83 @@ public final class ServerSession extends Session {
      * @param dataType
      * @return list of records found, may be empty! 
      */
-    @Override
-    public RecordsList<Record> checkoutSessionData(String sourceKey, SessionData dataType) {
-        if (dataType.getRecordType() == null) {
-            RecordsList<Record> returnData = super.checkoutSessionData(sourceKey, dataType);
-            LockedPacket p = new SessionDataPacket(this.engine, this, dataType, returnData);
-            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
-            return returnData;
+    public RecordsList<Record> getSessionData(String sourceKey, SessionData dataType, boolean shouldTellClient, boolean shouldCheckDatabase) {
+        if (!shouldCheckDatabase) {
+            return this.dbSoftlyGetSessionData(sourceKey, dataType, shouldTellClient);
         }
         
-        RecordsList<Record> oldData = super.checkoutSessionData(sourceKey, dataType);
-        RecordsList<Record> dataUpdate = this.checkoutDatabaseRecords(dataType);
-        if (dataUpdate != null && this.setSessionData(this.getSessionID(), dataType, dataUpdate)) {
-            if (oldData != null) {
-                RecordsTransform transform = RecordsTransform.getTransform(oldData, dataUpdate);
-                if (transform != null) {
-                    LockedPacket p = new UpdateSessionDataPacket(this.engine, this, dataType, transform);
-                    this.lockAndSendPacket(PacketPriority.MEDIUM, p);
-                }
+        RecordsList<Record> sessionData = super.getData(sourceKey, dataType);
+        RecordsList<Record> databaseData = this.getDatabaseData(dataType);
+        
+        if (databaseData == null) {
+            if (shouldTellClient) {
+                LockedPacket p = new SessionDataPacket(this.engine, this, dataType, null);
+                this.lockAndSendPacket(PacketPriority.MEDIUM, p);
             }
             
-            else {
-                LockedPacket p = new SessionDataPacket(this.engine, this, dataType, dataUpdate);
+            return null;
+        }
+        
+        else if (sessionData == null) {
+            super.setData(sourceKey, dataType, databaseData);
+            
+            if (shouldTellClient) {
+                LockedPacket p = new SessionDataPacket(this.engine, this, dataType, databaseData);
                 this.lockAndSendPacket(PacketPriority.MEDIUM, p);
             }
         }
+
+        else {
+            RecordsTransform transform = RecordsTransform.getTransform(sessionData, databaseData);
+            this.updateSessionData(sourceKey, dataType, transform, shouldTellClient);
+        }
         
-        return dataUpdate;
+        return databaseData;
+    }
+    
+    private RecordsList<Record> dbSoftlyGetSessionData(String sourceKey, SessionData dataType, boolean shouldTellClient) {
+        RecordsList<Record> currentData = super.getData(sourceKey, dataType);
+        if (shouldTellClient) {
+            LockedPacket p = new SessionDataPacket(this.engine, this, dataType, currentData);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+        }
+        
+        return currentData;
     }
     
     /**
-     * Softly checks out any session data from the data map, the key ensures the
-     * correct side is querying this and no packets will be sent
+     * Updates the session data, client should only update if from server
      * 
-     * @param dataType
-     * @return 
+     * @param sourceKey
+     * @param data 
      */
-    public RecordsList<Record> softlyCheckoutSessionData(SessionData dataType) {
-        if (dataType.getRecordType() == null) {
-            return super.checkoutSessionData(this.getSessionID(), dataType);
+    public void updateSessionData(String sourceKey, SessionData dataType, RecordsTransform data, boolean shouldTellClient) {
+        if (super.updateData(sourceKey, dataType, data)) {
+            if (shouldTellClient) {
+                LockedPacket p = new UpdateSessionDataPacket(this.engine, this, dataType, data);
+                this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            }
+        }
+    }
+    
+    /**
+     * Sets the session data if sever key is correct, automatically updates the
+     * client
+     * 
+     * @param soureKey
+     * @param dataType
+     * @param data
+     * @return whether the data set was successful
+     */
+    public boolean setSessionData(String soureKey, SessionData dataType, RecordsList<Record> data, boolean shouldTellClient) {
+        if (super.setData(soureKey, dataType, data)) {
+            this.fireChange(new DataArriveEvent(dataType)); // TODO: Fix events
+            LockedPacket p = new SetSessionDataPacket(this.engine, this, dataType, data, false);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            return true;
         }
         
-        else {
-            RecordsList<Record> dbData = this.checkoutDatabaseRecords(dataType);
-            if (this.setSessionData(this.getSessionID(), dataType, dbData)) {
-                return dbData;
-            }
-            
-            else {
-                return super.checkoutSessionData(this.getSessionID(), dataType);
-            }
-        }
+        return false;
     }
     
     /**
@@ -455,7 +437,7 @@ public final class ServerSession extends Session {
      * 
      * @param record 
      */
-    public void addDatabaseRecord(String key, Record record) {
+    public void addDatabaseRecord(String key, Record record, boolean shouldTellClient) {
         if (!this.isServerKey(key) || record == null) {
             return;
         }
@@ -464,7 +446,7 @@ public final class ServerSession extends Session {
         manager.saveNew(this.connection, record);
         RecordsList<Record> list = new RecordsList<Record> ();
         list.add(record);
-        this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(record.getType(), QueryType.SINGLE), list);
+        this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(record.getType(), QueryType.SINGLE), list, shouldTellClient);
         this.updateParent(record);
     }
     
@@ -473,7 +455,7 @@ public final class ServerSession extends Session {
      * 
      * @param record 
      */
-    public void updateDatabaseRecord(String key, Record record) {
+    public void updateDatabaseRecord(String key, Record record, boolean shouldTellClient) {
         if (!this.isServerKey(key) || record == null) {
             return;
         }
@@ -482,22 +464,12 @@ public final class ServerSession extends Session {
         manager.save(this.connection, record);
         RecordsList<Record> list = new RecordsList<Record> ();
         list.add(record);
-        this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(record.getType(), QueryType.SINGLE), list);
-        this.updateParent(record);
-    }
-    
-    public void softlyUpdateDatabaseRecord(String key, Record record) {
-        if (!this.isServerKey(key) || record == null) {
-            return;
-        }
-        
-        GenericManager manager = RecordHelper.getRecordManager(record.getType());
-        manager.save(this.connection, record);
+        this.setSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(record.getType(), QueryType.SINGLE), list, shouldTellClient);
         this.updateParent(record);
     }
     
     private void updateParent(Record record) {
-        RecordsList<Record> dataList = this.getSessionFocusData();
+        RecordsList<Record> dataList = this.getFocusData();
         if (dataList == null || dataList.isEmpty()) {
             return;
         }
@@ -517,18 +489,18 @@ public final class ServerSession extends Session {
      * @param dataType
      * @return a list of results that may be null if none were found
      */
-    private RecordsList<Record> checkoutDatabaseRecords(SessionData dataType) {
+    private RecordsList<Record> getDatabaseData(SessionData dataType) {
         if (dataType.getRecordType() == null) {
             return null;
         }
         
         if (dataType.getQueryType() == QueryType.SINGLE) {
-            RecordsList<Record> list = super.checkoutSessionData(this.getSessionID(), dataType);
+            RecordsList<Record> list = super.getData(this.getSessionID(), dataType);
             if (list == null || list.isEmpty()) {
                 return null;
             }
             
-            Record value = this.checkoutDatabaseRecord(dataType.getRecordType(), list.getFirst().getUUID());
+            Record value = this.getDatabaseRecord(dataType.getRecordType(), list.getFirst().getUUID());
             RecordsList<Record> out = new RecordsList<Record> ();
             out.add(value);
             return out;
@@ -539,7 +511,7 @@ public final class ServerSession extends Session {
                 return UserManager.getInstance().loadAll(this.connection);
                 
             case USER_EXPERIMENTS:
-                RecordsList<Record> list = this.softlyCheckoutSessionData(SessionData.getSessionDataFromDatabaseRecordAndQuery(DatabaseRecord.USER, QueryType.SINGLE));
+                RecordsList<Record> list = this.getSessionData(this.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(DatabaseRecord.USER, QueryType.SINGLE), false, false);
                 if (list == null || list.isEmpty()) {
                     return null;
                 }
@@ -577,7 +549,7 @@ public final class ServerSession extends Session {
      * @param recordType
      * @return a record of type requested, may be null if no record was found
      */
-    private Record checkoutDatabaseRecord(DatabaseRecord recordType, String attribute) {
+    private Record getDatabaseRecord(DatabaseRecord recordType, String attribute) {
         GenericManager manager = RecordHelper.getRecordManager(recordType);
         Record out = manager.findByID(this.connection, attribute);
         return out;
