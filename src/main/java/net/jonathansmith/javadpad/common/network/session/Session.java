@@ -23,10 +23,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.jboss.netty.channel.Channel;
 
-import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.api.database.RecordsTransform;
 import net.jonathansmith.javadpad.api.events.Event;
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
@@ -147,34 +147,72 @@ public abstract class Session {
     }
     
     /**
+     * Returns the current focus of the session, but contains no data
+     * 
+     * @return session data of the type that is currently focussed
+     */
+    public final SessionData getFocus() {
+        RecordsList<Record> focus = this.getData(this.getSessionID(), SessionData.FOCUS);
+        if (focus == null || focus.isEmpty()) {
+            focus = new RecordsList<Record> ();
+            focus.add(new IntegerRecord(SessionData.NONE.ordinal()));
+            this.setData(this.getSessionID(), SessionData.NONE, focus);
+            return SessionData.NONE;
+        }
+        
+        return SessionData.values()[((IntegerRecord) focus.getFirst()).getValue()];
+    }
+    
+    /**
      * Checks out the focus of the current session, is always soft so as to not
      * packet spam. Code should rigourously set focus
      * 
      * @return records list containing the current focus data, can be empty if no
      * current focus
      */
-    public final RecordsList<Record> getSessionFocusData() {
-        SessionData focusType = this.getSessionFocusType();
-        return this.checkoutSessionData(this.getSessionID(), focusType);
+    public final RecordsList<Record> getFocusData() {
+        return this.getData(this.getSessionID(), this.getFocus());
     }
     
     /**
-     * Returns the current focus of the session, but contains no data
+     * Check out session data from the data map, checks the key against itself
+     * (Server should never ask for client data and client should request
+     * through the session)
      * 
-     * @return session data of the type that is currently focussed
+     * @param key
+     * @param dataType
+     * @return A list of records that may be null if key was wrong
      */
-    public final SessionData getSessionFocusType() {
-        RecordsList<Record> focusList = this.checkoutSessionData(this.getSessionID(), SessionData.FOCUS);
-        if (focusList == null || focusList.isEmpty()) {
+    protected RecordsList<Record> getData(String sourceKey, SessionData dataType) {
+        if (!sourceKey.contentEquals(this.getSessionID())) {
             return null;
         }
         
-        Record focus = focusList.getFirst();
-        if (focus == null) {
-            return null;
+        if (this.sessionData.containsKey(dataType)) {
+            return this.sessionData.get(dataType);
         }
         
-        return SessionData.values()[((IntegerRecord) focus).getValue()];
+        return null;
+    }
+    
+    /**
+     * Updates the session data
+     * 
+     * @param sourceKey
+     * @param data 
+     */
+    protected boolean updateData(String sourceKey, SessionData dataType, RecordsTransform transform) {
+        if (!sourceKey.contentEquals(this.serverKey)) {
+            return false;
+        }
+        
+        RecordsList<Record> currentData = this.getData(serverKey, dataType);
+        if (currentData == null) {
+            return false;
+        }
+        
+        RecordsList<Record> newData = transform.transform(currentData);
+        return this.setData(sourceKey, dataType, newData);
     }
     
     /**
@@ -185,50 +223,14 @@ public abstract class Session {
      * @param data
      * @return whether the set was successful or not
      */
-    protected boolean setSessionData(String sourceKey, SessionData dataType, RecordsList<Record> data) {
-        if (sourceKey.contentEquals(this.serverKey)) {
-            this.sessionData.put(dataType, data);
-            return true;
+    protected boolean setData(String sourceKey, SessionData dataType, RecordsList<Record> data) {
+        if (!sourceKey.contentEquals(this.serverKey)) {
+            return false;
         }
         
-        return false;
+        this.sessionData.put(dataType, data);
+        return true;
     }
-    
-    /**
-     * Updates the session data
-     * 
-     * @param sourceKey
-     * @param data 
-     */
-    public abstract void updateSessionData(String sourceKey, SessionData dataType, RecordsTransform data);
-    
-    /**
-     * Check out session data from the data map, checks the key against itself
-     * (Server should never ask for client data and client should request
-     * through the session)
-     * 
-     * @param key
-     * @param dataType
-     * @return A list of records that may be null if no session data was present
-     */
-    public RecordsList<Record> checkoutSessionData(String sourceKey, SessionData dataType) {
-        if (sourceKey.contentEquals(this.getSessionID())) {
-            if (this.sessionData.containsKey(dataType)) {
-                return this.sessionData.get(dataType);
-            }
-        }
-        
-        return null;
-    }
-    
-    /**
-     * Softly checks out any session data from the data map, the key ensures the
-     * correct side is querying this and no packets will be sent
-     * 
-     * @param dataType
-     * @return 
-     */
-    public abstract RecordsList<Record> softlyCheckoutSessionData(SessionData dataType);
     
     /**
      * Clears the session data if they have ownership

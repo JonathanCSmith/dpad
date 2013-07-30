@@ -111,7 +111,7 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
     
     @Override
     public void validateState() {
-        RecordsList<Record> list = this.session.getSessionFocusData();
+        RecordsList<Record> list = this.session.getFocusData();
         LoaderDataset r;
         if (list != null && !list.isEmpty() && list.getFirst() instanceof LoaderDataset) {
             r = (LoaderDataset) list.getFirst();
@@ -178,15 +178,13 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
             SessionData arrivedType = (SessionData) event.getSource();
             
             if (arrivedType == SessionData.LOADER_DATA) {
-                RecordsList<Record> result = this.session.softlyCheckoutSessionData(arrivedType);
-                if (result == null || result.isEmpty() || !(result.getFirst() instanceof LoaderDataset)) {
-                    return;
+                RecordsList<Record> result = this.session.getSessionData(this.session.getSessionID(), arrivedType, false);
+                if (result != null && !result.isEmpty() && result.getFirst() instanceof LoaderDataset) {
+                    LoaderDataset record = (LoaderDataset) result.getFirst();
+                    this.currentInformationPane.setCurrentData(record);
+                    this.handleButtonStates(record);
+                    this.data = record;
                 }
-                
-                LoaderDataset record = (LoaderDataset) result.getFirst();
-                this.currentInformationPane.setCurrentData(record);
-                this.handleButtonStates(record);
-                this.data = record;
                 
                 if (this.dialog != null) {
                     this.dialog.maskCloseEvent();
@@ -252,7 +250,7 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Please select your data");
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        RecordsList<Record> list = this.session.getSessionFocusData();
+        RecordsList<Record> list = this.session.getFocusData();
         if (list == null || list.isEmpty()) {
             return;
         }
@@ -293,7 +291,7 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
         if (outcome == JFileChooser.APPROVE_OPTION) {
             files = chooser.getSelectedFiles();
 
-            RecordsList<Record> lister = this.session.getSessionFocusData();
+            RecordsList<Record> lister = this.session.getFocusData();
             if (lister == null || lister.isEmpty()) {
                 return;
             }
@@ -340,7 +338,6 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
             this.session.lockAndSendPacket(PacketPriority.MEDIUM, p2);
             
             this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -355,7 +352,6 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
         this.session.lockAndSendPacket(PacketPriority.HIGH, p);
         
         this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-        
         SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {

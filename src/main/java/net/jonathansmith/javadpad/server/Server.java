@@ -320,7 +320,7 @@ public class Server extends Engine implements EventListener {
             
             String sessionID = this.pluginMap.remove(record);
             ServerSession sess = (ServerSession) this.sessionRegistry.getSession(sessionID);
-            sess.softlyUpdateDatabaseRecord(sessionID, data);
+            sess.updateDatabaseRecord(sessionID, data, false);
         }
     }
 }

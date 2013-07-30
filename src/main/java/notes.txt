@@ -1,13 +1,11 @@
 ********************************************************************************
-** MAIN PROGRESS LIST
+** MAIN PROGRESS LIST (VOLATILE :D)
 ********************************************************************************
 
-1) List of things yet to do (volatile :D)
-- Server side processing framework - should update and send the loader dataset
-- Event listen to plugin finish. Submit data;
-- Client can wait for above
+Session data functions
+    - clear data needs to be called on closing
 
-2) Test plugin (see constant notes 1)
+Test plugin (see constant notes 1)
 
 ********************************************************************************
 ** UNORDERED TODOS
@@ -17,8 +15,8 @@ Button shading
 Tooltips
 Centralise Gui
 Shutdown can edge case throw errors due to multiple channel shutdown calls
-Hibernate passworkd
-TODOS (lol)
+Hibernate password
+TODOS (lol - code ones)
 Lazy loading
 
 ********************************************************************************

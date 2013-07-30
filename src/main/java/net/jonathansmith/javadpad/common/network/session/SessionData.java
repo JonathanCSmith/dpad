@@ -24,6 +24,7 @@ import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
  * @author Jon
  */
 public enum SessionData {
+    NONE(null, null),
     ALL_USERS(DatabaseRecord.USER, QueryType.ALL_AVAILABLE_TO_SESSION),
     USER(DatabaseRecord.USER, QueryType.SINGLE),
     

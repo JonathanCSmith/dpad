@@ -18,9 +18,9 @@ package net.jonathansmith.javadpad.common.network.packet.session;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
@@ -94,7 +94,7 @@ public class SetSessionFocusPacket extends LockedPacket {
     public void handleServerSide() {
         RecordsList<Record> out = new RecordsList<Record> ();
         out.add(new IntegerRecord(this.dataType.ordinal()));
-        ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out);
+        ((ServerSession) this.session).setSessionData(this.getKey(), SessionData.FOCUS, out, true);
     }
 
     @Override

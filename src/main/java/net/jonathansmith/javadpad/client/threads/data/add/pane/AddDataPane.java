@@ -30,10 +30,10 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
-import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.api.database.records.LoaderDataset;
 import net.jonathansmith.javadpad.api.database.records.LoaderPluginRecord;
+import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
 
 /**
  *
@@ -62,8 +62,13 @@ public class AddDataPane extends CurrentRecordPane {
     public void setCurrentData(Record record) {
         if (record instanceof LoaderDataset) {
             LoaderDataset l = (LoaderDataset) record;
-            this.pluginName.setText(l.getPluginInfo().getName());
-            this.equipmentName.setText(((LoaderPluginRecord) l.getPluginInfo()).getEquipment().getName());
+            LoaderPluginRecord plugin = (LoaderPluginRecord) l.getPluginInfo();
+            
+            if (plugin != null) {
+                this.pluginName.setText(l.getPluginInfo().getName());
+                this.equipmentName.setText(((LoaderPluginRecord) l.getPluginInfo()).getEquipment().getName());
+            }
+            
             DefaultListModel list = (DefaultListModel) this.jList1.getModel();
             list.removeAllElements();
             
