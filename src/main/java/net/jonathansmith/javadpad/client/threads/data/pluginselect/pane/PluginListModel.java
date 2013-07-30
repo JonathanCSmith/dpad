@@ -21,8 +21,8 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-import net.jonathansmith.javadpad.common.database.PluginRecord;
-import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.api.database.PluginRecord;
+import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**

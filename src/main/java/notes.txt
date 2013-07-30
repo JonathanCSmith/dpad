@@ -37,4 +37,8 @@ Verify:
 - Plugin is in client
 - Plugin is in server
 
+On both client + server have same plugin build:
+    attempt to add new data set with dummy plugin.
+    ensure that plugin is run both client and server side
+
 2)

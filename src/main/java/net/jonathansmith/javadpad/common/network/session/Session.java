@@ -24,9 +24,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.jboss.netty.channel.Channel;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.RecordsTransform;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.database.RecordsTransform;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
@@ -142,7 +142,7 @@ public abstract class Session {
 
     public abstract void disconnect(boolean force);
     
-    public void fireChange(DPADEvent event) {
+    public void fireChange(Event event) {
         this.engine.getEventThread().post(event);
     }
     

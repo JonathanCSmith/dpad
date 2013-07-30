@@ -19,7 +19,7 @@ package net.jonathansmith.javadpad.server.database.recordaccess;
 import org.hibernate.HibernateException;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.Server;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;

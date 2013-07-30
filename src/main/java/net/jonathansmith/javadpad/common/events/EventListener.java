@@ -16,11 +16,13 @@
  */
 package net.jonathansmith.javadpad.common.events;
 
+import net.jonathansmith.javadpad.api.events.Event;
+
 /**
  *
  * @author Jon
  */
 public interface EventListener {
     
-    public void changeEventReceived(DPADEvent event);
+    public void changeEventReceived(Event event);
 }

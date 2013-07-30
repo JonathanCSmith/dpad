@@ -20,7 +20,7 @@ import javax.persistence.NonUniqueResultException;
 
 import org.hibernate.HibernateException;
 
-import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
+import net.jonathansmith.javadpad.api.database.records.LoaderPluginRecord;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
 

@@ -29,8 +29,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.NewRecordPane;
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.database.records.User;
 
 /**
  *

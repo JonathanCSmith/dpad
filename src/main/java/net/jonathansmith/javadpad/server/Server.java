@@ -44,27 +44,27 @@ import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
 import net.jonathansmith.javadpad.DPAD;
-import net.jonathansmith.javadpad.DPAD.Platform;
+import net.jonathansmith.javadpad.api.Platform;
+import net.jonathansmith.javadpad.api.database.Dataset;
+import net.jonathansmith.javadpad.api.database.PluginRecord;
+import net.jonathansmith.javadpad.api.database.records.AnalyserDataset;
+import net.jonathansmith.javadpad.api.database.records.AnalyserPluginRecord;
+import net.jonathansmith.javadpad.api.database.records.DataType;
+import net.jonathansmith.javadpad.api.database.records.Equipment;
+import net.jonathansmith.javadpad.api.database.records.Experiment;
+import net.jonathansmith.javadpad.api.database.records.LoaderDataset;
+import net.jonathansmith.javadpad.api.database.records.LoaderPluginRecord;
+import net.jonathansmith.javadpad.api.database.records.Sample;
+import net.jonathansmith.javadpad.api.database.records.Template;
+import net.jonathansmith.javadpad.api.database.records.TimeCourseData;
+import net.jonathansmith.javadpad.api.database.records.User;
+import net.jonathansmith.javadpad.api.events.Event;
+import net.jonathansmith.javadpad.api.events.PluginFinishEvent;
+import net.jonathansmith.javadpad.api.threads.IThread;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.Dataset;
-import net.jonathansmith.javadpad.common.database.PluginRecord;
-import net.jonathansmith.javadpad.common.database.records.AnalyserDataset;
-import net.jonathansmith.javadpad.common.database.records.AnalyserPluginRecord;
-import net.jonathansmith.javadpad.common.database.records.DataType;
-import net.jonathansmith.javadpad.common.database.records.Equipment;
-import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
-import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
-import net.jonathansmith.javadpad.common.database.records.Sample;
-import net.jonathansmith.javadpad.common.database.records.Template;
-import net.jonathansmith.javadpad.common.database.records.TimeCourseData;
-import net.jonathansmith.javadpad.common.database.records.User;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.events.EventListener;
-import net.jonathansmith.javadpad.common.events.plugin.PluginFinishEvent;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
-import net.jonathansmith.javadpad.common.threads.RunnableThread;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
 import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
@@ -222,7 +222,7 @@ public class Server extends Engine implements EventListener {
         this.finish();
     }
     
-    public void addWorkerThread(String sessionID, PluginRecord plugin, RunnableThread thread) {
+    public void addWorkerThread(String sessionID, PluginRecord plugin, IThread thread) {
         this.pluginMap.put(plugin, sessionID);
         this.pluginThreadService.submit(thread);
     }
@@ -312,7 +312,7 @@ public class Server extends Engine implements EventListener {
         return config;
     }
 
-    public void changeEventReceived(DPADEvent event) {
+    public void changeEventReceived(Event event) {
         if (event instanceof PluginFinishEvent) {
             PluginFinishEvent evt = (PluginFinishEvent) event;
             Dataset data = (Dataset) evt.getSource();

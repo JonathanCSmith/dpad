@@ -26,7 +26,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import net.jonathansmith.javadpad.common.database.PluginRecord;
+import net.jonathansmith.javadpad.api.database.PluginRecord;
 
 /**
  *

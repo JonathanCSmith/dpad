@@ -19,7 +19,8 @@ package net.jonathansmith.javadpad.common;
 import org.slf4j.Logger;
 
 import net.jonathansmith.javadpad.DPAD;
-import net.jonathansmith.javadpad.DPAD.Platform;
+import net.jonathansmith.javadpad.api.Platform;
+import net.jonathansmith.javadpad.api.utils.ILogger;
 import net.jonathansmith.javadpad.common.events.EventThread;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.common.plugins.PluginManagerHandler;
@@ -30,7 +31,7 @@ import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
  * 
  * @author jonathansmith
  */
-public abstract class Engine extends Thread {
+public abstract class Engine extends Thread implements ILogger {
     
     public final DPAD main;
     public final Platform platform;
@@ -139,12 +140,14 @@ public abstract class Engine extends Thread {
     
     public abstract void forceShutdown(String cause, Throwable ex);
     
+    @Override
     public void trace(String message) {
         if (this.isLoggerSetup()) {
             this.logger.trace(message);
         }
     }
     
+    @Override
     public void trace(String message, Throwable ex) {
         if (this.isLoggerSetup()) {
             this.logger.trace(message, ex);
@@ -152,11 +155,14 @@ public abstract class Engine extends Thread {
     }
     
     // Equivalent of fine
+    @Override
     public void debug(String message) {
         if (this.isLoggerSetup()) {
             this.logger.debug(message);
         }
     }
+    
+    @Override
     public void debug(String message, Throwable ex) {
         if (this.isLoggerSetup()) {
             this.logger.debug(message, ex);
@@ -164,12 +170,14 @@ public abstract class Engine extends Thread {
     }
     
     // Equivalent of info
+    @Override
     public void info(String message) {
         if (this.isLoggerSetup()) {
             this.logger.info(message);
         }
     }
     
+    @Override
     public void info(String message, Throwable ex) {
         if (this.isLoggerSetup()) {
             this.logger.info(message, ex);
@@ -177,6 +185,7 @@ public abstract class Engine extends Thread {
     }
     
     // Equivalent of warning
+    @Override
     public void warn(String message) {
         if (this.isLoggerSetup()) {
             this.logger.warn(message);
@@ -187,6 +196,7 @@ public abstract class Engine extends Thread {
         }
     }
     
+    @Override
     public void warn(String message, Throwable ex) {
         if (this.isLoggerSetup()) {
             this.logger.warn(message, ex);
@@ -199,6 +209,7 @@ public abstract class Engine extends Thread {
     }
     
     // Equivalent of severe
+    @Override
     public void error(String message) {
         if (this.isLoggerSetup()) {
             this.logger.error(message);
@@ -209,6 +220,7 @@ public abstract class Engine extends Thread {
         }
     }
     
+    @Override
     public void error(String message, Throwable ex) {
         if (this.isLoggerSetup()) {
             this.logger.error(message, ex);

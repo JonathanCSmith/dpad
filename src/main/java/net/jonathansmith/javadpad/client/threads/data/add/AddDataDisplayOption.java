@@ -28,24 +28,27 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
-import net.jonathansmith.javadpad.DPAD;
+import net.jonathansmith.javadpad.api.Platform;
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
+import net.jonathansmith.javadpad.api.database.Dataset;
+import net.jonathansmith.javadpad.api.database.PluginRecord;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.database.records.LoaderDataset;
+import net.jonathansmith.javadpad.api.database.records.LoaderPluginRecord;
+import net.jonathansmith.javadpad.api.events.Event;
+import net.jonathansmith.javadpad.api.events.PluginFinishEvent;
+import net.jonathansmith.javadpad.api.plugin.IPlugin;
+import net.jonathansmith.javadpad.api.threads.IRuntime;
+import net.jonathansmith.javadpad.api.utils.ILogger;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
-import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.client.threads.data.add.pane.AddDataPane;
 import net.jonathansmith.javadpad.client.threads.data.add.toolbar.AddDataToolbar;
 import net.jonathansmith.javadpad.client.threads.data.pluginselect.PluginDisplayOption;
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
-import net.jonathansmith.javadpad.common.database.Dataset;
-import net.jonathansmith.javadpad.common.database.PluginRecord;
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
-import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
-import net.jonathansmith.javadpad.common.events.plugin.PluginFinishEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.NewDataPacket;
@@ -53,8 +56,6 @@ import net.jonathansmith.javadpad.common.network.packet.database.UpdateDataPacke
 import net.jonathansmith.javadpad.common.network.packet.plugins.RunLoaderPluginPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
-import net.jonathansmith.javadpad.common.plugins.DPADPlugin;
-import net.jonathansmith.javadpad.common.threads.RuntimeThread;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**
@@ -164,7 +165,7 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
     }
     
     @Override
-    public void changeEventReceived(DPADEvent evt) {
+    public void changeEventReceived(Event evt) {
         if (evt instanceof ModalCloseEvent) {
             ModalCloseEvent event = (ModalCloseEvent) evt;
             if (event.getSource() == this.dialog && event.getWasForcedClosed()) {
@@ -314,8 +315,8 @@ public class AddDataDisplayOption extends DisplayOption implements ActionListene
     private void runPluginClientSide() {
         this.data = this.currentInformationPane.getCurrentData();
         PluginRecord record = this.data.getPluginInfo();
-        DPADPlugin plugin = this.engine.getPluginManager().getPlugin(record.getName());
-        RuntimeThread clientThread = plugin.getRuntimeThread(DPAD.Platform.CLIENT);
+        IPlugin plugin = this.engine.getPluginManager().getPlugin(record.getName());
+        IRuntime clientThread = plugin.getRuntimeThread(Platform.CLIENT, (ILogger) this.engine);
         this.runningPlugin = true;
         this.engine.forceSetRuntime(clientThread, true);
     }

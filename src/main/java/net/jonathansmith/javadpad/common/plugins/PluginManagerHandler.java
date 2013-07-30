@@ -16,6 +16,9 @@
  */
 package net.jonathansmith.javadpad.common.plugins;
 
+import net.jonathansmith.javadpad.api.plugin.IPlugin;
+import net.jonathansmith.javadpad.api.plugin.ILoaderPlugin;
+import net.jonathansmith.javadpad.api.plugin.IAnalyserPlugin;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -32,8 +35,8 @@ import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.PluginRecord;
-import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.api.database.PluginRecord;
+import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 import org.apache.commons.io.FileUtils;
@@ -48,13 +51,13 @@ public class PluginManagerHandler extends Thread {
     private final String updateDir;
     private final Engine engine;
     private final JSPFProperties props = new JSPFProperties();
-    private final Map<String, LoaderPlugin> liveLoaders = new HashMap<String, LoaderPlugin> ();
-    private final Map<String, AnalyserPlugin> liveAnalysers = new HashMap<String, AnalyserPlugin> ();
-    private final Map<DPADPlugin, String> livePlugins = new HashMap<DPADPlugin, String> ();
-    private final Map<String, LoaderPlugin> snapshottedLoaders = new HashMap<String, LoaderPlugin> ();
-    private final Map<String, AnalyserPlugin> snapshottedAnalysers = new HashMap<String, AnalyserPlugin> ();
-    private final Map<DPADPlugin, String> snapshottedPlugins = new HashMap<DPADPlugin, String> ();
-    private final List<DPADPlugin> checkedOutPlugins = new LinkedList<DPADPlugin> ();
+    private final Map<String, ILoaderPlugin> liveLoaders = new HashMap<String, ILoaderPlugin> ();
+    private final Map<String, IAnalyserPlugin> liveAnalysers = new HashMap<String, IAnalyserPlugin> ();
+    private final Map<IPlugin, String> livePlugins = new HashMap<IPlugin, String> ();
+    private final Map<String, ILoaderPlugin> snapshottedLoaders = new HashMap<String, ILoaderPlugin> ();
+    private final Map<String, IAnalyserPlugin> snapshottedAnalysers = new HashMap<String, IAnalyserPlugin> ();
+    private final Map<IPlugin, String> snapshottedPlugins = new HashMap<IPlugin, String> ();
+    private final List<IPlugin> checkedOutPlugins = new LinkedList<IPlugin> ();
     
     private PluginManager manager;
     private PluginManagerUtil utils;
@@ -127,8 +130,8 @@ public class PluginManagerHandler extends Thread {
     
     public RecordsList<Record> getLoaderPluginRecordList() {
         RecordsList<Record> list = new RecordsList<Record> ();
-        for (LoaderPlugin plugin : this.snapshottedLoaders.values()) {
-            list.add(((DPADPlugin) plugin).getPluginRecord());
+        for (ILoaderPlugin plugin : this.snapshottedLoaders.values()) {
+            list.add(((IPlugin) plugin).getPluginRecord());
         }
         
         return list;
@@ -136,15 +139,15 @@ public class PluginManagerHandler extends Thread {
     
     public RecordsList<Record> getAnalyserPluginRecordList() {
         RecordsList<Record> list = new RecordsList<Record> ();
-        for (AnalyserPlugin plugin : this.snapshottedAnalysers.values()) {
-            list.add(((DPADPlugin) plugin).getPluginRecord());
+        for (IAnalyserPlugin plugin : this.snapshottedAnalysers.values()) {
+            list.add(((IPlugin) plugin).getPluginRecord());
         }
         
         return list;
     }
     
     public String getPluginPath(String name) {
-        DPADPlugin plugin = this.getPluginWithoutCheckout(name);
+        IPlugin plugin = this.getPluginWithoutCheckout(name);
         if (plugin == null) {
             return null;
         }
@@ -153,7 +156,7 @@ public class PluginManagerHandler extends Thread {
     }
     
     public PluginRecord getPluginRecord(String name) {
-        DPADPlugin plugin = this.getPluginWithoutCheckout(name);
+        IPlugin plugin = this.getPluginWithoutCheckout(name);
         if (plugin == null) {
             return null;
         }
@@ -161,8 +164,8 @@ public class PluginManagerHandler extends Thread {
         return plugin.getPluginRecord();
     }
     
-    public DPADPlugin getPlugin(String name) {
-        DPADPlugin plugin = null;
+    public IPlugin getPlugin(String name) {
+        IPlugin plugin = null;
         if (this.snapshottedLoaders.containsKey(name)) {
             plugin = this.snapshottedLoaders.get(name);
         }
@@ -180,7 +183,7 @@ public class PluginManagerHandler extends Thread {
         return null;
     }
     
-    public void returnPlugin(DPADPlugin plugin) {
+    public void returnPlugin(IPlugin plugin) {
         if (this.checkedOutPlugins.contains(plugin)) {
             int first = this.checkedOutPlugins.indexOf(plugin);
             this.checkedOutPlugins.remove(first);
@@ -222,15 +225,15 @@ public class PluginManagerHandler extends Thread {
         this.manager.addPluginsFrom(dir.toURI());
         
         // Loader plugins
-        Collection<LoaderPlugin> loaders = this.utils.getPlugins(LoaderPlugin.class);
-        for (LoaderPlugin plugin : loaders) {
+        Collection<ILoaderPlugin> loaders = this.utils.getPlugins(ILoaderPlugin.class);
+        for (ILoaderPlugin plugin : loaders) {
             this.liveLoaders.put(plugin.getPluginRecord().getName(), plugin);
             this.livePlugins.put(plugin, this.pluginDir + plugin.getPluginRecord().getName() + ".jar");
         }
         
         // Analyser plugins
-        Collection<AnalyserPlugin> analysers = this.utils.getPlugins(AnalyserPlugin.class);
-        for (AnalyserPlugin plugin : analysers) {
+        Collection<IAnalyserPlugin> analysers = this.utils.getPlugins(IAnalyserPlugin.class);
+        for (IAnalyserPlugin plugin : analysers) {
             this.liveAnalysers.put(plugin.getPluginRecord().getName(), plugin);
             this.livePlugins.put(plugin, this.pluginDir + plugin.getPluginRecord().getName() + ".jar");
         }
@@ -275,7 +278,7 @@ public class PluginManagerHandler extends Thread {
     }
     
     // Use snapshotted
-    private DPADPlugin getPluginWithoutCheckout(String name) {
+    private IPlugin getPluginWithoutCheckout(String name) {
         if (this.snapshottedLoaders.containsKey(name)) {
             return this.snapshottedLoaders.get(name);
         }

@@ -32,14 +32,14 @@ import org.bouncycastle.crypto.modes.CFBBlockCipher;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.params.ParametersWithIV;
 
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
+import net.jonathansmith.javadpad.api.database.PluginRecord;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.database.RecordsTransform;
+import net.jonathansmith.javadpad.api.database.records.Experiment;
+import net.jonathansmith.javadpad.api.database.records.LoaderPluginRecord;
+import net.jonathansmith.javadpad.api.database.records.User;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
-import net.jonathansmith.javadpad.common.database.PluginRecord;
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.RecordsTransform;
-import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
-import net.jonathansmith.javadpad.common.database.records.User;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
@@ -62,6 +62,7 @@ import net.jonathansmith.javadpad.server.Server;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
 import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
+import net.jonathansmith.javadpad.server.database.recordaccess.RecordHelper;
 import net.jonathansmith.javadpad.server.database.recordaccess.loaderplugin.LoaderPluginManager;
 import net.jonathansmith.javadpad.server.database.recordaccess.user.UserManager;
 
@@ -459,7 +460,7 @@ public final class ServerSession extends Session {
             return;
         }
         
-        GenericManager manager = record.getType().getManager();
+        GenericManager manager = RecordHelper.getRecordManager(record.getType());
         manager.saveNew(this.connection, record);
         RecordsList<Record> list = new RecordsList<Record> ();
         list.add(record);
@@ -477,7 +478,7 @@ public final class ServerSession extends Session {
             return;
         }
         
-        GenericManager manager = record.getType().getManager();
+        GenericManager manager = RecordHelper.getRecordManager(record.getType());
         manager.save(this.connection, record);
         RecordsList<Record> list = new RecordsList<Record> ();
         list.add(record);
@@ -490,7 +491,7 @@ public final class ServerSession extends Session {
             return;
         }
         
-        GenericManager manager = record.getType().getManager();
+        GenericManager manager = RecordHelper.getRecordManager(record.getType());
         manager.save(this.connection, record);
         this.updateParent(record);
     }
@@ -505,7 +506,7 @@ public final class ServerSession extends Session {
         DatabaseRecord type = data.getType();
         if (type != null) {
             data.addToChildren(record);
-            GenericManager parentManager = type.getManager();
+            GenericManager parentManager = RecordHelper.getRecordManager(record.getType());
             parentManager.save(this.connection, data);
         }
     }
@@ -577,7 +578,7 @@ public final class ServerSession extends Session {
      * @return a record of type requested, may be null if no record was found
      */
     private Record checkoutDatabaseRecord(DatabaseRecord recordType, String attribute) {
-        GenericManager manager = recordType.getManager();
+        GenericManager manager = RecordHelper.getRecordManager(recordType);
         Record out = manager.findByID(this.connection, attribute);
         return out;
     }

@@ -16,14 +16,14 @@
  */
 package net.jonathansmith.javadpad.common.events.gui;
 
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 
 /**
  *
  * @author Jon
  */
-public class ContentChangedEvent extends DPADEvent {
+public class ContentChangedEvent extends Event {
     
     public ContentChangedEvent(TabbedGUI source) {
         super(source);

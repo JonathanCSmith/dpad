@@ -19,7 +19,7 @@ package net.jonathansmith.javadpad.server.database.recordaccess.user;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.api.database.records.User;
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericDAO;
 
 /**

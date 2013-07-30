@@ -31,7 +31,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.ExistingRecordPane;
-import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 import org.jdesktop.layout.GroupLayout;

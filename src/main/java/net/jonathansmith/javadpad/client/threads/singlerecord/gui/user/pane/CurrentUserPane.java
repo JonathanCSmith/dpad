@@ -21,8 +21,8 @@ import java.awt.Component;
 import javax.swing.JLabel;
 
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.records.User;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.database.records.User;
 
 import org.jdesktop.layout.GroupLayout;
 

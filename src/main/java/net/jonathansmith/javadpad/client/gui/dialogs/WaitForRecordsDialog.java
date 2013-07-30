@@ -27,7 +27,7 @@ import javax.swing.JProgressBar;
 import javax.swing.WindowConstants;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 
 /**
@@ -53,7 +53,7 @@ public class WaitForRecordsDialog extends JDialog {
         this.wasClosedProgrammatically = true;
     }
 
-    public void fireChange(DPADEvent event) {
+    public void fireChange(Event event) {
         this.engine.getEventThread().post(event);
     }
 

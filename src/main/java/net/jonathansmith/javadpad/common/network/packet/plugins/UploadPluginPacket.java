@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.database.PluginRecord;
+import net.jonathansmith.javadpad.api.database.PluginRecord;
 import net.jonathansmith.javadpad.common.events.plugin.PluginArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LargePayloadPacket;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;

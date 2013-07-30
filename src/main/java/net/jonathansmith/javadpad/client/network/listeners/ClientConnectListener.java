@@ -21,7 +21,7 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 
 import net.jonathansmith.javadpad.client.Client;
-import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;

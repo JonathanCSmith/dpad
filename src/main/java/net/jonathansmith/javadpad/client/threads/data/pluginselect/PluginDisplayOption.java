@@ -25,17 +25,17 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
-import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.client.threads.data.pluginselect.pane.PluginSelectPane;
 import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.toolbar.PluginSelectToolbar;
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
-import static net.jonathansmith.javadpad.common.database.DatabaseRecord.ANALYSER_PLUGIN;
-import static net.jonathansmith.javadpad.common.database.DatabaseRecord.LOADER_PLUGIN;
-import net.jonathansmith.javadpad.common.database.Dataset;
-import net.jonathansmith.javadpad.common.database.PluginRecord;
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
+import static net.jonathansmith.javadpad.api.database.DatabaseRecord.ANALYSER_PLUGIN;
+import static net.jonathansmith.javadpad.api.database.DatabaseRecord.LOADER_PLUGIN;
+import net.jonathansmith.javadpad.api.database.Dataset;
+import net.jonathansmith.javadpad.api.database.PluginRecord;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.plugin.PluginArriveEvent;
@@ -142,7 +142,7 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
     public void mouseExited(MouseEvent me) {}
     
     @Override
-    public void changeEventReceived(DPADEvent evt) {
+    public void changeEventReceived(Event evt) {
         if (evt instanceof ModalCloseEvent) {
             ModalCloseEvent event = (ModalCloseEvent) evt;
             if (event.getSource() == this.dialog && event.getWasForcedClosed()) {
