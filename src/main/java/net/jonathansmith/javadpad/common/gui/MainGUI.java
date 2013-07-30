@@ -34,7 +34,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import net.jonathansmith.javadpad.DPAD;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ContentChangedEvent;
 
@@ -100,7 +100,7 @@ public class MainGUI extends JFrame implements Runnable, EventListener {
     }
     
     @Override
-    public void changeEventReceived(DPADEvent event) {
+    public void changeEventReceived(Event event) {
         if (event instanceof ContentChangedEvent) {
             this.revalidate();
         }

@@ -16,6 +16,7 @@
  */
 package net.jonathansmith.javadpad.common.events;
 
+import net.jonathansmith.javadpad.api.events.Event;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,17 +25,19 @@ import java.util.Map.Entry;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import net.jonathansmith.javadpad.api.events.IEventSender;
+
 /**
  *
  * @author Jon
  */
-public class EventThread extends Thread {
+public class EventThread extends Thread implements IEventSender {
     
-    private Multimap<Class<? extends DPADEvent>, EventListener> liveListenerMap = ArrayListMultimap.create();
-    private Multimap<Class<? extends DPADEvent>, EventListener> snapshottedListenerMap = ArrayListMultimap.create();
+    private Multimap<Class<? extends Event>, EventListener> liveListenerMap = ArrayListMultimap.create();
+    private Multimap<Class<? extends Event>, EventListener> snapshottedListenerMap = ArrayListMultimap.create();
     
-    private List<DPADEvent> pendingEventList = new LinkedList<DPADEvent> ();
-    private List<DPADEvent> liveEventList = new LinkedList<DPADEvent> ();
+    private List<Event> pendingEventList = new LinkedList<Event> ();
+    private List<Event> liveEventList = new LinkedList<Event> ();
     
     private boolean isAlive = false;
     private boolean pendingListenerUpdates;
@@ -62,10 +65,10 @@ public class EventThread extends Thread {
             
             else {
                 this.isModifying = true;
-                DPADEvent event = this.liveEventList.remove(0);
+                Event event = this.liveEventList.remove(0);
                 this.isModifying = false;
                 
-                Class<? extends DPADEvent> eventClass = event.getClass();
+                Class<? extends Event> eventClass = event.getClass();
                 Collection<EventListener> listeners = this.snapshottedListenerMap.get(eventClass);
                 for (EventListener listener : listeners) {
                     listener.changeEventReceived(event);
@@ -102,7 +105,7 @@ public class EventThread extends Thread {
         this.isAlive = false;
     }
     
-    public void addListener(Class<? extends DPADEvent> clazz, EventListener listener) {
+    public void addListener(Class<? extends Event> clazz, EventListener listener) {
         this.liveListenerMap.put(clazz, listener);
         this.pendingListenerUpdates = true;
     }
@@ -126,14 +129,15 @@ public class EventThread extends Thread {
         }
     }
     
-    public void removeListenerFromEvent(Class<? extends DPADEvent> clazz, EventListener listener) {
+    public void removeListenerFromEvent(Class<? extends Event> clazz, EventListener listener) {
         if (this.liveListenerMap.get(clazz).contains(listener)) {
             this.liveListenerMap.remove(clazz, listener);
             this.pendingListenerUpdates = true;
         }
     }
     
-    public void post(DPADEvent event) {
+    @Override
+    public void post(Event event) {
         this.pendingEventList.add(event);
         this.pendingEventUpdates = true;
     }

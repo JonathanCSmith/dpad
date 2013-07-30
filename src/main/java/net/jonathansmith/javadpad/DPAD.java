@@ -22,6 +22,7 @@ import java.util.List;
 import org.jboss.netty.logging.InternalLoggerFactory;
 import org.jboss.netty.logging.Slf4JLoggerFactory;
 
+import net.jonathansmith.javadpad.api.Platform;
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.gui.MainGUI;
@@ -35,9 +36,9 @@ import net.jonathansmith.javadpad.common.network.packet.auth.EncryptionKeyRespon
 import net.jonathansmith.javadpad.common.network.packet.auth.HandshakePacket;
 import net.jonathansmith.javadpad.common.network.packet.database.NewDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.database.UpdateDataPacket;
+import net.jonathansmith.javadpad.common.network.packet.plugins.RunLoaderPluginPacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginPacket;
 import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginRequestPacket;
-import net.jonathansmith.javadpad.common.network.packet.plugins.RunLoaderPluginPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.RequestSessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SessionDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
@@ -54,12 +55,6 @@ import com.beust.jcommander.Parameter;
  * @author Jon
  */
 public class DPAD extends Thread {
-    
-    public enum Platform {
-        CLIENT,
-        SERVER,
-        LOCAL;
-    }
     
     @Parameter(names = {"-platform"}, converter = PlatformConverter.class, description = "Runtime type")
     public Platform platform = null;

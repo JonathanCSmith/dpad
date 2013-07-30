@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.server.database.recordaccess.loaderdata;
 
-import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
+import net.jonathansmith.javadpad.api.database.records.LoaderDataset;
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericDAO;
 
 /**

@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.common.network.session;
 
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
 import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
 
 /**

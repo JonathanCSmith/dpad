@@ -16,14 +16,14 @@
  */
 package net.jonathansmith.javadpad.common.events.sessiondata;
 
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 
 /**
  *
  * @author Jon
  */
-public class DataArriveEvent extends DPADEvent {
+public class DataArriveEvent extends Event {
     
     public DataArriveEvent(SessionData tag) {
         super(tag);

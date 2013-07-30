@@ -21,8 +21,8 @@ import java.util.List;
 
 import javax.swing.AbstractListModel;
 
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.records.Experiment;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.database.records.Experiment;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**

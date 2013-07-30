@@ -23,14 +23,14 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
-import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.client.threads.data.overview.pane.DataPane;
 import net.jonathansmith.javadpad.client.threads.data.overview.toolbar.DataToolbar;
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.records.Experiment;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.database.records.Experiment;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
@@ -116,7 +116,7 @@ public class DataDisplayOption extends DisplayOption implements ActionListener, 
     }
 
     // Listen for session events etc, forward to plugin
-    public void changeEventReceived(DPADEvent evt) {
+    public void changeEventReceived(Event evt) {
         if (evt instanceof DataArriveEvent) {
             DataArriveEvent event = (DataArriveEvent) evt;
             SessionData arrivedType = (SessionData) event.getSource();

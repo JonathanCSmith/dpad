@@ -33,9 +33,9 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import net.jonathansmith.javadpad.client.Client;
-import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ContentChangedEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
@@ -123,7 +123,7 @@ public class ClientGUI extends TabbedGUI implements EventListener {
     }
     
     @Override
-    public void changeEventReceived(DPADEvent event) {
+    public void changeEventReceived(Event event) {
         if (event instanceof ThreadChangeEvent) {
             ClientRuntimeThread thread = (ClientRuntimeThread) event.getSource();
             if (this.currentRuntime != thread && thread.isDisplayable()) {
@@ -133,7 +133,7 @@ public class ClientGUI extends TabbedGUI implements EventListener {
         }
     }
 
-    public void fireChange(DPADEvent event) {
+    public void fireChange(Event event) {
         this.engine.getEventThread().post(event);
     }
 

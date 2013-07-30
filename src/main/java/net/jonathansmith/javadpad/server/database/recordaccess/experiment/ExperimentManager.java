@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.server.database.recordaccess.experiment;
 
-import net.jonathansmith.javadpad.common.database.records.Experiment;
+import net.jonathansmith.javadpad.api.database.records.Experiment;
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
 
 /**

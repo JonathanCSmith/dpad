@@ -19,7 +19,7 @@ package net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane;
 
 import javax.swing.JPanel;
 
-import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.api.database.Record;
 
 /**
  *

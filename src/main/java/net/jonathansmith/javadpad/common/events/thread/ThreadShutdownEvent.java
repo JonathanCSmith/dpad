@@ -16,16 +16,16 @@
  */
 package net.jonathansmith.javadpad.common.events.thread;
 
-import net.jonathansmith.javadpad.common.events.DPADEvent;
-import net.jonathansmith.javadpad.common.threads.RuntimeThread;
+import net.jonathansmith.javadpad.api.events.Event;
+import net.jonathansmith.javadpad.api.threads.IRuntime;
 
 /**
  *
  * @author Jon
  */
-public class ThreadShutdownEvent extends DPADEvent {
+public class ThreadShutdownEvent extends Event {
     
-    public ThreadShutdownEvent(RuntimeThread thread) {
+    public ThreadShutdownEvent(IRuntime thread) {
         super(thread);
     }
 }

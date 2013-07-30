@@ -21,7 +21,7 @@ import java.io.File;
 
 import java.net.URISyntaxException;
 
-import net.jonathansmith.javadpad.DPAD.Platform;
+import net.jonathansmith.javadpad.api.Platform;
 import net.jonathansmith.javadpad.common.Engine;
 
 /**

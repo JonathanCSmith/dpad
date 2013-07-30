@@ -16,16 +16,16 @@
  */
 package net.jonathansmith.javadpad.common.events.thread;
 
-import net.jonathansmith.javadpad.common.events.DPADEvent;
-import net.jonathansmith.javadpad.common.threads.RuntimeThread;
+import net.jonathansmith.javadpad.api.events.Event;
+import net.jonathansmith.javadpad.api.threads.IRuntime;
 
 /**
  *
  * @author Jon
  */
-public class ThreadChangeEvent extends DPADEvent {
+public class ThreadChangeEvent extends Event {
     
-    public ThreadChangeEvent(RuntimeThread newThread) {
+    public ThreadChangeEvent(IRuntime newThread) {
         super(newThread);
     }
 }

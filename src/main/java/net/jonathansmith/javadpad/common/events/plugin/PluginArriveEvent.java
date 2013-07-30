@@ -16,13 +16,13 @@
  */
 package net.jonathansmith.javadpad.common.events.plugin;
 
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.events.Event;
 
 /**
  *
  * @author Jon
  */
-public class PluginArriveEvent extends DPADEvent {
+public class PluginArriveEvent extends Event {
     
     public PluginArriveEvent() {
         super(null);

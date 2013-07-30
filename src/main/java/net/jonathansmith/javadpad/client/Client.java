@@ -34,13 +34,15 @@ import org.jboss.netty.channel.local.LocalAddress;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import net.jonathansmith.javadpad.DPAD;
-import net.jonathansmith.javadpad.DPAD.Platform;
+import net.jonathansmith.javadpad.api.Platform;
+import net.jonathansmith.javadpad.api.events.Event;
+import net.jonathansmith.javadpad.api.threads.IRuntime;
+import net.jonathansmith.javadpad.api.threads.IThread;
 import net.jonathansmith.javadpad.client.gui.ClientGUI;
 import net.jonathansmith.javadpad.client.network.listeners.ClientConnectListener;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.common.Engine;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.thread.ThreadChangeEvent;
 import net.jonathansmith.javadpad.common.events.thread.ThreadShutdownEvent;
@@ -50,8 +52,6 @@ import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.session.DisconnectPacket;
 import net.jonathansmith.javadpad.common.network.protocol.CommonPipelineFactory;
 import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
-import net.jonathansmith.javadpad.common.threads.RunnableThread;
-import net.jonathansmith.javadpad.common.threads.RuntimeThread;
 import net.jonathansmith.javadpad.common.util.filesystem.FileSystem;
 import net.jonathansmith.javadpad.common.util.logging.DPADLoggerFactory;
 import net.jonathansmith.javadpad.common.util.threads.NamedThreadFactory;
@@ -64,7 +64,7 @@ public class Client extends Engine implements EventListener {
     
     private ClientBootstrap bootstrap;
     private ClientSession session;
-    private RuntimeThread currentThread;
+    private IRuntime currentThread;
     private boolean disconnectExpected = false;
     
     public Client(DPAD main, String host, int port) {
@@ -85,11 +85,11 @@ public class Client extends Engine implements EventListener {
         this.session = sess;
     }
     
-    public RuntimeThread getRuntime() {
+    public IRuntime getRuntime() {
         return this.currentThread;
     }
 
-    private void setRuntime(RuntimeThread thread) {
+    private void setRuntime(IRuntime thread) {
         if (this.currentThread != null) {
             if (this.currentThread.isRunnable() && this.currentThread.getThread().isRunning()) {
                 return;
@@ -104,7 +104,7 @@ public class Client extends Engine implements EventListener {
         this.fireChange(evt);
     }
     
-    public void forceSetRuntime(RuntimeThread thread, boolean force) {
+    public void forceSetRuntime(IRuntime thread, boolean force) {
         if (this.currentThread != null) {
             if (this.currentThread.isRunnable() && this.currentThread.getThread().isRunning()) {
                 if (force) {
@@ -124,11 +124,11 @@ public class Client extends Engine implements EventListener {
         this.forceSetRuntime(ClientRuntimeThread.RUNTIME_SELECT, error);
     }
     
-    public void fireChange(DPADEvent evt) {
+    public void fireChange(Event evt) {
         this.getEventThread().post(evt);
     }
 
-    public void changeEventReceived(DPADEvent event) {
+    public void changeEventReceived(Event event) {
         if (event instanceof ThreadShutdownEvent && event.getSource() == this.currentThread) {
             this.setRuntime(ClientRuntimeThread.RUNTIME_SELECT);
         }
@@ -205,9 +205,9 @@ public class Client extends Engine implements EventListener {
                     this.setRuntime(ClientRuntimeThread.RUNTIME_SELECT);
                 }
                 
-                RuntimeThread currentRuntime = this.getRuntime();
+                IRuntime currentRuntime = this.getRuntime();
                 if (currentRuntime.isRunnable()) {
-                    RunnableThread thread = currentRuntime.getThread();
+                    IThread thread = currentRuntime.getThread();
                     thread.init(this.getEventThread());
                     thread.start();
                     thread.join();

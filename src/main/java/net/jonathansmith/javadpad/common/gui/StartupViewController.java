@@ -23,7 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import net.jonathansmith.javadpad.DPAD;
-import net.jonathansmith.javadpad.DPAD.Platform;
+import net.jonathansmith.javadpad.api.Platform;
 
 /**
  *

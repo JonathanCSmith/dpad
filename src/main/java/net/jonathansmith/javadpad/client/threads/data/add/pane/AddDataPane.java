@@ -31,9 +31,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.database.records.LoaderDataset;
-import net.jonathansmith.javadpad.common.database.records.LoaderPluginRecord;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.database.records.LoaderDataset;
+import net.jonathansmith.javadpad.api.database.records.LoaderPluginRecord;
 
 /**
  *

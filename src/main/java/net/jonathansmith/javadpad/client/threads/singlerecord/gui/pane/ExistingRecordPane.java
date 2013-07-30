@@ -22,7 +22,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JPanel;
 
-import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 /**

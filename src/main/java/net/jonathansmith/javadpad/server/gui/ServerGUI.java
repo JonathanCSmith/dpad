@@ -34,7 +34,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import net.jonathansmith.javadpad.common.events.EventListener;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.gui.TabbedGUI;
 import net.jonathansmith.javadpad.server.Server;
 
@@ -103,7 +103,7 @@ public class ServerGUI extends TabbedGUI {
         this.currentTextLength = (this.currentTextLength + 1) % 1024;
     }
     
-    public void fireChange(DPADEvent event) {
+    public void fireChange(Event event) {
         for (EventListener listener : this.listeners) {
             listener.changeEventReceived(event);
         }

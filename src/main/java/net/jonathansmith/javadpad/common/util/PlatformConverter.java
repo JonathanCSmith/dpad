@@ -16,8 +16,9 @@
  */
 package net.jonathansmith.javadpad.common.util;
 
+import net.jonathansmith.javadpad.api.Platform;
+
 import com.beust.jcommander.IStringConverter;
-import net.jonathansmith.javadpad.DPAD.Platform;
 
 /**
  *

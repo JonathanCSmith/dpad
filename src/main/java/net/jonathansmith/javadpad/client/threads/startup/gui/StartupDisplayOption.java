@@ -16,7 +16,7 @@
  */
 package net.jonathansmith.javadpad.client.threads.startup.gui;
 
-import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.startup.gui.pane.StartupPane;
 import net.jonathansmith.javadpad.client.threads.startup.gui.toolbar.StartupToolbar;
 

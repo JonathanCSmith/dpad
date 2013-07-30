@@ -17,7 +17,7 @@
 
 package net.jonathansmith.javadpad.client.threads;
 
-import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.RecordsDisplayOption;
 import net.jonathansmith.javadpad.client.threads.data.add.AddDataDisplayOption;
 import net.jonathansmith.javadpad.client.threads.data.overview.DataDisplayOption;
@@ -31,16 +31,16 @@ import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.UploadPluginDi
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.user.pane.CurrentUserPane;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.user.pane.ExistingUserPane;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.user.pane.NewUserPane;
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
-import net.jonathansmith.javadpad.common.threads.RunnableThread;
-import net.jonathansmith.javadpad.common.threads.RuntimeThread;
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
+import net.jonathansmith.javadpad.api.threads.IThread;
+import net.jonathansmith.javadpad.api.threads.IRuntime;
 
 /**
  * Runtime
  *
  * @author Jonathan Smith
  */
-public enum ClientRuntimeThread implements RuntimeThread {
+public enum ClientRuntimeThread implements IRuntime {
     STARTUP(new StartupDisplayOption(), null),
     RUNTIME_SELECT(new RuntimeSelectDisplayOption(), null),
     USER(new RecordsDisplayOption(DatabaseRecord.USER, new CurrentUserPane(), new NewUserPane(), new ExistingUserPane(), "User toolbar:"), null),
@@ -54,9 +54,9 @@ public enum ClientRuntimeThread implements RuntimeThread {
     DISPLAY_PLUGINS(new PluginDisplayOption(), null);
     
     private final DisplayOption display;
-    private final RunnableThread thread;
+    private final IThread thread;
     
-    private ClientRuntimeThread(DisplayOption display, RunnableThread thread) {
+    private ClientRuntimeThread(DisplayOption display, IThread thread) {
         this.display = display;
         this.thread = thread;
     }
@@ -77,7 +77,7 @@ public enum ClientRuntimeThread implements RuntimeThread {
     }
     
     @Override
-    public RunnableThread getThread() {
+    public IThread getThread() {
         return this.thread;
     }
 }

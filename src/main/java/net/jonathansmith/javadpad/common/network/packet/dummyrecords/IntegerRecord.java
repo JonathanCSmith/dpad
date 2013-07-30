@@ -16,8 +16,8 @@
  */
 package net.jonathansmith.javadpad.common.network.packet.dummyrecords;
 
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
-import net.jonathansmith.javadpad.common.database.Record;
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
+import net.jonathansmith.javadpad.api.database.Record;
 
 /**
  *

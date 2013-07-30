@@ -25,14 +25,14 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
-import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.CurrentRecordPane;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.ExistingRecordPane;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.pane.NewRecordPane;
 import net.jonathansmith.javadpad.client.threads.singlerecord.gui.toolbar.RecordToolbar;
-import net.jonathansmith.javadpad.common.database.DatabaseRecord;
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
@@ -163,7 +163,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     public void mouseExited(MouseEvent me) {}
     
     @Override
-    public void changeEventReceived(DPADEvent evt) {
+    public void changeEventReceived(Event evt) {
         if (evt instanceof ModalCloseEvent) {
             ModalCloseEvent event = (ModalCloseEvent) evt;
             if (event.getSource() == this.dialog && event.getWasForcedClosed()) {

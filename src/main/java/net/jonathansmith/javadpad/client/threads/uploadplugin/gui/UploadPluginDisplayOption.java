@@ -30,13 +30,13 @@ import javax.swing.filechooser.FileFilter;
 import net.jonathansmith.javadpad.client.Client;
 import net.jonathansmith.javadpad.client.gui.dialogs.PopupDialog;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
-import net.jonathansmith.javadpad.client.gui.displayoptions.DisplayOption;
+import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.pane.PluginDisplayPane;
 import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.toolbar.PluginSelectToolbar;
-import net.jonathansmith.javadpad.common.database.PluginRecord;
-import net.jonathansmith.javadpad.common.database.Record;
-import net.jonathansmith.javadpad.common.events.DPADEvent;
+import net.jonathansmith.javadpad.api.database.PluginRecord;
+import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
@@ -159,7 +159,7 @@ public class UploadPluginDisplayOption extends DisplayOption implements ActionLi
     }
 
     @Override
-    public void changeEventReceived(DPADEvent event) {
+    public void changeEventReceived(Event event) {
         if (event instanceof ModalCloseEvent) {
             ModalCloseEvent evt = (ModalCloseEvent) event;
             if (evt.getSource() == this.dialog && evt.getWasForcedClosed()) {
