@@ -38,8 +38,8 @@ public class PopupDialog extends JDialog {
      */
     public PopupDialog(java.awt.Frame parent, String text) {
         super(parent, true);
-        this.jLabel1.setText(text);
         initComponents();
+        this.jLabel1.setText(text);
     }
 
     /**

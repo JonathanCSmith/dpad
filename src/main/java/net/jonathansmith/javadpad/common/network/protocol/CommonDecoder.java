@@ -19,8 +19,10 @@ package net.jonathansmith.javadpad.common.network.protocol;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.LargePayloadPacket;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.util.logging.exceptions.DecoderException;
@@ -31,6 +33,7 @@ import net.jonathansmith.javadpad.common.util.logging.exceptions.DecoderExceptio
  */
 public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingState> {
     
+    private Engine engine;
     private int type;
     private PacketPriority priority;
     private int paramCount;
@@ -41,8 +44,9 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
     private byte[] largePayloadBuffer = new byte[8192];
     private Packet packet;
  
-    public CommonDecoder() {
+    public CommonDecoder(Engine engine) {
         super(DecodingState.TYPE);
+        this.engine = engine;
     }
  
     @Override
@@ -64,6 +68,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
             case TYPE:
                 this.type = buffer.readInt();
                 this.packet = Packet.getPacket(this.type).newInstance();
+                this.packet.engine = this.engine;
                 
                 return this.continueDecoding(DecodingState.PRIORITY);
                 
@@ -84,7 +89,7 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 }
  
             case PARAM_SIZE:
-                if (this.packet instanceof LargePayloadPacket && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead)) {
+                if (this.packet instanceof LargePayloadPacket && ((this.packet instanceof LockedPacket && this.frameRead != 0 && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead - 1)) || (!(this.packet instanceof LockedPacket) && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead)))) {
                     this.paramSize = buffer.readDouble();
                 }
                 
@@ -115,7 +120,22 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                     try {
                         byte[] currentPayload = new byte[(int) this.paramSize];
                         buffer.readBytes(currentPayload);
-                        this.packet.parsePayload(this.frameRead, currentPayload);
+                        
+                        if (this.packet instanceof LargePayloadPacket && ((this.packet instanceof LockedPacket && this.frameRead != 0 && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead - 1)) || (!(this.packet instanceof LockedPacket) && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead)))) {
+                            if (this.packet instanceof LockedPacket) {
+                                ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead - 1, currentPayload, 0);
+                            }
+                            
+                            else {
+                                ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead, currentPayload, 0);
+                            }
+                            
+                            ((LargePayloadPacket) this.packet).finishReading();
+                        }
+                        
+                        else {
+                            this.packet.parsePayload(this.frameRead, currentPayload);
+                        }
                     }
 
                     catch (Exception e) {
@@ -132,19 +152,24 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                     }
                 }
                 
-                else if (this.packet instanceof LargePayloadPacket) {
-                    this.largePayloadFrame = 1;
-                    buffer.readBytes(this.largePayloadBuffer);
-                    ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead, this.largePayloadBuffer, 0);
-                
-                    return this.continueDecoding(DecodingState.PARAM_VALUE_CONTINUED);
-                }
-                
                 else {
                     this.largePayloadStoredInformation = new byte[(int) this.paramSize];
                     this.largePayloadFrame = 1;
                     buffer.readBytes(this.largePayloadBuffer);
-                    System.arraycopy(this.largePayloadBuffer, 0, this.largePayloadStoredInformation, 0, 8192);
+                    
+                    if (this.packet instanceof LargePayloadPacket && ((this.packet instanceof LockedPacket && this.frameRead != 0 && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead - 1)) || (!(this.packet instanceof LockedPacket) && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead)))) {
+                        if (this.packet instanceof LockedPacket) {
+                            ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead - 1, this.largePayloadBuffer, 0);
+                        }
+
+                        else {
+                            ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead, this.largePayloadBuffer, 0);
+                        }
+                    }
+                    
+                    else {
+                        System.arraycopy(this.largePayloadBuffer, 0, this.largePayloadStoredInformation, 0, 8192);
+                    }
                     
                     return this.continueDecoding(DecodingState.PARAM_VALUE_CONTINUED);
                 }
@@ -153,8 +178,14 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                 if ((this.largePayloadFrame +  1) * 8192 < this.paramSize) {
                     buffer.readBytes(this.largePayloadBuffer);
                     
-                    if (this.packet instanceof LargePayloadPacket) {
-                        ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead, this.largePayloadBuffer, this.largePayloadFrame);
+                    if (this.packet instanceof LargePayloadPacket && ((this.packet instanceof LockedPacket && this.frameRead != 0 && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead - 1)) || (!(this.packet instanceof LockedPacket) && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead)))) {
+                        if (this.packet instanceof LockedPacket) {
+                            ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead - 1, this.largePayloadBuffer, this.largePayloadFrame - 1);
+                        }
+
+                        else {
+                            ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead, this.largePayloadBuffer, this.largePayloadFrame - 1);
+                        }
                     }
                     
                     else {
@@ -169,8 +200,15 @@ public class CommonDecoder extends StateDrivenDecoder<CommonDecoder.DecodingStat
                     byte[] finalChunk = new byte[(int) this.paramSize - (this.largePayloadFrame * 8192)];
                     buffer.readBytes(finalChunk);
                     
-                    if (this.packet instanceof LargePayloadPacket) {
-                        ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead, this.largePayloadBuffer, this.largePayloadFrame - 1);
+                    if (this.packet instanceof LargePayloadPacket && ((this.packet instanceof LockedPacket && this.frameRead != 0 && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead - 1)) || (!(this.packet instanceof LockedPacket) && ((LargePayloadPacket) this.packet).isPayloadLarge(this.frameRead)))) {
+                        if (this.packet instanceof LockedPacket) {
+                            ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead - 1, this.largePayloadBuffer, this.largePayloadFrame - 1);
+                        }
+
+                        else {
+                            ((LargePayloadPacket) this.packet).processLargePayloadFragment(this.frameRead, this.largePayloadBuffer, this.largePayloadFrame - 1);
+                        }
+                        
                         ((LargePayloadPacket) this.packet).finishReading();
                     }
                     

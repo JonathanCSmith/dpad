@@ -16,9 +16,6 @@
  */
 package net.jonathansmith.javadpad.common.plugins;
 
-import net.jonathansmith.javadpad.api.plugin.IPlugin;
-import net.jonathansmith.javadpad.api.plugin.ILoaderPlugin;
-import net.jonathansmith.javadpad.api.plugin.IAnalyserPlugin;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -34,9 +31,12 @@ import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
 
-import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.api.database.PluginRecord;
 import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.api.plugin.IAnalyserPlugin;
+import net.jonathansmith.javadpad.api.plugin.ILoaderPlugin;
+import net.jonathansmith.javadpad.api.plugin.IPlugin;
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 
 import org.apache.commons.io.FileUtils;
@@ -88,8 +88,8 @@ public class PluginManagerHandler extends Thread {
     
     @Override
     public void run() {
-        while (isAlive) {
-            if (!pendingUpdates || pluginCheckedOut) {
+        while (this.isAlive) {
+            if (!this.pendingUpdates || this.pluginCheckedOut) {
                 try {
                     Thread.sleep(100);
                     continue;
@@ -126,6 +126,10 @@ public class PluginManagerHandler extends Thread {
                 this.engine.warn("Could not update plugin: " + plugin.getName(), ex);
             }
         }
+    }
+    
+    public void markPendingUpdates() {
+        this.pendingUpdates = true;
     }
     
     public RecordsList<Record> getLoaderPluginRecordList() {
@@ -228,14 +232,14 @@ public class PluginManagerHandler extends Thread {
         Collection<ILoaderPlugin> loaders = this.utils.getPlugins(ILoaderPlugin.class);
         for (ILoaderPlugin plugin : loaders) {
             this.liveLoaders.put(plugin.getPluginRecord().getName(), plugin);
-            this.livePlugins.put(plugin, this.pluginDir + plugin.getPluginRecord().getName() + ".jar");
+            this.livePlugins.put(plugin, this.pluginDir + "\\" + plugin.getPluginRecord().getName() + ".jar");
         }
         
         // Analyser plugins
         Collection<IAnalyserPlugin> analysers = this.utils.getPlugins(IAnalyserPlugin.class);
         for (IAnalyserPlugin plugin : analysers) {
             this.liveAnalysers.put(plugin.getPluginRecord().getName(), plugin);
-            this.livePlugins.put(plugin, this.pluginDir + plugin.getPluginRecord().getName() + ".jar");
+            this.livePlugins.put(plugin, this.pluginDir + "\\" + plugin.getPluginRecord().getName() + ".jar");
         }
     }
     

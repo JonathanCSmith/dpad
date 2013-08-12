@@ -108,15 +108,23 @@ public class UploadPluginDisplayOption extends DisplayOption implements ActionLi
         int outcome = chooser.showOpenDialog(this.engine.getGUI());
         File filepath;
         if (outcome == JFileChooser.APPROVE_OPTION) {
-            filepath = chooser.getSelectedFile();
+            filepath = chooser.getSelectedFile().getAbsoluteFile();
 
             String name = filepath.getName().substring(0, filepath.getName().length() - 4);
             PluginManagerHandler manager = this.engine.getPluginManager();
             manager.addPluginFile(filepath);
-            PluginRecord newPlugin = manager.getPluginRecord(name);
-            if (newPlugin == null) {
-                this.engine.warn("There was an error injecting your plugin");
-                return;
+            
+            PluginRecord newPlugin = null;
+            while (newPlugin == null) {
+                try {
+                    Thread.sleep(100);
+                }
+                
+                catch (InterruptedException ex) {
+                    // TODO:
+                }
+                
+                newPlugin = manager.getPluginRecord(name);
             }
             
             this.pluginSelectPane.setChosenPlugin(newPlugin);
@@ -124,7 +132,6 @@ public class UploadPluginDisplayOption extends DisplayOption implements ActionLi
             this.session.lockAndSendPacket(PacketPriority.HIGH, p);
 
             this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -170,8 +177,14 @@ public class UploadPluginDisplayOption extends DisplayOption implements ActionLi
         else if (event instanceof DataArriveEvent) {
             DataArriveEvent evt = (DataArriveEvent) event;
             if (((SessionData) evt.getSource()).equals(SessionData.PLUGIN_STATUS)) {
-                RecordsList<Record> data = this.session.getSessionData(this.session.getSessionID(), SessionData.LOADER_PLUGIN, false);
+                RecordsList<Record> data = this.session.getSessionData(this.session.getSessionID(), SessionData.PLUGIN_STATUS, false);
                 if (data != null && data.getFirst() instanceof IntegerRecord) {
+                    if (this.dialog != null) {
+                        this.dialog.maskCloseEvent();
+                        this.dialog.dispose();
+                        this.dialog = null;
+                    }
+                    
                     IntegerRecord res = (IntegerRecord) data.getFirst();
                     final JDialog popupDialog;
                     if (res.getValue() == 1) {
@@ -200,14 +213,20 @@ public class UploadPluginDisplayOption extends DisplayOption implements ActionLi
                             popupDialog.setVisible(true);
                         }
                     });
+                    
+                    try {
+                        Thread.sleep(100);
+                    }
+                    
+                    catch (InterruptedException ex) {
+                        // TODO:
+                    }
+                    
+                    popupDialog.dispose();
 
                     this.setCurrentView(this.pluginSelectPane);
                     this.engine.getGUI().validateState();
                 }
-
-                this.dialog.maskCloseEvent();
-                this.dialog.dispose();
-                this.dialog = null;
             }
         }
     }

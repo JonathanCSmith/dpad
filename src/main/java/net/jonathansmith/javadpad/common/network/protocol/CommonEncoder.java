@@ -29,6 +29,7 @@ import org.jboss.netty.channel.MessageEvent;
 
 import net.jonathansmith.javadpad.common.network.message.PacketMessage;
 import net.jonathansmith.javadpad.common.network.packet.LargePayloadPacket;
+import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 
@@ -53,15 +54,48 @@ public class CommonEncoder implements ChannelDownstreamHandler {
             ChannelBuffer header = this.encodePacketHeader(priority, p);
             Channels.write(ctx, e.getFuture(), header, e.getRemoteAddress());
             
-            for (int i = 0; i < p.getNumberOfPayloads(); i++) {
-                if (p instanceof LargePayloadPacket && ((LargePayloadPacket) p).isPayloadLarge(i)) {
-                    this.writePayloadSlowly(ctx, e.getFuture(), e.getRemoteAddress(), (LargePayloadPacket) p, i);
+            // Horrible looking if else block used to reduce instanceof checks
+            if (p instanceof LargePayloadPacket) {
+                if (p instanceof LockedPacket) {
+                    // Special case of locked + large, because large is an interface, we cannot let it handle this itself
+                    for (int i = 0; i < p.getNumberOfPayloads(); i++) {
+                        if (i == 0) {
+                            this.writePayload(ctx, e.getFuture(), e.getRemoteAddress(), p, i);
+                        }
+                        
+                        else {
+                            if (((LargePayloadPacket) p).isPayloadLarge(i - 1)) {
+                                this.writePayloadSlowly(ctx, e.getFuture(), e.getRemoteAddress(), (LargePayloadPacket) p, i - 1);
+                            }
+                            
+                            else {
+                                this.writePayload(ctx, e.getFuture(), e.getRemoteAddress(), p, i);
+                            }
+                        }
+                    }
                 }
                 
                 else {
+                    // Just a large packet, normal handling here
+                    for (int i = 0; i < p.getNumberOfPayloads(); i++) {
+                        if (((LargePayloadPacket) p).isPayloadLarge(i)) {
+                            this.writePayloadSlowly(ctx, e.getFuture(), e.getRemoteAddress(), (LargePayloadPacket) p, i);
+                        }
+                        
+                        else {
+                            this.writePayload(ctx, e.getFuture(), e.getRemoteAddress(), p, i);
+                        }
+                    }
+                }
+            }
+            
+            else {
+                // Normal packet, this is the most common scenario
+                for (int i = 0; i < p.getNumberOfPayloads(); i++) {
                     this.writePayload(ctx, e.getFuture(), e.getRemoteAddress(), p, i);
                 }
             }
+            
         } else {
             ctx.sendDownstream(evt);
         }
@@ -95,11 +129,11 @@ public class CommonEncoder implements ChannelDownstreamHandler {
             int length = 0;
             
             while (length < payloadSize && length + 8192 <= payloadSize) {
-                    System.arraycopy(payload, length, temp, 0, 8192);
-                    buff.writeBytes(temp);
-                    Channels.write(ctx, f, buff, address);
-                    buff.clear();
-                    length += 8192;
+                System.arraycopy(payload, length, temp, 0, 8192);
+                buff.writeBytes(temp);
+                Channels.write(ctx, f, buff, address);
+                buff.clear();
+                length += 8192;
             }
             
             int finalChunkSize = payloadSize - length;
@@ -130,7 +164,7 @@ public class CommonEncoder implements ChannelDownstreamHandler {
             buff.clear();
         }
         
-        p.writeLargePayloadFragment(payloadNumber, finalChunk, wholeChunks + 1);
+        p.writeLargePayloadFragment(payloadNumber, finalChunk, wholeChunks);
         ChannelBuffer rem = ChannelBuffers.buffer((int) finalChunkSize);
         rem.writeBytes(finalChunk);
         Channels.write(ctx, f, rem, address);
