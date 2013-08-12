@@ -35,7 +35,7 @@ import net.jonathansmith.javadpad.client.gui.dialogs.PopupDialog;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
 import net.jonathansmith.javadpad.client.network.session.ClientSession;
 import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.pane.PluginDisplayPane;
-import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.toolbar.PluginSelectToolbar;
+import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.toolbar.PluginAddToolbar;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
@@ -56,7 +56,7 @@ import net.jonathansmith.javadpad.common.util.database.RecordsList;
 public class UploadPluginDisplayOption extends DisplayOption implements ActionListener, EventListener {
 
     public PluginDisplayPane pluginSelectPane;
-    public PluginSelectToolbar pluginSelectToolbar;
+    public PluginAddToolbar pluginSelectToolbar;
     
     private WaitForRecordsDialog dialog = null;
     private PluginRecord localVersion = null;
@@ -64,7 +64,7 @@ public class UploadPluginDisplayOption extends DisplayOption implements ActionLi
     public UploadPluginDisplayOption() {
         super();
         this.pluginSelectPane = new PluginDisplayPane();
-        this.pluginSelectToolbar = new PluginSelectToolbar();
+        this.pluginSelectToolbar = new PluginAddToolbar();
         this.currentPanel = this.pluginSelectPane;
         this.currentToolbar = this.pluginSelectToolbar;
         

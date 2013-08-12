@@ -186,7 +186,7 @@ public class UploadPluginPacket extends LockedPacket implements LargePayloadPack
     @Override
     public void handleClientSide() {
         this.engine.getPluginManager().markPendingUpdates();
-        this.engine.getEventThread().post(new PluginArriveEvent());
+        this.engine.getEventThread().post(new PluginArriveEvent(this.plugin));
     }
 
     @Override
