@@ -488,8 +488,9 @@ public final class ServerSession extends Session {
         Record data = dataList.getFirst();
         DatabaseRecord type = data.getType();
         if (type != null) {
+            GenericManager parentManager = RecordHelper.getRecordManager(data.getType());
+            data = parentManager.loadChildrenForUpdate(this.connection, data, record.getType());
             data.addToChildren(record);
-            GenericManager parentManager = RecordHelper.getRecordManager(record.getType());
             parentManager.save(this.connection, data);
         }
     }
@@ -533,6 +534,7 @@ public final class ServerSession extends Session {
                 }
                 
                 User user = (User) record;
+                user = UserManager.getInstance().loadExperiments(this.connection, user);
                 Set<Experiment> experiments = user.getExperiments();
 
                 if (!experiments.isEmpty()) {
@@ -545,9 +547,6 @@ public final class ServerSession extends Session {
                 }
                 
                 return new RecordsList<Record> ();
-                
-            case ALL_LOADER_PLUGINS:
-                return this.engine.getPluginManager().getLoaderPluginRecordList();
                 
             default:
                 return null;

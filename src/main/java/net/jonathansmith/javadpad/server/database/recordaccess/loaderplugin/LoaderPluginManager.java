@@ -20,6 +20,7 @@ import javax.persistence.NonUniqueResultException;
 
 import org.hibernate.HibernateException;
 
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
 import net.jonathansmith.javadpad.api.database.records.LoaderPluginRecord;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
@@ -63,5 +64,10 @@ public class LoaderPluginManager extends GenericManager<LoaderPluginRecord> {
     @Override
     public LoaderPluginDAO getDAO() {
         return (LoaderPluginDAO) this.dao;
+    }
+    
+    @Override
+    public LoaderPluginRecord loadChildrenForUpdate(DatabaseConnection connection, LoaderPluginRecord plugin, DatabaseRecord childType) {
+        return plugin;
     }
 }

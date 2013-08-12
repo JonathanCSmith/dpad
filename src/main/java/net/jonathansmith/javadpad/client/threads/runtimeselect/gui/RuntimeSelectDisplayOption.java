@@ -19,6 +19,7 @@ package net.jonathansmith.javadpad.client.threads.runtimeselect.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
 import net.jonathansmith.javadpad.api.database.Record;
 import net.jonathansmith.javadpad.api.database.records.Experiment;
 import net.jonathansmith.javadpad.api.database.records.User;
@@ -32,6 +33,7 @@ import net.jonathansmith.javadpad.common.network.packet.session.SetSessionFocusP
 import net.jonathansmith.javadpad.common.network.session.Session.NetworkThreadState;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
+import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
 
 /**
  *
@@ -58,6 +60,12 @@ public class RuntimeSelectDisplayOption extends DisplayOption implements ActionL
     
     @Override
     public void validateState() {
+        SessionData focus = this.session.getFocus();
+        if (focus != SessionData.getSessionDataFromDatabaseRecordAndQuery(DatabaseRecord.USER, QueryType.SINGLE)) {
+            LockedPacket p = new SetSessionFocusPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(DatabaseRecord.USER, QueryType.SINGLE));
+            this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
+        }
+        
         User user;
         RecordsList<Record> list = this.session.getSessionData(this.session.getSessionID(), SessionData.USER, false);
         if (list == null || list.isEmpty() || !(list.getFirst() instanceof User)) {

@@ -40,7 +40,6 @@ import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.database.NewDataPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.SetSessionDataPacket;
-import net.jonathansmith.javadpad.common.network.packet.session.SetSessionFocusPacket;
 import net.jonathansmith.javadpad.common.network.session.SessionData;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.database.recordaccess.QueryType;
@@ -97,23 +96,19 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     
     @Override
     public void validateState() {
-        SessionData focus = this.session.getFocus();
-        if (focus != SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE)) {
-            LockedPacket p = new SetSessionFocusPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE));
-            this.session.lockAndSendPacket(PacketPriority.MEDIUM, p);
-            
-            RecordsList<Record> rcds = this.session.getSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE), true);
-            if (rcds == null || rcds.isEmpty()) {
-                this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog.setVisible(true);
-                    }
-                });
-            }
-            
-            else {
+        RecordsList<Record> rcds = this.session.getSessionData(this.session.getSessionID(), SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.SINGLE), true);
+        if (rcds == null) {
+            this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    dialog.setVisible(true);
+                }
+            });
+        }
+
+        else {
+            if (!rcds.isEmpty()) {
                 this.currentRecordPane.setCurrentData(rcds.getFirst());
             }
         }
@@ -212,7 +207,7 @@ public class RecordsDisplayOption extends DisplayOption implements ActionListene
     private void loadRecordButton() {
         if (this.getCurrentView() != this.existingRecordPane) {
             SessionData dataType = SessionData.getSessionDataFromDatabaseRecordAndQuery(this.recordType, QueryType.ALL_AVAILABLE_TO_SESSION);
-            RecordsList<Record> data = this.session.getSessionData(this.session.getSessionID(), dataType, true);
+            RecordsList<Record> data = this.session.getSessionData(this.session.getSessionID(), dataType, false);
 
             if (data == null) {
                 this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
