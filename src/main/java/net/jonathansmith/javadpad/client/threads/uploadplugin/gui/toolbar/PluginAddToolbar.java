@@ -29,12 +29,12 @@ import javax.swing.SwingConstants;
  *
  * @author Jon
  */
-public class PluginSelectToolbar extends JPanel {
+public class PluginAddToolbar extends JPanel {
 
     /**
      * Creates new form ClientMainToolbar
      */
-    public PluginSelectToolbar() {
+    public PluginAddToolbar() {
         initComponents();
     }
 
@@ -71,11 +71,9 @@ public class PluginSelectToolbar extends JPanel {
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addComponent(addPlugin, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                .addGap(5, 5, 5))
-            .addGroup(GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(5, 5, 5)
-                .addComponent(back, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                    .addComponent(addPlugin, GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
+                    .addComponent(back, GroupLayout.Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(5, 5, 5))
         );
 

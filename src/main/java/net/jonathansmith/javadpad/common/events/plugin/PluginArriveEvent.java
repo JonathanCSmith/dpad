@@ -16,6 +16,7 @@
  */
 package net.jonathansmith.javadpad.common.events.plugin;
 
+import net.jonathansmith.javadpad.api.database.PluginRecord;
 import net.jonathansmith.javadpad.api.events.Event;
 
 /**
@@ -24,7 +25,7 @@ import net.jonathansmith.javadpad.api.events.Event;
  */
 public class PluginArriveEvent extends Event {
     
-    public PluginArriveEvent() {
-        super(null);
+    public PluginArriveEvent(PluginRecord plugin) {
+        super(plugin);
     }
 }

@@ -34,14 +34,13 @@ import net.jonathansmith.javadpad.api.events.Event;
 import net.jonathansmith.javadpad.client.gui.dialogs.WaitForRecordsDialog;
 import net.jonathansmith.javadpad.client.threads.ClientRuntimeThread;
 import net.jonathansmith.javadpad.client.threads.data.pluginselect.pane.PluginSelectPane;
-import net.jonathansmith.javadpad.client.threads.uploadplugin.gui.toolbar.PluginSelectToolbar;
+import net.jonathansmith.javadpad.client.threads.data.pluginselect.toolbar.PluginSelectToolbar;
 import net.jonathansmith.javadpad.common.events.EventListener;
 import net.jonathansmith.javadpad.common.events.gui.ModalCloseEvent;
 import net.jonathansmith.javadpad.common.events.plugin.PluginArriveEvent;
 import net.jonathansmith.javadpad.common.events.sessiondata.DataArriveEvent;
 import net.jonathansmith.javadpad.common.gui.DisplayOption;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
-import net.jonathansmith.javadpad.common.network.packet.Packet;
 import net.jonathansmith.javadpad.common.network.packet.PacketPriority;
 import net.jonathansmith.javadpad.common.network.packet.plugins.UploadPluginRequestPacket;
 import net.jonathansmith.javadpad.common.network.packet.session.RequestSessionDataPacket;
@@ -78,6 +77,8 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
     private void addListeners() {
         this.currentInformationPane.addDisplayOptionListener(this);
         this.currentInformationPane.addDisplayOptionMouseListener(this);
+        this.toolbar.getAvailable.addActionListener(this);
+        this.toolbar.back.addActionListener(this);
     }
     
     public void setPluginType(DatabaseRecord pluginType) {
@@ -109,7 +110,7 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
     
     @Override
     public void actionPerformed(ActionEvent evt) {
-        if (evt.getSource() == this.toolbar.addPlugin) {
+        if (evt.getSource() == this.toolbar.getAvailable) {
             this.displayAvailablePlugins();
         }
         
@@ -152,7 +153,7 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
         
         else if (evt instanceof DataArriveEvent) {
             DataArriveEvent event = (DataArriveEvent) evt;
-            SessionData arriveType = (SessionData) evt.getSource();
+            SessionData arriveType = (SessionData) event.getSource();
             
             if (arriveType == SessionData.ALL_LOADER_PLUGINS || arriveType == SessionData.ALL_ANALYSER_PLUGINS) {
                 this.insertAvailablePlugins();
@@ -169,8 +170,8 @@ public class PluginDisplayOption extends DisplayOption implements ActionListener
     }
     
     private void displayAvailablePlugins() {
-        Packet p = new RequestSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.pluginType, QueryType.ALL_AVAILABLE_TO_SESSION));
-        this.session.addPacketToSend(PacketPriority.HIGH, p);
+        LockedPacket p = new RequestSessionDataPacket(this.engine, this.session, SessionData.getSessionDataFromDatabaseRecordAndQuery(this.pluginType, QueryType.ALL_AVAILABLE_TO_SESSION));
+        this.session.lockAndSendPacket(PacketPriority.HIGH, p);
 
         this.dialog = new WaitForRecordsDialog(new JFrame(), this.engine, true);
         SwingUtilities.invokeLater(new Runnable() {

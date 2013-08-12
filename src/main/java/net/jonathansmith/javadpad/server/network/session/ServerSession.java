@@ -87,9 +87,6 @@ public final class ServerSession extends Session {
         this.start();
         this.setServerKey(this.getSessionID());
         this.connection = ((Server) this.engine).getSessionConnection();
-        
-        super.setData(this.getSessionID(), SessionData.ALL_LOADER_PLUGINS, this.engine.getPluginManager().getLoaderPluginRecordList());
-        super.setData(this.getSessionID(), SessionData.ALL_ANALYSER_PLUGINS, this.engine.getPluginManager().getAnalyserPluginRecordList());
     }
     
     @Override
@@ -295,7 +292,7 @@ public final class ServerSession extends Session {
         }
         
         else {
-            byte status = manager.compareVersions(local, plugin);
+            byte status = PluginManagerHandler.compareVersions(local, plugin);
             switch (status) {
                 case -1:
                     LockedPacket p = new UploadPluginRequestPacket(this.engine, this, (byte) -1, null, true);
@@ -354,7 +351,21 @@ public final class ServerSession extends Session {
      * @return list of records found, may be empty! 
      */
     public RecordsList<Record> getSessionData(String sourceKey, SessionData dataType, boolean shouldTellClient, boolean shouldCheckDatabase) {
-        if (!shouldCheckDatabase) {
+        if (dataType == SessionData.ALL_LOADER_PLUGINS) {
+            RecordsList<Record> list = this.engine.getPluginManager().getLoaderPluginRecordList();
+            LockedPacket p = new SessionDataPacket(this.engine, this, dataType, list);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            return list;
+        }
+        
+        else if (dataType == SessionData.ALL_ANALYSER_PLUGINS) {
+            RecordsList<Record> list = this.engine.getPluginManager().getAnalyserPluginRecordList();
+            LockedPacket p = new SessionDataPacket(this.engine, this, dataType, list);
+            this.lockAndSendPacket(PacketPriority.MEDIUM, p);
+            return list;
+        }
+        
+        else if (!shouldCheckDatabase) {
             return this.dbSoftlyGetSessionData(sourceKey, dataType, shouldTellClient);
         }
         

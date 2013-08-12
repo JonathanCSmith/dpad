@@ -1,6 +1,7 @@
 ********************************************************************************
 ** MAIN PROGRESS LIST (VOLATILE :D)
 ********************************************************************************
+Server data (i.e. not session)
 
 Session data functions
     - back in add plugin
