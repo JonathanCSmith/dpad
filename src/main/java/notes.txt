@@ -3,7 +3,10 @@
 ********************************************************************************
 
 Session data functions
+    - back in add plugin
     - clear data needs to be called on closing
+    - client not handling an upload request from the server
+    - no focus +/ data is being sent when add plugin to data is called, also the neccessity of the add plugin button is lost on me
 
 Test plugin (see constant notes 1)
 

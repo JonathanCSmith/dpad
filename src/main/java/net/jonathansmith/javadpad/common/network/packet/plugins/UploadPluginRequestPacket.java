@@ -18,10 +18,10 @@ package net.jonathansmith.javadpad.common.network.packet.plugins;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.jonathansmith.javadpad.client.network.session.ClientSession;
-import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.api.database.PluginRecord;
 import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.client.network.session.ClientSession;
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
 import net.jonathansmith.javadpad.common.network.packet.dummyrecords.IntegerRecord;
 import net.jonathansmith.javadpad.common.network.session.Session;
@@ -95,10 +95,10 @@ public class UploadPluginRequestPacket extends LockedPacket {
                 return 1;
                 
             case 1:
-                return this.data.length;
+                return 1;
                 
             case 2:
-                return 1;
+                return this.data.length;
                 
             default:
                 return 0;
@@ -112,9 +112,6 @@ public class UploadPluginRequestPacket extends LockedPacket {
                 return new byte[] {this.status};
                 
             case 1:
-                return this.data;
-                
-            case 2:
                 if (this.toServer) {
                     return new byte[] {1};
                 }
@@ -122,6 +119,9 @@ public class UploadPluginRequestPacket extends LockedPacket {
                 else {
                     return new byte[] {0};
                 }
+                
+            case 2:
+                return this.data;
                 
             default:
                 return null;
@@ -136,10 +136,6 @@ public class UploadPluginRequestPacket extends LockedPacket {
                 break;
                 
             case 1:
-                this.record = (PluginRecord) SerializationUtils.deserialize(bytes);
-                break;
-                
-            case 2:
                 if (bytes[0] == 1) {
                     this.toServer = true;
                 }
@@ -147,6 +143,10 @@ public class UploadPluginRequestPacket extends LockedPacket {
                 else {
                     this.toServer = false;
                 }
+                break;
+                
+            case 2:
+                this.record = (PluginRecord) SerializationUtils.deserialize(bytes);
                 break;
         }
     }

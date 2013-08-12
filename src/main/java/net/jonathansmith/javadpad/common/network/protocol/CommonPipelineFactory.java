@@ -36,7 +36,7 @@ public class CommonPipelineFactory implements ChannelPipelineFactory {
     @Override
     public ChannelPipeline getPipeline() throws Exception {
         CommonLogger logger = new CommonLogger(this.engine);
-        CommonDecoder decoder = new CommonDecoder();
+        CommonDecoder decoder = new CommonDecoder(this.engine);
         CommonEncoder encoder = new CommonEncoder();
         CommonHandler handler = new CommonHandler(this.engine);
         

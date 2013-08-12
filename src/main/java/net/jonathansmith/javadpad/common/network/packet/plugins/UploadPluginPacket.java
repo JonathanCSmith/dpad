@@ -23,8 +23,8 @@ import java.io.IOException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.api.database.PluginRecord;
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.events.plugin.PluginArriveEvent;
 import net.jonathansmith.javadpad.common.network.packet.LargePayloadPacket;
 import net.jonathansmith.javadpad.common.network.packet.LockedPacket;
@@ -185,14 +185,13 @@ public class UploadPluginPacket extends LockedPacket implements LargePayloadPack
     
     @Override
     public void handleClientSide() {
-        this.engine.getPluginManager().addPluginFile(new File(this.path));
-        
+        this.engine.getPluginManager().markPendingUpdates();
         this.engine.getEventThread().post(new PluginArriveEvent());
     }
 
     @Override
     public void handleServerSide() {
-        this.engine.getPluginManager().addPluginFile(new File(this.path));
+        this.engine.getPluginManager().markPendingUpdates();
     }
     
     @Override
