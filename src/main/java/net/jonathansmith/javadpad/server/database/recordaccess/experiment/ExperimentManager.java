@@ -16,7 +16,9 @@
  */
 package net.jonathansmith.javadpad.server.database.recordaccess.experiment;
 
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
 import net.jonathansmith.javadpad.api.database.records.Experiment;
+import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
 
 /**
@@ -42,5 +44,10 @@ public class ExperimentManager extends GenericManager<Experiment> {
     @Override
     public ExperimentDAO getDAO() {
         return (ExperimentDAO) this.dao;
+    }
+    
+    @Override
+    public Experiment loadChildrenForUpdate(DatabaseConnection connection, Experiment experiment, DatabaseRecord childType) {
+        return experiment;
     }
 }

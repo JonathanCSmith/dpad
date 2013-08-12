@@ -18,8 +18,9 @@ package net.jonathansmith.javadpad.server.database.recordaccess;
 
 import org.hibernate.HibernateException;
 
-import net.jonathansmith.javadpad.common.Engine;
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
 import net.jonathansmith.javadpad.api.database.Record;
+import net.jonathansmith.javadpad.common.Engine;
 import net.jonathansmith.javadpad.common.util.database.RecordsList;
 import net.jonathansmith.javadpad.server.Server;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
@@ -32,7 +33,7 @@ public abstract class GenericManager<T extends Record> {
     
     public final GenericDAO dao;
     protected final Engine engine;
-    private final Class<T> clazz;
+    public final Class<T> clazz;
     
     public GenericManager(GenericDAO dao, Class clazz) {
         this.engine = Server.getEngine();
@@ -116,4 +117,6 @@ public abstract class GenericManager<T extends Record> {
     }
     
     public abstract <L extends GenericDAO> L getDAO();
+    
+    public abstract T loadChildrenForUpdate(DatabaseConnection connection, T record, DatabaseRecord childType);
 }

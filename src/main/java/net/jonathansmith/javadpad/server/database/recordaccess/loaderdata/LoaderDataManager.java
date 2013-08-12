@@ -16,7 +16,9 @@
  */
 package net.jonathansmith.javadpad.server.database.recordaccess.loaderdata;
 
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
 import net.jonathansmith.javadpad.api.database.records.LoaderDataset;
+import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
 
 /**
@@ -42,5 +44,10 @@ public class LoaderDataManager extends GenericManager<LoaderDataset> {
     @Override
     public LoaderDataDAO getDAO() {
         return (LoaderDataDAO) this.dao;
+    }
+    
+    @Override
+    public LoaderDataset loadChildrenForUpdate(DatabaseConnection connection, LoaderDataset data, DatabaseRecord childType) {
+        return data;
     }
 }

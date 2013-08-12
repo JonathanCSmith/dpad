@@ -20,6 +20,7 @@ import javax.persistence.NonUniqueResultException;
 
 import org.hibernate.HibernateException;
 
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
 import net.jonathansmith.javadpad.api.database.records.Equipment;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
@@ -63,5 +64,10 @@ public class EquipmentManager extends GenericManager<Equipment> {
     @Override
     public EquipmentDAO getDAO() {
         return (EquipmentDAO) this.dao;
+    }
+    
+    @Override
+    public Equipment loadChildrenForUpdate(DatabaseConnection connection, Equipment equipment, DatabaseRecord childType) {
+        return equipment;
     }
 }

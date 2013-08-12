@@ -16,10 +16,15 @@
  */
 package net.jonathansmith.javadpad.server.database.recordaccess.user;
 
+
 import javax.persistence.NonUniqueResultException;
 
+import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
+import org.hibernate.criterion.Property;
 
+import net.jonathansmith.javadpad.api.database.DatabaseRecord;
 import net.jonathansmith.javadpad.api.database.records.User;
 import net.jonathansmith.javadpad.server.database.connection.DatabaseConnection;
 import net.jonathansmith.javadpad.server.database.recordaccess.GenericManager;
@@ -51,17 +56,54 @@ public class UserManager extends GenericManager<User> {
             user = this.getDAO().findByName(connection.getSession(), name);
             connection.commitTransaction();
             
-        } catch (NonUniqueResultException ex) {
+        } 
+        
+        catch (NonUniqueResultException ex) {
             this.engine.error("Query resulted in a non unique answer", ex);
-        } catch (HibernateException ex) {
+        } 
+        
+        catch (HibernateException ex) {
             this.engine.error("Database access error", ex);
         }
         
         return user;
     }
     
+    public User loadExperiments(DatabaseConnection connection, User user) {
+        User result = null;
+        try {
+            connection.beginTransaction();
+            final Criteria crits = connection.getSession().createCriteria(User.class);
+            crits.setFetchMode("Experiments", FetchMode.JOIN);
+            crits.add(Property.forName("UUID").eq(user.getUUID()));
+            result = (User) crits.uniqueResult();
+            connection.commitTransaction();
+        } 
+        
+        catch (NonUniqueResultException ex) {
+            this.engine.error("Query resulted in a non unique answer", ex);
+        } 
+        
+        catch (HibernateException ex) {
+            this.engine.error("Database access error", ex);
+        }
+        
+        return result;
+    }
+    
     @Override
     public UserDAO getDAO() {
         return (UserDAO) this.dao;
+    }
+    
+    @Override
+    public User loadChildrenForUpdate(DatabaseConnection connection, User user, DatabaseRecord childType) {
+        switch (childType) {
+            case EXPERIMENT:
+                return this.loadExperiments(connection, user);
+                
+            default:
+                return user;
+        }
     }
 }

@@ -29,7 +29,7 @@ import net.jonathansmith.javadpad.server.database.recordaccess.GenericDAO;
 public class UserDAO extends GenericDAO<User, String> {
     
     public User findByName(Session sess, String username) {
-        String sql = "SELECT p FROM User p WHERE p.Username :name";
+        String sql = "SELECT p FROM User p WHERE p.username = :name";
         Query query = sess.createQuery(sql).setParameter("name", username);
         User user = findOne(query);
         return user;
