@@ -9,7 +9,7 @@ import java.util.LinkedList;
 
 import javax.swing.*;
 
-import jonathansmith.jdpad.JDPAD;
+import jonathansmith.jdpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
@@ -21,14 +21,14 @@ public class GUIContainer extends JFrame implements WindowListener, ActionListen
     private static final int MINIMUM_WIDTH  = 500;
     private static final int MINIMUM_HEIGHT = 300;
 
-    private final JDPAD                      main;
+    private final DPAD                       main;
     private final LinkedList<ITabController> tabs;
 
     private JPanel      display;
     private JTabbedPane tabContainer;
     private JButton     shutdownAll;
 
-    public GUIContainer(JDPAD main) {
+    public GUIContainer(DPAD main) {
         this.main = main;
         this.tabs = new LinkedList<ITabController>();
         this.setContentPane(this.display);

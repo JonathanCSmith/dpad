@@ -13,16 +13,16 @@ import io.netty.channel.local.LocalAddress;
 import jonathansmith.jdpad.common.gui.ITabController;
 import jonathansmith.jdpad.common.platform.Platform;
 
-import jonathansmith.jdpad.JDPAD;
+import jonathansmith.jdpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
  * <p/>
- * Startup tab for J-DPAD
+ * Startup tab for DPAD
  */
 public class StartupTabController implements ITabController, ActionListener {
 
-    private static final String TITLE = "J-DPAD Startup";
+    private static final String TITLE = "DPAD Startup";
 
     private JPanel     display;
     private JTextField headerText;
@@ -60,8 +60,8 @@ public class StartupTabController implements ITabController, ActionListener {
 
         Object source = ae.getSource();
         if (source == this.localButton) {
-            JDPAD.getInstance().setPlatformSelection(Platform.LOCAL);
-            JDPAD.getInstance().setPlatformAddress(new LocalAddress("6568"));
+            DPAD.getInstance().setPlatformSelection(Platform.LOCAL);
+            DPAD.getInstance().setPlatformAddress(new LocalAddress("6568"));
             return;
         }
 
@@ -71,7 +71,7 @@ public class StartupTabController implements ITabController, ActionListener {
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
 
-            JDPAD.getInstance().setPlatformSelection(Platform.SERVER);
+            DPAD.getInstance().setPlatformSelection(Platform.SERVER);
         }
 
         else if (source == this.clientButton) {
@@ -80,7 +80,7 @@ public class StartupTabController implements ITabController, ActionListener {
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
 
-            JDPAD.getInstance().setPlatformSelection(Platform.CLIENT);
+            DPAD.getInstance().setPlatformSelection(Platform.CLIENT);
         }
 
         else {
@@ -88,16 +88,16 @@ public class StartupTabController implements ITabController, ActionListener {
         }
 
         if (this.port == -1) {
-            JDPAD.getInstance().handleError("Invalid port for platform. JDPAD failed to initialise.", null, true);
+            DPAD.getInstance().handleError("Invalid port for platform. DPAD failed to initialise.", null, true);
             return;
         }
 
         try {
-            JDPAD.getInstance().setPlatformAddress(new InetSocketAddress(InetAddress.getByName(this.ipAddress), this.port));
+            DPAD.getInstance().setPlatformAddress(new InetSocketAddress(InetAddress.getByName(this.ipAddress), this.port));
         }
 
         catch (UnknownHostException ex) {
-            JDPAD.getInstance().handleError("Invalid IP Address. JDPAD failed to initialise", ex, true);
+            DPAD.getInstance().handleError("Invalid IP Address. DPAD failed to initialise", ex, true);
         }
     }
 

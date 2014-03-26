@@ -13,7 +13,7 @@ import jonathansmith.jdpad.common.network.packet.Packet;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
-import jonathansmith.jdpad.JDPAD;
+import jonathansmith.jdpad.DPAD;
 import org.dom4j.IllegalAddException;
 
 /**
@@ -40,7 +40,7 @@ public enum ConnectionState {
     protected void addClientPacket(Class<? extends Packet> clazz) throws IllegalAddException {
         if (this.addPacket(clazz, this.whitelistedClientPackets)) {
             String error = "Failure to register client packet: " + clazz.getCanonicalName();
-            JDPAD.getInstance().handleError(error, null, true);
+            DPAD.getInstance().handleError(error, null, true);
             throw new IllegalAddException(error);
         }
     }
@@ -48,7 +48,7 @@ public enum ConnectionState {
     protected void addServerPacket(Class<? extends Packet> clazz) throws IllegalAddException {
         if (!this.addPacket(clazz, this.whitelistedServerPackets)) {
             String error = "Failure to register client packet: " + clazz.getCanonicalName();
-            JDPAD.getInstance().handleError(error, null, true);
+            DPAD.getInstance().handleError(error, null, true);
             throw new IllegalAddException(error);
         }
     }
@@ -120,7 +120,7 @@ public enum ConnectionState {
 
                 if (packetMap.containsKey(clazz) && packetMap.get(clazz) != state) {
                     String error = "Packet " + clazz.getCanonicalName() + " is already assigned to " + packetMap.get(clazz) + " - which cannot be reassigned to: " + state;
-                    JDPAD.getInstance().handleError(error, null, true);
+                    DPAD.getInstance().handleError(error, null, true);
                     throw new IllegalAddException(error);
                 }
             }

@@ -26,21 +26,23 @@ import jonathansmith.jdpad.server.ServerEngine;
 /**
  * Created by Jon on 23/03/14.
  * <p/>
- * Main entry point for J-DPAD
+ * Main entry point for DPAD (Data Processing Analysis and Display)
  */
-public class JDPAD extends Thread {
+public class DPAD extends Thread {
 
-    private static JDPAD instance;
+    private static String  version             = "1.0.0.1";
     private static boolean runtimeShutdownFlag = false;
     private static boolean errorFlag           = false;
 
+    private static DPAD instance;
+
     /**
-     * Main entry point for the J-DPAD program.
+     * Main entry point for the DPAD program.
      *
      * @param args
      */
     public static void main(String[] args) {
-        JDPAD main = JDPAD.getInstance();
+        DPAD main = DPAD.getInstance();
 
         // Inputs handling - JCommander is used to parse the input arguments.
         JCommander inputHandler = new JCommander(main);
@@ -194,9 +196,9 @@ public class JDPAD extends Thread {
         }
     }
 
-    public static JDPAD getInstance() {
+    public static DPAD getInstance() {
         if (instance == null) {
-            instance = new JDPAD();
+            instance = new DPAD();
         }
 
         return instance;
@@ -222,7 +224,7 @@ public class JDPAD extends Thread {
     private GUIContainer  gui;
     private SocketAddress platformAddress;
 
-    public JDPAD() {
+    public DPAD() {
     }
 
     public void init(GUIContainer gui) {
@@ -251,11 +253,12 @@ public class JDPAD extends Thread {
 
     @Override
     public void run() {
-        // When building a local JDPAD instance, we need to wait for the server to setup first
+        // When building a local DPAD instance, we need to wait for the server to setup first
         if (this.getPlatformSelection() == Platform.LOCAL) {
             ServerEngine server = null;
             for (Engine engine : this.engines) {
                 if (engine instanceof ServerEngine) {
+                    engine.injectVersion(version);
                     engine.start();
                     server = (ServerEngine) engine;
                 }
@@ -280,6 +283,7 @@ public class JDPAD extends Thread {
                 if (server.isSetup()) {
                     for (Engine engine : this.engines) {
                         if (engine instanceof ClientEngine) {
+                            engine.injectVersion(version);
                             engine.start();
                         }
                     }
@@ -289,6 +293,7 @@ public class JDPAD extends Thread {
 
         else {
             for (Engine engine : this.engines) {
+                engine.injectVersion(version);
                 engine.start();
             }
         }

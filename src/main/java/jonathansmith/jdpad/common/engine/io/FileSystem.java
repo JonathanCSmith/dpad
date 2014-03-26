@@ -9,7 +9,7 @@ import jonathansmith.jdpad.common.platform.Platform;
 /**
  * Created by Jon on 23/03/14.
  * <p/>
- * Backbone filesystem for J-DPAD
+ * Backbone filesystem for DPAD
  */
 public class FileSystem {
 
@@ -46,9 +46,9 @@ public class FileSystem {
             throw new NullPointerException("Root directory does not exist");
         }
 
-        File file = new File(this.rootDirectory, "JDPAD");
+        File file = new File(this.rootDirectory, "DPAD");
         if (!file.exists() && !file.mkdir()) {
-            throw new URISyntaxException("Could not build JDPAD directory", file.getAbsolutePath());
+            throw new URISyntaxException("Could not build DPAD directory", file.getAbsolutePath());
         }
 
         File main = new File(file, this.engine.getPlatform().toString().toLowerCase());

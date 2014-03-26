@@ -4,7 +4,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
-import jonathansmith.jdpad.JDPAD;
+import jonathansmith.jdpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
@@ -104,18 +104,18 @@ public class PlatformConnectionDialog extends JDialog implements MouseListener {
 
     private void validatePlatformProperties(String properties) {
         if (properties.contentEquals("Enter the required text here...") || properties.contentEquals("")) {
-            JDPAD.getInstance().handleError("IP Address || Port format exception", null, true);
+            DPAD.getInstance().handleError("IP Address || Port format exception", null, true);
             return;
         }
 
         String[] props = properties.split(":");
         if (!this.isHost && props.length != 2) {
-            JDPAD.getInstance().handleError("IP Address || Port format exception", null, true);
+            DPAD.getInstance().handleError("IP Address || Port format exception", null, true);
             return;
         }
 
         else if (props.length <= 0 || props.length > 2) {
-            JDPAD.getInstance().handleError("IP Address || Port format exception", null, true);
+            DPAD.getInstance().handleError("IP Address || Port format exception", null, true);
             return;
         }
 
@@ -133,7 +133,7 @@ public class PlatformConnectionDialog extends JDialog implements MouseListener {
         }
 
         catch (NumberFormatException ex) {
-            JDPAD.getInstance().handleError("Number format exception in port address", ex, true);
+            DPAD.getInstance().handleError("Number format exception in port address", ex, true);
         }
     }
 }

@@ -18,7 +18,7 @@ import jonathansmith.jdpad.server.engine.event.ServerDisplayChangeEvent;
  */
 public class ServerTabController extends EngineTabController {
 
-    private static final String                       TITLE  = "J-DPAD Server";
+    private static final String                       TITLE  = "DPAD Server";
     private static final List<Class<? extends Event>> EVENTS = new ArrayList<Class<? extends Event>>(
             Arrays.asList(
                     ServerDisplayChangeEvent.class

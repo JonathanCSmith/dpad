@@ -10,7 +10,7 @@ import jonathansmith.jdpad.common.engine.Engine;
 /**
  * Created by Jon on 26/03/14.
  * <p/>
- * Generic parent class for tabs that can be displayed within the J-DPAD GUI Container
+ * Generic parent class for tabs that can be displayed within the DPAD GUI Container
  */
 public abstract class EngineTabController implements ITabController, ILogDisplay, IEventListener {
 

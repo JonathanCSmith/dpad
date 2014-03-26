@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 
 import jonathansmith.jdpad.common.engine.Engine;
 
-import jonathansmith.jdpad.JDPAD;
+import jonathansmith.jdpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
@@ -48,7 +48,7 @@ public class LoggerFactory {
         SwingAppender appender = new SwingAppender(pattern, engine.getDisplayTab());
 
         LevelRangeFilter levelFilter = new LevelRangeFilter();
-        if (JDPAD.getInstance().isVerboseLogging()) {
+        if (DPAD.getInstance().isVerboseLogging()) {
             levelFilter.setLevelMin(levels.getVerboseConsoleMin());
             levelFilter.setLevelMax(levels.getVerboseConsoleMax());
         }
@@ -67,7 +67,7 @@ public class LoggerFactory {
 
             LevelRangeFilter fileLevelFilter = new LevelRangeFilter();
 
-            if (JDPAD.getInstance().isVerboseLogging()) {
+            if (DPAD.getInstance().isVerboseLogging()) {
                 fileLevelFilter.setLevelMin(levels.getVerboseFileMin());
                 fileLevelFilter.setLevelMax(levels.getVerboseFileMax());
             }
@@ -87,7 +87,7 @@ public class LoggerFactory {
             logger.error("Could not create file appender for file logging!");
         }
 
-        if (JDPAD.getInstance().isVerboseLogging()) {
+        if (DPAD.getInstance().isVerboseLogging()) {
             ConsoleAppender consoleAppender = new ConsoleAppender(pattern);
             consoleAppender.addFilter(levelFilter);
             logger.addAppender(consoleAppender);
