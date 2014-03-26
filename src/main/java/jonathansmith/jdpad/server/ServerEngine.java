@@ -14,7 +14,7 @@ import jonathansmith.jdpad.common.platform.Platform;
 import jonathansmith.jdpad.server.engine.executor.ServerStartup;
 import jonathansmith.jdpad.server.gui.ServerTabController;
 
-import jonathansmith.jdpad.JDPAD;
+import jonathansmith.jdpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
@@ -31,7 +31,7 @@ public class ServerEngine extends Engine {
         super(address, new ServerTabController());
 
         this.tabDisplay.setEngine(this);
-        JDPAD.getInstance().getGUI().addTab(this.tabDisplay);
+        DPAD.getInstance().getGUI().addTab(this.tabDisplay);
 
         this.setFileSystem(new FileSystem(this));
         this.setLogger(LoggerFactory.getInstance().getLogger(this, new LoggingLevel(Level.DEBUG, Level.WARN, Level.DEBUG, Level.INFO)));

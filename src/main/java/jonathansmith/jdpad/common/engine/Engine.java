@@ -17,12 +17,12 @@ import jonathansmith.jdpad.common.platform.Platform;
 
 import jonathansmith.jdpad.server.engine.executor.ServerIdle;
 
-import jonathansmith.jdpad.JDPAD;
+import jonathansmith.jdpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
  * <p/>
- * Parent class for all runnable engines in the JDPAD framework
+ * Parent class for all runnable engines in the DPAD framework
  */
 public abstract class Engine extends Thread implements IEngine {
 
@@ -40,6 +40,7 @@ public abstract class Engine extends Thread implements IEngine {
     private boolean networkManagerSetup = false;
 
     private NetworkManager networkManager;
+    private String         version;
 
     public Engine(SocketAddress address, EngineTabController tabController) {
         this.address = address;
@@ -84,7 +85,7 @@ public abstract class Engine extends Thread implements IEngine {
     public void saveAndShutdown() {
         if (this.tabDisplay != null) {
             this.tabDisplay.shutdown(false);
-            JDPAD.getInstance().getGUI().removeTab(this.tabDisplay);
+            DPAD.getInstance().getGUI().removeTab(this.tabDisplay);
             this.tabDisplay = null;
         }
 
@@ -104,7 +105,7 @@ public abstract class Engine extends Thread implements IEngine {
     public void forceShutdown() {
         if (this.tabDisplay != null) {
             this.tabDisplay.shutdown(true);
-            JDPAD.getInstance().getGUI().removeTab(this.tabDisplay);
+            DPAD.getInstance().getGUI().removeTab(this.tabDisplay);
             this.tabDisplay = null;
         }
 
@@ -119,6 +120,22 @@ public abstract class Engine extends Thread implements IEngine {
         if (this.getEventThread() != null) {
             this.getEventThread().shutdown(true);
         }
+    }
+
+    public String getAddress() {
+        return this.address.toString().split(":")[0];
+    }
+
+    public String getPort() {
+        return this.address.toString().split(":")[1];
+    }
+
+    public String getVersion() {
+        return this.version;
+    }
+
+    public void injectVersion(String version) {
+        this.version = version;
     }
 
     public ILogDisplay getDisplayTab() {
@@ -270,15 +287,5 @@ public abstract class Engine extends Thread implements IEngine {
         if (shutdownThreadFlag) {
             this.hasErrored = true;
         }
-    }
-
-    public abstract String getVersion();
-
-    public String getAddress() {
-        return this.address.toString().split(":")[0];
-    }
-
-    public String getPort() {
-        return this.address.toString().split(":")[1];
     }
 }

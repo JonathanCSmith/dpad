@@ -12,7 +12,7 @@ import jonathansmith.jdpad.common.platform.Platform;
 import jonathansmith.jdpad.client.ClientEngine;
 import jonathansmith.jdpad.client.network.ClientNetworkManager;
 
-import jonathansmith.jdpad.JDPAD;
+import jonathansmith.jdpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
@@ -37,7 +37,7 @@ public class ClientStartup extends Executor {
         LoggerFactory.getInstance().getLogger(this.engine, "io.netty", new LoggingLevel(Level.DEBUG, Level.WARN, Level.DEBUG, Level.INFO));
 
         // Client Network Manager
-        ClientNetworkManager cNM = new ClientNetworkManager(this.engine, this.address, JDPAD.getInstance().getPlatformSelection() == Platform.LOCAL);
+        ClientNetworkManager cNM = new ClientNetworkManager(this.engine, this.address, DPAD.getInstance().getPlatformSelection() == Platform.LOCAL);
 
         try {
             cNM.buildBootstap();

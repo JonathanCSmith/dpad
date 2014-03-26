@@ -16,7 +16,7 @@ import jonathansmith.jdpad.client.engine.event.ClientDisplayChangeEvent;
  */
 public class ClientTabController extends EngineTabController {
 
-    private static final String                       TITLE  = "J-DPAD Client";
+    private static final String                       TITLE  = "DPAD Client";
     private static final List<Class<? extends Event>> EVENTS = new ArrayList<Class<? extends Event>>(
             Arrays.asList(
                     ClientDisplayChangeEvent.class

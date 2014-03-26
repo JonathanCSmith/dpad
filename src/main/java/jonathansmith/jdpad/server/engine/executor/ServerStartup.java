@@ -23,7 +23,7 @@ import jonathansmith.jdpad.common.platform.Platform;
 import jonathansmith.jdpad.server.ServerEngine;
 import jonathansmith.jdpad.server.network.ServerNetworkManager;
 
-import jonathansmith.jdpad.JDPAD;
+import jonathansmith.jdpad.DPAD;
 
 /**
  * Created by Jon on 26/03/14.
@@ -82,7 +82,7 @@ public class ServerStartup extends Executor {
 
         // Server Network Manager
         this.engine.info("Beginning network initialisation", null);
-        ServerNetworkManager sNM = new ServerNetworkManager(this.engine, this.address, JDPAD.getInstance().getPlatformSelection() == Platform.LOCAL);
+        ServerNetworkManager sNM = new ServerNetworkManager(this.engine, this.address, DPAD.getInstance().getPlatformSelection() == Platform.LOCAL);
 
         try {
             sNM.buildBootstap();
@@ -113,7 +113,7 @@ public class ServerStartup extends Executor {
         Configuration cfg = new Configuration();
         cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         cfg.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
-        cfg.setProperty("hibernate.connection.url", "jdbc:h2:file:" + this.engine.getFileSystem().getDatabaseDirectory() + "/JDPADDatabase");
+        cfg.setProperty("hibernate.connection.url", "jdbc:h2:file:" + this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase");
 
         // Use custom connection manager for better IO to the database
         cfg.setProperty("connection.provider.provider_class", "com.jolbox.bonecp.provider.BoneCPConnectionProvider");
@@ -126,7 +126,7 @@ public class ServerStartup extends Executor {
         cfg.setProperty("hibernate.connection.password", "");
         cfg.setProperty("hibernate.current_session_context_class", "thread");
 
-        File file = new File(this.engine.getFileSystem().getDatabaseDirectory() + "/JDPADDatabase.h2.db");
+        File file = new File(this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase.h2.db");
         if (!file.exists()) {
             cfg.setProperty("hibernate.hbm2ddl.auto", "create");
 

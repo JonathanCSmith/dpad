@@ -34,7 +34,7 @@
           <editable value="false"/>
           <maximumSize width="2147483647" height="30"/>
           <minimumSize width="14" height="30"/>
-          <text value="Connect to a J-DPAD Server:"/>
+          <text value="Connect to a DPAD Server:"/>
         </properties>
       </component>
       <component id="686f" class="javax.swing.JTextField" binding="connectInfo">
@@ -47,7 +47,7 @@
           <editable value="false"/>
           <maximumSize width="2147483647" height="30"/>
           <minimumSize width="14" height="30"/>
-          <text value="Host a J-DPAD Server:"/>
+          <text value="Host a DPAD Server:"/>
         </properties>
       </component>
       <component id="a110c" class="javax.swing.JTextField" binding="localInfo">
@@ -60,7 +60,7 @@
           <editable value="false"/>
           <maximumSize width="2147483647" height="30"/>
           <minimumSize width="100" height="30"/>
-          <text value="Create a local instance of J-DPAD:"/>
+          <text value="Create a local instance of DPAD:"/>
         </properties>
       </component>
       <component id="bac7a" class="javax.swing.JButton" binding="localButton">
