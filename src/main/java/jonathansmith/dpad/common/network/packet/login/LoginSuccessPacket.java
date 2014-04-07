@@ -2,30 +2,27 @@ package jonathansmith.dpad.common.network.packet.login;
 
 import java.io.IOException;
 
+import jonathansmith.dpad.client.network.protocol.ClientLoginProtocol;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
-import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
 
 /**
- * Created by Jon on 26/03/14.
+ * Created by Jon on 08/04/14.
  * <p/>
- * Initial login data
+ * Passes the server side session information back to the client to confirm a successful login
+ * TODO: Implement
  */
-public class LoginStartPacket extends Packet {
+public class LoginSuccessPacket extends Packet {
 
     private String uuid;
 
-    public LoginStartPacket() {
+    public LoginSuccessPacket() {
     }
 
-    public LoginStartPacket(NetworkSession session) {
-        this.uuid = session.getEngineAssignedUUID();
-    }
-
-    public String getUUIDPayload() {
-        return this.uuid;
+    public LoginSuccessPacket(NetworkSession networkSession) {
+        this.uuid = networkSession.getEngineAssignedUUID();
     }
 
     @Override
@@ -40,11 +37,11 @@ public class LoginStartPacket extends Packet {
 
     @Override
     public void processPacket(NetworkProtocol networkProtocol) {
-        ((ServerLoginNetworkProtocol) networkProtocol).handleLoginStart(this);
+        ((ClientLoginProtocol) networkProtocol).handleLoginSuccess(this);
     }
 
     @Override
     public String payloadToString() {
-        return "Login start packet with a foreign assigned id of: " + this.uuid;
+        return "Login success packet with uuid of: " + this.uuid;
     }
 }

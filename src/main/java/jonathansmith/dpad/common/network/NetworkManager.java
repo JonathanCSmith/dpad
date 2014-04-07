@@ -1,6 +1,7 @@
 package jonathansmith.dpad.common.network;
 
 import java.net.SocketAddress;
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -14,7 +15,9 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.common.network.packet.login.DisconnectDuringLoginPacket;
+import jonathansmith.dpad.server.engine.util.config.AddressList;
 
 /**
  * Created by Jon on 23/03/14.
@@ -27,9 +30,14 @@ public abstract class NetworkManager extends Thread {
 
     protected final IEngine engine;
 
+    private final AddressList blacklistedConnections = new AddressList();
+    private final AddressList whitelistedConnections = new AddressList();
+
     private final SocketAddress     address;
     private final NioEventLoopGroup eventLoopGroup;
     private final boolean           isLocalConnection;
+    private final KeyPair           serverKeyPair;
+    private final boolean           isServerWhitelisted;
 
     private boolean isAlive     = false;
     private boolean hasErrored  = false;
@@ -42,6 +50,8 @@ public abstract class NetworkManager extends Thread {
         this.address = address;
         this.eventLoopGroup = new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat(eventThreadNameFormat).setDaemon(true).build());
         this.isLocalConnection = isLocal;
+        this.serverKeyPair = CryptographyManager.createNewKeyPair();
+        this.isServerWhitelisted = false; // TODO:
     }
 
     public SocketAddress getSocketAddress() {
@@ -54,6 +64,10 @@ public abstract class NetworkManager extends Thread {
 
     public boolean isLocalConnection() {
         return this.isLocalConnection;
+    }
+
+    public KeyPair getKeyPair() {
+        return this.serverKeyPair;
     }
 
     public void addSession(NetworkSession session) {
@@ -168,5 +182,19 @@ public abstract class NetworkManager extends Thread {
         }
 
         this.hasShutdown = true;
+    }
+
+    public String allowUserToConnect(NetworkSession networkSession) {
+        if (this.blacklistedConnections.isPresent(networkSession.getAddress(), networkSession.getPort())) {
+            return "Banned from the server!";
+        }
+
+        else if (this.isServerWhitelisted && !this.whitelistedConnections.isPresent(networkSession.getAddress(), networkSession.getPort())) {
+            return "Not whitelisted for this server!";
+        }
+
+        else {
+            return null;
+        }
     }
 }

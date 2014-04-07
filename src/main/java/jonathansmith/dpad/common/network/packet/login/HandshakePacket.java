@@ -6,7 +6,7 @@ import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
-import jonathansmith.dpad.server.network.protocol.ServerHandshakeProtocol;
+import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
 
 /**
  * Created by Jon on 26/03/14.
@@ -61,7 +61,7 @@ public class HandshakePacket extends Packet {
 
     @Override
     public void processPacket(NetworkProtocol networkProtocol) {
-        ((ServerHandshakeProtocol) networkProtocol).handleHandshake(this);
+        ((ServerLoginNetworkProtocol) networkProtocol).handleHandshake(this);
     }
 
     @Override

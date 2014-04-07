@@ -1,5 +1,7 @@
 package jonathansmith.dpad.api.common.engine;
 
+import jonathansmith.dpad.common.network.NetworkManager;
+
 /**
  * Created by Jon on 23/03/14.
  * <p/>
@@ -20,4 +22,6 @@ public interface IEngine {
     void error(String message, Throwable e);
 
     void handleError(String message, Throwable e, boolean shutdownThreadFlag);
+
+    NetworkManager getNetworkManager();
 }

@@ -156,7 +156,8 @@ public abstract class Engine extends Thread implements IEngine {
         this.fileSystem = fileSystem;
     }
 
-    protected NetworkManager getNetworkManager() {
+    @Override
+    public synchronized NetworkManager getNetworkManager() {
         return this.networkManager;
     }
 

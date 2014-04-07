@@ -23,7 +23,7 @@ public abstract class NetworkProtocol {
 
     public abstract void onConnectionStateTransition(ConnectionState connectionState, ConnectionState connectionState1);
 
-    public abstract void pulseRepeatPackets();
+    public abstract void pulseScheduledProtocolTasks();
 
     public abstract void onDisconnect(String exitMessage);
 
