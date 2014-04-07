@@ -104,6 +104,10 @@ public class PacketBuffer {
         }
     }
 
+    private short readShort() {
+        return this.buffer.readShort();
+    }
+
     public int readUnsignedShort() {
         return this.buffer.readUnsignedShort();
     }
@@ -116,11 +120,38 @@ public class PacketBuffer {
         return this.buffer.readableBytes();
     }
 
+    private ByteBuf readBytes(byte[] bytes) {
+        return this.buffer.readBytes(bytes);
+    }
+
     public void ensureWriteable(int i) {
         this.buffer.ensureWritable(i);
     }
 
     public void writeBytes(ByteBuf source, int readerIndex, int length) {
         this.buffer.writeBytes(source, readerIndex, length);
+    }
+
+    private void writeBytes(byte[] encoded) {
+        this.buffer.writeBytes(encoded);
+    }
+
+    public byte[] readBlob() throws IOException {
+        short length = this.readShort();
+
+        if (length < 0) {
+            throw new IOException("Key was smaller than zero.... should not happend!");
+        }
+
+        else {
+            byte[] bytes = new byte[length];
+            this.readBytes(bytes);
+            return bytes;
+        }
+    }
+
+    public void writeBlob(byte[] encoded) {
+        this.writeShort(encoded.length);
+        this.writeBytes(encoded);
     }
 }

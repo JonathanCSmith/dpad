@@ -13,9 +13,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import jonathansmith.dpad.DPAD;
 import jonathansmith.dpad.common.network.packet.Packet;
-import jonathansmith.dpad.common.network.packet.login.DisconnectDuringLoginPacket;
-import jonathansmith.dpad.common.network.packet.login.HandshakePacket;
-import jonathansmith.dpad.common.network.packet.login.LoginStartPacket;
+import jonathansmith.dpad.common.network.packet.login.*;
 import org.dom4j.IllegalAddException;
 
 /**
@@ -26,7 +24,7 @@ import org.dom4j.IllegalAddException;
 public enum ConnectionState {
 
     LOGIN(0),
-    PLAY(1);
+    RUNTIME(1);
 
     private final int                                     stateFlag;
     private final BiMap<Integer, Class<? extends Packet>> whitelistedClientPackets;
@@ -136,6 +134,9 @@ public enum ConnectionState {
     private static void registerLoginPackets() throws IllegalAddException {
         ConnectionState.LOGIN.addClientPacket(HandshakePacket.class);
         ConnectionState.LOGIN.addClientPacket(LoginStartPacket.class);
+        ConnectionState.LOGIN.addServerPacket(EncryptionRequestPacket.class);
+        ConnectionState.LOGIN.addClientPacket(EncryptionResponsePacket.class);
+        ConnectionState.LOGIN.addServerPacket(LoginSuccessPacket.class);
         ConnectionState.LOGIN.addServerPacket(DisconnectDuringLoginPacket.class);
     }
 

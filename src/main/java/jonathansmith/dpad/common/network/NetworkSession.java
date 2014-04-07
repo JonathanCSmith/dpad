@@ -4,6 +4,8 @@ import java.net.SocketAddress;
 import java.util.Queue;
 import java.util.UUID;
 
+import javax.crypto.SecretKey;
+
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Queues;
 
@@ -15,9 +17,13 @@ import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.common.crypto.CryptographyManager;
+import jonathansmith.dpad.common.network.channel.EncryptionDecoder;
+import jonathansmith.dpad.common.network.channel.EncryptionEncoder;
 import jonathansmith.dpad.common.network.listener.PacketListenersTuple;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+import jonathansmith.dpad.server.network.protocol.ServerRuntimeNetworkProtocol;
 
 /**
  * Created by Jon on 23/03/14.
@@ -193,10 +199,26 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
                 packet.processPacket(this.networkProtocol);
             }
 
-            this.networkProtocol.pulseRepeatPackets();
+            this.networkProtocol.pulseScheduledProtocolTasks();
         }
 
         this.channel.flush();
+    }
+
+    public void enableEncryption(SecretKey secretKey) {
+        this.channel.pipeline().addBefore("split_handler", "decryption_handler", new EncryptionDecoder(CryptographyManager.getCipher(2, secretKey)));
+        this.channel.pipeline().addBefore("prepend_handler", "encryption_handler", new EncryptionEncoder(CryptographyManager.getCipher(1, secretKey)));
+    }
+
+    public void finaliseConnection() {
+        // TODO: Sync the client and server information.
+        this.setNetworkProtocol(new ServerRuntimeNetworkProtocol(this.engine, this));
+        // TODO: Send a ready status to the client (i.e. they have logged in)
+    }
+
+    public String buildSessionInformation() {
+        // TODO:
+        return null;
     }
 
     public String getExitMessage() {
