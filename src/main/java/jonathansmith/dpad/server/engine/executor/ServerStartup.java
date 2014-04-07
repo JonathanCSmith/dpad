@@ -12,6 +12,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
+import jonathansmith.dpad.DPAD;
 import jonathansmith.dpad.common.database.DatabaseManager;
 import jonathansmith.dpad.common.database.record.Record;
 import jonathansmith.dpad.common.engine.Engine;
@@ -19,11 +20,8 @@ import jonathansmith.dpad.common.engine.executor.Executor;
 import jonathansmith.dpad.common.engine.util.log.LoggerFactory;
 import jonathansmith.dpad.common.engine.util.log.LoggingLevel;
 import jonathansmith.dpad.common.platform.Platform;
-
 import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.network.ServerNetworkManager;
-
-import jonathansmith.dpad.DPAD;
 
 /**
  * Created by Jon on 26/03/14.

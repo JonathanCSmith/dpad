@@ -5,11 +5,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-import jonathansmith.dpad.common.engine.Engine;
+import jonathansmith.dpad.client.network.ClientNetworkSession;
 import jonathansmith.dpad.common.network.NetworkManager;
 import jonathansmith.dpad.common.network.channel.*;
-
-import jonathansmith.dpad.client.network.ClientNetworkSession;
 
 /**
  * Created by Jon on 26/03/14.

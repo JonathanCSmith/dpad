@@ -9,13 +9,13 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
 
-import jonathansmith.dpad.common.network.packet.HandshakePacket;
-import jonathansmith.dpad.common.network.packet.LoginStartPacket;
-import jonathansmith.dpad.common.network.packet.Packet;
-
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import jonathansmith.dpad.DPAD;
+import jonathansmith.dpad.common.network.packet.Packet;
+import jonathansmith.dpad.common.network.packet.login.DisconnectDuringLoginPacket;
+import jonathansmith.dpad.common.network.packet.login.HandshakePacket;
+import jonathansmith.dpad.common.network.packet.login.LoginStartPacket;
 import org.dom4j.IllegalAddException;
 
 /**
@@ -135,9 +135,8 @@ public enum ConnectionState {
 
     private static void registerLoginPackets() throws IllegalAddException {
         ConnectionState.LOGIN.addClientPacket(HandshakePacket.class);
-        ConnectionState.LOGIN.addServerPacket(HandshakePacket.class);
         ConnectionState.LOGIN.addClientPacket(LoginStartPacket.class);
-        ConnectionState.LOGIN.addServerPacket(LoginStartPacket.class);
+        ConnectionState.LOGIN.addServerPacket(DisconnectDuringLoginPacket.class);
     }
 
     private static void registerPlayPackets() throws IllegalAddException {

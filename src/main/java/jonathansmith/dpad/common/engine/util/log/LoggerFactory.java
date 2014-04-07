@@ -9,9 +9,8 @@ import org.apache.log4j.varia.LevelRangeFilter;
 
 import org.slf4j.Logger;
 
-import jonathansmith.dpad.common.engine.Engine;
-
 import jonathansmith.dpad.DPAD;
+import jonathansmith.dpad.common.engine.Engine;
 
 /**
  * Created by Jon on 23/03/14.

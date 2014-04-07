@@ -2,6 +2,7 @@ package jonathansmith.dpad.common.network;
 
 import java.net.SocketAddress;
 import java.util.Queue;
+import java.util.UUID;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.Queues;
@@ -14,7 +15,6 @@ import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-
 import jonathansmith.dpad.common.network.listener.PacketListenersTuple;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
@@ -35,6 +35,7 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
 
     protected final IEngine engine;
 
+    private final UUID    localUUID;
     private final boolean isClientSide;
 
     private NetworkProtocol networkProtocol;
@@ -42,14 +43,36 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     private SocketAddress   address;
     private ConnectionState connectionState;
     private String          terminationReason;
+    private UUID            foreignUUID;
 
     public NetworkSession(IEngine engine, boolean isClientSide) {
         this.engine = engine;
+        this.localUUID = UUID.randomUUID();
         this.isClientSide = isClientSide;
     }
 
-    public SocketAddress getAddress() {
+    public SocketAddress getSocketAddress() {
         return this.address;
+    }
+
+    public String getAddress() {
+        return this.address.toString().split(":")[0];
+    }
+
+    public String getPort() {
+        return this.address.toString().split(":")[1];
+    }
+
+    public String getEngineAssignedUUID() {
+        return this.localUUID.toString();
+    }
+
+    public void assignForeignUUID(String foreignUUID) {
+        this.foreignUUID = UUID.fromString(foreignUUID);
+    }
+
+    public String getForeignUUID() {
+        return this.foreignUUID.toString();
     }
 
     public NetworkProtocol getNetworkProtocol() {

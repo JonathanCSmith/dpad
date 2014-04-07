@@ -1,10 +1,11 @@
-package jonathansmith.dpad.common.network.packet;
+package jonathansmith.dpad.common.network.packet.login;
 
 import java.io.IOException;
 
 import jonathansmith.dpad.common.network.ConnectionState;
+import jonathansmith.dpad.common.network.packet.Packet;
+import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
-
 import jonathansmith.dpad.server.network.protocol.ServerHandshakeProtocol;
 
 /**
@@ -60,7 +61,7 @@ public class HandshakePacket extends Packet {
 
     @Override
     public void processPacket(NetworkProtocol networkProtocol) {
-        ((ServerHandshakeProtocol) networkProtocol).onHandshake(this);
+        ((ServerHandshakeProtocol) networkProtocol).handleHandshake(this);
     }
 
     @Override

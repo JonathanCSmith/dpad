@@ -5,15 +5,12 @@ import static jonathansmith.dpad.common.network.ConnectionState.LOGIN;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
-import jonathansmith.dpad.common.network.packet.DisconnectPacket;
-import jonathansmith.dpad.common.network.packet.HandshakePacket;
+import jonathansmith.dpad.common.network.packet.login.DisconnectDuringLoginPacket;
+import jonathansmith.dpad.common.network.packet.login.HandshakePacket;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
-
 import jonathansmith.dpad.server.engine.util.version.Version;
-
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -34,7 +31,7 @@ public class ServerHandshakeProtocol extends NetworkProtocol {
         this.isLocalConnection = isLocal;
     }
 
-    public void onHandshake(HandshakePacket packet) {
+    public void handleHandshake(HandshakePacket packet) {
         if (this.isLocalConnection) {
             this.networkSession.setConnectionState(packet.getConnectionState());
             this.versionMatch = true;
@@ -58,12 +55,12 @@ public class ServerHandshakeProtocol extends NetworkProtocol {
         Validate.validState(connectionState1 == LOGIN, "Unexpected protocol: " + connectionState1);
 
         if (this.isLocalConnection || this.versionMatch) {
-            this.networkSession.setNetworkProtocol(new ServerLoginProtocol(this.engine, this.networkSession));
+            this.networkSession.setNetworkProtocol(new ServerLoginNetworkProtocol(this.engine, this.networkSession));
         }
 
         else {
-            String reason = "Network protocol version missmatch.";
-            this.networkSession.scheduleOutboundPacket(new DisconnectPacket(reason), new GenericFutureListener[0]);
+            String reason = "Network protocol version mismatch.";
+            this.networkSession.scheduleOutboundPacket(new DisconnectDuringLoginPacket(reason), new GenericFutureListener[0]);
             this.networkSession.closeChannel(reason);
         }
     }

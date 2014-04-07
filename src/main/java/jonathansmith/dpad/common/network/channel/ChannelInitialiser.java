@@ -3,7 +3,6 @@ package jonathansmith.dpad.common.network.channel;
 import io.netty.channel.ChannelInitializer;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkManager;
 import jonathansmith.dpad.common.network.NetworkSession;
 

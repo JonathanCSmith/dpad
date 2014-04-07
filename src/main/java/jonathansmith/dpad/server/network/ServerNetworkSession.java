@@ -1,9 +1,7 @@
 package jonathansmith.dpad.server.network;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkSession;
-
 import jonathansmith.dpad.server.network.protocol.ServerHandshakeProtocol;
 
 /**

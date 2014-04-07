@@ -7,3 +7,4 @@ Events
 Plugin manager
 
 LOGIN FRAMEWORK:
+	Implemenent login states and their transitions

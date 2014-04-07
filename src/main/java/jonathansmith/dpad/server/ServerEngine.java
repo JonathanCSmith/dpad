@@ -4,17 +4,15 @@ import java.net.SocketAddress;
 
 import org.apache.log4j.Level;
 
+import jonathansmith.dpad.DPAD;
 import jonathansmith.dpad.common.database.DatabaseManager;
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.engine.io.FileSystem;
 import jonathansmith.dpad.common.engine.util.log.LoggerFactory;
 import jonathansmith.dpad.common.engine.util.log.LoggingLevel;
 import jonathansmith.dpad.common.platform.Platform;
-
 import jonathansmith.dpad.server.engine.executor.ServerStartup;
 import jonathansmith.dpad.server.gui.ServerTabController;
-
-import jonathansmith.dpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
