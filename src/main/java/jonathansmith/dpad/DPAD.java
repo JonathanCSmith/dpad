@@ -13,15 +13,13 @@ import com.beust.jcommander.Parameter;
 
 import io.netty.channel.local.LocalAddress;
 
+import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.gui.GUIContainer;
 import jonathansmith.dpad.common.gui.startup.StartupTabController;
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.platform.Platform;
 import jonathansmith.dpad.common.platform.PlatformConverter;
-
-import jonathansmith.dpad.client.ClientEngine;
-
 import jonathansmith.dpad.server.ServerEngine;
 
 /**

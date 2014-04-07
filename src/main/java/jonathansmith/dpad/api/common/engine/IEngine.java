@@ -9,10 +9,6 @@ public interface IEngine {
 
     String getVersion();
 
-    String getAddress();
-
-    String getPort();
-
     void trace(String message, Throwable e);
 
     void debug(String message, Throwable e);

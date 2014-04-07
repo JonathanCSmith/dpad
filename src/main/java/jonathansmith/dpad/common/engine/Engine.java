@@ -4,10 +4,10 @@ import java.net.SocketAddress;
 
 import org.slf4j.Logger;
 
+import jonathansmith.dpad.DPAD;
 import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.event.IEventThread;
 import jonathansmith.dpad.api.common.engine.util.log.ILogDisplay;
-
 import jonathansmith.dpad.common.engine.event.EventThread;
 import jonathansmith.dpad.common.engine.executor.Executor;
 import jonathansmith.dpad.common.engine.executor.IdleExecutor;
@@ -15,8 +15,6 @@ import jonathansmith.dpad.common.engine.io.FileSystem;
 import jonathansmith.dpad.common.gui.EngineTabController;
 import jonathansmith.dpad.common.network.NetworkManager;
 import jonathansmith.dpad.common.platform.Platform;
-
-import jonathansmith.dpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
@@ -118,14 +116,6 @@ public abstract class Engine extends Thread implements IEngine {
         if (this.getEventThread() != null) {
             this.getEventThread().shutdown(true);
         }
-    }
-
-    public String getAddress() {
-        return this.address.toString().split(":")[0];
-    }
-
-    public String getPort() {
-        return this.address.toString().split(":")[1];
     }
 
     public String getVersion() {

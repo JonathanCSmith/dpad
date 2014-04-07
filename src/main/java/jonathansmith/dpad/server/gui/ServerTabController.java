@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import jonathansmith.dpad.client.engine.event.ClientDisplayChangeEvent;
 import jonathansmith.dpad.common.engine.event.Event;
 import jonathansmith.dpad.common.gui.EngineTabController;
-
-import jonathansmith.dpad.client.engine.event.ClientDisplayChangeEvent;
-
 import jonathansmith.dpad.server.engine.event.ServerDisplayChangeEvent;
 
 /**

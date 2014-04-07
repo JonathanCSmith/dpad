@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import jonathansmith.dpad.api.common.engine.event.IEventListener;
 import jonathansmith.dpad.api.common.engine.util.log.ILogDisplay;
-
 import jonathansmith.dpad.common.engine.Engine;
 
 /**

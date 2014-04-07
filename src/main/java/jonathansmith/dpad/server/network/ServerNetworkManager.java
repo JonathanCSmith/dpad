@@ -8,7 +8,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkManager;
-
 import jonathansmith.dpad.server.network.channel.ServerChannelInitialiser;
 
 /**

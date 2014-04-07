@@ -14,8 +14,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-
-import jonathansmith.dpad.common.network.packet.DisconnectPacket;
+import jonathansmith.dpad.common.network.packet.login.DisconnectDuringLoginPacket;
 
 /**
  * Created by Jon on 23/03/14.
@@ -140,10 +139,10 @@ public abstract class NetworkManager extends Thread {
                             }
 
                             else {
-                                this.engine.warn("Failed to process inbound packet from: " + session.getAddress(), ex);
+                                this.engine.warn("Failed to process inbound packet from: " + session.getSocketAddress(), ex);
                             }
 
-                            session.scheduleOutboundPacket(new DisconnectPacket("Internal server error"), new GenericFutureListener[]{new GenericFutureListener() {
+                            session.scheduleOutboundPacket(new DisconnectDuringLoginPacket("Internal server error"), new GenericFutureListener[]{new GenericFutureListener() {
                                 @Override
                                 public void operationComplete(Future f) {
                                     session.closeChannel("Internal Server Error");
@@ -159,7 +158,7 @@ public abstract class NetworkManager extends Thread {
 
         for (final NetworkSession session : this.sessions) {
             if (session.isLocalChannel() && session.isChannelOpen()) {
-                session.scheduleOutboundPacket(new DisconnectPacket("Server shutdown"), new GenericFutureListener[]{new GenericFutureListener() {
+                session.scheduleOutboundPacket(new DisconnectDuringLoginPacket("Server shutdown"), new GenericFutureListener[]{new GenericFutureListener() {
                     @Override
                     public void operationComplete(Future future) throws Exception {
                         session.shutdown(NetworkManager.this.hasErrored);
