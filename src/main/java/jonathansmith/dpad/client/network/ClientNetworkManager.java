@@ -6,9 +6,10 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.local.LocalChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-import jonathansmith.dpad.client.network.channel.ClientChannelInitialiser;
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkManager;
+
+import jonathansmith.dpad.client.network.channel.ClientChannelInitialiser;
 
 /**
  * Created by Jon on 23/03/14.

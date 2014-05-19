@@ -3,11 +3,12 @@ package jonathansmith.dpad.common.network.packet.login;
 import java.io.IOException;
 import java.security.PublicKey;
 
-import jonathansmith.dpad.client.network.protocol.ClientLoginProtocol;
 import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+
+import jonathansmith.dpad.client.network.protocol.ClientLoginProtocol;
 
 /**
  * Created by Jon on 08/04/14.
@@ -18,10 +19,6 @@ public class EncryptionRequestPacket extends Packet {
 
     private PublicKey key;
     private byte[]    randomSignature;
-
-    public EncryptionRequestPacket() {
-
-    }
 
     public EncryptionRequestPacket(PublicKey aPublic, byte[] loginKey) {
         this.key = aPublic;

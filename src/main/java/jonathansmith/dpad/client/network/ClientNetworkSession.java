@@ -3,9 +3,11 @@ package jonathansmith.dpad.client.network;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-import jonathansmith.dpad.client.network.protocol.ClientLoginProtocol;
+
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.login.LoginStartPacket;
+
+import jonathansmith.dpad.client.network.protocol.ClientLoginProtocol;
 
 /**
  * Created by Jon on 23/03/14.

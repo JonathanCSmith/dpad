@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
+
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
@@ -38,7 +39,7 @@ public class MessageEncoder extends MessageToByteEncoder {
 
         else {
             PacketBuffer packetBuffer = new PacketBuffer(byteBuf);
-            packetBuffer.writeVarIntToBuffer(packetId.intValue());
+            packetBuffer.writeVarIntToBuffer(packetId);
             packet.writePacketData(packetBuffer);
         }
     }

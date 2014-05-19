@@ -17,12 +17,14 @@ import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
+
 import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.common.network.channel.EncryptionDecoder;
 import jonathansmith.dpad.common.network.channel.EncryptionEncoder;
 import jonathansmith.dpad.common.network.listener.PacketListenersTuple;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+
 import jonathansmith.dpad.server.network.protocol.ServerRuntimeNetworkProtocol;
 
 /**

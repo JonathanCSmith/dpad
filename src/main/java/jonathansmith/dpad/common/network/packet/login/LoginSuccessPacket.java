@@ -2,11 +2,12 @@ package jonathansmith.dpad.common.network.packet.login;
 
 import java.io.IOException;
 
-import jonathansmith.dpad.client.network.protocol.ClientLoginProtocol;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+
+import jonathansmith.dpad.client.network.protocol.ClientLoginProtocol;
 
 /**
  * Created by Jon on 08/04/14.
@@ -16,9 +17,6 @@ import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
 public class LoginSuccessPacket extends Packet {
 
     private String uuid;
-
-    public LoginSuccessPacket() {
-    }
 
     public LoginSuccessPacket(NetworkSession networkSession) {
         this.uuid = networkSession.getEngineAssignedUUID();

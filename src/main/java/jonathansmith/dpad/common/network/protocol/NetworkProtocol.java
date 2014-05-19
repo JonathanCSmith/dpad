@@ -1,6 +1,7 @@
 package jonathansmith.dpad.common.network.protocol;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
+
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
 
@@ -28,7 +29,7 @@ public abstract class NetworkProtocol {
     /**
      * Responsible for handling an actual disconnect and any response that may occur. This should ONLY be called by the network manager.
      *
-     * @param exitMessage
+     * @param exitMessage message to display as the cause of disconnect
      */
     public abstract void onDisconnect(String exitMessage);
 }

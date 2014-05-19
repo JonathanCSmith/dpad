@@ -13,6 +13,9 @@ import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
  */
 public abstract class Packet {
 
+    public Packet() {
+    }
+
     public static Packet getEmptyPacket(BiMap<Integer, Class<? extends Packet>> integerClassBiMap, int packetId) throws Exception {
         Class clazz = integerClassBiMap.get(packetId);
         return clazz == null ? null : (Packet) clazz.newInstance();

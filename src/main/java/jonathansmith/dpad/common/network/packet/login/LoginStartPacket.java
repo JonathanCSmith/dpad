@@ -6,6 +6,7 @@ import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+
 import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
 
 /**
@@ -19,9 +20,6 @@ public class LoginStartPacket extends Packet {
     private String uuid;
     private String address;
     private int    port;
-
-    public LoginStartPacket() {
-    }
 
     public LoginStartPacket(String version, NetworkSession session) {
         this.version = version;

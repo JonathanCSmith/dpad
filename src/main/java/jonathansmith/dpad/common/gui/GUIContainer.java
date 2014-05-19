@@ -9,11 +9,14 @@ import java.util.LinkedList;
 
 import javax.swing.*;
 
-import jonathansmith.dpad.DPAD;
 import jonathansmith.dpad.api.common.gui.IGUIController;
 import jonathansmith.dpad.api.common.gui.ITabController;
+
 import jonathansmith.dpad.client.gui.ClientTabController;
+
 import jonathansmith.dpad.server.gui.ServerTabController;
+
+import jonathansmith.dpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.

@@ -10,6 +10,7 @@ import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+
 import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
 
 /**
@@ -21,9 +22,6 @@ public class EncryptionResponsePacket extends Packet {
 
     private byte[] encodedSecretKey;
     private byte[] encodedRandomSignature;
-
-    public EncryptionResponsePacket() {
-    }
 
     public EncryptionResponsePacket(SecretKey secretKey, PublicKey key, byte[] randomSignature) {
         this.encodedSecretKey = CryptographyManager.encryptData(key, secretKey.getEncoded());
