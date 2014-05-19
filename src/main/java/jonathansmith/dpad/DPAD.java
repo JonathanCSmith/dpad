@@ -13,7 +13,9 @@ import com.beust.jcommander.Parameter;
 
 import io.netty.channel.local.LocalAddress;
 
+import jonathansmith.dpad.api.APIAccess;
 import jonathansmith.dpad.client.ClientEngine;
+import jonathansmith.dpad.common.api.API;
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.gui.GUIContainer;
 import jonathansmith.dpad.common.gui.startup.StartupTabController;
@@ -130,7 +132,7 @@ public class DPAD extends Thread {
             }
 
             else {
-                gui.removeTab(tab);
+                gui.removeCoreTab(tab);
             }
         }
 
@@ -258,6 +260,11 @@ public class DPAD extends Thread {
 
     @Override
     public void run() {
+        API api = new API();
+        APIAccess.setAPI(api);
+        api.setGUI(this.gui);
+        // TODO: Add in api stuff
+
         // When building a local DPAD instance, we need to wait for the server to setup first
         if (this.getPlatformSelection() == Platform.LOCAL) {
             ServerEngine server = null;
@@ -274,6 +281,7 @@ public class DPAD extends Thread {
             }
 
             else {
+                api.setServerEngine(server);
                 while (!server.isSetup()) {
                     try {
                         Thread.sleep(100);
@@ -290,6 +298,7 @@ public class DPAD extends Thread {
                         if (engine instanceof ClientEngine) {
                             engine.injectVersion(version);
                             engine.start();
+                            api.setClientEngine(engine);
                         }
                     }
                 }
@@ -302,6 +311,8 @@ public class DPAD extends Thread {
                 engine.start();
             }
         }
+
+        api.finishAPISetup();
 
         while (!runtimeShutdownFlag) {
             try {

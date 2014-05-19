@@ -3,8 +3,9 @@ package jonathansmith.dpad.common.gui;
 import javax.swing.*;
 
 import jonathansmith.dpad.api.common.engine.event.IEventListener;
-import jonathansmith.dpad.api.common.engine.util.log.ILogDisplay;
+import jonathansmith.dpad.api.common.gui.ITabController;
 import jonathansmith.dpad.common.engine.Engine;
+import jonathansmith.dpad.common.engine.util.log.ILogDisplay;
 
 /**
  * Created by Jon on 26/03/14.

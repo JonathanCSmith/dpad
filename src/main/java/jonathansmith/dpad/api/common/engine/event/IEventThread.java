@@ -8,11 +8,25 @@ import jonathansmith.dpad.common.engine.event.Event;
  * Methods for subscribing to and posting events
  */
 public interface IEventThread {
-    void shutdown(boolean force);
 
-    void addEventListener(IEventListener listener) throws InterruptedException;
+    /**
+     * Method to add an event listener into the event listener pool
+     *
+     * @param listener to add
+     */
+    void addEventListener(IEventListener listener);
 
-    void removeListener(IEventListener listener) throws InterruptedException;
+    /**
+     * Method to remove an event listener from the event listener pool
+     *
+     * @param listener to remove
+     */
+    void removeListener(IEventListener listener);
 
-    void postEvent(Event event) throws InterruptedException;
+    /**
+     * Post an event into the event thread for other listeners to respond to
+     *
+     * @param event
+     */
+    void postEvent(Event event);
 }

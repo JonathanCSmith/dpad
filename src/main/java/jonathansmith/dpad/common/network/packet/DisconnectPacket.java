@@ -1,9 +1,8 @@
-package jonathansmith.dpad.common.network.packet.login;
+package jonathansmith.dpad.common.network.packet;
 
 import java.io.IOException;
 
-import jonathansmith.dpad.common.network.packet.Packet;
-import jonathansmith.dpad.common.network.packet.PacketBuffer;
+import jonathansmith.dpad.client.network.protocol.ClientNetworkProtocol;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
 
 /**
@@ -11,14 +10,14 @@ import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
  * <p/>
  * Disconnect packet informing the client of a pending disconnect and the provided reason.
  */
-public class DisconnectDuringLoginPacket extends Packet {
+public class DisconnectPacket extends Packet {
 
     private String reason;
 
-    public DisconnectDuringLoginPacket() {
+    public DisconnectPacket() {
     }
 
-    public DisconnectDuringLoginPacket(String s) {
+    public DisconnectPacket(String s) {
         this.reason = s;
     }
 
@@ -34,7 +33,7 @@ public class DisconnectDuringLoginPacket extends Packet {
 
     @Override
     public void processPacket(NetworkProtocol networkProtocol) {
-        networkProtocol.handleDisconnect(this.reason);
+        ((ClientNetworkProtocol) networkProtocol).handleDisconnect(this.reason);
     }
 
     @Override

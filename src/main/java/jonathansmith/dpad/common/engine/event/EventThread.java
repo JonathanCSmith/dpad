@@ -15,7 +15,7 @@ import jonathansmith.dpad.api.common.engine.event.IEventThread;
 /**
  * Created by Jon on 23/03/14.
  * <p/>
- * Generic event thread. Events can be subscribed to using IEventListener
+ * Generic event thread implementation. Represents the core event processing behind an IEngine instance
  */
 public class EventThread extends Thread implements IEventThread {
 
@@ -65,7 +65,7 @@ public class EventThread extends Thread implements IEventThread {
                 Class<? extends Event> eventClass = event.getClass();
                 Collection<IEventListener> listeners = this.liveListenerMap.get(eventClass);
                 for (IEventListener listener : listeners) {
-                    listener.onEventRecieved(event);
+                    listener.onEventReceived(event);
                 }
             }
 
@@ -107,7 +107,6 @@ public class EventThread extends Thread implements IEventThread {
         this.liveEventList.clear();
     }
 
-    @Override
     public void shutdown(boolean force) {
         if (force) {
             this.isAlive = false;
@@ -119,7 +118,7 @@ public class EventThread extends Thread implements IEventThread {
     }
 
     @Override
-    public void addEventListener(IEventListener listener) throws InterruptedException {
+    public void addEventListener(IEventListener listener) {
         if (this.isShuttingDown) {
             return;
         }
@@ -127,7 +126,14 @@ public class EventThread extends Thread implements IEventThread {
         List<Class<? extends Event>> events = listener.getEventsToListenFor();
 
         while (this.isModifyingEventListenersAdditionsMap) {
-            Thread.sleep(100);
+            try {
+                Thread.sleep(100);
+            }
+
+            catch (InterruptedException ex) {
+                // Should not happen?!
+                // TODO: Verify fatality of this error
+            }
         }
 
         this.isModifyingEventListenersAdditionsMap = true;
@@ -138,7 +144,7 @@ public class EventThread extends Thread implements IEventThread {
     }
 
     @Override
-    public void removeListener(IEventListener listener) throws InterruptedException {
+    public void removeListener(IEventListener listener) {
         if (this.isShuttingDown) {
             return;
         }
@@ -146,7 +152,14 @@ public class EventThread extends Thread implements IEventThread {
         List<Class<? extends Event>> events = listener.getEventsToListenFor();
 
         while (this.isModifyingEventListenerRemovalMap) {
-            Thread.sleep(100);
+            try {
+                Thread.sleep(100);
+            }
+
+            catch (InterruptedException ex) {
+                // Should not happen?!
+                // TODO: Verify fatality of this error
+            }
         }
 
         this.isModifyingEventListenerRemovalMap = true;
@@ -157,13 +170,20 @@ public class EventThread extends Thread implements IEventThread {
     }
 
     @Override
-    public void postEvent(Event event) throws InterruptedException {
+    public void postEvent(Event event) {
         if (this.isShuttingDown) {
             return;
         }
 
         while (this.isModifyingEventsList) {
-            Thread.sleep(100);
+            try {
+                Thread.sleep(100);
+            }
+
+            catch (InterruptedException ex) {
+                // Should not happen?!
+                // TODO: Verify fatality of this error
+            }
         }
 
         this.isModifyingEventsList = true;

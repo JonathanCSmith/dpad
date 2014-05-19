@@ -33,7 +33,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
             int packetId = packetBuffer.readVarIntFromBuffer();
             Packet packet;
             try {
-                packet = Packet.getEmptyPacket(channelHandlerContext.channel().attr(NetworkSession.WHITELISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY).get(), packetId);
+                packet = Packet.getEmptyPacket(channelHandlerContext.channel().attr(NetworkSession.WHITE_LISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY).get(), packetId);
             }
 
             catch (Exception ex) {

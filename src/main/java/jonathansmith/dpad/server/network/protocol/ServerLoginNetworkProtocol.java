@@ -11,7 +11,11 @@ import io.netty.util.concurrent.GenericFutureListener;
 import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
-import jonathansmith.dpad.common.network.packet.login.*;
+import jonathansmith.dpad.common.network.packet.DisconnectPacket;
+import jonathansmith.dpad.common.network.packet.login.EncryptionRequestPacket;
+import jonathansmith.dpad.common.network.packet.login.EncryptionResponsePacket;
+import jonathansmith.dpad.common.network.packet.login.LoginStartPacket;
+import jonathansmith.dpad.common.network.packet.login.LoginSuccessPacket;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
 import jonathansmith.dpad.server.engine.util.version.Version;
 import org.apache.commons.lang3.Validate;
@@ -30,7 +34,7 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
     private final boolean isLocalConnection;
     private final byte[] loginKey = new byte[4];
 
-    private LoginState loginState = LoginState.HANDSHAKE;
+    private LoginState loginState = LoginState.GREETING;
     private SecretKey secretKey;
     private int       loginTime;
 
@@ -40,35 +44,27 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
         LOGIN_KEY_GENERATOR.nextBytes(this.loginKey);
     }
 
-    // Handles a handshake between the client and server. Checks to see whether the network standards between the two are compatible
-    public void handleHandshake(HandshakePacket packet) {
+    // Begins the login process by disseminating a shared key to the client for encryption
+    public void handleLoginStart(LoginStartPacket packet) {
+        Validate.validState(this.loginState == LoginState.GREETING, "Unexpected login start packet during the: " + this.loginState + " state");
+
         boolean versionMatch = false;
         if (this.isLocalConnection) {
-            this.networkSession.setConnectionState(packet.getConnectionState());
             versionMatch = true;
         }
 
         else {
-            String version = packet.getNetworkProtocolVersion();
-            if (Version.isCompatible(this.engine.getVersion(), version)) {
+            if (Version.isCompatible(this.engine.getVersion(), packet.getVersion())) {
                 versionMatch = true;
             }
         }
 
         if (!versionMatch) {
             this.handleLoginFailure("Network protocol version mismatch");
+            return;
         }
 
-        else {
-            this.loginState = LoginState.GREETING;
-        }
-    }
-
-    // Begins the login process by disseminating a shared key to the client for encryption
-    public void handleLoginStart(LoginStartPacket packet) {
-        Validate.validState(this.loginState == LoginState.GREETING, "Unexpected login start packet during the: " + this.loginState + " state");
-
-        this.networkSession.assignForeignUUID(packet.getUUIDPayload());
+        this.networkSession.assignForeignUUID(packet.getUUID());
 
         if (this.isLocalConnection) {
             this.loginState = LoginState.READY_TO_FINISH;
@@ -113,7 +109,7 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
 
     private void handleLoginFailure(String reason) {
         this.engine.handleError("Could not accept client due to: " + reason, null, false);
-        this.networkSession.scheduleOutboundPacket(new DisconnectDuringLoginPacket(reason), new GenericFutureListener[0]);
+        this.networkSession.scheduleOutboundPacket(new DisconnectPacket(reason), new GenericFutureListener[0]);
         this.networkSession.closeChannel(reason);
     }
 

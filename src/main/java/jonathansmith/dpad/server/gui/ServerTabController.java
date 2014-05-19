@@ -20,7 +20,8 @@ public class ServerTabController extends EngineTabController {
     private static final List<Class<? extends Event>> EVENTS = new ArrayList<Class<? extends Event>>(
             Arrays.asList(
                     ServerDisplayChangeEvent.class
-            ));
+            )
+    );
 
     private ServerDisplay currentDisplay = null;
     private ServerDisplay oldDisplay     = null;
@@ -37,13 +38,7 @@ public class ServerTabController extends EngineTabController {
     public void init() {
         super.init();
 
-        try {
-            this.engine.getEventThread().addEventListener(this);
-        }
-
-        catch (InterruptedException ex) {
-            this.engine.handleError("Could not subscribe to event thread", ex, true);
-        }
+        this.engine.getEventThread().addEventListener(this);
     }
 
     @Override
@@ -64,7 +59,7 @@ public class ServerTabController extends EngineTabController {
     }
 
     @Override
-    public void onEventRecieved(Event event) {
+    public void onEventReceived(Event event) {
         ClientDisplayChangeEvent evt = (ClientDisplayChangeEvent) event;
         this.currentDisplay = (ServerDisplay) evt.getTargetDisplay();
     }

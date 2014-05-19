@@ -12,7 +12,7 @@ import jonathansmith.dpad.common.network.channel.*;
 /**
  * Created by Jon on 26/03/14.
  * <p/>
- * Client side channel initialiser
+ * Client side channel initialiser. Used to setup the client side of a network channel for proper data handling.
  */
 public class ClientChannelInitialiser extends ChannelInitialiser {
 

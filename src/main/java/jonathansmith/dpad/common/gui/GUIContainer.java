@@ -10,13 +10,17 @@ import java.util.LinkedList;
 import javax.swing.*;
 
 import jonathansmith.dpad.DPAD;
+import jonathansmith.dpad.api.common.gui.IGUIController;
+import jonathansmith.dpad.api.common.gui.ITabController;
+import jonathansmith.dpad.client.gui.ClientTabController;
+import jonathansmith.dpad.server.gui.ServerTabController;
 
 /**
  * Created by Jon on 23/03/14.
  * <p/>
  * Parent GUI Container - contains style and layout information for all child GUI panes
  */
-public class GUIContainer extends JFrame implements WindowListener, ActionListener, Runnable {
+public class GUIContainer extends JFrame implements IGUIController, WindowListener, ActionListener, Runnable {
 
     private static final int MINIMUM_WIDTH  = 500;
     private static final int MINIMUM_HEIGHT = 300;
@@ -52,6 +56,7 @@ public class GUIContainer extends JFrame implements WindowListener, ActionListen
         }
     }
 
+    @Override
     public void addTab(ITabController tab) {
         if (this.tabs.contains(tab)) {
             return;
@@ -62,8 +67,25 @@ public class GUIContainer extends JFrame implements WindowListener, ActionListen
         this.tabContainer.addTab(tab.getTitle(), tab.getPanel());
     }
 
+    @Override
     public void removeTab(ITabController tab) {
         if (!this.tabs.contains(tab)) {
+            return;
+        }
+
+        if (tab instanceof ClientTabController || tab instanceof ServerTabController) {
+            // TODO: Log
+            return;
+        }
+
+        int index = this.tabs.indexOf(tab);
+        this.tabs.remove(tab);
+        this.tabContainer.removeTabAt(index);
+    }
+
+    public void removeCoreTab(ITabController tab) {
+        if (!(tab instanceof ClientTabController) && !(tab instanceof ServerTabController)) {
+            // TODO: Log
             return;
         }
 

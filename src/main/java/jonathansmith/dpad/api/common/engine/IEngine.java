@@ -23,5 +23,6 @@ public interface IEngine {
 
     void handleError(String message, Throwable e, boolean shutdownThreadFlag);
 
+    // TODO: Remove from API
     NetworkManager getNetworkManager();
 }
