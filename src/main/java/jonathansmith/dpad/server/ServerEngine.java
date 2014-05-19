@@ -2,16 +2,13 @@ package jonathansmith.dpad.server;
 
 import java.net.SocketAddress;
 
-import org.apache.log4j.Level;
-
 import jonathansmith.dpad.common.database.DatabaseManager;
 import jonathansmith.dpad.common.engine.Engine;
-import jonathansmith.dpad.common.engine.io.FileSystem;
-import jonathansmith.dpad.common.engine.util.log.LoggerFactory;
-import jonathansmith.dpad.common.engine.util.log.LoggingLevel;
+import jonathansmith.dpad.common.engine.executor.Executor;
 import jonathansmith.dpad.common.platform.Platform;
 
-import jonathansmith.dpad.server.engine.executor.ServerStartupExecutor;
+import jonathansmith.dpad.server.engine.executor.idle.ServerIdleExecutor;
+import jonathansmith.dpad.server.engine.executor.startup.ServerStartupExecutor;
 import jonathansmith.dpad.server.gui.ServerTabController;
 
 import jonathansmith.dpad.DPAD;
@@ -33,8 +30,8 @@ public class ServerEngine extends Engine {
         this.tabDisplay.setEngine(this);
         DPAD.getInstance().getGUI().addTab(this.tabDisplay);
 
-        this.setFileSystem(new FileSystem(this));
-        this.setLogger(LoggerFactory.getInstance().getLogger(this, new LoggingLevel(Level.DEBUG, Level.WARN, Level.DEBUG, Level.INFO)));
+        // Add the server startup executor as the first program to be run. Ensuring that everything is setup before anything else is performed.
+        this.setProposedExecutor(new ServerStartupExecutor(this, this.address));
     }
 
     public void setDatabaseManager(DatabaseManager dbm) {
@@ -51,16 +48,6 @@ public class ServerEngine extends Engine {
 
     public void setServerFinishedSetup() {
         this.isSetup = true;
-    }
-
-    @Override
-    public void init() {
-        super.init();
-        if (this.hasErrored()) {
-            return;
-        }
-
-        this.setProposedExecutor(new ServerStartupExecutor(this, this.address));
     }
 
     @Override
@@ -84,5 +71,10 @@ public class ServerEngine extends Engine {
     @Override
     public Platform getPlatform() {
         return Platform.SERVER;
+    }
+
+    @Override
+    protected Executor getDefaultExecutor() {
+        return new ServerIdleExecutor(this);
     }
 }

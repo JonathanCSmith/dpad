@@ -34,26 +34,34 @@ import jonathansmith.dpad.server.ServerEngine;
  */
 public class DPAD extends Thread {
 
-    private static String  version             = "1.0.0.1";
+    private static final String THREAD_NAME = "DPAD MAIN THREAD";
+    private static final String VERSION     = "1.0.0.1";
+
     private static boolean runtimeShutdownFlag = false;
     private static boolean errorFlag           = false;
 
     private static DPAD instance;
-    private final LinkedList<Engine> engines          = new LinkedList<Engine>();
+    private final LinkedList<Engine> engines = new LinkedList<Engine>();
+    private ServerEngine serverEngine;
+    private ClientEngine clientEngine;
+    // JCommander arguments. TODO: Detail these in args
     @Parameter(names = {"-platform"}, converter = PlatformConverter.class, description = "Platform Type")
-    private       Platform           platform         = null;
+    private Platform platform         = null;
     @Parameter(names = {"-ip"}, description = "IP Address to connect to")
-    private       String             ipAddress        = "";
+    private String   ipAddress        = "";
     @Parameter(names = {"-port"}, description = "Port to host or connect on")
-    private       int                port             = -1;
+    private int      port             = -1;
     @Parameter(names = {"-debug"}, description = "Verbosity of logging")
-    private       boolean            isVerboseLogging = true;
-    private       boolean            isInitialised    = false;
-    private       boolean            isShutdown       = false;
+    private boolean  isVerboseLogging = true;
+
+    private boolean isInitialised = false;
+    private boolean isShutdown    = false;
+
     private GUIContainer  gui;
     private SocketAddress platformAddress;
 
     public DPAD() {
+
     }
 
     /**
@@ -167,7 +175,7 @@ public class DPAD extends Thread {
             }
 
             else {
-                main.setPlatformAddress(LocalAddress.ANY);
+                main.setPlatformAddress(new LocalAddress("6568"));
             }
 
             if (runtimeShutdownFlag) {
@@ -242,15 +250,11 @@ public class DPAD extends Thread {
         }
 
         if (this.platform == Platform.LOCAL || this.platform == Platform.SERVER) {
-            this.engines.add(new ServerEngine(this.platformAddress));
+            this.serverEngine = new ServerEngine(this.platformAddress);
         }
 
         if (this.platform == Platform.LOCAL || this.platform == Platform.CLIENT) {
-            this.engines.add(new ClientEngine(this.platformAddress));
-        }
-
-        for (Engine engine : this.engines) {
-            engine.init();
+            this.clientEngine = new ClientEngine(this.platformAddress);
         }
     }
 
@@ -261,77 +265,66 @@ public class DPAD extends Thread {
         api.setGUI(this.gui);
         // TODO: Add in api stuff
 
-        // When building a local DPAD instance, we need to wait for the server to setup first
-        if (this.getPlatformSelection() == Platform.LOCAL) {
-            ServerEngine server = null;
-            for (Engine engine : this.engines) {
-                if (engine instanceof ServerEngine) {
-                    engine.injectVersion(version);
-                    engine.start();
-                    server = (ServerEngine) engine;
+        if (this.getPlatformSelection() == Platform.SERVER || this.getPlatformSelection() == Platform.LOCAL) {
+            this.serverEngine.injectVersion(VERSION);
+            this.serverEngine.start();
+            this.engines.add(this.serverEngine);
+
+            while (!this.serverEngine.isSetup()) {
+                try {
+                    Thread.sleep(100);
+                }
+
+                catch (InterruptedException ex) {
+                    this.handleError("Interrupted while waiting for server thread to finish startup", ex, true);
+                    break;
                 }
             }
 
-            if (server == null) {
-                this.handleError("Could not find the server engine during local setup", null, true);
-            }
-
-            else {
-                api.setServerEngine(server);
-                while (!server.isSetup()) {
-                    try {
-                        Thread.sleep(100);
-                    }
-
-                    catch (InterruptedException ex) {
-                        this.handleError("Interrupted while waiting for server thread to finish startup", ex, true);
-                        break;
-                    }
-                }
-
-                if (server.isSetup()) {
-                    for (Engine engine : this.engines) {
-                        if (engine instanceof ClientEngine) {
-                            engine.injectVersion(version);
-                            engine.start();
-                            api.setClientEngine(engine);
-                        }
-                    }
-                }
-            }
+            api.setServerEngine(this.serverEngine);
         }
 
-        else {
-            for (Engine engine : this.engines) {
-                engine.injectVersion(version);
-                engine.start();
-            }
+        if (this.getPlatformSelection() == Platform.CLIENT || this.getPlatformSelection() == Platform.LOCAL) {
+            this.clientEngine.injectVersion(VERSION);
+            this.clientEngine.start();
+            this.engines.add(this.clientEngine);
+            api.setClientEngine(this.clientEngine);
         }
 
         api.finishAPISetup();
 
         while (!runtimeShutdownFlag) {
-            try {
-                Thread.sleep(100);
+            int shutdownCount = 0;
+            for (Engine engine : this.engines) {
+                if (engine.isShuttingDown()) {
+                    shutdownCount++;
+                }
             }
 
-            catch (InterruptedException ex) {
-                for (Engine engine : this.engines) {
-                    engine.error("Background monitor thread was interrupted. A critical failure has occurred", ex);
+            if (shutdownCount == this.engines.size()) {
+                runtimeShutdownFlag = true;
+            }
+
+            else {
+                try {
+                    Thread.sleep(100);
                 }
 
-                this.handleError("Background monitor thread was interrupted. A critical failure has occurred", ex, true);
-                break;
+                catch (InterruptedException ex) {
+                    for (Engine engine : this.engines) {
+                        engine.error("Background monitor thread was interrupted. A critical failure has occurred", ex);
+                    }
+
+                    this.handleError("Background monitor thread was interrupted. A critical failure has occurred", ex, true);
+                }
             }
         }
 
         for (Engine engine : this.engines) {
-            if (engine.isAlive() && engine.isViable()) {
-                engine.saveAndShutdown();
-            }
-
-            else {
-                engine.forceShutdown();
+            // Theoretically any erroring engine would have shut itself down
+            // TODO: Looks like the engines are never viable at this stage?
+            if (engine.isViable()) {
+                engine.handleShutdown("Exit on main thread.");
             }
         }
 
@@ -346,10 +339,6 @@ public class DPAD extends Thread {
         this.platform = platform;
     }
 
-    public SocketAddress getPlatformAddress() {
-        return this.platformAddress;
-    }
-
     public void setPlatformAddress(SocketAddress address) {
         this.platformAddress = address;
     }
@@ -360,10 +349,6 @@ public class DPAD extends Thread {
 
     public int getPortAddress() {
         return this.port;
-    }
-
-    public boolean getIsShutdown() {
-        return this.isShutdown;
     }
 
     public void handleError(String errorHeader, Exception ex, boolean runtimeQuitFlag) {

@@ -7,7 +7,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.common.engine.Engine;
 
 import jonathansmith.dpad.server.engine.util.config.AddressList;
 
@@ -18,7 +18,7 @@ import jonathansmith.dpad.server.engine.util.config.AddressList;
  */
 public abstract class NetworkManager extends Thread {
 
-    protected final IEngine engine;
+    protected final Engine engine;
 
     private final AddressList blackListedConnections = new AddressList();
     private final AddressList whiteListedConnections = new AddressList();
@@ -34,7 +34,7 @@ public abstract class NetworkManager extends Thread {
 
     private ChannelFuture channelFuture;
 
-    public NetworkManager(IEngine engine, SocketAddress address, String eventThreadNameFormat, boolean isLocal) {
+    public NetworkManager(Engine engine, SocketAddress address, String eventThreadNameFormat, boolean isLocal) {
         this.engine = engine;
         this.address = address;
         this.eventLoopGroup = new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat(eventThreadNameFormat).setDaemon(true).build());

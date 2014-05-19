@@ -8,12 +8,9 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
 
-import jonathansmith.dpad.common.network.packet.DisconnectPacket;
 import jonathansmith.dpad.common.network.packet.Packet;
-import jonathansmith.dpad.common.network.packet.login.EncryptionRequestPacket;
-import jonathansmith.dpad.common.network.packet.login.EncryptionResponsePacket;
-import jonathansmith.dpad.common.network.packet.login.LoginStartPacket;
-import jonathansmith.dpad.common.network.packet.login.LoginSuccessPacket;
+import jonathansmith.dpad.common.network.packet.login.*;
+import jonathansmith.dpad.common.network.packet.play.RuntimeDisconnectPacket;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -55,14 +52,8 @@ public enum ConnectionState {
             return;
         }
 
-        try {
-            registerLoginPackets();
-            registerPlayPackets();
-        }
-
-        catch (IllegalAddException ex) {
-            return;
-        }
+        registerLoginPackets();
+        registerPlayPackets();
 
         ConnectionState[] states = values();
 
@@ -75,6 +66,8 @@ public enum ConnectionState {
                     DPAD.getInstance().handleError(error, null, true);
                     throw new IllegalAddException(error);
                 }
+
+                packetMap.put(clazz, state);
             }
         }
 
@@ -86,16 +79,16 @@ public enum ConnectionState {
         ConnectionState.LOGIN.addServerPacket(EncryptionRequestPacket.class);
         ConnectionState.LOGIN.addClientPacket(EncryptionResponsePacket.class);
         ConnectionState.LOGIN.addServerPacket(LoginSuccessPacket.class);
-        ConnectionState.LOGIN.addServerPacket(DisconnectPacket.class);
+        ConnectionState.LOGIN.addServerPacket(LoginDisconnectPacket.class);
     }
 
     private static void registerPlayPackets() throws IllegalAddException {
-        ConnectionState.RUNTIME.addServerPacket(DisconnectPacket.class);
+        ConnectionState.RUNTIME.addServerPacket(RuntimeDisconnectPacket.class);
     }
 
     // Add packet to allowed sendables from client
     protected void addClientPacket(Class<? extends Packet> clazz) throws IllegalAddException {
-        if (this.addPacket(clazz, this.whiteListedClientPackets)) {
+        if (!this.addPacket(clazz, this.whiteListedClientPackets)) {
             String error = "Failure to register client packet: " + clazz.getCanonicalName();
             DPAD.getInstance().handleError(error, null, true);
             throw new IllegalAddException(error);

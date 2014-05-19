@@ -20,6 +20,9 @@ public class EncryptionRequestPacket extends Packet {
     private PublicKey key;
     private byte[]    randomSignature;
 
+    public EncryptionRequestPacket() {
+    }
+
     public EncryptionRequestPacket(PublicKey aPublic, byte[] loginKey) {
         this.key = aPublic;
         this.randomSignature = loginKey;

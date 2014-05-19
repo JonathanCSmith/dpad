@@ -18,6 +18,9 @@ public class LoginSuccessPacket extends Packet {
 
     private String uuid;
 
+    public LoginSuccessPacket() {
+    }
+
     public LoginSuccessPacket(NetworkSession networkSession) {
         this.uuid = networkSession.getEngineAssignedUUID();
     }
@@ -28,7 +31,7 @@ public class LoginSuccessPacket extends Packet {
 
     @Override
     public void readPacketData(PacketBuffer packetBuffer) throws IOException {
-        this.uuid = packetBuffer.readStringFromBuffer(16);
+        this.uuid = packetBuffer.readStringFromBuffer(36);
     }
 
     @Override
