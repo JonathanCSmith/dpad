@@ -37,23 +37,31 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     public static final AttributeKey<ConnectionState>                         CONNECTION_STATE_ATTRIBUTE_KEY                = new AttributeKey<ConnectionState>("Connection State");
     public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITE_LISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY = new AttributeKey<BiMap<Integer, Class<? extends Packet>>>("Receivable Packets");
     public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITE_LISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY   = new AttributeKey<BiMap<Integer, Class<? extends Packet>>>("Sendable Packets");
+
     protected final IEngine engine;
-    private final Queue<PacketListenersTuple> outboundPacketsQueue = Queues.newConcurrentLinkedQueue();
-    private final Queue<Packet>               inboundPacketsQueue  = Queues.newConcurrentLinkedQueue();
-    private final UUID    localUUID;
-    private final boolean isClientSide;
+
+    private final Queue<PacketListenersTuple> outbound_packets_queue = Queues.newConcurrentLinkedQueue();
+    private final Queue<Packet>               inbound_packets_queue  = Queues.newConcurrentLinkedQueue();
+
+    private final UUID    local_UUID;
+    private final boolean is_local_connection;
+    private final boolean is_client_side;
+
+    private Channel channel              = null;
+    private long    timeSinceLastProcess = 0L;
 
     private NetworkProtocol networkProtocol;
-    private Channel         channel;
     private SocketAddress   address;
     private ConnectionState connectionState;
     private String          terminationReason;
     private UUID            foreignUUID;
 
-    public NetworkSession(IEngine engine, boolean isLocal) {
+    public NetworkSession(IEngine engine, SocketAddress address, boolean isLocal, boolean isClient) {
         this.engine = engine;
-        this.localUUID = UUID.randomUUID();
-        this.isClientSide = isLocal;
+        this.address = address;
+        this.local_UUID = UUID.randomUUID();
+        this.is_local_connection = isLocal;
+        this.is_client_side = isClient;
     }
 
     public SocketAddress getSocketAddress() {
@@ -61,7 +69,8 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     }
 
     public String getAddress() {
-        return this.address.toString().split(":")[0];
+        String[] bits = this.address.toString().split(":");
+        return bits[0];
     }
 
     public String getPort() {
@@ -69,7 +78,7 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     }
 
     public String getEngineAssignedUUID() {
-        return this.localUUID.toString();
+        return this.local_UUID.toString();
     }
 
     public void assignForeignUUID(String foreignUUID) {
@@ -77,7 +86,7 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     }
 
     public String getForeignUUID() {
-        return this.foreignUUID.toString();
+        return this.foreignUUID == null ? "NULL" : this.foreignUUID.toString();
     }
 
     public NetworkProtocol getNetworkProtocol() {
@@ -100,9 +109,13 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
 
     public void setConnectionState(ConnectionState state) {
         this.connectionState = this.channel.attr(CONNECTION_STATE_ATTRIBUTE_KEY).getAndSet(state);
-        this.channel.attr(WHITE_LISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY).set(state.getReceivablePacketsForSide(this.isClientSide));
-        this.channel.attr(WHITE_LISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY).set(state.getSendablePacketsForSide(this.isClientSide));
+        this.channel.attr(WHITE_LISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY).set(state.getReceivablePacketsForSide(this.is_client_side));
+        this.channel.attr(WHITE_LISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY).set(state.getSendablePacketsForSide(this.is_client_side));
         this.channel.config().setAutoRead(true);
+    }
+
+    public boolean hasChannelInitialised() {
+        return this.channel != null;
     }
 
     public boolean isChannelOpen() {
@@ -110,7 +123,11 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     }
 
     public boolean isLocalChannel() {
-        return this.isClientSide;
+        return this.is_local_connection;
+    }
+
+    public boolean isClientChannel() {
+        return this.is_client_side;
     }
 
     public void disableAutoRead() {
@@ -124,20 +141,21 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
         }
 
         else {
-            this.outboundPacketsQueue.add(new PacketListenersTuple(packet, listeners));
+            this.outbound_packets_queue.add(new PacketListenersTuple(packet, listeners));
         }
     }
 
     private void flushOutboundQueue() {
         if (this.isChannelOpen()) {
-            while (!this.outboundPacketsQueue.isEmpty()) {
-                PacketListenersTuple listener = this.outboundPacketsQueue.poll();
+            while (!this.outbound_packets_queue.isEmpty()) {
+                PacketListenersTuple listener = this.outbound_packets_queue.poll();
                 this.dispatchPacket(listener.getPacket(), listener.getListeners());
             }
         }
     }
 
     private void dispatchPacket(final Packet packet, final GenericFutureListener[] listeners) {
+        this.engine.debug("Dispatching packet: " + packet.getClass(), null);
         final ConnectionState packetsRegisteredConnectionState = ConnectionState.getConnectionStateFromPacket(packet);
         final ConnectionState channelConnectionState = this.channel.attr(CONNECTION_STATE_ATTRIBUTE_KEY).get();
 
@@ -171,16 +189,21 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     private void readPacket(ChannelHandlerContext ctx, Packet p) {
         if (this.isChannelOpen()) {
             if (p.isUrgent()) {
+                this.engine.debug("Processing packet: " + p.getClass(), null);
                 p.processPacket(this.networkProtocol);
             }
 
             else {
-                this.inboundPacketsQueue.add(p);
+                this.inbound_packets_queue.add(p);
             }
         }
     }
 
     public void processReceivedPackets() {
+        if (this.isProcessLocked()) {
+            return;
+        }
+
         this.flushOutboundQueue();
         ConnectionState connectionState = this.channel.attr(CONNECTION_STATE_ATTRIBUTE_KEY).get();
 
@@ -193,8 +216,9 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
         }
 
         if (this.networkProtocol != null) {
-            for (int i = 1000; !this.inboundPacketsQueue.isEmpty() && i >= 0; i--) {
-                Packet packet = this.inboundPacketsQueue.poll();
+            for (int i = 1000; !this.inbound_packets_queue.isEmpty() && i >= 0; i--) {
+                Packet packet = this.inbound_packets_queue.poll();
+                this.engine.debug("Processing packet: " + packet.getClass(), null);
                 packet.processPacket(this.networkProtocol);
             }
 
@@ -202,6 +226,21 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
         }
 
         this.channel.flush();
+    }
+
+    private boolean isProcessLocked() {
+        if (this.timeSinceLastProcess == 0L) {
+            this.timeSinceLastProcess = System.currentTimeMillis();
+        }
+
+        if (System.currentTimeMillis() - this.timeSinceLastProcess < 50) {
+            return true;
+        }
+
+        else {
+            this.timeSinceLastProcess = System.currentTimeMillis();
+            return false;
+        }
     }
 
     public void enableEncryption(SecretKey secretKey) {
@@ -256,8 +295,6 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable reason) {
-        String info = "NETWORK: channel closed due to exception";
-        this.engine.info(info, reason);
-        this.closeChannel(info);
+        this.closeChannel("NETWORK: channel closed due to exception");
     }
 }

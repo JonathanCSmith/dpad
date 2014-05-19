@@ -12,6 +12,8 @@ import javax.swing.*;
 import jonathansmith.dpad.api.common.gui.IGUIController;
 import jonathansmith.dpad.api.common.gui.ITabController;
 
+import jonathansmith.dpad.common.gui.startup.StartupTabController;
+
 import jonathansmith.dpad.client.gui.ClientTabController;
 
 import jonathansmith.dpad.server.gui.ServerTabController;
@@ -87,7 +89,7 @@ public class GUIContainer extends JFrame implements IGUIController, WindowListen
     }
 
     public void removeCoreTab(ITabController tab) {
-        if (!(tab instanceof ClientTabController) && !(tab instanceof ServerTabController)) {
+        if (!(tab instanceof ClientTabController) && !(tab instanceof ServerTabController) && !(tab instanceof StartupTabController)) {
             // TODO: Log
             return;
         }

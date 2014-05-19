@@ -11,7 +11,7 @@ import jonathansmith.dpad.client.network.protocol.ClientNetworkProtocol;
  * <p/>
  * Disconnect packet informing the client of a pending disconnect and the provided reason.
  */
-public class DisconnectPacket extends Packet {
+public abstract class DisconnectPacket extends Packet {
 
     private String reason;
 

@@ -1,13 +1,13 @@
-package jonathansmith.dpad.server.engine.executor;
+package jonathansmith.dpad.server.engine.executor.startup;
 
 import java.io.File;
 import java.util.List;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 
 import jonathansmith.dpad.common.database.DatabaseManager;
 import jonathansmith.dpad.common.database.record.Record;
@@ -42,27 +42,29 @@ public class SetupHibernateTask extends Task {
         Configuration cfg = this.buildHibernateSessioncfguration();
 
         this.loggingEngine.trace("Building hibernate service registry", null);
-        ServiceRegistry registry = new ServiceRegistryBuilder().applySettings(cfg.getProperties()).buildServiceRegistry();
+        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties());
 
         // Initialise the hibernate session
         SessionFactory sessionFactory;
         try {
             this.loggingEngine.trace("Building hibernate session factory", null);
-            sessionFactory = cfg.buildSessionFactory(registry);
-            sessionFactory.openSession();
+            sessionFactory = cfg.buildSessionFactory(builder.build());
+            Session session = sessionFactory.openSession();
+            session.close();
 
-            if (this.isNewDatabase) {
-                this.loggingEngine.trace("Rebuilding database as it is new... I am not sure why I have to do this though...", null);
-                this.loggingEngine.warn("", null);
-                this.loggingEngine.warn("==========================================================", null);
-                this.loggingEngine.warn("Retrying database creation for a second time as it is new!", null);
-                this.loggingEngine.warn("==========================================================", null);
-                this.loggingEngine.warn("", null);
-
-                sessionFactory.close();
-                sessionFactory = cfg.buildSessionFactory(registry);
-                sessionFactory.openSession();
-            }
+            // TODO: Assess whether we need this or not anymore
+//            if (this.isNewDatabase) {
+//                this.loggingEngine.trace("Rebuilding database as it is new... I am not sure why I have to do this though...", null);
+//                this.loggingEngine.warn("", null);
+//                this.loggingEngine.warn("==========================================================", null);
+//                this.loggingEngine.warn("Retrying database creation for a second time as it is new!", null);
+//                this.loggingEngine.warn("==========================================================", null);
+//                this.loggingEngine.warn("", null);
+//
+//                sessionFactory.close();
+//                sessionFactory = cfg.buildSessionFactory(builder.build());
+//                sessionFactory.openSession();
+//            }
         }
 
         catch (HibernateException ex) {
@@ -85,11 +87,12 @@ public class SetupHibernateTask extends Task {
         cfg.setProperty("hibernate.connection.url", "jdbc:h2:file:" + this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase");
 
         // Use custom connection manager for better IO to the database
-        cfg.setProperty("connection.provider.provider_class", "com.jolbox.bonecp.provider.BoneCPConnectionProvider");
-        cfg.setProperty("bonecp.partitionCount", "3");
-        cfg.setProperty("bonecp.maxConnectionsPerPartition", "15");
-        cfg.setProperty("bonecp.minConnectionsPerPartition", "2");
-        cfg.setProperty("bonecp.acquireIncrement", "3");
+        cfg.setProperty("c3p0.acquire_increment", "1");
+        cfg.setProperty("c3p0.idle_test_period", "100");
+        cfg.setProperty("c3p0.max_size", "100");
+        cfg.setProperty("c3p0.max_statements", "0");
+        cfg.setProperty("c3p0.min_size", "10");
+        cfg.setProperty("c3p0.timeout", "10");
 
         cfg.setProperty("hibernate.connection.username", "sa");
         cfg.setProperty("hibernate.connection.password", "");

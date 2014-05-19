@@ -3,6 +3,7 @@ package jonathansmith.dpad.common.engine.executor;
 import java.util.LinkedList;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.api.common.engine.executor.IExecutor;
 
 import jonathansmith.dpad.common.engine.Engine;
 
@@ -11,7 +12,7 @@ import jonathansmith.dpad.common.engine.Engine;
  * <p/>
  * Abstract operation parent. Represents an internal execution thread.
  */
-public class Executor extends Thread {
+public abstract class Executor extends Thread implements IExecutor {
 
     protected final IEngine engine;
 
@@ -34,17 +35,30 @@ public class Executor extends Thread {
 
     public final void execute() {
         this.isExecuting = true;
+
+        if (this.task_list.size() == 0) {
+            this.engine.handleError("Current Executor: " + this.getExecutorName() + " has a task list with no tasks in it. Whilst not fatal, this is stupid.", null, false);
+        }
+
         this.start();
     }
 
+    @Override
+    public final String getExecutorName() {
+        return this.executorName;
+    }
+
+    @Override
     public final boolean isExecuting() {
         return this.isExecuting;
     }
 
+    @Override
     public final boolean hasFinished() {
         return this.hasFinished;
     }
 
+    @Override
     public final void shutdown(boolean forceShutdownFlag) {
         if (forceShutdownFlag) {
             this.shutdownFlag = true;
@@ -62,22 +76,24 @@ public class Executor extends Thread {
         if (this.repeatExecution) {
             while (!this.mustFinish) {
                 this.runTasks();
-                this.engine.trace("Repeating task set in current executor: " + this.executorName, null);
+                //this.engine.trace("Repeating task set in current executor: " + this.executorName, null);
             }
         }
 
         else {
-            this.engine.trace("Executing: " + this.executorName, null);
+            //this.engine.trace("Executing: " + this.executorName, null);
             this.runTasks();
         }
 
+        this.isExecuting = false;
         this.hasFinished = true;
     }
 
+    // Note: No must finish flags here as the premise is that the executor be allowed to complete all of its tasks
     private void runTasks() {
         while (!this.shutdownFlag && this.taskCount < this.task_list.size()) {
             Task task = this.task_list.get(this.taskCount);
-            this.engine.trace("Starting task: " + task.getTaskName(), null);
+            //this.engine.trace("Starting task: " + task.getTaskName(), null);
             task.runTask();
             this.taskCount++;
         }

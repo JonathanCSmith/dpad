@@ -47,7 +47,7 @@ public class ClientLoginProtocol extends ClientNetworkProtocol {
 
     @Override
     public void onConnectionStateTransition(ConnectionState connectionState, ConnectionState connectionState1) {
-        this.engine.debug("Switching from: " + connectionState.toString() + " to: " + connectionState1.toString(), null);
+        this.engine.debug("Switching from: " + (connectionState == null ? "NULL" : connectionState.toString()) + " to: " + (connectionState1 == null ? "NULL" : connectionState1.toString()), null);
 
         if (connectionState1 == ConnectionState.RUNTIME) {
             this.networkSession.setNetworkProtocol(new ClientRuntimeProtocol(this.engine, this.networkSession));

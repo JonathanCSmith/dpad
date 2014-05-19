@@ -21,11 +21,14 @@ public class LoginStartPacket extends Packet {
     private String address;
     private int    port;
 
+    public LoginStartPacket() {
+    }
+
     public LoginStartPacket(String version, NetworkSession session) {
         this.version = version;
         this.uuid = session.getEngineAssignedUUID();
         this.address = session.getAddress();
-        this.port = Integer.getInteger(session.getPort());
+        this.port = Integer.parseInt(session.getPort());
     }
 
     public String getVersion() {
@@ -44,7 +47,7 @@ public class LoginStartPacket extends Packet {
     @Override
     public void readPacketData(PacketBuffer packetBuffer) throws IOException {
         this.version = packetBuffer.readStringFromBuffer(255);
-        this.uuid = packetBuffer.readStringFromBuffer(16);
+        this.uuid = packetBuffer.readStringFromBuffer(36);
         this.address = packetBuffer.readStringFromBuffer(255);
         this.port = packetBuffer.readUnsignedShort();
     }

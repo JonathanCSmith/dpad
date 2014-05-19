@@ -2,6 +2,7 @@ package jonathansmith.dpad.client.engine.executor.startup;
 
 import java.net.SocketAddress;
 
+import jonathansmith.dpad.common.engine.executor.CommonSetupTask;
 import jonathansmith.dpad.common.engine.executor.Executor;
 import jonathansmith.dpad.common.platform.Platform;
 
@@ -21,10 +22,8 @@ public class ClientStartupExecutor extends Executor {
     public ClientStartupExecutor(ClientEngine engine, SocketAddress address) {
         super(EXECUTOR_NAME, engine, false);
 
+        this.addTask(new CommonSetupTask(engine));
         this.addTask(new SetupClientLoggingTask(engine));
         this.addTask(new SetupClientNetworkTask(engine, address, DPAD.getInstance().getPlatformSelection() == Platform.LOCAL));
-        // TODO: PluginManager setup task
-        // TODO: Assess whether event thread should be constructed here
-        // TODO: Assess whether file system should be constructed here
     }
 }

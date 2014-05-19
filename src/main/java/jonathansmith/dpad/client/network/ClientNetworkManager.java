@@ -49,16 +49,34 @@ public class ClientNetworkManager extends NetworkManager {
     @Override
     public void run() {
         while (this.isAlive && !this.hasErrored) {
+            if (this.session == null) {
+                try {
+                    Thread.sleep(10);
+                }
+
+                catch (InterruptedException ex) {
+                    // Should not happen?! TODO: Log?!
+                }
+
+                continue;
+            }
+
+            if (!this.session.hasChannelInitialised()) {
+                continue;
+            }
+
             if (this.session.isChannelOpen()) {
                 this.session.processReceivedPackets();
             }
 
             else if (this.session.getExitMessage() != null) {
                 this.session.getNetworkProtocol().onDisconnect(this.session.getExitMessage());
+                this.shutdown(true);
             }
 
             else {
                 this.session.getNetworkProtocol().onDisconnect("Disconnected from Server");
+                this.shutdown(true);
             }
         }
     }

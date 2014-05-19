@@ -19,7 +19,7 @@ public class ClientNetworkSession extends NetworkSession {
     private final ClientNetworkManager networkManager;
 
     public ClientNetworkSession(IEngine engine, ClientNetworkManager manager) {
-        super(engine, manager.isLocalConnection());
+        super(engine, manager.getSocketAddress(), manager.isLocalConnection(), true);
 
         this.networkManager = manager;
         this.setNetworkProtocol(new ClientLoginProtocol(this.engine, this));

@@ -6,10 +6,10 @@ import org.slf4j.Logger;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.event.IEventThread;
+import jonathansmith.dpad.api.common.engine.executor.IExecutor;
 
 import jonathansmith.dpad.common.engine.event.EventThread;
 import jonathansmith.dpad.common.engine.executor.Executor;
-import jonathansmith.dpad.common.engine.executor.IdleExecutor;
 import jonathansmith.dpad.common.engine.io.FileSystem;
 import jonathansmith.dpad.common.engine.util.log.ILogDisplay;
 import jonathansmith.dpad.common.gui.EngineTabController;
@@ -26,7 +26,7 @@ import jonathansmith.dpad.DPAD;
 public abstract class Engine extends Thread implements IEngine {
 
     protected final SocketAddress address;
-    protected final EventThread   eventThread;
+    protected final EventThread event_thread;
 
     protected FileSystem fileSystem = null;
     protected Logger     logger     = null;
@@ -45,37 +45,34 @@ public abstract class Engine extends Thread implements IEngine {
     public Engine(SocketAddress address, EngineTabController tabController) {
         this.address = address;
         this.tabDisplay = tabController;
-        this.eventThread = new EventThread(this);
+        this.event_thread = new EventThread(this);
     }
 
     public abstract Platform getPlatform();
 
-    public void init() {
-        this.eventThread.start();
-        // TODO: Plugin manager start
-    }
-
     @Override
     public void run() {
         while (!this.hasErrored() && !this.isShuttingDown()) {
-            Executor currentExecutor = this.getCurrentExecutor();
-            if (!(currentExecutor instanceof IdleExecutor)) {
-                if (currentExecutor.hasFinished()) {
+            if (this.currentExecutor == null) {
+                this.currentExecutor = this.proposedExecutor;
+                this.proposedExecutor = null;
+            }
 
-                    Executor proposedExecutor = this.getProposedExecutor();
-                    if (proposedExecutor == null) {
-                        this.setCurrentExecutor(new IdleExecutor(this));
-                    }
-
-                    else {
-                        this.setCurrentExecutor(proposedExecutor);
-                        this.setProposedExecutor(null);
-                    }
+            if (this.currentExecutor.hasFinished()) {
+                Executor proposedExecutor = this.getProposedExecutor();
+                if (proposedExecutor == null) {
+                    this.setCurrentExecutor(this.getDefaultExecutor());
+                    this.currentExecutor.execute();
                 }
 
-                else if (!currentExecutor.isExecuting()) {
-                    currentExecutor.execute();
+                else {
+                    this.setCurrentExecutor(proposedExecutor);
+                    this.setProposedExecutor(null);
                 }
+            }
+
+            if (!this.currentExecutor.isExecuting()) {
+                this.currentExecutor.execute();
             }
 
             try {
@@ -96,6 +93,8 @@ public abstract class Engine extends Thread implements IEngine {
         }
     }
 
+    protected abstract Executor getDefaultExecutor();
+
     public boolean isViable() {
         return this.hasErrored();
     }
@@ -105,7 +104,7 @@ public abstract class Engine extends Thread implements IEngine {
             this.getCurrentExecutor().shutdown(false);
         }
 
-        this.eventThread.shutdown(true);
+        this.event_thread.shutdown(true);
 
         if (this.tabDisplay != null) {
             this.tabDisplay.shutdown(false);
@@ -123,7 +122,7 @@ public abstract class Engine extends Thread implements IEngine {
             this.getCurrentExecutor().shutdown(true);
         }
 
-        this.eventThread.shutdown(true);
+        this.event_thread.shutdown(true);
 
         if (this.tabDisplay != null) {
             this.tabDisplay.shutdown(true);
@@ -183,7 +182,7 @@ public abstract class Engine extends Thread implements IEngine {
         this.networkManagerSetup = true;
     }
 
-    public Executor getCurrentExecutor() {
+    public IExecutor getCurrentExecutor() {
         return this.currentExecutor;
     }
 
@@ -213,7 +212,7 @@ public abstract class Engine extends Thread implements IEngine {
 
     @Override
     public IEventThread getEventThread() {
-        return this.eventThread;
+        return this.event_thread;
     }
 
     @Override

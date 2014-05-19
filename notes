@@ -15,8 +15,9 @@ Notes:
 - Tasks should heavily trace logging
 
 Global TODO:
+- Fix non local login process
+- Check for successful login after client network initialisation and fail client if it didnt work
 - Disconnect GUI
 - RuntimeNetworkProtocols
-- Idle Execs = Default which should be assigned during engine creation.
-- Idle Execs and ensure they only return when necessary
+- Idle Exec tasks
 - Idle GUIs

@@ -16,7 +16,7 @@ public class ServerNetworkSession extends NetworkSession {
     private final ServerNetworkManager networkManager;
 
     public ServerNetworkSession(IEngine engine, ServerNetworkManager manager) {
-        super(engine, manager.isLocalConnection());
+        super(engine, manager.getSocketAddress(), manager.isLocalConnection(), false);
 
         this.networkManager = manager;
         this.setNetworkProtocol(new ServerLoginNetworkProtocol(this.engine, this, this.isLocalChannel()));

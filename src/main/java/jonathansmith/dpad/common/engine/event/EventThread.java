@@ -8,9 +8,10 @@ import java.util.Map;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.event.IEventListener;
 import jonathansmith.dpad.api.common.engine.event.IEventThread;
+
+import jonathansmith.dpad.common.engine.Engine;
 
 /**
  * Created by Jon on 23/03/14.
@@ -19,7 +20,7 @@ import jonathansmith.dpad.api.common.engine.event.IEventThread;
  */
 public class EventThread extends Thread implements IEventThread {
 
-    private final IEngine engine;
+    private final Engine engine;
 
     private final Multimap<Class<? extends Event>, IEventListener> liveListenerMap             = LinkedListMultimap.create();
     private final Multimap<Class<? extends Event>, IEventListener> pendingListenerAdditionsMap = LinkedListMultimap.create();
@@ -36,7 +37,7 @@ public class EventThread extends Thread implements IEventThread {
     private boolean pendingListenerRemovalsUpdate         = false;
     private boolean isModifyingEventListenerRemovalMap    = false;
 
-    public EventThread(IEngine engine) {
+    public EventThread(Engine engine) {
         this.engine = engine;
     }
 

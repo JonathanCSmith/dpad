@@ -12,11 +12,7 @@ import jonathansmith.dpad.api.common.engine.IEngine;
 
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
-import jonathansmith.dpad.common.network.packet.DisconnectPacket;
-import jonathansmith.dpad.common.network.packet.login.EncryptionRequestPacket;
-import jonathansmith.dpad.common.network.packet.login.EncryptionResponsePacket;
-import jonathansmith.dpad.common.network.packet.login.LoginStartPacket;
-import jonathansmith.dpad.common.network.packet.login.LoginSuccessPacket;
+import jonathansmith.dpad.common.network.packet.login.*;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
 
 import jonathansmith.dpad.server.engine.util.version.Version;
@@ -33,27 +29,29 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
 
     private static final String PROTOCOL_NAME       = "Server login protocol";
     private static final Random LOGIN_KEY_GENERATOR = new Random();
-    private static final int    LOGIN_TIMEOUT       = 600;
+    private static final long   LOGIN_TIMEOUT       = 30000;
 
-    private final boolean isLocalConnection;
-    private final byte[] loginKey = new byte[4];
+    private final boolean is_local_connection;
+    private final byte[] login_key = new byte[4];
+
+    private long loginTime;
 
     private LoginState loginState = LoginState.GREETING;
     private SecretKey secretKey;
-    private int       loginTime;
 
     public ServerLoginNetworkProtocol(IEngine engine, NetworkSession networkSession, boolean isLocalConnection) {
         super(engine, networkSession);
-        this.isLocalConnection = isLocalConnection;
-        LOGIN_KEY_GENERATOR.nextBytes(this.loginKey);
+        this.is_local_connection = isLocalConnection;
+        LOGIN_KEY_GENERATOR.nextBytes(this.login_key);
     }
 
     // Begins the login process by disseminating a shared key to the client for encryption
     public void handleLoginStart(LoginStartPacket packet) {
         Validate.validState(this.loginState == LoginState.GREETING, "Unexpected login start packet during the: " + this.loginState + " state");
+        this.loginTime = System.currentTimeMillis();
 
         boolean versionMatch = false;
-        if (this.isLocalConnection) {
+        if (this.is_local_connection) {
             versionMatch = true;
         }
 
@@ -70,13 +68,13 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
 
         this.networkSession.assignForeignUUID(packet.getUUID());
 
-        if (this.isLocalConnection) {
+        if (this.is_local_connection) {
             this.loginState = LoginState.READY_TO_FINISH;
         }
 
         else {
             this.loginState = LoginState.KEY_TRANSFER;
-            this.networkSession.scheduleOutboundPacket(new EncryptionRequestPacket(((ServerNetworkSession) this.networkSession).getNetworkManager().getKeyPair().getPublic(), this.loginKey), new GenericFutureListener[0]);
+            this.networkSession.scheduleOutboundPacket(new EncryptionRequestPacket(((ServerNetworkSession) this.networkSession).getNetworkManager().getKeyPair().getPublic(), this.login_key), new GenericFutureListener[0]);
         }
     }
 
@@ -85,7 +83,7 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
         Validate.validState(this.loginState == LoginState.KEY_TRANSFER, "Unexpected encryption response packet during the: " + this.loginState + " state");
         PrivateKey privateKey = ((ServerNetworkSession) this.networkSession).getNetworkManager().getKeyPair().getPrivate();
 
-        if (!Arrays.equals(this.loginKey, encryptionResponsePacket.decodeRandomSignature(privateKey))) {
+        if (!Arrays.equals(this.login_key, encryptionResponsePacket.decodeRandomSignature(privateKey))) {
             this.handleLoginFailure("Invalid login sequence");
         }
 
@@ -113,7 +111,7 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
 
     private void handleLoginFailure(String reason) {
         this.engine.handleError("Could not accept client due to: " + reason, null, false);
-        this.networkSession.scheduleOutboundPacket(new DisconnectPacket(reason), new GenericFutureListener[0]);
+        this.networkSession.scheduleOutboundPacket(new LoginDisconnectPacket(reason), new GenericFutureListener[0]);
         this.networkSession.closeChannel(reason);
     }
 
@@ -134,7 +132,7 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
             this.handleLoginFinish();
         }
 
-        if (this.loginTime++ == LOGIN_TIMEOUT) {
+        if (this.networkSession.isChannelOpen() && System.currentTimeMillis() - this.loginTime == LOGIN_TIMEOUT) {
             this.handleLoginFailure("Took too long to log in!");
         }
     }

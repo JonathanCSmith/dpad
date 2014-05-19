@@ -23,6 +23,9 @@ public class EncryptionResponsePacket extends Packet {
     private byte[] encodedSecretKey;
     private byte[] encodedRandomSignature;
 
+    public EncryptionResponsePacket() {
+    }
+
     public EncryptionResponsePacket(SecretKey secretKey, PublicKey key, byte[] randomSignature) {
         this.encodedSecretKey = CryptographyManager.encryptData(key, secretKey.getEncoded());
         this.encodedRandomSignature = CryptographyManager.encryptData(key, randomSignature);
