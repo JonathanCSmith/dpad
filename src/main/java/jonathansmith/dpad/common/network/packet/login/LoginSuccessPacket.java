@@ -12,7 +12,6 @@ import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
  * Created by Jon on 08/04/14.
  * <p/>
  * Passes the server side session information back to the client to confirm a successful login
- * TODO: Implement
  */
 public class LoginSuccessPacket extends Packet {
 
@@ -23,6 +22,10 @@ public class LoginSuccessPacket extends Packet {
 
     public LoginSuccessPacket(NetworkSession networkSession) {
         this.uuid = networkSession.getEngineAssignedUUID();
+    }
+
+    public String getUUIDPayload() {
+        return this.uuid;
     }
 
     @Override

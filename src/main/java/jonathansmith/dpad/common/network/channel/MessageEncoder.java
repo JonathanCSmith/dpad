@@ -27,7 +27,7 @@ public class MessageEncoder extends MessageToByteEncoder {
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, Object o, ByteBuf byteBuf) throws Exception {
         Packet packet = (Packet) o;
-        Integer packetId = channelHandlerContext.channel().attr(NetworkSession.WHITELISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY).get().inverse().get(packet.getClass());
+        Integer packetId = channelHandlerContext.channel().attr(NetworkSession.WHITE_LISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY).get().inverse().get(packet.getClass());
         this.engine.debug("Encoding: " + packet.getClass() + " on connection state: " + channelHandlerContext.channel().attr(NetworkSession.CONNECTION_STATE_ATTRIBUTE_KEY).get() + " with a payload of: " + packet.payloadToString(), null);
 
         if (packetId == null) {

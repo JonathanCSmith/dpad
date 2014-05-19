@@ -32,9 +32,9 @@ import jonathansmith.dpad.server.network.protocol.ServerRuntimeNetworkProtocol;
  */
 public abstract class NetworkSession extends SimpleChannelInboundHandler {
 
-    public static final AttributeKey<ConnectionState>                         CONNECTION_STATE_ATTRIBUTE_KEY               = new AttributeKey("Connection State");
-    public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITELISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY = new AttributeKey("Receivable Packets");
-    public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITELISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY   = new AttributeKey("Sendable Packets");
+    public static final AttributeKey<ConnectionState>                         CONNECTION_STATE_ATTRIBUTE_KEY                = new AttributeKey<ConnectionState>("Connection State");
+    public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITE_LISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY = new AttributeKey<BiMap<Integer, Class<? extends Packet>>>("Receivable Packets");
+    public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITE_LISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY   = new AttributeKey<BiMap<Integer, Class<? extends Packet>>>("Sendable Packets");
 
     private final Queue<PacketListenersTuple> outboundPacketsQueue = Queues.newConcurrentLinkedQueue();
     private final Queue<Packet>               inboundPacketsQueue  = Queues.newConcurrentLinkedQueue();
@@ -101,8 +101,8 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
 
     public void setConnectionState(ConnectionState state) {
         this.connectionState = this.channel.attr(CONNECTION_STATE_ATTRIBUTE_KEY).getAndSet(state);
-        this.channel.attr(WHITELISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY).set(state.getReceivablePacketsForSide(this.isClientSide));
-        this.channel.attr(WHITELISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY).set(state.getSendablePacketsForSide(this.isClientSide));
+        this.channel.attr(WHITE_LISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY).set(state.getReceivablePacketsForSide(this.isClientSide));
+        this.channel.attr(WHITE_LISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY).set(state.getSendablePacketsForSide(this.isClientSide));
         this.channel.config().setAutoRead(true);
     }
 
@@ -211,14 +211,12 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     }
 
     public void finaliseConnection() {
-        // TODO: Sync the client and server information.
         this.setNetworkProtocol(new ServerRuntimeNetworkProtocol(this.engine, this));
         // TODO: Send a ready status to the client (i.e. they have logged in)
     }
 
     public String buildSessionInformation() {
-        // TODO:
-        return null;
+        return "Address: " + this.getAddress() + ", Port: " + this.getPort() + ", Local UUID: " + this.getEngineAssignedUUID() + ", Foreign UUID: " + this.getForeignUUID();
     }
 
     public String getExitMessage() {

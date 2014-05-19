@@ -4,8 +4,6 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
-import jonathansmith.dpad.api.common.engine.util.log.ILogDisplay;
-
 /**
  * Created by Jon on 23/03/14.
  * <p/>

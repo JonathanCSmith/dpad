@@ -1,5 +1,6 @@
 package jonathansmith.dpad.common.network.listener;
 
+import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.common.network.packet.Packet;
@@ -11,8 +12,8 @@ import jonathansmith.dpad.common.network.packet.Packet;
  */
 public class PacketListenersTuple {
 
-    private final Packet                  packet;
-    private final GenericFutureListener[] listeners;
+    private final Packet                                packet;
+    private final GenericFutureListener<Future<Void>>[] listeners;
 
     public PacketListenersTuple(Packet packet, GenericFutureListener[] listeners) {
         this.packet = packet;
@@ -23,7 +24,7 @@ public class PacketListenersTuple {
         return this.packet;
     }
 
-    public GenericFutureListener[] getListeners() {
+    public GenericFutureListener<Future<Void>>[] getListeners() {
         return this.listeners;
     }
 }

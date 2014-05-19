@@ -11,7 +11,7 @@ import jonathansmith.dpad.common.gui.EngineTabController;
 /**
  * Created by Jon on 23/03/14.
  * <p/>
- * Client GUI display tab
+ * Client GUI display tab. Handles display switching and events
  */
 public class ClientTabController extends EngineTabController {
 
@@ -19,7 +19,8 @@ public class ClientTabController extends EngineTabController {
     private static final List<Class<? extends Event>> EVENTS = new ArrayList<Class<? extends Event>>(
             Arrays.asList(
                     ClientDisplayChangeEvent.class
-            ));
+            )
+    );
 
     private ClientDisplay currentDisplay = null;
     private ClientDisplay oldDisplay     = null;
@@ -36,13 +37,7 @@ public class ClientTabController extends EngineTabController {
     public void init() {
         super.init();
 
-        try {
-            this.engine.getEventThread().addEventListener(this);
-        }
-
-        catch (InterruptedException ex) {
-            this.engine.handleError("Could not subscribe to event thread", ex, true);
-        }
+        this.engine.getEventThread().addEventListener(this);
     }
 
     @Override
@@ -63,7 +58,7 @@ public class ClientTabController extends EngineTabController {
     }
 
     @Override
-    public void onEventRecieved(Event event) {
+    public void onEventReceived(Event event) {
         ClientDisplayChangeEvent evt = (ClientDisplayChangeEvent) event;
         this.currentDisplay = (ClientDisplay) evt.getTargetDisplay();
     }

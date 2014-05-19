@@ -1,10 +1,10 @@
-Remove handshake netcode in favour of a direct login status
-Add in login netcode.
 Add in idle executors for both client and server
 GUI for setup - (blank?!)
 GUI for idle - should be the default option guis, i.e. client should be runtime select and server should (perhaps) have debug tools (i.e. enabling packet profiling etc)
 Events
 Plugin manager
-
-LOGIN FRAMEWORK:
-	Implemenent login states and their transitions
+Minor feature possibility added by allowing servers to blacklist/whitelist ips (not fully implemented).
+Verify session info is synced by the end of the process.
+Finish-up login process
+Permission ruleset for db access
+Config

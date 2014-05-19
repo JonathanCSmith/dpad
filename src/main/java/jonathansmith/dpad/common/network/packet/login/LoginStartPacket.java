@@ -15,27 +15,48 @@ import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
  */
 public class LoginStartPacket extends Packet {
 
+    private String version;
     private String uuid;
+    private String address;
+    private int    port;
 
     public LoginStartPacket() {
     }
 
-    public LoginStartPacket(NetworkSession session) {
+    public LoginStartPacket(String version, NetworkSession session) {
+        this.version = version;
         this.uuid = session.getEngineAssignedUUID();
+        this.address = session.getAddress();
+        this.port = Integer.getInteger(session.getPort());
     }
 
-    public String getUUIDPayload() {
+    public String getVersion() {
+        return this.version;
+    }
+
+    public String getUUID() {
         return this.uuid;
     }
 
     @Override
+    public boolean isUrgent() {
+        return true;
+    }
+
+    @Override
     public void readPacketData(PacketBuffer packetBuffer) throws IOException {
+        this.version = packetBuffer.readStringFromBuffer(255);
         this.uuid = packetBuffer.readStringFromBuffer(16);
+        this.address = packetBuffer.readStringFromBuffer(255);
+        this.port = packetBuffer.readUnsignedShort();
     }
 
     @Override
     public void writePacketData(PacketBuffer packetBuffer) throws IOException {
+        packetBuffer.writeStringToBuffer(this.version);
         packetBuffer.writeStringToBuffer(this.uuid);
+        packetBuffer.writeStringToBuffer(this.address);
+        packetBuffer.writeShort(this.port);
     }
 
     @Override
@@ -45,6 +66,6 @@ public class LoginStartPacket extends Packet {
 
     @Override
     public String payloadToString() {
-        return "Login start packet with a foreign assigned id of: " + this.uuid;
+        return String.format("Login start packet with version: %s, client uuid: %s, socket address: %s and port: %d", this.version, this.uuid, this.address, this.port);
     }
 }

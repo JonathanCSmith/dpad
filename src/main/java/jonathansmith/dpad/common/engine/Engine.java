@@ -7,11 +7,11 @@ import org.slf4j.Logger;
 import jonathansmith.dpad.DPAD;
 import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.event.IEventThread;
-import jonathansmith.dpad.api.common.engine.util.log.ILogDisplay;
 import jonathansmith.dpad.common.engine.event.EventThread;
 import jonathansmith.dpad.common.engine.executor.Executor;
 import jonathansmith.dpad.common.engine.executor.IdleExecutor;
 import jonathansmith.dpad.common.engine.io.FileSystem;
+import jonathansmith.dpad.common.engine.util.log.ILogDisplay;
 import jonathansmith.dpad.common.gui.EngineTabController;
 import jonathansmith.dpad.common.network.NetworkManager;
 import jonathansmith.dpad.common.platform.Platform;
@@ -81,7 +81,7 @@ public abstract class Engine extends Thread implements IEngine {
     public void saveAndShutdown() {
         if (this.tabDisplay != null) {
             this.tabDisplay.shutdown(false);
-            DPAD.getInstance().getGUI().removeTab(this.tabDisplay);
+            DPAD.getInstance().getGUI().removeCoreTab(this.tabDisplay);
             this.tabDisplay = null;
         }
 
@@ -93,15 +93,15 @@ public abstract class Engine extends Thread implements IEngine {
             this.networkManager.shutdown(false);
         }
 
-        if (this.getEventThread() != null) {
-            this.getEventThread().shutdown(false);
+        if (this.eventThread != null) {
+            this.eventThread.shutdown(true);
         }
     }
 
     public void forceShutdown() {
         if (this.tabDisplay != null) {
             this.tabDisplay.shutdown(true);
-            DPAD.getInstance().getGUI().removeTab(this.tabDisplay);
+            DPAD.getInstance().getGUI().removeCoreTab(this.tabDisplay);
             this.tabDisplay = null;
         }
 
@@ -113,8 +113,8 @@ public abstract class Engine extends Thread implements IEngine {
             this.networkManager.shutdown(true);
         }
 
-        if (this.getEventThread() != null) {
-            this.getEventThread().shutdown(true);
+        if (this.eventThread != null) {
+            this.eventThread.shutdown(true);
         }
     }
 

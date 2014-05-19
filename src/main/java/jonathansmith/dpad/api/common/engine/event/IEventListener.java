@@ -11,7 +11,17 @@ import jonathansmith.dpad.common.engine.event.Event;
  */
 public interface IEventListener {
 
+    /**
+     * Used to obtain events that this listener is interesting
+     *
+     * @return List of Classes (extended from event) that are of interest to this listener
+     */
     List<Class<? extends Event>> getEventsToListenFor();
 
-    void onEventRecieved(Event event);
+    /**
+     * Called when an event occurs. Proper type checking should be performed within the listener as the event is only guaranteed to be of one of the types returned from {@link IEventListener#getEventsToListenFor()}
+     *
+     * @param event the event to which this listener is subscribed
+     */
+    void onEventReceived(Event event);
 }

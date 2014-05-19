@@ -13,14 +13,13 @@ import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.login.EncryptionResponsePacket;
 import jonathansmith.dpad.common.network.packet.login.LoginSuccessPacket;
-import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
 
 /**
  * Created by Jon on 23/03/14.
  * <p/>
  * Client login protocol. No encryption used...
  */
-public class ClientLoginProtocol extends NetworkProtocol {
+public class ClientLoginProtocol extends ClientNetworkProtocol {
 
     private static final String PROTOCOL_NAME = "Client Login Protocol";
 
@@ -42,6 +41,7 @@ public class ClientLoginProtocol extends NetworkProtocol {
 
     public void handleLoginSuccess(LoginSuccessPacket loginSuccessPacket) {
         this.networkSession.setConnectionState(ConnectionState.RUNTIME);
+        this.networkSession.assignForeignUUID(loginSuccessPacket.getUUIDPayload());
     }
 
     @Override
@@ -60,11 +60,16 @@ public class ClientLoginProtocol extends NetworkProtocol {
 
     @Override
     public void pulseScheduledProtocolTasks() {
+    }
 
+    @Override
+    public void handleDisconnect(String reason) {
+        this.networkSession.closeChannel(reason);
     }
 
     @Override
     public void onDisconnect(String exitMessage) {
-        this.networkSession.closeChannel(exitMessage);
+        // TODO: Cleanup
+        // TODO: Disconnect message
     }
 }

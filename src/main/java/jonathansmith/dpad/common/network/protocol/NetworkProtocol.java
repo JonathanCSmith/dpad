@@ -25,9 +25,10 @@ public abstract class NetworkProtocol {
 
     public abstract void pulseScheduledProtocolTasks();
 
+    /**
+     * Responsible for handling an actual disconnect and any response that may occur. This should ONLY be called by the network manager.
+     *
+     * @param exitMessage
+     */
     public abstract void onDisconnect(String exitMessage);
-
-    public void handleDisconnect(String reason) {
-        this.networkSession.closeChannel(reason);
-    }
 }

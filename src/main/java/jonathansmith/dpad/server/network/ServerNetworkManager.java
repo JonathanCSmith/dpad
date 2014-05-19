@@ -1,13 +1,21 @@
 package jonathansmith.dpad.server.network;
 
 import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.local.LocalServerChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkManager;
+import jonathansmith.dpad.common.network.NetworkSession;
+import jonathansmith.dpad.common.network.packet.DisconnectPacket;
 import jonathansmith.dpad.server.network.channel.ServerChannelInitialiser;
 
 /**
@@ -17,12 +25,84 @@ import jonathansmith.dpad.server.network.channel.ServerChannelInitialiser;
  */
 public class ServerNetworkManager extends NetworkManager {
 
+    private final List<NetworkSession> sessions = Collections.synchronizedList(new ArrayList<NetworkSession>());
+
     private final ServerBootstrap serverBootstrap;
 
     public ServerNetworkManager(Engine engine, SocketAddress address, boolean isLocal) {
         super(engine, address, "Netty Server IO #%d", isLocal);
 
         this.serverBootstrap = new ServerBootstrap();
+    }
+
+    // TODO: Switch Disconnect during logins to disconnect generic
+    @Override
+    public void run() {
+        while (this.isAlive && !this.hasErrored) {
+            synchronized (this.sessions) {
+                Iterator<NetworkSession> iter = this.sessions.iterator();
+
+                while (iter.hasNext()) {
+                    final NetworkSession session = iter.next();
+
+                    if (!session.isChannelOpen()) {
+                        iter.remove();
+
+                        if (session.getExitMessage() != null) {
+                            session.getNetworkProtocol().onDisconnect(session.getExitMessage());
+                        }
+
+                        else if (session.getNetworkProtocol() != null) {
+                            session.getNetworkProtocol().onDisconnect("Disconnected");
+                        }
+                    }
+
+                    else {
+                        try {
+                            session.processReceivedPackets();
+                        }
+
+                        catch (Exception ex) {
+                            if (session.isLocalChannel()) {
+                                this.engine.handleError("Error processing packets on local channel", ex, true);
+                                this.isAlive = false;
+                            }
+
+                            else {
+                                this.engine.warn("Failed to process inbound packet from: " + session.getSocketAddress(), ex);
+                            }
+
+                            session.scheduleOutboundPacket(new DisconnectPacket("Internal server error"), new GenericFutureListener[]{new GenericFutureListener() {
+                                @Override
+                                public void operationComplete(Future f) {
+                                    session.closeChannel("Internal Server Error");
+                                }
+                            }});
+
+                            session.disableAutoRead();
+                        }
+                    }
+                }
+            }
+        }
+
+        for (final NetworkSession session : this.sessions) {
+            if (session.isLocalChannel() && session.isChannelOpen()) {
+                session.scheduleOutboundPacket(new DisconnectPacket("Server shutdown"), new GenericFutureListener[]{new GenericFutureListener() {
+                    @Override
+                    public void operationComplete(Future future) throws Exception {
+                        session.shutdown(ServerNetworkManager.this.hasErrored);
+                    }
+                }});
+            }
+        }
+
+        this.hasShutdown = true;
+    }
+
+    @Override
+    public void addSession(NetworkSession session) {
+        this.sessions.add(session);
     }
 
     @Override
