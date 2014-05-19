@@ -18,6 +18,7 @@ import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkManager;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.DisconnectPacket;
+
 import jonathansmith.dpad.server.network.channel.ServerChannelInitialiser;
 
 /**
@@ -30,7 +31,7 @@ public class ServerNetworkManager extends NetworkManager {
     private final List<NetworkSession> sessions = Collections.synchronizedList(new ArrayList<NetworkSession>());
 
     private final ServerBootstrap serverBootstrap;
-    private final KeyPair serverKeyPair;
+    private final KeyPair         serverKeyPair;
 
     public ServerNetworkManager(Engine engine, SocketAddress address, boolean isLocal) {
         super(engine, address, "Netty Server IO #%d", isLocal);

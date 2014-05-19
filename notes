@@ -12,10 +12,11 @@ Notes:
 - NetworkManager should never be directly accessed. Instead session should deal with everything internally
 - Client side executors will be linear and communicate through sessions
 - Server side executors are independent of network communication as all replies should be handled through sessions
+- Tasks should heavily trace logging
 
 Global TODO:
 - Disconnect GUI
 - RuntimeNetworkProtocols
-- Executors as queue?! (Or at least submit executor for post completion?!)
-- Idle Execs and ensure they only return when neccessary
+- Idle Execs = Default which should be assigned during engine creation.
+- Idle Execs and ensure they only return when necessary
 - Idle GUIs

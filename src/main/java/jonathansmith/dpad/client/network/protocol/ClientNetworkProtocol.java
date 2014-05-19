@@ -2,10 +2,12 @@ package jonathansmith.dpad.client.network.protocol;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.event.IEventThread;
-import jonathansmith.dpad.client.engine.event.ClientDisplayChangeEvent;
-import jonathansmith.dpad.client.gui.ClientDisconnectDisplay;
+
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+
+import jonathansmith.dpad.client.engine.event.ClientDisplayChangeEvent;
+import jonathansmith.dpad.client.gui.ClientDisconnectDisplay;
 
 /**
  * Created by Jon on 19/05/2014.

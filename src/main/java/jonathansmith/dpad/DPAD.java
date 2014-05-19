@@ -14,7 +14,7 @@ import com.beust.jcommander.Parameter;
 import io.netty.channel.local.LocalAddress;
 
 import jonathansmith.dpad.api.APIAccess;
-import jonathansmith.dpad.client.ClientEngine;
+
 import jonathansmith.dpad.common.api.API;
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.gui.GUIContainer;
@@ -22,6 +22,9 @@ import jonathansmith.dpad.common.gui.startup.StartupTabController;
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.platform.Platform;
 import jonathansmith.dpad.common.platform.PlatformConverter;
+
+import jonathansmith.dpad.client.ClientEngine;
+
 import jonathansmith.dpad.server.ServerEngine;
 
 /**
@@ -36,11 +39,27 @@ public class DPAD extends Thread {
     private static boolean errorFlag           = false;
 
     private static DPAD instance;
+    private final LinkedList<Engine> engines          = new LinkedList<Engine>();
+    @Parameter(names = {"-platform"}, converter = PlatformConverter.class, description = "Platform Type")
+    private       Platform           platform         = null;
+    @Parameter(names = {"-ip"}, description = "IP Address to connect to")
+    private       String             ipAddress        = "";
+    @Parameter(names = {"-port"}, description = "Port to host or connect on")
+    private       int                port             = -1;
+    @Parameter(names = {"-debug"}, description = "Verbosity of logging")
+    private       boolean            isVerboseLogging = true;
+    private       boolean            isInitialised    = false;
+    private       boolean            isShutdown       = false;
+    private GUIContainer  gui;
+    private SocketAddress platformAddress;
+
+    public DPAD() {
+    }
 
     /**
      * Main entry point for the DPAD program.
      *
-     * @param args
+     * @param args TODO
      */
     public static void main(String[] args) {
         DPAD main = DPAD.getInstance();
@@ -205,29 +224,6 @@ public class DPAD extends Thread {
         return instance;
     }
 
-    private final LinkedList<Engine> engines = new LinkedList<Engine>();
-
-    @Parameter(names = {"-platform"}, converter = PlatformConverter.class, description = "Platform Type")
-    private Platform platform = null;
-
-    @Parameter(names = {"-ip"}, description = "IP Address to connect to")
-    private String ipAddress = "";
-
-    @Parameter(names = {"-port"}, description = "Port to host or connect on")
-    private int port = -1;
-
-    @Parameter(names = {"-debug"}, description = "Verbosity of logging")
-    private boolean isVerboseLogging = true;
-
-    private boolean isInitialised = false;
-    private boolean isShutdown    = false;
-
-    private GUIContainer  gui;
-    private SocketAddress platformAddress;
-
-    public DPAD() {
-    }
-
     public void init(GUIContainer gui) {
         if (this.isInitialised) {
             return;
@@ -354,6 +350,10 @@ public class DPAD extends Thread {
         return this.platformAddress;
     }
 
+    public void setPlatformAddress(SocketAddress address) {
+        this.platformAddress = address;
+    }
+
     public String getIPAddress() {
         return this.ipAddress;
     }
@@ -364,10 +364,6 @@ public class DPAD extends Thread {
 
     public boolean getIsShutdown() {
         return this.isShutdown;
-    }
-
-    public void setPlatformAddress(SocketAddress address) {
-        this.platformAddress = address;
     }
 
     public void handleError(String errorHeader, Exception ex, boolean runtimeQuitFlag) {

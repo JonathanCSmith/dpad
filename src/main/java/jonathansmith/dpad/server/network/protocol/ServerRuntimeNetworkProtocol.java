@@ -1,6 +1,7 @@
 package jonathansmith.dpad.server.network.protocol;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
+
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;

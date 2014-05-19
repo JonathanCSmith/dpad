@@ -8,6 +8,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
+
 import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;

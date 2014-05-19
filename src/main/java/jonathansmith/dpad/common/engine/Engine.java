@@ -4,9 +4,9 @@ import java.net.SocketAddress;
 
 import org.slf4j.Logger;
 
-import jonathansmith.dpad.DPAD;
 import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.event.IEventThread;
+
 import jonathansmith.dpad.common.engine.event.EventThread;
 import jonathansmith.dpad.common.engine.executor.Executor;
 import jonathansmith.dpad.common.engine.executor.IdleExecutor;
@@ -15,6 +15,8 @@ import jonathansmith.dpad.common.engine.util.log.ILogDisplay;
 import jonathansmith.dpad.common.gui.EngineTabController;
 import jonathansmith.dpad.common.network.NetworkManager;
 import jonathansmith.dpad.common.platform.Platform;
+
+import jonathansmith.dpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
@@ -67,6 +69,7 @@ public abstract class Engine extends Thread implements IEngine {
 
                     else {
                         this.setCurrentExecutor(proposedExecutor);
+                        this.setProposedExecutor(null);
                     }
                 }
 
@@ -193,6 +196,10 @@ public abstract class Engine extends Thread implements IEngine {
     }
 
     public void setProposedExecutor(Executor op) {
+        if (this.proposedExecutor != null) {
+            this.error("An executor has been overridden, this is a program error that is likely due to concurrency issues...", null);
+        }
+
         this.proposedExecutor = op;
     }
 

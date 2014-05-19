@@ -10,9 +10,11 @@ import javax.swing.*;
 
 import io.netty.channel.local.LocalAddress;
 
-import jonathansmith.dpad.DPAD;
 import jonathansmith.dpad.api.common.gui.ITabController;
+
 import jonathansmith.dpad.common.platform.Platform;
+
+import jonathansmith.dpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.

@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import jonathansmith.dpad.client.engine.event.ClientDisplayChangeEvent;
 import jonathansmith.dpad.common.engine.event.Event;
 import jonathansmith.dpad.common.gui.EngineTabController;
+
+import jonathansmith.dpad.client.engine.event.ClientDisplayChangeEvent;
 
 /**
  * Created by Jon on 23/03/14.
@@ -21,6 +22,7 @@ public class ClientTabController extends EngineTabController {
                     ClientDisplayChangeEvent.class
             )
     );
+    // TODO: Fix this in constructor
 
     private ClientDisplay currentDisplay = null;
     private ClientDisplay oldDisplay     = null;

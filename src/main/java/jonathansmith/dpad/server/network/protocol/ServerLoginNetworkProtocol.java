@@ -9,6 +9,7 @@ import javax.crypto.SecretKey;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
+
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.DisconnectPacket;
@@ -17,8 +18,10 @@ import jonathansmith.dpad.common.network.packet.login.EncryptionResponsePacket;
 import jonathansmith.dpad.common.network.packet.login.LoginStartPacket;
 import jonathansmith.dpad.common.network.packet.login.LoginSuccessPacket;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+
 import jonathansmith.dpad.server.engine.util.version.Version;
 import jonathansmith.dpad.server.network.ServerNetworkSession;
+
 import org.apache.commons.lang3.Validate;
 
 /**

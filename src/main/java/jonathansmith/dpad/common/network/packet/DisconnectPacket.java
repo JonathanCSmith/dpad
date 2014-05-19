@@ -2,8 +2,9 @@ package jonathansmith.dpad.common.network.packet;
 
 import java.io.IOException;
 
-import jonathansmith.dpad.client.network.protocol.ClientNetworkProtocol;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+
+import jonathansmith.dpad.client.network.protocol.ClientNetworkProtocol;
 
 /**
  * Created by Jon on 26/03/14.
@@ -13,9 +14,6 @@ import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
 public class DisconnectPacket extends Packet {
 
     private String reason;
-
-    public DisconnectPacket() {
-    }
 
     public DisconnectPacket(String s) {
         this.reason = s;
