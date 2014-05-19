@@ -14,7 +14,7 @@ public class IdleExecutor extends Executor {
     }
 
     @Override
-    public void execute() {
+    public void run() {
         while (!this.hasFinished() && !this.engine.hasErrored()) {
             try {
                 Thread.sleep(100);

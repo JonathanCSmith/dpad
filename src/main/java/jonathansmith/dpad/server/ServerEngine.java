@@ -58,7 +58,7 @@ public class ServerEngine extends Engine {
             return;
         }
 
-        this.setCurrentExecutor(new ServerStartup(this, this.address));
+        this.setProposedExecutor(new ServerStartup(this, this.address));
     }
 
     @Override

@@ -3,8 +3,6 @@ package jonathansmith.dpad.common.network.channel;
 import io.netty.channel.ChannelInitializer;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-import jonathansmith.dpad.common.network.NetworkManager;
-import jonathansmith.dpad.common.network.NetworkSession;
 
 /**
  * Created by Jon on 26/03/14.
@@ -13,13 +11,9 @@ import jonathansmith.dpad.common.network.NetworkSession;
  */
 public abstract class ChannelInitialiser extends ChannelInitializer {
 
-    protected final IEngine        engine;
-    protected final NetworkManager networkManager;
+    protected final IEngine engine;
 
-    private NetworkSession session;
-
-    public ChannelInitialiser(IEngine engine, NetworkManager manager) {
+    public ChannelInitialiser(IEngine engine) {
         this.engine = engine;
-        this.networkManager = manager;
     }
 }

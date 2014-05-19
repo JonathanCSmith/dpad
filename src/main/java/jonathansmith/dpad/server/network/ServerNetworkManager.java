@@ -1,6 +1,7 @@
 package jonathansmith.dpad.server.network;
 
 import java.net.SocketAddress;
+import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
+import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkManager;
 import jonathansmith.dpad.common.network.NetworkSession;
@@ -28,14 +30,23 @@ public class ServerNetworkManager extends NetworkManager {
     private final List<NetworkSession> sessions = Collections.synchronizedList(new ArrayList<NetworkSession>());
 
     private final ServerBootstrap serverBootstrap;
+    private final KeyPair serverKeyPair;
 
     public ServerNetworkManager(Engine engine, SocketAddress address, boolean isLocal) {
         super(engine, address, "Netty Server IO #%d", isLocal);
 
         this.serverBootstrap = new ServerBootstrap();
+        this.serverKeyPair = CryptographyManager.createNewKeyPair();
     }
 
-    // TODO: Switch Disconnect during logins to disconnect generic
+    public void addSession(NetworkSession session) {
+        this.sessions.add(session);
+    }
+
+    public KeyPair getKeyPair() {
+        return this.serverKeyPair;
+    }
+
     @Override
     public void run() {
         while (this.isAlive && !this.hasErrored) {
@@ -98,11 +109,6 @@ public class ServerNetworkManager extends NetworkManager {
         }
 
         this.hasShutdown = true;
-    }
-
-    @Override
-    public void addSession(NetworkSession session) {
-        this.sessions.add(session);
     }
 
     @Override

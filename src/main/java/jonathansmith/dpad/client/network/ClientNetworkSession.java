@@ -14,9 +14,12 @@ import jonathansmith.dpad.common.network.packet.login.LoginStartPacket;
  */
 public class ClientNetworkSession extends NetworkSession {
 
-    public ClientNetworkSession(IEngine engine, boolean isLocal) {
-        super(engine, isLocal);
+    private final ClientNetworkManager networkManager;
 
+    public ClientNetworkSession(IEngine engine, ClientNetworkManager manager) {
+        super(engine, manager.isLocalConnection());
+
+        this.networkManager = manager;
         this.setNetworkProtocol(new ClientLoginProtocol(this.engine, this));
         this.scheduleOutboundPacket(new LoginStartPacket(this.engine.getVersion(), this), new GenericFutureListener[0]);
     }

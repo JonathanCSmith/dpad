@@ -1,7 +1,6 @@
 package jonathansmith.dpad.common.network;
 
 import java.net.SocketAddress;
-import java.security.KeyPair;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
@@ -9,7 +8,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.nio.NioEventLoopGroup;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.server.engine.util.config.AddressList;
 
 /**
@@ -27,7 +25,6 @@ public abstract class NetworkManager extends Thread {
     private final SocketAddress     address;
     private final NioEventLoopGroup eventLoopGroup;
     private final boolean           isLocalConnection;
-    private final KeyPair           serverKeyPair;
     private final boolean           isServerWhiteListed;
 
     protected boolean isAlive     = false;
@@ -41,7 +38,6 @@ public abstract class NetworkManager extends Thread {
         this.address = address;
         this.eventLoopGroup = new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat(eventThreadNameFormat).setDaemon(true).build());
         this.isLocalConnection = isLocal;
-        this.serverKeyPair = CryptographyManager.createNewKeyPair();
         this.isServerWhiteListed = false; // TODO:
     }
 
@@ -55,10 +51,6 @@ public abstract class NetworkManager extends Thread {
 
     public boolean isLocalConnection() {
         return this.isLocalConnection;
-    }
-
-    public KeyPair getKeyPair() {
-        return this.serverKeyPair;
     }
 
     public ChannelFuture getChannelFuture() {
@@ -99,8 +91,6 @@ public abstract class NetworkManager extends Thread {
             this.engine.info("Shutdown network event threads", null);
         }
     }
-
-    public abstract void addSession(NetworkSession session);
 
     public abstract void buildBootstap();
 

@@ -14,31 +14,11 @@ public class ClientRuntimeProtocol extends ClientNetworkProtocol {
     private static final String PROTOCOL_NAME = "Client Runtime Protocol";
 
     public ClientRuntimeProtocol(IEngine engine, NetworkSession session) {
-        super(engine, session);
-    }
-
-    @Override
-    public String getProtocolName() {
-        return PROTOCOL_NAME;
+        super(engine, session, PROTOCOL_NAME);
     }
 
     @Override
     public void onConnectionStateTransition(ConnectionState connectionState, ConnectionState connectionState1) {
         this.engine.handleError("Unexpected protocol change. Attempted to change to" + connectionState1.toString(), new IllegalStateException("Protocol cannot be changed once runtime has been established"), false);
-    }
-
-    @Override
-    public void pulseScheduledProtocolTasks() {
-    }
-
-    @Override
-    public void handleDisconnect(String reason) {
-        this.networkSession.closeChannel(reason);
-    }
-
-    @Override
-    public void onDisconnect(String exitMessage) {
-        // TODO: Cleanup
-        // TODO: Disconnect screen
     }
 }

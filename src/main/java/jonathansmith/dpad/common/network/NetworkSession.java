@@ -35,12 +35,9 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     public static final AttributeKey<ConnectionState>                         CONNECTION_STATE_ATTRIBUTE_KEY                = new AttributeKey<ConnectionState>("Connection State");
     public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITE_LISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY = new AttributeKey<BiMap<Integer, Class<? extends Packet>>>("Receivable Packets");
     public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITE_LISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY   = new AttributeKey<BiMap<Integer, Class<? extends Packet>>>("Sendable Packets");
-
+    protected final IEngine engine;
     private final Queue<PacketListenersTuple> outboundPacketsQueue = Queues.newConcurrentLinkedQueue();
     private final Queue<Packet>               inboundPacketsQueue  = Queues.newConcurrentLinkedQueue();
-
-    protected final IEngine engine;
-
     private final UUID    localUUID;
     private final boolean isClientSide;
 
@@ -51,10 +48,10 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     private String          terminationReason;
     private UUID            foreignUUID;
 
-    public NetworkSession(IEngine engine, boolean isClientSide) {
+    public NetworkSession(IEngine engine, boolean isLocal) {
         this.engine = engine;
         this.localUUID = UUID.randomUUID();
-        this.isClientSide = isClientSide;
+        this.isClientSide = isLocal;
     }
 
     public SocketAddress getSocketAddress() {

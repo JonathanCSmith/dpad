@@ -7,17 +7,21 @@ import jonathansmith.dpad.common.engine.Engine;
  * <p/>
  * Abstract operation parent. Represents an internal execution thread.
  */
-public abstract class Executor {
+public abstract class Executor extends Thread {
 
     protected final Engine engine;
 
+    private boolean isExecuting = false;
     private boolean hasFinished = false;
 
     public Executor(Engine engine) {
         this.engine = engine;
     }
 
-    public abstract void execute();
+    public final void execute() {
+        this.isExecuting = true;
+        this.start();
+    }
 
     public boolean hasFinished() {
         return this.hasFinished;
@@ -28,4 +32,8 @@ public abstract class Executor {
     }
 
     public abstract void shutdown(boolean forceShutdownFlag);
+
+    public final boolean isExecuting() {
+        return this.isExecuting;
+    }
 }

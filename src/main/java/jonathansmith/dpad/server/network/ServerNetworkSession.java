@@ -11,9 +11,16 @@ import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
  */
 public class ServerNetworkSession extends NetworkSession {
 
-    public ServerNetworkSession(IEngine engine, boolean isLocal) {
-        super(engine, isLocal);
+    private final ServerNetworkManager networkManager;
 
-        this.setNetworkProtocol(new ServerLoginNetworkProtocol(this.engine, this, isLocal));
+    public ServerNetworkSession(IEngine engine, ServerNetworkManager manager) {
+        super(engine, manager.isLocalConnection());
+
+        this.networkManager = manager;
+        this.setNetworkProtocol(new ServerLoginNetworkProtocol(this.engine, this, this.isLocalChannel()));
+    }
+
+    public ServerNetworkManager getNetworkManager() {
+        return this.networkManager;
     }
 }
