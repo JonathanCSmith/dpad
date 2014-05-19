@@ -30,11 +30,12 @@ public abstract class Engine extends Thread implements IEngine {
     protected Logger     logger     = null;
 
     protected EngineTabController tabDisplay;
-    protected Executor            currentExecutor;
 
-    private boolean hasError            = false;
-    private boolean shutdownFlag        = false;
-    private boolean networkManagerSetup = false;
+    private boolean  hasError            = false;
+    private boolean  shutdownFlag        = false;
+    private boolean  networkManagerSetup = false;
+    private Executor currentExecutor     = null;
+    private Executor proposedExecutor    = null;
 
     private NetworkManager networkManager;
     private String         version;
@@ -56,12 +57,30 @@ public abstract class Engine extends Thread implements IEngine {
     public void run() {
         while (!this.hasErrored() && !this.isShuttingDown()) {
             Executor currentExecutor = this.getCurrentExecutor();
-            if (currentExecutor.hasFinished()) {
-                this.setCurrentExecutor(new IdleExecutor(this));
+            if (!(currentExecutor instanceof IdleExecutor)) {
+                if (currentExecutor.hasFinished()) {
+
+                    Executor proposedExecutor = this.getProposedExecutor();
+                    if (proposedExecutor == null) {
+                        this.setCurrentExecutor(new IdleExecutor(this));
+                    }
+
+                    else {
+                        this.setCurrentExecutor(proposedExecutor);
+                    }
+                }
+
+                else if (!currentExecutor.isExecuting()) {
+                    currentExecutor.execute();
+                }
             }
 
-            else {
-                currentExecutor.execute();
+            try {
+                Thread.sleep(100);
+            }
+
+            catch (InterruptedException ex) {
+                // TODO: Log?!
             }
         }
 
@@ -69,7 +88,7 @@ public abstract class Engine extends Thread implements IEngine {
             this.forceShutdown();
         }
 
-        else if (this.isShuttingDown()) {
+        else {
             this.saveAndShutdown();
         }
     }
@@ -79,42 +98,38 @@ public abstract class Engine extends Thread implements IEngine {
     }
 
     public void saveAndShutdown() {
+        if (this.getCurrentExecutor() != null) {
+            this.getCurrentExecutor().shutdown(false);
+        }
+
+        this.eventThread.shutdown(true);
+
         if (this.tabDisplay != null) {
             this.tabDisplay.shutdown(false);
             DPAD.getInstance().getGUI().removeCoreTab(this.tabDisplay);
             this.tabDisplay = null;
         }
 
-        if (this.getCurrentExecutor() != null) {
-            this.getCurrentExecutor().shutdown(false);
-        }
-
         if (this.networkManager != null) {
             this.networkManager.shutdown(false);
-        }
-
-        if (this.eventThread != null) {
-            this.eventThread.shutdown(true);
         }
     }
 
     public void forceShutdown() {
+        if (this.getCurrentExecutor() != null) {
+            this.getCurrentExecutor().shutdown(true);
+        }
+
+        this.eventThread.shutdown(true);
+
         if (this.tabDisplay != null) {
             this.tabDisplay.shutdown(true);
             DPAD.getInstance().getGUI().removeCoreTab(this.tabDisplay);
             this.tabDisplay = null;
         }
 
-        if (this.getCurrentExecutor() != null) {
-            this.getCurrentExecutor().shutdown(true);
-        }
-
         if (this.networkManager != null) {
             this.networkManager.shutdown(true);
-        }
-
-        if (this.eventThread != null) {
-            this.eventThread.shutdown(true);
         }
     }
 
@@ -156,11 +171,6 @@ public abstract class Engine extends Thread implements IEngine {
         this.fileSystem = fileSystem;
     }
 
-    @Override
-    public synchronized NetworkManager getNetworkManager() {
-        return this.networkManager;
-    }
-
     public void setNetworkManager(NetworkManager networkManager) {
         if (networkManager == null || this.networkManagerSetup) {
             return;
@@ -170,12 +180,20 @@ public abstract class Engine extends Thread implements IEngine {
         this.networkManagerSetup = true;
     }
 
-    public void setCurrentExecutor(Executor op) {
+    public Executor getCurrentExecutor() {
+        return this.currentExecutor;
+    }
+
+    private void setCurrentExecutor(Executor op) {
         this.currentExecutor = op;
     }
 
-    public Executor getCurrentExecutor() {
-        return this.currentExecutor;
+    private Executor getProposedExecutor() {
+        return this.proposedExecutor;
+    }
+
+    public void setProposedExecutor(Executor op) {
+        this.proposedExecutor = op;
     }
 
     public boolean hasErrored() {
@@ -186,12 +204,9 @@ public abstract class Engine extends Thread implements IEngine {
         return this.shutdownFlag;
     }
 
+    @Override
     public IEventThread getEventThread() {
         return this.eventThread;
-    }
-
-    public void startShutdown() {
-        this.shutdownFlag = true;
     }
 
     @Override
@@ -270,5 +285,11 @@ public abstract class Engine extends Thread implements IEngine {
         if (shutdownThreadFlag) {
             this.hasError = true;
         }
+    }
+
+    @Override
+    public synchronized void handleShutdown(String exitMessage) {
+        this.debug(exitMessage, null);
+        this.shutdownFlag = true;
     }
 }

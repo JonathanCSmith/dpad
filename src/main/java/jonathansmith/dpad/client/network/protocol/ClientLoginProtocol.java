@@ -24,7 +24,7 @@ public class ClientLoginProtocol extends ClientNetworkProtocol {
     private static final String PROTOCOL_NAME = "Client Login Protocol";
 
     public ClientLoginProtocol(IEngine engine, NetworkSession session) {
-        super(engine, session);
+        super(engine, session, PROTOCOL_NAME);
     }
 
     public void handleEncryptionRequest(PublicKey key, byte[] randomSignature) {
@@ -45,31 +45,11 @@ public class ClientLoginProtocol extends ClientNetworkProtocol {
     }
 
     @Override
-    public String getProtocolName() {
-        return PROTOCOL_NAME;
-    }
-
-    @Override
     public void onConnectionStateTransition(ConnectionState connectionState, ConnectionState connectionState1) {
         this.engine.debug("Switching from: " + connectionState.toString() + " to: " + connectionState1.toString(), null);
 
         if (connectionState1 == ConnectionState.RUNTIME) {
             this.networkSession.setNetworkProtocol(new ClientRuntimeProtocol(this.engine, this.networkSession));
         }
-    }
-
-    @Override
-    public void pulseScheduledProtocolTasks() {
-    }
-
-    @Override
-    public void handleDisconnect(String reason) {
-        this.networkSession.closeChannel(reason);
-    }
-
-    @Override
-    public void onDisconnect(String exitMessage) {
-        // TODO: Cleanup
-        // TODO: Disconnect message
     }
 }

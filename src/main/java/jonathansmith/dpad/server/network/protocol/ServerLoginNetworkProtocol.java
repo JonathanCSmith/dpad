@@ -18,6 +18,7 @@ import jonathansmith.dpad.common.network.packet.login.LoginStartPacket;
 import jonathansmith.dpad.common.network.packet.login.LoginSuccessPacket;
 import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
 import jonathansmith.dpad.server.engine.util.version.Version;
+import jonathansmith.dpad.server.network.ServerNetworkSession;
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -72,14 +73,14 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
 
         else {
             this.loginState = LoginState.KEY_TRANSFER;
-            this.networkSession.scheduleOutboundPacket(new EncryptionRequestPacket(this.engine.getNetworkManager().getKeyPair().getPublic(), this.loginKey), new GenericFutureListener[0]);
+            this.networkSession.scheduleOutboundPacket(new EncryptionRequestPacket(((ServerNetworkSession) this.networkSession).getNetworkManager().getKeyPair().getPublic(), this.loginKey), new GenericFutureListener[0]);
         }
     }
 
     // Finalises the login process by completing the key exchange and enabling encryption on the channel
     public void handleEncryptionResponse(EncryptionResponsePacket encryptionResponsePacket) {
         Validate.validState(this.loginState == LoginState.KEY_TRANSFER, "Unexpected encryption response packet during the: " + this.loginState + " state");
-        PrivateKey privateKey = this.engine.getNetworkManager().getKeyPair().getPrivate();
+        PrivateKey privateKey = ((ServerNetworkSession) this.networkSession).getNetworkManager().getKeyPair().getPrivate();
 
         if (!Arrays.equals(this.loginKey, encryptionResponsePacket.decodeRandomSignature(privateKey))) {
             this.handleLoginFailure("Invalid login sequence");
@@ -95,7 +96,7 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
 
     // Starts the transition process between logging in + general runtime
     private void handleLoginFinish() {
-        String joinMsg = this.engine.getNetworkManager().allowUserToConnect(this.networkSession);
+        String joinMsg = ((ServerNetworkSession) this.networkSession).getNetworkManager().allowUserToConnect(this.networkSession);
         if (joinMsg != null) {
             this.handleLoginFailure(joinMsg);
         }

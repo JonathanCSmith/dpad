@@ -38,7 +38,7 @@ public class ClientEngine extends Engine {
         }
 
         // Add the client startup executor as the first program to be run. Ensuring that everything is setup before anything else is performed.
-        this.setCurrentExecutor(new ClientStartupExecutor(this, this.address));
+        this.setProposedExecutor(new ClientStartupExecutor(this, this.address));
     }
 
     @Override

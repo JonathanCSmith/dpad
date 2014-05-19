@@ -1,6 +1,6 @@
 package jonathansmith.dpad.api.common.engine;
 
-import jonathansmith.dpad.common.network.NetworkManager;
+import jonathansmith.dpad.api.common.engine.event.IEventThread;
 
 /**
  * Created by Jon on 23/03/14.
@@ -9,7 +9,19 @@ import jonathansmith.dpad.common.network.NetworkManager;
  */
 public interface IEngine {
 
+    /**
+     * Return the version of this engine. Includes the network protocol version string for comparing client / server compatibility
+     *
+     * @return String version information
+     */
     String getVersion();
+
+    /**
+     * Return the event thread for the engine
+     *
+     * @return {@link jonathansmith.dpad.api.common.engine.event.IEventThread} the event thread used by the current engine
+     */
+    IEventThread getEventThread();
 
     void trace(String message, Throwable e);
 
@@ -23,6 +35,10 @@ public interface IEngine {
 
     void handleError(String message, Throwable e, boolean shutdownThreadFlag);
 
-    // TODO: Remove from API
-    NetworkManager getNetworkManager();
+    /**
+     * Causes a shutdown of the engine with full saving.
+     *
+     * @param exitMessage debug shutdown message
+     */
+    void handleShutdown(String exitMessage);
 }

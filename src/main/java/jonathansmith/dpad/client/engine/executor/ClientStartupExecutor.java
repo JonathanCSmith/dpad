@@ -28,8 +28,8 @@ public class ClientStartupExecutor extends Executor {
     }
 
     @Override
-    public void execute() {
-        this.engine.info("Beginning netwok initialisation", null);
+    public void run() {
+        this.engine.info("Beginning network initialisation", null);
 
         // Bind the net logger to our loggers
         LoggerFactory.getInstance().getLogger(this.engine, "io.netty", new LoggingLevel(Level.DEBUG, Level.WARN, Level.DEBUG, Level.INFO));

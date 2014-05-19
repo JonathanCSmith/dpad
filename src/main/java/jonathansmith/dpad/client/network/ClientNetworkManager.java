@@ -9,7 +9,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import jonathansmith.dpad.client.network.channel.ClientChannelInitialiser;
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkManager;
-import jonathansmith.dpad.common.network.NetworkSession;
 
 /**
  * Created by Jon on 23/03/14.
@@ -21,19 +20,12 @@ public class ClientNetworkManager extends NetworkManager {
 
     private final Bootstrap clientBootstrap;
 
-    private NetworkSession session = null;
+    private ClientNetworkSession session = null;
 
     public ClientNetworkManager(Engine engine, SocketAddress address, boolean isLocal) {
         super(engine, address, "Netty Client IO #%d", isLocal);
 
         this.clientBootstrap = new Bootstrap();
-    }
-
-    @Override
-    public void addSession(NetworkSession session) {
-        if (this.session != null) {
-            this.engine.handleError("Cannot override session", new IllegalStateException("Session data has already been established"), true);
-        }
     }
 
     @Override
@@ -67,6 +59,16 @@ public class ClientNetworkManager extends NetworkManager {
             else {
                 this.session.getNetworkProtocol().onDisconnect("Disconnected from Server");
             }
+        }
+    }
+
+    public void setSession(ClientNetworkSession session) {
+        if (this.session != null) {
+            this.engine.handleError("Cannot override session", new IllegalStateException("Session data has already been established"), true);
+        }
+
+        else {
+            this.session = session;
         }
     }
 }
