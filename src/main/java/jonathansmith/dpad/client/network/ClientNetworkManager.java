@@ -30,7 +30,7 @@ public class ClientNetworkManager extends NetworkManager {
     }
 
     @Override
-    public void buildBootstap() {
+    public void buildBootstrap() {
         this.clientBootstrap.group(this.getEventLoopGroups());
         this.clientBootstrap.handler(new ClientChannelInitialiser(this.engine, this));
 
@@ -48,7 +48,7 @@ public class ClientNetworkManager extends NetworkManager {
 
     @Override
     public void run() {
-        while (this.isAlive && !this.hasErrored) {
+        while (this.isAlive && !this.hasError) {
             if (this.session == null) {
                 try {
                     Thread.sleep(10);
@@ -83,7 +83,8 @@ public class ClientNetworkManager extends NetworkManager {
 
     public void setSession(ClientNetworkSession session) {
         if (this.session != null) {
-            this.engine.handleError("Cannot override session", new IllegalStateException("Session data has already been established"), true);
+            this.engine.error("Something attempted to override a current session", new IllegalStateException("Session data has already been established"));
+            this.shutdown(true);
         }
 
         else {

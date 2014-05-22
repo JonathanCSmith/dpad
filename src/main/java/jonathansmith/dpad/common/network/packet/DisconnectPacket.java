@@ -2,7 +2,7 @@ package jonathansmith.dpad.common.network.packet;
 
 import java.io.IOException;
 
-import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
 import jonathansmith.dpad.client.network.protocol.ClientNetworkProtocol;
 
@@ -30,7 +30,7 @@ public abstract class DisconnectPacket extends Packet {
     }
 
     @Override
-    public void processPacket(NetworkProtocol networkProtocol) {
+    public void processPacket(INetworkProtocol networkProtocol) {
         ((ClientNetworkProtocol) networkProtocol).handleDisconnect(this.reason);
     }
 

@@ -37,7 +37,7 @@ public class FileSystem {
         }
 
         catch (Exception ex) {
-            this.engine.handleError("Could not instantiate FileSystem", ex, true);
+            this.engine.handleError("Could not instantiate FileSystem", ex);
         }
     }
 

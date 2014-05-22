@@ -1,4 +1,4 @@
-package jonathansmith.dpad.common.api;
+package jonathansmith.dpad.common;
 
 import jonathansmith.dpad.api.common.IAPI;
 import jonathansmith.dpad.api.common.engine.IEngine;

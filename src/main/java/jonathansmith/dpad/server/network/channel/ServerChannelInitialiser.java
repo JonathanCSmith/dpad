@@ -18,7 +18,7 @@ import jonathansmith.dpad.server.network.ServerNetworkSession;
  */
 public class ServerChannelInitialiser extends ChannelInitialiser {
 
-    private static final int TIMEOUT_TIME = 50;
+    private static final int TIMEOUT_TIME = 100;
 
     private final ServerNetworkManager networkManager;
 

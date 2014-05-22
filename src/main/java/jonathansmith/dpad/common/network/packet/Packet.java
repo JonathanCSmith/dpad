@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.google.common.collect.BiMap;
 
-import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
 /**
  * Created by Jon on 26/03/14.
@@ -29,7 +29,7 @@ public abstract class Packet {
 
     public abstract void writePacketData(PacketBuffer packetBuffer) throws IOException;
 
-    public abstract void processPacket(NetworkProtocol networkProtocol);
+    public abstract void processPacket(INetworkProtocol networkProtocol);
 
     public abstract String payloadToString();
 }

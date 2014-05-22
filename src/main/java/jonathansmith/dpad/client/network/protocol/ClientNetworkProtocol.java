@@ -4,7 +4,7 @@ import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.event.IEventThread;
 
 import jonathansmith.dpad.common.network.NetworkSession;
-import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
 import jonathansmith.dpad.client.engine.event.ClientDisplayChangeEvent;
 import jonathansmith.dpad.client.gui.ClientDisconnectDisplay;
@@ -14,18 +14,20 @@ import jonathansmith.dpad.client.gui.ClientDisconnectDisplay;
  * <p/>
  * Client side specific protocols
  */
-public abstract class ClientNetworkProtocol extends NetworkProtocol {
+public abstract class ClientNetworkProtocol implements INetworkProtocol {
 
-    private final String protocolName;
+    protected final IEngine        engine;
+    protected final NetworkSession network_session;
+    private final   String         protocolName;
 
     public ClientNetworkProtocol(IEngine engine, NetworkSession session, String protocolName) {
-        super(engine, session);
-
+        this.engine = engine;
+        this.network_session = session;
         this.protocolName = protocolName;
     }
 
     public void handleDisconnect(String reason) {
-        this.networkSession.closeChannel(reason);
+        this.network_session.closeChannel(reason);
     }
 
     @Override

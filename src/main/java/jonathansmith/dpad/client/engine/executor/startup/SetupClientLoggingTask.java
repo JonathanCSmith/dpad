@@ -26,7 +26,7 @@ public class SetupClientLoggingTask extends Task {
     @Override
     public void runTask() {
         // Bind the net logger to our loggers
-        LoggerFactory.getInstance().getLogger(this.engine, "io.netty", new LoggingLevel(Level.DEBUG, Level.WARN, Level.DEBUG, Level.INFO));
+        LoggerFactory.getInstance().getLogger(this.engine, "io.netty", new LoggingLevel(Level.DEBUG, Level.WARN, Level.TRACE, Level.INFO));
 
         this.loggingEngine.trace("Client logging setup complete", null);
     }

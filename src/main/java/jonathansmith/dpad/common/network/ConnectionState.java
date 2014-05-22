@@ -8,6 +8,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
 
+import jonathansmith.dpad.common.network.packet.KeepAlivePacket;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.login.*;
 import jonathansmith.dpad.common.network.packet.play.RuntimeDisconnectPacket;
@@ -53,7 +54,7 @@ public enum ConnectionState {
         }
 
         registerLoginPackets();
-        registerPlayPackets();
+        registerRuntimePackets();
 
         ConnectionState[] states = values();
 
@@ -79,11 +80,14 @@ public enum ConnectionState {
         ConnectionState.LOGIN.addServerPacket(EncryptionRequestPacket.class);
         ConnectionState.LOGIN.addClientPacket(EncryptionResponsePacket.class);
         ConnectionState.LOGIN.addServerPacket(LoginSuccessPacket.class);
+        ConnectionState.LOGIN.addClientPacket(LoginConfirmPacket.class);
         ConnectionState.LOGIN.addServerPacket(LoginDisconnectPacket.class);
     }
 
-    private static void registerPlayPackets() throws IllegalAddException {
+    private static void registerRuntimePackets() throws IllegalAddException {
         ConnectionState.RUNTIME.addServerPacket(RuntimeDisconnectPacket.class);
+        ConnectionState.RUNTIME.addServerPacket(KeepAlivePacket.class);
+        ConnectionState.RUNTIME.addClientPacket(KeepAlivePacket.class);
     }
 
     // Add packet to allowed sendables from client

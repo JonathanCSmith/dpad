@@ -31,7 +31,7 @@ public class CommonSetupTask extends Task {
         this.engine.setFileSystem(new FileSystem(this.engine));
 
         // Build the generic logger for both
-        this.engine.setLogger(LoggerFactory.getInstance().getLogger(this.engine, new LoggingLevel(Level.DEBUG, Level.WARN, Level.DEBUG, Level.INFO)));
+        this.engine.setLogger(LoggerFactory.getInstance().getLogger(this.engine, new LoggingLevel(Level.DEBUG, Level.WARN, Level.TRACE, Level.INFO)));
 
         // Start the event thread NOTE: I am not particularly happy with this cast, but it seems better than putting the start method in the api interface...
         ((EventThread) this.engine.getEventThread()).start();

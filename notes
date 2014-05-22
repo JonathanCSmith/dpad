@@ -14,10 +14,23 @@ Notes:
 - Server side executors are independent of network communication as all replies should be handled through sessions
 - Tasks should heavily trace logging
 
+Global MAYBE:
+- Have a debug variable for logging in threads to prevent cpu + memory usage (MAY NOT IMPLEMENT)
+- White list
+- Black list
+- Config?!
+- Disconnect information [move to enum?!]
+
 Global TODO:
-- Fix non local login process
-- Check for successful login after client network initialisation and fail client if it didnt work
-- Disconnect GUI
-- RuntimeNetworkProtocols
+- Test keep alive
+- Restore login times + time out times
+- Sort out channel disconnect information
+- Work out GUI transitioning
 - Idle Exec tasks
+- Disconnect GUI
+- Move client log to a debug tab
 - Idle GUIs
+- Reformat local finals to use lowercase + underscores
+
+GLOBAL INCREMENTAL TODO:
+- RuntimeNetworkProtocols

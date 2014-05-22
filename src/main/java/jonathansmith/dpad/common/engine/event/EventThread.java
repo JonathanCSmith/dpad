@@ -56,7 +56,8 @@ public class EventThread extends Thread implements IEventThread {
                 }
 
                 catch (InterruptedException ex) {
-                    this.engine.handleError("Event thread interrupted. Critical failure", ex, true);
+                    this.engine.error("Event thread interrupted. Critical failure", ex);
+                    this.shutdown(true);
                     continue;
                 }
             }
@@ -70,32 +71,9 @@ public class EventThread extends Thread implements IEventThread {
                 }
             }
 
-            if (this.pendingListenerAdditionsUpdate && !this.isModifyingEventListenersAdditionsMap) {
-                this.isModifyingEventListenersAdditionsMap = true;
-                this.liveListenerMap.putAll(this.pendingListenerAdditionsMap);
-                this.pendingListenerAdditionsMap.clear();
-                this.isModifyingEventListenersAdditionsMap = false;
-                this.pendingListenerAdditionsUpdate = false;
-            }
+            this.updateEventThread();
 
-            if (this.pendingListenerRemovalsUpdate && !this.isModifyingEventListenerRemovalMap) {
-                this.isModifyingEventListenerRemovalMap = true;
-                for (Map.Entry<Class<? extends Event>, IEventListener> entry : this.pendingListenerRemovalMap.entries()) {
-                    this.liveListenerMap.remove(entry.getKey(), entry.getValue());
-                }
-                this.pendingListenerRemovalMap.clear();
-                this.isModifyingEventListenerRemovalMap = false;
-                this.pendingListenerRemovalsUpdate = false;
-            }
-
-            if (this.pendingEventUpdates && !this.isModifyingEventsList) {
-                this.isModifyingEventsList = true;
-                this.liveEventList.addAll(this.pendingEventList);
-                this.pendingEventList.clear();
-                this.isModifyingEventsList = false;
-                this.pendingEventUpdates = false;
-            }
-
+            // If we are shutting down and all pending events have been posted kill the even thread
             if (this.liveEventList.isEmpty() && this.isShuttingDown) {
                 this.isAlive = false;
             }
@@ -108,7 +86,45 @@ public class EventThread extends Thread implements IEventThread {
         this.liveEventList.clear();
     }
 
+    private void updateEventThread() {
+        if (this.pendingListenerAdditionsUpdate && !this.isModifyingEventListenersAdditionsMap) {
+            this.isModifyingEventListenersAdditionsMap = true;
+            this.liveListenerMap.putAll(this.pendingListenerAdditionsMap);
+            this.pendingListenerAdditionsMap.clear();
+            this.isModifyingEventListenersAdditionsMap = false;
+            this.pendingListenerAdditionsUpdate = false;
+        }
+
+        if (this.pendingListenerRemovalsUpdate && !this.isModifyingEventListenerRemovalMap) {
+            this.isModifyingEventListenerRemovalMap = true;
+            for (Map.Entry<Class<? extends Event>, IEventListener> entry : this.pendingListenerRemovalMap.entries()) {
+                this.liveListenerMap.remove(entry.getKey(), entry.getValue());
+            }
+            this.pendingListenerRemovalMap.clear();
+            this.isModifyingEventListenerRemovalMap = false;
+            this.pendingListenerRemovalsUpdate = false;
+        }
+
+        if (this.pendingEventUpdates && !this.isModifyingEventsList) {
+            this.isModifyingEventsList = true;
+            this.liveEventList.addAll(this.pendingEventList);
+            this.pendingEventList.clear();
+            this.isModifyingEventsList = false;
+            this.pendingEventUpdates = false;
+        }
+    }
+
     public void shutdown(boolean force) {
+        if (!this.engine.isShuttingDown()) {
+            if (force) {
+                this.engine.handleError("Event thread shutdown caused by a fatal incident", null);
+            }
+
+            else {
+                this.engine.handleShutdown("Event thread shutdown with a non-fatal route cause");
+            }
+        }
+
         if (force) {
             this.isAlive = false;
         }
@@ -120,6 +136,7 @@ public class EventThread extends Thread implements IEventThread {
 
     @Override
     public void addEventListener(IEventListener listener) {
+        // Cannot add listeners when the event thread is shutting down
         if (this.isShuttingDown) {
             return;
         }
@@ -132,8 +149,8 @@ public class EventThread extends Thread implements IEventThread {
             }
 
             catch (InterruptedException ex) {
-                // Should not happen?!
-                // TODO: Verify fatality of this error
+                this.engine.error("Pending listener registration in event thread was interrupted", null);
+                this.shutdown(true); // Cannot guarantee the stability of the system if a listener goes unregistered
             }
         }
 
@@ -146,6 +163,7 @@ public class EventThread extends Thread implements IEventThread {
 
     @Override
     public void removeListener(IEventListener listener) {
+        // Cannot remove listeners when the event thread is shutting down
         if (this.isShuttingDown) {
             return;
         }
@@ -158,8 +176,8 @@ public class EventThread extends Thread implements IEventThread {
             }
 
             catch (InterruptedException ex) {
-                // Should not happen?!
-                // TODO: Verify fatality of this error
+                this.engine.error("Pending listener removal in event thread was interrupted", null);
+                this.shutdown(true); // Cannot guarantee the stability of the system if a listener goes unregistered
             }
         }
 
@@ -172,6 +190,7 @@ public class EventThread extends Thread implements IEventThread {
 
     @Override
     public void postEvent(Event event) {
+        // Cannot post new events when the event thread is shutting down
         if (this.isShuttingDown) {
             return;
         }
@@ -182,8 +201,8 @@ public class EventThread extends Thread implements IEventThread {
             }
 
             catch (InterruptedException ex) {
-                // Should not happen?!
-                // TODO: Verify fatality of this error
+                this.engine.error("Pending event posting in event thread was interrupted", null);
+                this.shutdown(true); // Cannot guarantee the stability of the system if a listener goes unregistered
             }
         }
 
