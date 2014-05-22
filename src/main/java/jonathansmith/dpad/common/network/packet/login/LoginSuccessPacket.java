@@ -5,7 +5,7 @@ import java.io.IOException;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
-import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
 import jonathansmith.dpad.client.network.protocol.ClientLoginProtocol;
 
@@ -40,7 +40,7 @@ public class LoginSuccessPacket extends Packet {
     }
 
     @Override
-    public void processPacket(NetworkProtocol networkProtocol) {
+    public void processPacket(INetworkProtocol networkProtocol) {
         ((ClientLoginProtocol) networkProtocol).handleLoginSuccess(this);
     }
 

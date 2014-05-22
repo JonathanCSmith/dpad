@@ -68,7 +68,7 @@ public class SetupHibernateTask extends Task {
         }
 
         catch (HibernateException ex) {
-            this.loggingEngine.handleError("Connection to: " + this.engine.getFileSystem().getDatabaseDirectory() + " was rejected or unavailable", ex, true);
+            this.loggingEngine.handleError("Connection to: " + this.engine.getFileSystem().getDatabaseDirectory() + " was rejected or unavailable", ex);
             return;
         }
 

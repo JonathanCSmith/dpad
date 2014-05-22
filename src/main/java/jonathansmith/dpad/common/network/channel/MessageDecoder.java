@@ -31,6 +31,8 @@ public class MessageDecoder extends ByteToMessageDecoder {
         if (byteBuf.readableBytes() != 0) {
             PacketBuffer packetBuffer = new PacketBuffer(byteBuf);
 
+            this.engine.debug("Decoding packet on connection state: " + channelHandlerContext.channel().attr(NetworkSession.CONNECTION_STATE_ATTRIBUTE_KEY).get(), null);
+
             int packetId = packetBuffer.readVarIntFromBuffer();
             Packet packet;
             try {
@@ -60,7 +62,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
                 else {
                     objects.add(packet);
 
-                    this.engine.debug(packet.getClass() + " was received and successfully decoded on connection state: " + channelHandlerContext.channel().attr(NetworkSession.CONNECTION_STATE_ATTRIBUTE_KEY).get() + " with a payload of: " + packet.payloadToString(), null);
+                    this.engine.debug(packet.getClass() + " was received and successfully decoded with a payload of: " + packet.payloadToString(), null);
                 }
             }
         }

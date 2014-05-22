@@ -15,7 +15,7 @@ import io.netty.channel.local.LocalAddress;
 
 import jonathansmith.dpad.api.APIAccess;
 
-import jonathansmith.dpad.common.api.API;
+import jonathansmith.dpad.common.API;
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.gui.GUIContainer;
 import jonathansmith.dpad.common.gui.startup.StartupTabController;

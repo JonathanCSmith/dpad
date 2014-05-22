@@ -26,7 +26,7 @@ import jonathansmith.dpad.DPAD;
 public abstract class Engine extends Thread implements IEngine {
 
     protected final SocketAddress address;
-    protected final EventThread event_thread;
+    protected final EventThread   event_thread;
 
     protected FileSystem fileSystem = null;
     protected Logger     logger     = null;
@@ -286,11 +286,11 @@ public abstract class Engine extends Thread implements IEngine {
     }
 
     @Override
-    public synchronized void handleError(String message, Throwable e, boolean shutdownThreadFlag) {
+    public synchronized void handleError(String message, Throwable e) {
         this.error(message, e);
-        if (shutdownThreadFlag) {
-            this.hasError = true;
-        }
+        this.hasError = true;
+
+        // TODO: Do we need shutdown flag here?!
     }
 
     @Override

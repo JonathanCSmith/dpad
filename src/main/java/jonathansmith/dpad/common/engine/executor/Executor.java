@@ -37,7 +37,8 @@ public abstract class Executor extends Thread implements IExecutor {
         this.isExecuting = true;
 
         if (this.task_list.size() == 0) {
-            this.engine.handleError("Current Executor: " + this.getExecutorName() + " has a task list with no tasks in it. Whilst not fatal, this is stupid.", null, false);
+            this.engine.error("Current Executor: " + this.getExecutorName() + " has a task list with no tasks in it. This is stupid and should not happen", null);
+            // TODO: Is this fatal?
         }
 
         this.start();
@@ -76,12 +77,12 @@ public abstract class Executor extends Thread implements IExecutor {
         if (this.repeatExecution) {
             while (!this.mustFinish) {
                 this.runTasks();
-                //this.engine.trace("Repeating task set in current executor: " + this.executorName, null);
+                this.engine.trace("Repeating task set in current executor: " + this.executorName, null);
             }
         }
 
         else {
-            //this.engine.trace("Executing: " + this.executorName, null);
+            this.engine.trace("Executing: " + this.executorName, null);
             this.runTasks();
         }
 
@@ -93,7 +94,7 @@ public abstract class Executor extends Thread implements IExecutor {
     private void runTasks() {
         while (!this.shutdownFlag && this.taskCount < this.task_list.size()) {
             Task task = this.task_list.get(this.taskCount);
-            //this.engine.trace("Starting task: " + task.getTaskName(), null);
+            this.engine.trace("Starting task: " + task.getTaskName(), null);
             task.runTask();
             this.taskCount++;
         }

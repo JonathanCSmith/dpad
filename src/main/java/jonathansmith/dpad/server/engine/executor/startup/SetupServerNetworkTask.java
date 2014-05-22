@@ -38,11 +38,11 @@ public class SetupServerNetworkTask extends Task {
 
         try {
             this.loggingEngine.trace("Attempting to initialise network infrastructure", null);
-            sNM.buildBootstap();
+            sNM.buildBootstrap();
         }
 
         catch (Exception ex) {
-            this.loggingEngine.handleError("Could not build bootstrap during network initialisation.", ex, true);
+            this.loggingEngine.handleError("Could not build bootstrap during network initialisation.", ex);
             return;
         }
 

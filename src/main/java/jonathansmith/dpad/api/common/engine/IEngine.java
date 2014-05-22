@@ -33,7 +33,7 @@ public interface IEngine {
 
     void error(String message, Throwable e);
 
-    void handleError(String message, Throwable e, boolean shutdownThreadFlag);
+    void handleError(String message, Throwable e);
 
     /**
      * Causes a shutdown of the engine with full saving.

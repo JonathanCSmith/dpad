@@ -39,12 +39,12 @@ public class SetupClientNetworkTask extends Task {
 
         try {
             this.loggingEngine.trace("Attempting to connect to server", null);
-            cNM.buildBootstap();
+            cNM.buildBootstrap();
         }
 
         // Generic exception as there are none specifically thrown. We catch, log, and shutdown the client.
         catch (Exception ex) {
-            this.loggingEngine.handleError("Could not connect to provided network during network initialisation.", ex, true);
+            this.loggingEngine.handleError("Could not connect to provided network during network initialisation.", ex);
             return;
         }
 

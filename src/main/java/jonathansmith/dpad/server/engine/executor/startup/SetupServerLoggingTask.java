@@ -27,9 +27,9 @@ public class SetupServerLoggingTask extends Task {
     @Override
     public void runTask() {
         // Bind the net logger to our loggers
-        LoggerFactory.getInstance().getLogger(this.engine, "org.jboss.logging", new LoggingLevel(Level.DEBUG, Level.WARN, Level.DEBUG, Level.INFO));
-        LoggerFactory.getInstance().getLogger(this.engine, "io.netty", new LoggingLevel(Level.DEBUG, Level.WARN, Level.DEBUG, Level.INFO));
-        LoggerFactory.getInstance().getLogger(this.engine, "org.hibernate", new LoggingLevel(Level.DEBUG, Level.WARN, Level.DEBUG, Level.INFO));
+        LoggerFactory.getInstance().getLogger(this.engine, "org.jboss.logging", new LoggingLevel(Level.DEBUG, Level.WARN, Level.TRACE, Level.INFO));
+        LoggerFactory.getInstance().getLogger(this.engine, "io.netty", new LoggingLevel(Level.DEBUG, Level.WARN, Level.TRACE, Level.INFO));
+        LoggerFactory.getInstance().getLogger(this.engine, "org.hibernate", new LoggingLevel(Level.DEBUG, Level.WARN, Level.TRACE, Level.INFO));
 
         this.loggingEngine.trace("Server logging setup complete", null);
     }

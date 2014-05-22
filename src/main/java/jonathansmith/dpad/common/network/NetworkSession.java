@@ -23,9 +23,7 @@ import jonathansmith.dpad.common.network.channel.EncryptionDecoder;
 import jonathansmith.dpad.common.network.channel.EncryptionEncoder;
 import jonathansmith.dpad.common.network.listener.PacketListenersTuple;
 import jonathansmith.dpad.common.network.packet.Packet;
-import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
-
-import jonathansmith.dpad.server.network.protocol.ServerRuntimeNetworkProtocol;
+import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
 /**
  * Created by Jon on 23/03/14.
@@ -50,11 +48,11 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     private Channel channel              = null;
     private long    timeSinceLastProcess = 0L;
 
-    private NetworkProtocol networkProtocol;
-    private SocketAddress   address;
-    private ConnectionState connectionState;
-    private String          terminationReason;
-    private UUID            foreignUUID;
+    private INetworkProtocol networkProtocol;
+    private SocketAddress    address;
+    private ConnectionState  connectionState;
+    private String           terminationReason;
+    private UUID             foreignUUID;
 
     public NetworkSession(IEngine engine, SocketAddress address, boolean isLocal, boolean isClient) {
         this.engine = engine;
@@ -89,11 +87,11 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
         return this.foreignUUID == null ? "NULL" : this.foreignUUID.toString();
     }
 
-    public NetworkProtocol getNetworkProtocol() {
+    public INetworkProtocol getNetworkProtocol() {
         return this.networkProtocol;
     }
 
-    public void setNetworkProtocol(NetworkProtocol networkProtocol) {
+    public void setNetworkProtocol(INetworkProtocol networkProtocol) {
         if (networkProtocol == null) {
             return;
         }
@@ -158,6 +156,12 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
         this.engine.debug("Dispatching packet: " + packet.getClass(), null);
         final ConnectionState packetsRegisteredConnectionState = ConnectionState.getConnectionStateFromPacket(packet);
         final ConnectionState channelConnectionState = this.channel.attr(CONNECTION_STATE_ATTRIBUTE_KEY).get();
+
+        if (packetsRegisteredConnectionState == null) {
+            this.engine.error("Attempted to dispatch an unregistered packet", null);
+            this.shutdown(true);
+            return;
+        }
 
         if (packetsRegisteredConnectionState != channelConnectionState) {
             this.engine.info("Disabling autoread of packet due to channel state mismatch", null);
@@ -244,13 +248,9 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     }
 
     public void enableEncryption(SecretKey secretKey) {
+        this.engine.trace("Switching to encrypted channels", null);
         this.channel.pipeline().addBefore("split_handler", "decryption_handler", new EncryptionDecoder(CryptographyManager.getCipher(2, secretKey)));
         this.channel.pipeline().addBefore("prepend_handler", "encryption_handler", new EncryptionEncoder(CryptographyManager.getCipher(1, secretKey)));
-    }
-
-    public void finaliseConnection() {
-        this.setNetworkProtocol(new ServerRuntimeNetworkProtocol(this.engine, this));
-        // TODO: Send a ready status to the client (i.e. they have logged in)
     }
 
     public String buildSessionInformation() {
@@ -295,6 +295,6 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable reason) {
-        this.closeChannel("NETWORK: channel closed due to exception");
+        this.closeChannel("NETWORK: channel closed due to exception: " + reason.toString());
     }
 }

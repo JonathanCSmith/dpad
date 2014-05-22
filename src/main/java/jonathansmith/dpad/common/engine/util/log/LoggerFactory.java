@@ -62,7 +62,7 @@ public class LoggerFactory {
         logger.addAppender(appender);
 
         try {
-            String path = engine.getFileSystem().getLogDirectory().getAbsolutePath().concat("\\log.log");
+            String path = engine.getFileSystem().getLogDirectory().getAbsolutePath().concat("\\" + engine.getPlatform() + "_log.log");
             FileAppender fileAppender = new DailyRollingFileAppender(pattern, path, "'.'yyyy-MM-dd");
 
             LevelRangeFilter fileLevelFilter = new LevelRangeFilter();

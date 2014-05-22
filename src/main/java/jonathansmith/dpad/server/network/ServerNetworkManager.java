@@ -50,7 +50,7 @@ public class ServerNetworkManager extends NetworkManager {
 
     @Override
     public void run() {
-        while (this.isAlive && !this.hasErrored) {
+        while (this.isAlive && !this.hasError) {
             synchronized (this.sessions) {
                 Iterator<NetworkSession> iter = this.sessions.iterator();
 
@@ -76,7 +76,7 @@ public class ServerNetworkManager extends NetworkManager {
 
                         catch (Exception ex) {
                             if (session.isLocalChannel()) {
-                                this.engine.handleError("Error processing packets on local channel", ex, true);
+                                this.engine.error("Error processing packets on local channel", ex);
                                 this.shutdown(true);
                             }
 
@@ -103,7 +103,7 @@ public class ServerNetworkManager extends NetworkManager {
                 session.scheduleOutboundPacket(new RuntimeDisconnectPacket("Server shutdown"), new GenericFutureListener[]{new GenericFutureListener() {
                     @Override
                     public void operationComplete(Future future) throws Exception {
-                        session.shutdown(ServerNetworkManager.this.hasErrored);
+                        session.shutdown(ServerNetworkManager.this.hasError);
                     }
                 }});
             }
@@ -113,7 +113,7 @@ public class ServerNetworkManager extends NetworkManager {
     }
 
     @Override
-    public void buildBootstap() {
+    public void buildBootstrap() {
         this.serverBootstrap.group(this.getEventLoopGroups());
         this.serverBootstrap.childHandler(new ServerChannelInitialiser(this.engine, this));
 

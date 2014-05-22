@@ -13,7 +13,7 @@ import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.login.*;
-import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
 import jonathansmith.dpad.server.engine.util.version.Version;
 import jonathansmith.dpad.server.network.ServerNetworkSession;
@@ -25,13 +25,15 @@ import org.apache.commons.lang3.Validate;
  * <p/>
  * Protocol used by the network during the login process (Server side). Uses an unencrypted channel until keys are shared.
  */
-public class ServerLoginNetworkProtocol extends NetworkProtocol {
+public class ServerLoginNetworkProtocol implements INetworkProtocol {
 
     private static final String PROTOCOL_NAME       = "Server login protocol";
     private static final Random LOGIN_KEY_GENERATOR = new Random();
     private static final long   LOGIN_TIMEOUT       = 30000;
 
-    private final boolean is_local_connection;
+    private final IEngine        engine;
+    private final NetworkSession network_session;
+    private final boolean        is_local_connection;
     private final byte[] login_key = new byte[4];
 
     private long loginTime;
@@ -40,7 +42,8 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
     private SecretKey secretKey;
 
     public ServerLoginNetworkProtocol(IEngine engine, NetworkSession networkSession, boolean isLocalConnection) {
-        super(engine, networkSession);
+        this.engine = engine;
+        this.network_session = networkSession;
         this.is_local_connection = isLocalConnection;
         LOGIN_KEY_GENERATOR.nextBytes(this.login_key);
     }
@@ -66,7 +69,7 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
             return;
         }
 
-        this.networkSession.assignForeignUUID(packet.getUUID());
+        this.network_session.assignForeignUUID(packet.getUUID());
 
         if (this.is_local_connection) {
             this.loginState = LoginState.READY_TO_FINISH;
@@ -74,14 +77,14 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
 
         else {
             this.loginState = LoginState.KEY_TRANSFER;
-            this.networkSession.scheduleOutboundPacket(new EncryptionRequestPacket(((ServerNetworkSession) this.networkSession).getNetworkManager().getKeyPair().getPublic(), this.login_key), new GenericFutureListener[0]);
+            this.network_session.scheduleOutboundPacket(new EncryptionRequestPacket(((ServerNetworkSession) this.network_session).getNetworkManager().getKeyPair().getPublic(), this.login_key), new GenericFutureListener[0]);
         }
     }
 
     // Finalises the login process by completing the key exchange and enabling encryption on the channel
     public void handleEncryptionResponse(EncryptionResponsePacket encryptionResponsePacket) {
         Validate.validState(this.loginState == LoginState.KEY_TRANSFER, "Unexpected encryption response packet during the: " + this.loginState + " state");
-        PrivateKey privateKey = ((ServerNetworkSession) this.networkSession).getNetworkManager().getKeyPair().getPrivate();
+        PrivateKey privateKey = ((ServerNetworkSession) this.network_session).getNetworkManager().getKeyPair().getPrivate();
 
         if (!Arrays.equals(this.login_key, encryptionResponsePacket.decodeRandomSignature(privateKey))) {
             this.handleLoginFailure("Invalid login sequence");
@@ -90,29 +93,29 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
         else {
             this.secretKey = encryptionResponsePacket.decodeSecretKey(privateKey);
             this.loginState = LoginState.AUTHENTICATING;
-            this.networkSession.enableEncryption(this.secretKey);
+            this.network_session.enableEncryption(this.secretKey);
             this.loginState = LoginState.READY_TO_FINISH;
         }
     }
 
     // Starts the transition process between logging in + general runtime
     private void handleLoginFinish() {
-        String joinMsg = ((ServerNetworkSession) this.networkSession).getNetworkManager().allowUserToConnect(this.networkSession);
+        String joinMsg = ((ServerNetworkSession) this.network_session).getNetworkManager().allowUserToConnect(this.network_session);
         if (joinMsg != null) {
             this.handleLoginFailure(joinMsg);
         }
 
         else {
             this.loginState = LoginState.ACCEPTING;
-            this.networkSession.scheduleOutboundPacket(new LoginSuccessPacket(this.networkSession), new GenericFutureListener[0]);
-            this.networkSession.finaliseConnection();
+            this.network_session.scheduleOutboundPacket(new LoginSuccessPacket(this.network_session), new GenericFutureListener[0]);
+            ((ServerNetworkSession) this.network_session).finaliseConnection();
         }
     }
 
     private void handleLoginFailure(String reason) {
-        this.engine.handleError("Could not accept client due to: " + reason, null, false);
-        this.networkSession.scheduleOutboundPacket(new LoginDisconnectPacket(reason), new GenericFutureListener[0]);
-        this.networkSession.closeChannel(reason);
+        this.engine.error("Could not accept client due to: " + reason, null);
+        this.network_session.scheduleOutboundPacket(new LoginDisconnectPacket(reason), new GenericFutureListener[0]);
+        this.network_session.closeChannel(reason);
     }
 
     @Override
@@ -122,8 +125,14 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
 
     @Override
     public void onConnectionStateTransition(ConnectionState connectionState, ConnectionState connectionState1) {
-        Validate.validState(this.loginState == LoginState.ACCEPTING, "Unexpected connection state transition when login is not yet complete");
-        Validate.validState(connectionState1 == ConnectionState.RUNTIME || connectionState1 == ConnectionState.LOGIN, "Unexpected connection state");
+        try {
+            Validate.validState(this.loginState == LoginState.ACCEPTING, "Unexpected connection state transition when login is not yet complete");
+            Validate.validState(connectionState == ConnectionState.LOGIN && connectionState1 == ConnectionState.RUNTIME, "Cannot switch from connection state %s to %s", connectionState == null ? "NULL" : connectionState.toString(), connectionState1 == null ? "NULL" : connectionState1.toString());
+        }
+
+        catch (IllegalStateException ex) {
+            this.engine.error("Invalid connection state transition", ex);
+        }
     }
 
     @Override
@@ -132,13 +141,13 @@ public class ServerLoginNetworkProtocol extends NetworkProtocol {
             this.handleLoginFinish();
         }
 
-        if (this.networkSession.isChannelOpen() && System.currentTimeMillis() - this.loginTime == LOGIN_TIMEOUT) {
+        if (this.network_session.isChannelOpen() && System.currentTimeMillis() - this.loginTime == LOGIN_TIMEOUT) {
             this.handleLoginFailure("Took too long to log in!");
         }
     }
 
     @Override
     public void onDisconnect(String exitMessage) {
-        this.engine.error(this.networkSession.buildSessionInformation() + " lost connection: " + exitMessage, null);
+        this.engine.info(this.network_session.buildSessionInformation() + " lost connection: " + exitMessage, null);
     }
 }

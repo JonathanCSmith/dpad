@@ -5,7 +5,7 @@ import java.io.IOException;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
-import jonathansmith.dpad.common.network.protocol.NetworkProtocol;
+import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
 import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
 
@@ -61,7 +61,7 @@ public class LoginStartPacket extends Packet {
     }
 
     @Override
-    public void processPacket(NetworkProtocol networkProtocol) {
+    public void processPacket(INetworkProtocol networkProtocol) {
         ((ServerLoginNetworkProtocol) networkProtocol).handleLoginStart(this);
     }
 
