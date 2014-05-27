@@ -4,6 +4,7 @@ import org.apache.log4j.Level;
 
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.engine.event.EventThread;
+import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
 import jonathansmith.dpad.common.engine.io.FileSystem;
 import jonathansmith.dpad.common.engine.util.log.LoggerFactory;
 import jonathansmith.dpad.common.engine.util.log.LoggingLevel;
@@ -27,15 +28,21 @@ public class CommonSetupTask extends Task {
 
     @Override
     public void runTask() {
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 4, 0));
+
         // Build the filesystem for the engine
         this.engine.setFileSystem(new FileSystem(this.engine));
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 4, 1));
 
         // Build the generic logger for both
         this.engine.setLogger(LoggerFactory.getInstance().getLogger(this.engine, new LoggingLevel(Level.DEBUG, Level.WARN, Level.TRACE, Level.INFO)));
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 4, 2));
 
         // Start the event thread NOTE: I am not particularly happy with this cast, but it seems better than putting the start method in the api interface...
         ((EventThread) this.engine.getEventThread()).start();
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 4, 3));
 
         // TODO: Plugin manager startup
+        // TODO progressbar - common setup 4 / 4
     }
 }

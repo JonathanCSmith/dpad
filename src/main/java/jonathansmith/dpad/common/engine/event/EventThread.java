@@ -50,6 +50,8 @@ public class EventThread extends Thread implements IEventThread {
     @Override
     public void run() {
         while (this.isAlive) {
+            this.updateEventThread();
+
             if (this.liveEventList.isEmpty()) {
                 try {
                     Thread.sleep(100);
@@ -70,8 +72,6 @@ public class EventThread extends Thread implements IEventThread {
                     listener.onEventReceived(event);
                 }
             }
-
-            this.updateEventThread();
 
             // If we are shutting down and all pending events have been posted kill the even thread
             if (this.liveEventList.isEmpty() && this.isShuttingDown) {
@@ -159,6 +159,7 @@ public class EventThread extends Thread implements IEventThread {
             this.pendingListenerAdditionsMap.put(clazz, listener);
         }
         this.isModifyingEventListenersAdditionsMap = false;
+        this.pendingListenerAdditionsUpdate = true;
     }
 
     @Override
@@ -186,6 +187,7 @@ public class EventThread extends Thread implements IEventThread {
             this.pendingListenerRemovalMap.put(clazz, listener);
         }
         this.isModifyingEventListenerRemovalMap = false;
+        this.pendingListenerRemovalsUpdate = true;
     }
 
     @Override

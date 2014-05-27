@@ -67,7 +67,7 @@ public class StartupTabController implements ITabController, ActionListener {
         }
 
         else if (source == this.serverButton) {
-            PlatformConnectionDialog dialog = new PlatformConnectionDialog(this, true);
+            PlatformConnectionPanel dialog = new PlatformConnectionPanel(this, true);
             dialog.pack();
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
@@ -76,7 +76,7 @@ public class StartupTabController implements ITabController, ActionListener {
         }
 
         else if (source == this.clientButton) {
-            PlatformConnectionDialog dialog = new PlatformConnectionDialog(this, false);
+            PlatformConnectionPanel dialog = new PlatformConnectionPanel(this, false);
             dialog.pack();
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);

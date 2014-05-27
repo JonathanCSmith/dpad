@@ -3,8 +3,6 @@ GUI for setup - (blank?!)
 GUI for idle - should be the default option guis, i.e. client should be runtime select and server should (perhaps) have debug tools (i.e. enabling packet profiling etc)
 Events
 Plugin manager
-Minor feature possibility added by allowing servers to blacklist/whitelist ips (not fully implemented).
-Permission ruleset for db access
 Config
 
 Notes:
@@ -14,23 +12,23 @@ Notes:
 - Server side executors are independent of network communication as all replies should be handled through sessions
 - Tasks should heavily trace logging
 
+Global TODO:
+- Plugin framework
+- Idle Exec tasks
+- Idle Execs restore/create standard gui?!
+- Idle GUIs
+- Disconnect GUI
+- Clean up TODOs
+
+GLOBAL INCREMENTAL TODO:
+- RuntimeNetworkProtocols
+- Reformat local finals to use lowercase + underscores
+- Remove listeners when they die
+
 Global MAYBE:
 - Have a debug variable for logging in threads to prevent cpu + memory usage (MAY NOT IMPLEMENT)
 - White list
 - Black list
 - Config?!
-- Disconnect information [move to enum?!]
-
-Global TODO:
-- Test keep alive
-- Restore login times + time out times
-- Sort out channel disconnect information
-- Work out GUI transitioning
-- Idle Exec tasks
-- Disconnect GUI
-- Move client log to a debug tab
-- Idle GUIs
-- Reformat local finals to use lowercase + underscores
-
-GLOBAL INCREMENTAL TODO:
-- RuntimeNetworkProtocols
+- allowing servers to blacklist/whitelist ips (not fully implemented).
+- Permission ruleset for db access

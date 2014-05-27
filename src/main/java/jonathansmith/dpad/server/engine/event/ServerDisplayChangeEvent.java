@@ -1,6 +1,6 @@
 package jonathansmith.dpad.server.engine.event;
 
-import jonathansmith.dpad.common.engine.event.DisplayChangeEvent;
+import jonathansmith.dpad.common.engine.event.gui.DisplayChangeEvent;
 
 import jonathansmith.dpad.server.gui.ServerDisplay;
 

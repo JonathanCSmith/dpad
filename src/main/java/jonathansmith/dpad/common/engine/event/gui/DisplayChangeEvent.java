@@ -1,5 +1,6 @@
-package jonathansmith.dpad.common.engine.event;
+package jonathansmith.dpad.common.engine.event.gui;
 
+import jonathansmith.dpad.common.engine.event.Event;
 import jonathansmith.dpad.common.gui.display.Display;
 
 /**
