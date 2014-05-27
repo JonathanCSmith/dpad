@@ -2,6 +2,7 @@ package jonathansmith.dpad.server.engine.executor.startup;
 
 import java.net.SocketAddress;
 
+import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
 import jonathansmith.dpad.common.engine.executor.Task;
 import jonathansmith.dpad.common.network.NetworkManager;
 
@@ -32,6 +33,7 @@ public class SetupServerNetworkTask extends Task {
     @Override
     public void runTask() {
         // Server Network Manager
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 2, 0));
         this.loggingEngine.info("Beginning network initialisation", null);
         this.loggingEngine.trace("Creating server side network manager", null);
         NetworkManager sNM = new ServerNetworkManager(this.engine, this.address, this.isLocalConnection);
@@ -39,6 +41,7 @@ public class SetupServerNetworkTask extends Task {
         try {
             this.loggingEngine.trace("Attempting to initialise network infrastructure", null);
             sNM.buildBootstrap();
+            this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 2, 1));
         }
 
         catch (Exception ex) {
@@ -48,6 +51,7 @@ public class SetupServerNetworkTask extends Task {
 
         this.loggingEngine.trace("Starting network manager thread", null);
         sNM.start();
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 2, 2));
         this.loggingEngine.info("Network initialisation complete", null);
 
         // Hand off information to engine

@@ -29,7 +29,7 @@ public class ServerLoginNetworkProtocol implements INetworkProtocol {
 
     private static final String PROTOCOL_NAME       = "Server login protocol";
     private static final Random LOGIN_KEY_GENERATOR = new Random();
-    private static final long   LOGIN_TIMEOUT       = 30000;
+    private static final long   LOGIN_TIMEOUT       = 300;
 
     private final IEngine        engine;
     private final NetworkSession network_session;

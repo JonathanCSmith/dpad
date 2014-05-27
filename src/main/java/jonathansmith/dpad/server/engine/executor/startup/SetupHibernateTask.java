@@ -11,6 +11,7 @@ import org.hibernate.cfg.Configuration;
 
 import jonathansmith.dpad.common.database.DatabaseManager;
 import jonathansmith.dpad.common.database.record.Record;
+import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
 import jonathansmith.dpad.common.engine.executor.Task;
 
 import jonathansmith.dpad.server.ServerEngine;
@@ -36,10 +37,14 @@ public class SetupHibernateTask extends Task {
 
     @Override
     public void runTask() {
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 3, 0));
+
         // Build the hibernate Configuration
         this.loggingEngine.info("Beginning database initialisation", null);
         this.loggingEngine.trace("Building hibernate configuration", null);
         Configuration cfg = this.buildHibernateSessioncfguration();
+
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 3, 1));
 
         this.loggingEngine.trace("Building hibernate service registry", null);
         StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties());
@@ -51,6 +56,7 @@ public class SetupHibernateTask extends Task {
             sessionFactory = cfg.buildSessionFactory(builder.build());
             Session session = sessionFactory.openSession();
             session.close();
+            this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 3, 2));
 
             // TODO: Assess whether we need this or not anymore
 //            if (this.isNewDatabase) {
@@ -75,6 +81,7 @@ public class SetupHibernateTask extends Task {
         this.loggingEngine.trace("Assigning hibernate information to the database manager", null);
         DatabaseManager dbm = new DatabaseManager(sessionFactory);
         this.engine.setDatabaseManager(dbm);
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 3, 3));
         this.loggingEngine.info("Database initialisation complete", null);
     }
 

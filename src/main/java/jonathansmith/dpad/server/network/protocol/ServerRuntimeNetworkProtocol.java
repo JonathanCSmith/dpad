@@ -19,7 +19,8 @@ import org.apache.commons.lang3.Validate;
  */
 public class ServerRuntimeNetworkProtocol implements IRuntimeNetworkProtocol {
 
-    private static final String PROTOCOL_NAME = "Server Runtime Protocol";
+    private static final String PROTOCOL_NAME    = "Server Runtime Protocol";
+    private static final long   KEEP_ALIVE_DELAY = 300L;
 
     private final IEngine        engine;
     private final NetworkSession network_session;
@@ -58,7 +59,7 @@ public class ServerRuntimeNetworkProtocol implements IRuntimeNetworkProtocol {
             this.lastKeepAliveTime = System.currentTimeMillis();
         }
 
-        if (System.currentTimeMillis() - this.lastKeepAliveTime < 30L) {
+        if (System.currentTimeMillis() - this.lastKeepAliveTime > KEEP_ALIVE_DELAY) {
             this.lastKeepAliveTime = System.currentTimeMillis();
             this.network_session.scheduleOutboundPacket(new KeepAlivePacket(), new GenericFutureListener[0]);
         }

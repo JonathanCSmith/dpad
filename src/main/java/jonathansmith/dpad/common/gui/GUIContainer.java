@@ -36,6 +36,7 @@ public class GUIContainer extends JFrame implements IGUIController, WindowListen
     private JPanel      display;
     private JTabbedPane tabContainer;
     private JButton     shutdownAll;
+    private boolean     isAlive;
 
     public GUIContainer(DPAD main) {
         this.main = main;
@@ -51,6 +52,7 @@ public class GUIContainer extends JFrame implements IGUIController, WindowListen
         this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
+        this.isAlive = true;
         SwingUtilities.invokeLater(this);
     }
 
@@ -58,6 +60,10 @@ public class GUIContainer extends JFrame implements IGUIController, WindowListen
     public void run() {
         for (ITabController tab : this.tabs) {
             tab.update();
+        }
+
+        if (this.isAlive) {
+            SwingUtilities.invokeLater(this);
         }
     }
 
@@ -109,6 +115,8 @@ public class GUIContainer extends JFrame implements IGUIController, WindowListen
         for (ITabController tab : this.tabs) {
             tab.onWindowClosing();
         }
+
+        this.isAlive = false;
     }
 
     @Override

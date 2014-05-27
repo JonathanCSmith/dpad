@@ -22,6 +22,7 @@ public class ServerStartupExecutor extends Executor {
     public ServerStartupExecutor(ServerEngine engine, SocketAddress address) {
         super(EXECUTOR_NAME, engine, false);
 
+        this.addTask(new ServerStartupGUISetupTask(engine));
         this.addTask(new CommonSetupTask(engine));
         this.addTask(new SetupServerLoggingTask(engine));
         this.addTask(new SetupHibernateTask(engine));

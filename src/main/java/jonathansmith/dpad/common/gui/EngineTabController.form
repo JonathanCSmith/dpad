@@ -15,7 +15,9 @@
           </grid>
         </constraints>
         <properties>
+          <dividerLocation value="368"/>
           <orientation value="0"/>
+          <resizeWeight value="1.0"/>
         </properties>
         <border type="none"/>
         <children>
@@ -38,7 +40,10 @@
             <constraints>
               <splitpane position="left"/>
             </constraints>
-            <properties/>
+            <properties>
+              <dividerLocation value="100"/>
+              <resizeWeight value="0.0"/>
+            </properties>
             <border type="none"/>
             <children/>
           </splitpane>

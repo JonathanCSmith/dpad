@@ -22,6 +22,7 @@ import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.common.network.channel.EncryptionDecoder;
 import jonathansmith.dpad.common.network.channel.EncryptionEncoder;
 import jonathansmith.dpad.common.network.listener.PacketListenersTuple;
+import jonathansmith.dpad.common.network.packet.KeepAlivePacket;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
@@ -153,7 +154,10 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     }
 
     private void dispatchPacket(final Packet packet, final GenericFutureListener[] listeners) {
-        this.engine.debug("Dispatching packet: " + packet.getClass(), null);
+        if (packet.getClass() != KeepAlivePacket.class) {
+            this.engine.debug("Dispatching packet: " + packet.getClass(), null);
+        }
+
         final ConnectionState packetsRegisteredConnectionState = ConnectionState.getConnectionStateFromPacket(packet);
         final ConnectionState channelConnectionState = this.channel.attr(CONNECTION_STATE_ATTRIBUTE_KEY).get();
 
@@ -222,7 +226,11 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
         if (this.networkProtocol != null) {
             for (int i = 1000; !this.inbound_packets_queue.isEmpty() && i >= 0; i--) {
                 Packet packet = this.inbound_packets_queue.poll();
-                this.engine.debug("Processing packet: " + packet.getClass(), null);
+
+                if (packet.getClass() != KeepAlivePacket.class) {
+                    this.engine.debug("Processing packet: " + packet.getClass(), null);
+                }
+
                 packet.processPacket(this.networkProtocol);
             }
 

@@ -22,6 +22,7 @@ public class ClientStartupExecutor extends Executor {
     public ClientStartupExecutor(ClientEngine engine, SocketAddress address) {
         super(EXECUTOR_NAME, engine, false);
 
+        this.addTask(new ClientStartupGUISetupTask(engine));
         this.addTask(new CommonSetupTask(engine));
         this.addTask(new SetupClientLoggingTask(engine));
         this.addTask(new SetupClientNetworkTask(engine, address, DPAD.getInstance().getPlatformSelection() == Platform.LOCAL));

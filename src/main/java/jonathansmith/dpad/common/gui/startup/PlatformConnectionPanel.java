@@ -11,7 +11,7 @@ import jonathansmith.dpad.DPAD;
  * <p/>
  * Acquires platform specific properties for runtime types
  */
-public class PlatformConnectionDialog extends JDialog implements MouseListener {
+public class PlatformConnectionPanel extends JDialog implements MouseListener {
 
     private static final String CLIENT_INFO = "Please enter the ip address of the server followed by a colon and the port of the server (i.e. 127.0.0.1:6868).";
     private static final String SERVER_INFO = "Please enter the port of the server. An ip address can also be specified by prefixing the port with the address followed by a colon (i.e. either 6868 (port) or 134.24.21.145:6868 (ipAddress:port).";
@@ -25,7 +25,7 @@ public class PlatformConnectionDialog extends JDialog implements MouseListener {
     private JTextArea  info;
     private JTextField properties;
 
-    public PlatformConnectionDialog(StartupTabController controller, boolean isHost) {
+    public PlatformConnectionPanel(StartupTabController controller, boolean isHost) {
         this.controller = controller;
         this.isHost = isHost;
         this.setContentPane(this.contentPane);

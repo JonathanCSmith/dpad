@@ -34,8 +34,7 @@ import jonathansmith.dpad.server.ServerEngine;
  */
 public class DPAD extends Thread {
 
-    private static final String THREAD_NAME = "DPAD MAIN THREAD";
-    private static final String VERSION     = "1.0.0.1";
+    private static final String VERSION = "1.0.0.1";
 
     private static boolean runtimeShutdownFlag = false;
     private static boolean errorFlag           = false;
@@ -44,15 +43,18 @@ public class DPAD extends Thread {
     private final LinkedList<Engine> engines = new LinkedList<Engine>();
     private ServerEngine serverEngine;
     private ClientEngine clientEngine;
-    // JCommander arguments. TODO: Detail these in args
+
+    // JCommander arguments. TODO: Detail these in args TODO: change to defaults
     @Parameter(names = {"-platform"}, converter = PlatformConverter.class, description = "Platform Type")
     private Platform platform         = null;
     @Parameter(names = {"-ip"}, description = "IP Address to connect to")
     private String   ipAddress        = "";
     @Parameter(names = {"-port"}, description = "Port to host or connect on")
     private int      port             = -1;
-    @Parameter(names = {"-debug"}, description = "Verbosity of logging")
+    @Parameter(names = {"-verbose"}, description = "Verbosity of logging")
     private boolean  isVerboseLogging = true;
+    @Parameter(names = {"-debug"}, description = "Is debug runtime")
+    private boolean  debugging        = false;
 
     private boolean isInitialised = false;
     private boolean isShutdown    = false;
@@ -371,5 +373,9 @@ public class DPAD extends Thread {
 
     public GUIContainer getGUI() {
         return this.gui;
+    }
+
+    public boolean isDebugging() {
+        return this.debugging;
     }
 }
