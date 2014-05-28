@@ -11,19 +11,31 @@ Notes:
 - Client side executors will be linear and communicate through sessions
 - Server side executors are independent of network communication as all replies should be handled through sessions
 - Tasks should heavily trace logging
+- Plugin Manager thread should have transient database session access so it does not lock down the database
+- Current database sessions should be masked internally by ONLY handing them off to managers.
+    - No network sessions should access it internally.
+    - Only hand off the database connection.
 
 Global TODO:
-- Plugin framework
+- Ensure database manager is accessible to sessions
+- Ensure database manager access methods are threadsafe
+- Plugin Version checking
+- Global Version checking
+- Plugin thread to acquire database access
+- Plugin database submission
 - Idle Exec tasks
 - Idle Execs restore/create standard gui?!
 - Idle GUIs
 - Disconnect GUI
 - Clean up TODOs
+- Plugin guis
 
 GLOBAL INCREMENTAL TODO:
 - RuntimeNetworkProtocols
+- Finish plugin database entries, daos and managers
 - Reformat local finals to use lowercase + underscores
 - Remove listeners when they die
+- Assess whether event threads need to api accessible
 
 Global MAYBE:
 - Have a debug variable for logging in threads to prevent cpu + memory usage (MAY NOT IMPLEMENT)
@@ -32,3 +44,4 @@ Global MAYBE:
 - Config?!
 - allowing servers to blacklist/whitelist ips (not fully implemented).
 - Permission ruleset for db access
+- Can saveAndShutdown + forceShutdown (in engine) be made private. Perhaps also executors?!

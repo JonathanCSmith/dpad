@@ -22,8 +22,8 @@ public class ClientEngine extends Engine {
     public ClientEngine(SocketAddress address) {
         super(address, new ClientTabController());
 
-        this.tabDisplay.setEngine(this);
-        DPAD.getInstance().getGUI().addTab(this.tabDisplay);
+        this.engine_tab_controller.setEngine(this);
+        DPAD.getInstance().getGUI().addTab(this.engine_tab_controller);
 
         // Add the client startup executor as the first program to be run. Ensuring that everything is setup before anything else is performed.
         this.setProposedExecutor(new ClientStartupExecutor(this, this.address));

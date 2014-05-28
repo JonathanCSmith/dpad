@@ -2,11 +2,11 @@ package jonathansmith.dpad.server;
 
 import java.net.SocketAddress;
 
-import jonathansmith.dpad.common.database.DatabaseManager;
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.engine.executor.Executor;
 import jonathansmith.dpad.common.platform.Platform;
 
+import jonathansmith.dpad.server.database.DatabaseManager;
 import jonathansmith.dpad.server.engine.executor.idle.ServerIdleExecutor;
 import jonathansmith.dpad.server.engine.executor.startup.ServerStartupExecutor;
 import jonathansmith.dpad.server.gui.ServerTabController;
@@ -21,25 +21,31 @@ import jonathansmith.dpad.DPAD;
 public class ServerEngine extends Engine {
 
     private boolean isSetup = false;
+    private boolean isDatabaseSetup = false;
 
     private DatabaseManager databaseManager;
 
     public ServerEngine(SocketAddress address) {
         super(address, new ServerTabController());
 
-        this.tabDisplay.setEngine(this);
-        DPAD.getInstance().getGUI().addTab(this.tabDisplay);
+        this.engine_tab_controller.setEngine(this);
+        DPAD.getInstance().getGUI().addTab(this.engine_tab_controller);
 
         // Add the server startup executor as the first program to be run. Ensuring that everything is setup before anything else is performed.
         this.setProposedExecutor(new ServerStartupExecutor(this, this.address));
     }
 
+    public DatabaseManager getDatabaseManager() {
+        return this.databaseManager;
+    }
+
     public void setDatabaseManager(DatabaseManager dbm) {
-        if (dbm == null || this.databaseManager != null) {
+        if (dbm == null || this.isDatabaseSetup) {
             return;
         }
 
         this.databaseManager = dbm;
+        this.isDatabaseSetup = true;
     }
 
     public boolean isSetup() {

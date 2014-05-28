@@ -15,6 +15,7 @@ import jonathansmith.dpad.common.engine.util.log.ILogDisplay;
 import jonathansmith.dpad.common.gui.EngineTabController;
 import jonathansmith.dpad.common.network.NetworkManager;
 import jonathansmith.dpad.common.platform.Platform;
+import jonathansmith.dpad.common.plugin.PluginManager;
 
 import jonathansmith.dpad.DPAD;
 
@@ -25,26 +26,28 @@ import jonathansmith.dpad.DPAD;
  */
 public abstract class Engine extends Thread implements IEngine {
 
-    protected final SocketAddress address;
-    protected final EventThread   event_thread;
+    protected final EngineTabController engine_tab_controller;
+    protected final SocketAddress       address;
 
-    protected FileSystem fileSystem = null;
-    protected Logger     logger     = null;
-
-    protected EngineTabController tabDisplay;
+    private final EventThread event_thread;
 
     private boolean  hasError            = false;
     private boolean  shutdownFlag        = false;
+    private boolean  fileSystemSetup     = false;
     private boolean  networkManagerSetup = false;
+    private boolean  pluginManagerSetup  = false;
     private Executor currentExecutor     = null;
     private Executor proposedExecutor    = null;
 
+    private Logger         logger;
+    private FileSystem     fileSystem;
     private NetworkManager networkManager;
+    private PluginManager  pluginManager;
     private String         version;
 
     public Engine(SocketAddress address, EngineTabController tabController) {
         this.address = address;
-        this.tabDisplay = tabController;
+        this.engine_tab_controller = tabController;
         this.event_thread = new EventThread(this);
     }
 
@@ -106,14 +109,17 @@ public abstract class Engine extends Thread implements IEngine {
 
         this.event_thread.shutdown(true);
 
-        if (this.tabDisplay != null) {
-            this.tabDisplay.shutdown(false);
-            DPAD.getInstance().getGUI().removeCoreTab(this.tabDisplay);
-            this.tabDisplay = null;
+        if (this.engine_tab_controller != null) {
+            this.engine_tab_controller.shutdown(false);
+            DPAD.getInstance().getGUI().removeCoreTab(this.engine_tab_controller);
         }
 
         if (this.networkManager != null) {
             this.networkManager.shutdown(false);
+        }
+
+        if (this.pluginManager != null) {
+            this.pluginManager.shutdown(false);
         }
     }
 
@@ -124,14 +130,17 @@ public abstract class Engine extends Thread implements IEngine {
 
         this.event_thread.shutdown(true);
 
-        if (this.tabDisplay != null) {
-            this.tabDisplay.shutdown(true);
-            DPAD.getInstance().getGUI().removeCoreTab(this.tabDisplay);
-            this.tabDisplay = null;
+        if (this.engine_tab_controller != null) {
+            this.engine_tab_controller.shutdown(true);
+            DPAD.getInstance().getGUI().removeCoreTab(this.engine_tab_controller);
         }
 
         if (this.networkManager != null) {
             this.networkManager.shutdown(true);
+        }
+
+        if (this.pluginManager != null) {
+            this.pluginManager.shutdown(true);
         }
     }
 
@@ -144,7 +153,7 @@ public abstract class Engine extends Thread implements IEngine {
     }
 
     public ILogDisplay getDisplayTab() {
-        return this.tabDisplay;
+        return this.engine_tab_controller;
     }
 
     public Logger getLogger() {
@@ -165,16 +174,34 @@ public abstract class Engine extends Thread implements IEngine {
     }
 
     public void setFileSystem(FileSystem fileSystem) {
-        if (this.fileSystem != null) {
+        if (fileSystem == null || this.fileSystemSetup) {
             this.error("Cannot change the filesystem once it has been set!", null);
             return;
         }
 
         this.fileSystem = fileSystem;
+        this.fileSystemSetup = true;
+
+        this.setPluginManager(new PluginManager(fileSystem.getPluginDirectory().getAbsolutePath(), fileSystem.getUpdateDirectory().getAbsolutePath(), this));
+    }
+
+    public PluginManager getPluginManager() {
+        return this.pluginManager;
+    }
+
+    public void setPluginManager(PluginManager pluginManagerThread) {
+        if (pluginManagerThread == null || this.pluginManagerSetup) {
+            this.error("Cannot change the plugin manager once it has been set!", null);
+            return;
+        }
+
+        this.pluginManager = pluginManagerThread;
+        this.pluginManagerSetup = true;
     }
 
     public void setNetworkManager(NetworkManager networkManager) {
         if (networkManager == null || this.networkManagerSetup) {
+            this.error("Cannot change the network manager once it has been set!", null);
             return;
         }
 

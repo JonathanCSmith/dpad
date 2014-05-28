@@ -108,6 +108,16 @@
             <artifactId>trove4j</artifactId>
             <version>3.0.3</version>
         </dependency>
+        <dependency>
+            <groupId>jspf</groupId>
+            <artifactId>jspf-core</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.3</version>
+        </dependency>
     </dependencies>
 
 </project>
