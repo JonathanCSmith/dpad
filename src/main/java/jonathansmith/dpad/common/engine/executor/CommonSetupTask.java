@@ -42,7 +42,8 @@ public class CommonSetupTask extends Task {
         ((EventThread) this.engine.getEventThread()).start();
         this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 4, 3));
 
-        // TODO: Plugin manager startup
-        // TODO progressbar - common setup 4 / 4
+        // Start the plugin thread
+        this.engine.getPluginManager().start();
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 4, 4));
     }
 }

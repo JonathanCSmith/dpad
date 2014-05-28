@@ -9,12 +9,13 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
-import jonathansmith.dpad.common.database.DatabaseManager;
+import jonathansmith.dpad.common.database.record.DatabaseRecord;
 import jonathansmith.dpad.common.database.record.Record;
 import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
 import jonathansmith.dpad.common.engine.executor.Task;
 
 import jonathansmith.dpad.server.ServerEngine;
+import jonathansmith.dpad.server.database.DatabaseManager;
 
 /**
  * Created by Jon on 20/05/2014.
@@ -79,7 +80,7 @@ public class SetupHibernateTask extends Task {
         }
 
         this.loggingEngine.trace("Assigning hibernate information to the database manager", null);
-        DatabaseManager dbm = new DatabaseManager(sessionFactory);
+        DatabaseManager dbm = new DatabaseManager(this.engine, sessionFactory);
         this.engine.setDatabaseManager(dbm);
         this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 3, 3));
         this.loggingEngine.info("Database initialisation complete", null);
@@ -118,7 +119,7 @@ public class SetupHibernateTask extends Task {
         }
 
         // Build records for the database programatically
-        List<Class<? extends Record>> annotatedClasses = DatabaseManager.getAnnotatedClasses();
+        List<Class<? extends Record>> annotatedClasses = DatabaseRecord.getRecordClasses();
         for (Class<? extends Record> clazz : annotatedClasses) {
             cfg.addAnnotatedClass(clazz);
         }
