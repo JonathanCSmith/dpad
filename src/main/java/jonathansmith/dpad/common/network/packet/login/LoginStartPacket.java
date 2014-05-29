@@ -2,6 +2,8 @@ package jonathansmith.dpad.common.network.packet.login;
 
 import java.io.IOException;
 
+import jonathansmith.dpad.api.common.util.Version;
+
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
@@ -16,22 +18,22 @@ import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
  */
 public class LoginStartPacket extends Packet {
 
-    private String version;
-    private String uuid;
-    private String address;
-    private int    port;
+    private Version version;
+    private String  uuid;
+    private String  address;
+    private int     port;
 
     public LoginStartPacket() {
     }
 
-    public LoginStartPacket(String version, NetworkSession session) {
+    public LoginStartPacket(Version version, NetworkSession session) {
         this.version = version;
         this.uuid = session.getEngineAssignedUUID();
         this.address = session.getAddress();
         this.port = Integer.parseInt(session.getPort());
     }
 
-    public String getVersion() {
+    public Version getVersion() {
         return this.version;
     }
 
@@ -46,7 +48,7 @@ public class LoginStartPacket extends Packet {
 
     @Override
     public void readPacketData(PacketBuffer packetBuffer) throws IOException {
-        this.version = packetBuffer.readStringFromBuffer(255);
+        this.version = new Version(packetBuffer.readStringFromBuffer(255));
         this.uuid = packetBuffer.readStringFromBuffer(36);
         this.address = packetBuffer.readStringFromBuffer(255);
         this.port = packetBuffer.readUnsignedShort();
@@ -54,7 +56,7 @@ public class LoginStartPacket extends Packet {
 
     @Override
     public void writePacketData(PacketBuffer packetBuffer) throws IOException {
-        packetBuffer.writeStringToBuffer(this.version);
+        packetBuffer.writeStringToBuffer(this.version.getVersionString());
         packetBuffer.writeStringToBuffer(this.uuid);
         packetBuffer.writeStringToBuffer(this.address);
         packetBuffer.writeShort(this.port);

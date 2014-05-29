@@ -2,11 +2,10 @@ package jonathansmith.dpad.client.network;
 
 import io.netty.util.concurrent.GenericFutureListener;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.login.LoginStartPacket;
 
+import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.network.protocol.ClientLoginProtocol;
 
 /**
@@ -18,7 +17,7 @@ public class ClientNetworkSession extends NetworkSession {
 
     private final ClientNetworkManager networkManager;
 
-    public ClientNetworkSession(IEngine engine, ClientNetworkManager manager) {
+    public ClientNetworkSession(ClientEngine engine, ClientNetworkManager manager) {
         super(engine, manager.getSocketAddress(), manager.isLocalConnection(), true);
 
         this.networkManager = manager;

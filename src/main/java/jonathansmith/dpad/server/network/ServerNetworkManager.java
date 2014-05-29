@@ -14,11 +14,11 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.common.crypto.CryptographyManager;
-import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkManager;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.play.RuntimeDisconnectPacket;
 
+import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.network.channel.ServerChannelInitialiser;
 
 /**
@@ -33,7 +33,7 @@ public class ServerNetworkManager extends NetworkManager {
     private final ServerBootstrap serverBootstrap;
     private final KeyPair         serverKeyPair;
 
-    public ServerNetworkManager(Engine engine, SocketAddress address, boolean isLocal) {
+    public ServerNetworkManager(ServerEngine engine, SocketAddress address, boolean isLocal) {
         super(engine, address, "Netty Server IO #%d", isLocal);
 
         this.serverBootstrap = new ServerBootstrap();
@@ -115,7 +115,7 @@ public class ServerNetworkManager extends NetworkManager {
     @Override
     public void buildBootstrap() {
         this.serverBootstrap.group(this.getEventLoopGroups());
-        this.serverBootstrap.childHandler(new ServerChannelInitialiser(this.engine, this));
+        this.serverBootstrap.childHandler(new ServerChannelInitialiser((ServerEngine) this.engine, this));
 
         if (this.isLocalConnection()) {
             this.serverBootstrap.channel(LocalServerChannel.class);

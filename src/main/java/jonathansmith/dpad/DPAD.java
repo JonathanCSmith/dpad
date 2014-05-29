@@ -14,6 +14,7 @@ import com.beust.jcommander.Parameter;
 import io.netty.channel.local.LocalAddress;
 
 import jonathansmith.dpad.api.APIAccess;
+import jonathansmith.dpad.api.common.util.Version;
 
 import jonathansmith.dpad.common.API;
 import jonathansmith.dpad.common.engine.Engine;
@@ -34,7 +35,11 @@ import jonathansmith.dpad.server.ServerEngine;
  */
 public class DPAD extends Thread {
 
-    private static final String VERSION = "1.0.0.1";
+    private static final int SOFTWARE_VERSION       = 1;
+    private static final int SOFTWARE_MINOR_VERSION = 0;
+    private static final int API_VERSION            = 1;
+    private static final int DATABASE_VERION        = 0;
+    private static final int NETWORK_VERSION        = 0;
 
     private static boolean runtimeShutdownFlag = false;
     private static boolean errorFlag           = false;
@@ -268,7 +273,7 @@ public class DPAD extends Thread {
         // TODO: Add in api stuff
 
         if (this.getPlatformSelection() == Platform.SERVER || this.getPlatformSelection() == Platform.LOCAL) {
-            this.serverEngine.injectVersion(VERSION);
+            this.serverEngine.injectVersion(new Version(SOFTWARE_VERSION, API_VERSION, DATABASE_VERION, NETWORK_VERSION, SOFTWARE_MINOR_VERSION));
             this.serverEngine.start();
             this.engines.add(this.serverEngine);
 
@@ -287,7 +292,7 @@ public class DPAD extends Thread {
         }
 
         if (this.getPlatformSelection() == Platform.CLIENT || this.getPlatformSelection() == Platform.LOCAL) {
-            this.clientEngine.injectVersion(VERSION);
+            this.clientEngine.injectVersion(new Version(SOFTWARE_VERSION, API_VERSION, DATABASE_VERION, NETWORK_VERSION, SOFTWARE_MINOR_VERSION));
             this.clientEngine.start();
             this.engines.add(this.clientEngine);
             api.setClientEngine(this.clientEngine);

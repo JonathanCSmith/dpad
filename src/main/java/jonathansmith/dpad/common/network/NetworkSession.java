@@ -16,9 +16,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GenericFutureListener;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
 import jonathansmith.dpad.common.crypto.CryptographyManager;
+import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.channel.EncryptionDecoder;
 import jonathansmith.dpad.common.network.channel.EncryptionEncoder;
 import jonathansmith.dpad.common.network.listener.PacketListenersTuple;
@@ -37,7 +36,7 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITE_LISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY = new AttributeKey<BiMap<Integer, Class<? extends Packet>>>("Receivable Packets");
     public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITE_LISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY   = new AttributeKey<BiMap<Integer, Class<? extends Packet>>>("Sendable Packets");
 
-    protected final IEngine engine;
+    protected final Engine engine;
 
     private final Queue<PacketListenersTuple> outbound_packets_queue = Queues.newConcurrentLinkedQueue();
     private final Queue<Packet>               inbound_packets_queue  = Queues.newConcurrentLinkedQueue();
@@ -55,7 +54,7 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
     private String           terminationReason;
     private UUID             foreignUUID;
 
-    public NetworkSession(IEngine engine, SocketAddress address, boolean isLocal, boolean isClient) {
+    public NetworkSession(Engine engine, SocketAddress address, boolean isLocal, boolean isClient) {
         this.engine = engine;
         this.address = address;
         this.local_UUID = UUID.randomUUID();
@@ -144,6 +143,64 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
         }
     }
 
+    public void processReceivedPackets() {
+        if (this.isProcessLocked()) {
+            return;
+        }
+
+        this.flushOutboundQueue();
+        ConnectionState connectionState = this.channel.attr(CONNECTION_STATE_ATTRIBUTE_KEY).get();
+
+        if (this.connectionState != connectionState) {
+            if (this.connectionState != null) {
+                this.networkProtocol.onConnectionStateTransition(this.connectionState, connectionState);
+            }
+
+            this.connectionState = connectionState;
+        }
+
+        if (this.networkProtocol != null) {
+            for (int i = 1000; !this.inbound_packets_queue.isEmpty() && i >= 0; i--) {
+                Packet packet = this.inbound_packets_queue.poll();
+
+                if (packet.getClass() != KeepAlivePacket.class) {
+                    this.engine.debug("Processing packet: " + packet.getClass(), null);
+                }
+
+                packet.processPacket(this.networkProtocol);
+            }
+
+            this.networkProtocol.pulseScheduledProtocolTasks();
+        }
+
+        this.channel.flush();
+    }
+
+    public void enableEncryption(SecretKey secretKey) {
+        this.engine.trace("Switching to encrypted channels", null);
+        this.channel.pipeline().addBefore("split_handler", "decryption_handler", new EncryptionDecoder(CryptographyManager.getCipher(2, secretKey)));
+        this.channel.pipeline().addBefore("prepend_handler", "encryption_handler", new EncryptionEncoder(CryptographyManager.getCipher(1, secretKey)));
+    }
+
+    public String buildSessionInformation() {
+        return "Address: " + this.getAddress() + ", Port: " + this.getPort() + ", Local UUID: " + this.getEngineAssignedUUID() + ", Foreign UUID: " + this.getForeignUUID();
+    }
+
+    public String getExitMessage() {
+        return this.terminationReason;
+    }
+
+    public void closeChannel(String reason) {
+        if (this.channel.isOpen()) {
+            this.channel.close();
+            this.terminationReason = reason;
+        }
+    }
+
+    public void shutdown(boolean force) {
+        this.closeChannel("Shutdown request received, request has status: " + force);
+    }
+
     private void flushOutboundQueue() {
         if (this.isChannelOpen()) {
             while (!this.outbound_packets_queue.isEmpty()) {
@@ -207,39 +264,6 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
         }
     }
 
-    public void processReceivedPackets() {
-        if (this.isProcessLocked()) {
-            return;
-        }
-
-        this.flushOutboundQueue();
-        ConnectionState connectionState = this.channel.attr(CONNECTION_STATE_ATTRIBUTE_KEY).get();
-
-        if (this.connectionState != connectionState) {
-            if (this.connectionState != null) {
-                this.networkProtocol.onConnectionStateTransition(this.connectionState, connectionState);
-            }
-
-            this.connectionState = connectionState;
-        }
-
-        if (this.networkProtocol != null) {
-            for (int i = 1000; !this.inbound_packets_queue.isEmpty() && i >= 0; i--) {
-                Packet packet = this.inbound_packets_queue.poll();
-
-                if (packet.getClass() != KeepAlivePacket.class) {
-                    this.engine.debug("Processing packet: " + packet.getClass(), null);
-                }
-
-                packet.processPacket(this.networkProtocol);
-            }
-
-            this.networkProtocol.pulseScheduledProtocolTasks();
-        }
-
-        this.channel.flush();
-    }
-
     private boolean isProcessLocked() {
         if (this.timeSinceLastProcess == 0L) {
             this.timeSinceLastProcess = System.currentTimeMillis();
@@ -253,31 +277,6 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
             this.timeSinceLastProcess = System.currentTimeMillis();
             return false;
         }
-    }
-
-    public void enableEncryption(SecretKey secretKey) {
-        this.engine.trace("Switching to encrypted channels", null);
-        this.channel.pipeline().addBefore("split_handler", "decryption_handler", new EncryptionDecoder(CryptographyManager.getCipher(2, secretKey)));
-        this.channel.pipeline().addBefore("prepend_handler", "encryption_handler", new EncryptionEncoder(CryptographyManager.getCipher(1, secretKey)));
-    }
-
-    public String buildSessionInformation() {
-        return "Address: " + this.getAddress() + ", Port: " + this.getPort() + ", Local UUID: " + this.getEngineAssignedUUID() + ", Foreign UUID: " + this.getForeignUUID();
-    }
-
-    public String getExitMessage() {
-        return this.terminationReason;
-    }
-
-    public void closeChannel(String reason) {
-        if (this.channel.isOpen()) {
-            this.channel.close();
-            this.terminationReason = reason;
-        }
-    }
-
-    public void shutdown(boolean force) {
-        this.closeChannel("Shutdown request received, request has status: " + force);
     }
 
     @Override

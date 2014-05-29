@@ -8,17 +8,17 @@ import javax.crypto.SecretKey;
 
 import io.netty.util.concurrent.GenericFutureListener;
 
+import org.apache.commons.lang3.Validate;
+
 import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.api.common.util.Version;
 
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.login.*;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
-import jonathansmith.dpad.server.engine.util.version.Version;
 import jonathansmith.dpad.server.network.ServerNetworkSession;
-
-import org.apache.commons.lang3.Validate;
 
 /**
  * Created by Jon on 26/03/14.
@@ -59,7 +59,7 @@ public class ServerLoginNetworkProtocol implements INetworkProtocol {
         }
 
         else {
-            if (Version.isCompatible(this.engine.getVersion(), packet.getVersion())) {
+            if (Version.matches(this.engine.getVersion(), packet.getVersion())) {
                 versionMatch = true;
             }
         }

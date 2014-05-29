@@ -15,7 +15,6 @@ public class DatabaseConnection {
         this.session = session;
     }
 
-    // TODO: Should this be accessible?!
     public Session getSession() {
         return this.session;
     }
@@ -26,14 +25,24 @@ public class DatabaseConnection {
 
     public void commitTransaction() {
         this.session.getTransaction().commit();
-        ;
     }
 
     public void rollbackTransaction() {
         this.session.getTransaction().rollback();
     }
 
-    public void closeSession() {
-        this.session.close();
+    public void closeSession(boolean force) {
+        if (force) {
+            this.session.close();
+        }
+
+        else {
+            if (this.session.isDirty()) {
+                this.session.flush();
+                this.session.getTransaction().commit();
+            }
+
+            this.session.close();
+        }
     }
 }

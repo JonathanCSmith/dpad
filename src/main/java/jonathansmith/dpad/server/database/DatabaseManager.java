@@ -1,6 +1,7 @@
 package jonathansmith.dpad.server.database;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -21,7 +22,7 @@ import jonathansmith.dpad.server.database.record.loadingplugin.LoadingPluginReco
  */
 public class DatabaseManager {
 
-    private final HashMap<String, DatabaseConnection> connections = new HashMap<String, DatabaseConnection>();
+    private final HashMap<UUID, DatabaseConnection> connections = new HashMap<UUID, DatabaseConnection>();
 
     private final IEngine        engine;
     private final SessionFactory sessionFactory;
@@ -33,58 +34,7 @@ public class DatabaseManager {
         this.sessionFactory = sessionFactory;
     }
 
-    public void shutdown(boolean force) {
-        this.isShuttingDown = true;
-
-        for (DatabaseConnection connection : this.connections.values()) {
-            try {
-                if (force) {
-                    connection.getSession().close();
-                }
-
-                else {
-                    if (connection.getSession().isDirty()) {
-                        connection.getSession().flush();
-                        connection.commitTransaction();
-                    }
-
-                    connection.getSession().close();
-                }
-            }
-
-            catch (HibernateException ex) {
-                this.engine.error("Could not close database connection", ex);
-            }
-        }
-    }
-
-    public RecordManager getRecordManager(Class<? extends Record> clazz, String uuid) {
-        if (this.isShuttingDown) {
-            return null;
-        }
-
-        DatabaseRecord record = DatabaseRecord.getRecordTypeFromClass(clazz);
-
-        RecordManager manager;
-        switch (record) {
-            case LOADING_PLUGIN:
-                manager = LoadingPluginRecordManager.getInstance();
-                manager.bindConnection(this.getConnectionFromUUID(uuid));
-                break;
-
-            case ANALYSING_PLUGIN:
-                manager = AnalysingPluginRecordManager.getInstance();
-                manager.bindConnection(this.getConnectionFromUUID(uuid));
-                break;
-
-            default:
-                manager = null;
-        }
-
-        return manager;
-    }
-
-    private DatabaseConnection getConnectionFromUUID(String uuid) {
+    public DatabaseConnection getConnectionFromUUID(UUID uuid) {
         if (this.isShuttingDown) {
             return null;
         }
@@ -98,6 +48,44 @@ public class DatabaseManager {
             DatabaseConnection connection = new DatabaseConnection(session);
             this.connections.put(uuid, connection);
             return connection;
+        }
+    }
+
+    public RecordManager getRecordManager(Class<? extends Record> clazz) {
+        if (this.isShuttingDown) {
+            return null;
+        }
+
+        DatabaseRecord record = DatabaseRecord.getRecordTypeFromClass(clazz);
+
+        RecordManager manager;
+        switch (record) {
+            case LOADING_PLUGIN:
+                manager = LoadingPluginRecordManager.getInstance();
+                break;
+
+            case ANALYSING_PLUGIN:
+                manager = AnalysingPluginRecordManager.getInstance();
+                break;
+
+            default:
+                manager = null;
+        }
+
+        return manager;
+    }
+
+    public void shutdown(boolean force) {
+        this.isShuttingDown = true;
+
+        for (DatabaseConnection connection : this.connections.values()) {
+            try {
+                connection.closeSession(force);
+            }
+
+            catch (HibernateException ex) {
+                this.engine.error("Could not close database connection", ex);
+            }
         }
     }
 }

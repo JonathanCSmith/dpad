@@ -1,9 +1,8 @@
 package jonathansmith.dpad.server.network;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
 import jonathansmith.dpad.common.network.NetworkSession;
 
+import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
 import jonathansmith.dpad.server.network.protocol.ServerRuntimeNetworkProtocol;
 
@@ -16,7 +15,7 @@ public class ServerNetworkSession extends NetworkSession {
 
     private final ServerNetworkManager networkManager;
 
-    public ServerNetworkSession(IEngine engine, ServerNetworkManager manager) {
+    public ServerNetworkSession(ServerEngine engine, ServerNetworkManager manager) {
         super(engine, manager.getSocketAddress(), manager.isLocalConnection(), false);
 
         this.networkManager = manager;

@@ -2,11 +2,11 @@ package jonathansmith.dpad.client.engine.executor.startup;
 
 import java.net.SocketAddress;
 
-import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
 import jonathansmith.dpad.common.engine.executor.Task;
 import jonathansmith.dpad.common.network.NetworkManager;
 
+import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.network.ClientNetworkManager;
 
 /**
@@ -18,11 +18,11 @@ public class SetupClientNetworkTask extends Task {
 
     private static final String TASK_NAME = "Client Network Setup";
 
-    private final Engine        engine;
+    private final ClientEngine  engine;
     private final SocketAddress address;
     private final boolean       isLocalConnection;
 
-    public SetupClientNetworkTask(Engine engine, SocketAddress address, boolean isLocal) {
+    public SetupClientNetworkTask(ClientEngine engine, SocketAddress address, boolean isLocal) {
         super(TASK_NAME, engine);
 
         this.engine = engine;
