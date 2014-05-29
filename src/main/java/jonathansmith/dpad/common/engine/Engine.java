@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.event.IEventThread;
 import jonathansmith.dpad.api.common.engine.executor.IExecutor;
+import jonathansmith.dpad.api.common.util.Version;
 
 import jonathansmith.dpad.common.engine.event.EventThread;
 import jonathansmith.dpad.common.engine.executor.Executor;
@@ -43,7 +44,7 @@ public abstract class Engine extends Thread implements IEngine {
     private FileSystem     fileSystem;
     private NetworkManager networkManager;
     private PluginManager  pluginManager;
-    private String         version;
+    private Version        version;
 
     public Engine(SocketAddress address, EngineTabController tabController) {
         this.address = address;
@@ -144,11 +145,7 @@ public abstract class Engine extends Thread implements IEngine {
         }
     }
 
-    public String getVersion() {
-        return this.version;
-    }
-
-    public void injectVersion(String version) {
+    public void injectVersion(Version version) {
         this.version = version;
     }
 
@@ -235,6 +232,11 @@ public abstract class Engine extends Thread implements IEngine {
 
     public boolean isShuttingDown() {
         return this.shutdownFlag;
+    }
+
+    @Override
+    public Version getVersion() {
+        return this.version;
     }
 
     @Override

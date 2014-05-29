@@ -21,24 +21,18 @@ public abstract class RecordManager<T extends Record> {
 
     private final Class<T> clazz;
 
-    protected DatabaseConnection connection;
-
-    public RecordManager(RecordDAO dao, Class clazz) {
+    public RecordManager(RecordDAO dao, Class<T> clazz) {
         this.engine = APIAccess.getAPI().getServer();
         this.database_access_object = dao;
         this.clazz = clazz;
     }
 
-    public void bindConnection(DatabaseConnection connectionFromUUID) {
-        this.connection = connectionFromUUID;
-    }
-
-    public RecordList<Record> loadAll() {
-        RecordList<Record> all = new RecordList<Record>();
+    public RecordList<T> loadAll(DatabaseConnection connection) {
+        RecordList<T> all = new RecordList<T>();
         try {
-            this.connection.beginTransaction();
-            all = this.database_access_object.findAll(this.connection.getSession(), this.clazz);
-            this.connection.commitTransaction();
+            connection.beginTransaction();
+            all = this.getDAO().findAll(connection.getSession(), this.clazz);
+            connection.commitTransaction();
 
         }
         catch (HibernateException ex) {
@@ -48,13 +42,13 @@ public abstract class RecordManager<T extends Record> {
         return all;
     }
 
-    public boolean save(T input) {
+    public boolean save(DatabaseConnection connection, T input) {
         boolean success = false;
         try {
-            this.connection.beginTransaction();
-            input = (T) this.database_access_object.merge(this.connection.getSession(), input);
-            this.database_access_object.save(this.connection.getSession(), input);
-            this.connection.commitTransaction();
+            connection.beginTransaction();
+            input = this.getDAO().merge(connection.getSession(), input);
+            this.getDAO().save(connection.getSession(), input);
+            connection.commitTransaction();
             success = true;
 
         }
@@ -65,12 +59,12 @@ public abstract class RecordManager<T extends Record> {
         return success;
     }
 
-    public boolean saveNew(T input) {
+    public boolean saveNew(DatabaseConnection connection, T input) {
         boolean success = false;
         try {
-            this.connection.beginTransaction();
-            this.database_access_object.save(this.connection.getSession(), input);
-            this.connection.commitTransaction();
+            connection.beginTransaction();
+            this.getDAO().save(connection.getSession(), input);
+            connection.commitTransaction();
             success = true;
 
         }
@@ -81,12 +75,12 @@ public abstract class RecordManager<T extends Record> {
         return success;
     }
 
-    public T findByID(String uuid) {
+    public T findByID(DatabaseConnection connection, String uuid) {
         T out = null;
         try {
-            this.connection.beginTransaction();
-            out = (T) this.database_access_object.findByID(this.connection.getSession(), this.clazz, uuid);
-            this.connection.commitTransaction();
+            connection.beginTransaction();
+            out = this.getDAO().findByID(connection.getSession(), this.clazz, uuid);
+            connection.commitTransaction();
 
         }
         catch (HibernateException ex) {
@@ -96,24 +90,24 @@ public abstract class RecordManager<T extends Record> {
         return out;
     }
 
-    public boolean deleteExisting(T input) {
+    public boolean deleteExisting(DatabaseConnection connection, T input) {
         boolean success = false;
         try {
-            this.connection.beginTransaction();
-            this.database_access_object.delete(this.connection.getSession(), input);
-            this.connection.commitTransaction();
+            connection.beginTransaction();
+            this.getDAO().delete(connection.getSession(), input);
+            connection.commitTransaction();
             success = true;
 
         }
         catch (HibernateException ex) {
             this.engine.error("Database access error", ex);
-            this.connection.rollbackTransaction();
+            connection.rollbackTransaction();
         }
 
         return success;
     }
 
-    public abstract <L extends RecordDAO> L getDAO();
+    public abstract <L extends RecordDAO<T, String>> L getDAO();
 
-    public abstract T loadChildrenForUpdate(T record, DatabaseRecord childType);
+    public abstract T loadChildrenForUpdate(DatabaseConnection connection, T record, DatabaseRecord childType);
 }

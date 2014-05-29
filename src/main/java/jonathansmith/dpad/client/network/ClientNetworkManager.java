@@ -6,9 +6,9 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.local.LocalChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
-import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkManager;
 
+import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.network.channel.ClientChannelInitialiser;
 
 /**
@@ -23,7 +23,7 @@ public class ClientNetworkManager extends NetworkManager {
 
     private ClientNetworkSession session = null;
 
-    public ClientNetworkManager(Engine engine, SocketAddress address, boolean isLocal) {
+    public ClientNetworkManager(ClientEngine engine, SocketAddress address, boolean isLocal) {
         super(engine, address, "Netty Client IO #%d", isLocal);
 
         this.clientBootstrap = new Bootstrap();
@@ -32,7 +32,7 @@ public class ClientNetworkManager extends NetworkManager {
     @Override
     public void buildBootstrap() {
         this.clientBootstrap.group(this.getEventLoopGroups());
-        this.clientBootstrap.handler(new ClientChannelInitialiser(this.engine, this));
+        this.clientBootstrap.handler(new ClientChannelInitialiser((ClientEngine) this.engine, this));
 
         if (this.isLocalConnection()) {
             this.clientBootstrap.channel(LocalChannel.class);

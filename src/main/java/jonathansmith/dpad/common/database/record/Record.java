@@ -32,9 +32,6 @@ public abstract class Record implements Serializable {
 
     public abstract void addToChildren(Record record);
 
-//    @Transient
-//    public abstract DatabaseRecordType getType();
-
     @Override
     public abstract boolean equals(Object o);
 

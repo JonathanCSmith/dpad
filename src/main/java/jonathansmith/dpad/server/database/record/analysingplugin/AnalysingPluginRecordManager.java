@@ -3,6 +3,7 @@ package jonathansmith.dpad.server.database.record.analysingplugin;
 import jonathansmith.dpad.common.database.record.AnalysingPluginRecord;
 import jonathansmith.dpad.common.database.record.DatabaseRecord;
 
+import jonathansmith.dpad.server.database.DatabaseConnection;
 import jonathansmith.dpad.server.database.RecordManager;
 
 /**
@@ -32,7 +33,7 @@ public class AnalysingPluginRecordManager extends RecordManager<AnalysingPluginR
     }
 
     @Override
-    public AnalysingPluginRecord loadChildrenForUpdate(AnalysingPluginRecord record, DatabaseRecord childType) {
+    public AnalysingPluginRecord loadChildrenForUpdate(DatabaseConnection connection, AnalysingPluginRecord record, DatabaseRecord childType) {
         // TODO:
         return null;
     }

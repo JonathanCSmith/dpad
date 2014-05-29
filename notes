@@ -1,10 +1,3 @@
-Add in idle executors for both client and server
-GUI for setup - (blank?!)
-GUI for idle - should be the default option guis, i.e. client should be runtime select and server should (perhaps) have debug tools (i.e. enabling packet profiling etc)
-Events
-Plugin manager
-Config
-
 Notes:
 - GUI is changed through events
 - NetworkManager should never be directly accessed. Instead session should deal with everything internally
@@ -12,30 +5,32 @@ Notes:
 - Server side executors are independent of network communication as all replies should be handled through sessions
 - Tasks should heavily trace logging
 - Plugin Manager thread should have transient database session access so it does not lock down the database
-- Current database sessions should be masked internally by ONLY handing them off to managers.
-    - No network sessions should access it internally.
-    - Only hand off the database connection.
+- Network sessions should NEVER hand off database connections!!!
+- Plugin handling detailed separately below
 
-Global TODO:
-- Ensure database manager is accessible to sessions
-- Ensure database manager access methods are threadsafe
-- Plugin Version checking
-- Global Version checking
-- Plugin thread to acquire database access
-- Plugin database submission
+GLOBAL CURRENT TODO:
+- Plugin version generation from filename
+- Plugin manager thread (server side) acquire transcendal database connection
 - Idle Exec tasks
 - Idle Execs restore/create standard gui?!
 - Idle GUIs
 - Disconnect GUI
 - Clean up TODOs
-- Plugin guis
+- Clean up warnings
 
 GLOBAL INCREMENTAL TODO:
 - RuntimeNetworkProtocols
-- Finish plugin database entries, daos and managers
 - Reformat local finals to use lowercase + underscores
 - Remove listeners when they die
 - Assess whether event threads need to api accessible
+
+GLOBAL DELAYED TODO:
+- Plugin Version checking
+- Plugin thread to acquire database access
+- Plugin database submission
+- Finish plugin database entries, daos and managers
+- Plugin guis
+- Use of ID generic in recordDAO
 
 Global MAYBE:
 - Have a debug variable for logging in threads to prevent cpu + memory usage (MAY NOT IMPLEMENT)
@@ -45,3 +40,16 @@ Global MAYBE:
 - allowing servers to blacklist/whitelist ips (not fully implemented).
 - Permission ruleset for db access
 - Can saveAndShutdown + forceShutdown (in engine) be made private. Perhaps also executors?!
+
+Plugin Handling
+- Plugins are stored both on the client and the server
+- Plugins are distributed globally by the server
+- Client can upload plugins
+- Version strings are parsed using the filename
+- Plugins are added to the database when they are used
+- Plugins that are updated need a way of identifying relevant datasets and updating them
+- Plugins must include an update feature
+- Update feature must be able to handle *generic* datasets from the database
+- Server should identify when a plugin has been updated and start applying the update process in the background (threaded?!)
+- Plugin does not have a separate version setting. It MUST use the filename to ensure correctness
+- Plugin manager on the server must acquire a transient, non-session associated database connection

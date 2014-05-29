@@ -4,10 +4,9 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
 import jonathansmith.dpad.common.network.channel.*;
 
+import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.network.ClientNetworkManager;
 import jonathansmith.dpad.client.network.ClientNetworkSession;
 
@@ -22,7 +21,7 @@ public class ClientChannelInitialiser extends ChannelInitialiser {
 
     private final ClientNetworkManager networkManager;
 
-    public ClientChannelInitialiser(IEngine engine, ClientNetworkManager manager) {
+    public ClientChannelInitialiser(ClientEngine engine, ClientNetworkManager manager) {
         super(engine);
 
         this.networkManager = manager;
@@ -40,7 +39,7 @@ public class ClientChannelInitialiser extends ChannelInitialiser {
             channel.pipeline().addLast("encode_handler", new MessageEncoder(this.engine));
         }
 
-        ClientNetworkSession session = new ClientNetworkSession(this.engine, this.networkManager);
+        ClientNetworkSession session = new ClientNetworkSession((ClientEngine) this.engine, this.networkManager);
         channel.pipeline().addLast("packet_handler", session);
         this.networkManager.setSession(session);
     }

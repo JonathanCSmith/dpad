@@ -1,6 +1,7 @@
 package jonathansmith.dpad.api.common.engine;
 
 import jonathansmith.dpad.api.common.engine.event.IEventThread;
+import jonathansmith.dpad.api.common.util.Version;
 
 /**
  * Created by Jon on 23/03/14.
@@ -14,7 +15,7 @@ public interface IEngine {
      *
      * @return String version information
      */
-    String getVersion();
+    Version getVersion();
 
     /**
      * Return the event thread for the engine
