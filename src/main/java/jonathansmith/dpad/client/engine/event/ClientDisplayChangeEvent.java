@@ -14,4 +14,8 @@ public class ClientDisplayChangeEvent extends DisplayChangeEvent {
     public ClientDisplayChangeEvent(ClientDisplay display) {
         super(display);
     }
+
+    public ClientDisplay getTargetDisplay() {
+        return (ClientDisplay) this.targetDisplay;
+    }
 }

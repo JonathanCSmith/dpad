@@ -10,13 +10,9 @@ import jonathansmith.dpad.common.gui.display.Display;
  */
 public abstract class DisplayChangeEvent extends Event {
 
-    private final Display targetDisplay;
+    protected final Display targetDisplay;
 
     public DisplayChangeEvent(Display display) {
         this.targetDisplay = display;
-    }
-
-    public Display getTargetDisplay() {
-        return this.targetDisplay;
     }
 }

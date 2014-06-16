@@ -7,7 +7,6 @@ import java.util.List;
  * Created by Jon on 27/05/2014.
  * <p/>
  * Types of database record.
- * TODO: move away from static declaration if possible
  */
 public enum DatabaseRecord {
 

@@ -2,12 +2,12 @@ package jonathansmith.dpad.client.network.protocol;
 
 import io.netty.util.concurrent.GenericFutureListener;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.KeepAlivePacket;
 import jonathansmith.dpad.common.network.protocol.IRuntimeNetworkProtocol;
+
+import jonathansmith.dpad.client.ClientEngine;
 
 /**
  * Created by Jon on 08/04/14.
@@ -18,7 +18,7 @@ public class ClientRuntimeProtocol extends ClientNetworkProtocol implements IRun
 
     private static final String PROTOCOL_NAME = "Client Runtime Protocol";
 
-    public ClientRuntimeProtocol(IEngine engine, NetworkSession session) {
+    public ClientRuntimeProtocol(ClientEngine engine, NetworkSession session) {
         super(engine, session, PROTOCOL_NAME);
     }
 

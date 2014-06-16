@@ -2,6 +2,8 @@ package jonathansmith.dpad.server.network.protocol;
 
 import io.netty.util.concurrent.GenericFutureListener;
 
+import org.apache.commons.lang3.Validate;
+
 import jonathansmith.dpad.api.common.engine.IEngine;
 
 import jonathansmith.dpad.common.network.ConnectionState;
@@ -9,13 +11,10 @@ import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.KeepAlivePacket;
 import jonathansmith.dpad.common.network.protocol.IRuntimeNetworkProtocol;
 
-import org.apache.commons.lang3.Validate;
-
 /**
  * Created by Jon on 08/04/14.
  * <p/>
  * General runtime network protocol for the associated client
- * // TODO: Implement
  */
 public class ServerRuntimeNetworkProtocol implements IRuntimeNetworkProtocol {
 

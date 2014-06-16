@@ -1,13 +1,13 @@
 package jonathansmith.dpad.client.network.protocol;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.event.IEventThread;
 
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
+import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.engine.event.ClientDisplayChangeEvent;
-import jonathansmith.dpad.client.gui.ClientDisconnectDisplay;
+import jonathansmith.dpad.client.gui.disconnect.ClientDisconnectDisplay;
 
 /**
  * Created by Jon on 19/05/2014.
@@ -16,11 +16,11 @@ import jonathansmith.dpad.client.gui.ClientDisconnectDisplay;
  */
 public abstract class ClientNetworkProtocol implements INetworkProtocol {
 
-    protected final IEngine        engine;
+    protected final ClientEngine   engine;
     protected final NetworkSession network_session;
     private final   String         protocolName;
 
-    public ClientNetworkProtocol(IEngine engine, NetworkSession session, String protocolName) {
+    public ClientNetworkProtocol(ClientEngine engine, NetworkSession session, String protocolName) {
         this.engine = engine;
         this.network_session = session;
         this.protocolName = protocolName;
@@ -42,7 +42,7 @@ public abstract class ClientNetworkProtocol implements INetworkProtocol {
     @Override
     public void onDisconnect(String exitMessage) {
         IEventThread eventThread = this.engine.getEventThread();
-        eventThread.postEvent(new ClientDisplayChangeEvent(new ClientDisconnectDisplay()));
+        eventThread.postEvent(new ClientDisplayChangeEvent(new ClientDisconnectDisplay(this.engine, exitMessage)));
         this.engine.handleShutdown(exitMessage);
     }
 }

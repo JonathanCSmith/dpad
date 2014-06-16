@@ -1,7 +1,5 @@
 package jonathansmith.dpad.api.common.plugin;
 
-import jonathansmith.dpad.api.common.util.Version;
-
 /**
  * Created by Jon on 28/05/2014.
  * <p/>
@@ -22,13 +20,6 @@ public interface IPluginRecord {
      * @return a description of the plugin
      */
     String getPluginDescription();
-
-    /**
-     * Return the version of the plugin. Used internally for updating.
-     *
-     * @return the plugin version. See {@link jonathansmith.dpad.api.common.util.Version}
-     */
-    Version getPluginVersion();
 
     /**
      * Return the author of the plugin.

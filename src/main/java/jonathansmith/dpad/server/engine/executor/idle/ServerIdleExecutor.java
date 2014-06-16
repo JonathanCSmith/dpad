@@ -17,7 +17,6 @@ public class ServerIdleExecutor extends Executor {
     public ServerIdleExecutor(ServerEngine serverEngine) {
         super(EXECUTOR_NAME, serverEngine, true);
 
-        // TODO: Add idle tasks
         this.addTask(new IdleTask(serverEngine));
     }
 }

@@ -84,8 +84,8 @@ public class GUIContainer extends JFrame implements IGUIController, WindowListen
             return;
         }
 
+        // Prevents non core systems from removing core displays
         if (tab instanceof ClientTabController || tab instanceof ServerTabController) {
-            // TODO: Log
             return;
         }
 
@@ -95,8 +95,8 @@ public class GUIContainer extends JFrame implements IGUIController, WindowListen
     }
 
     public void removeCoreTab(ITabController tab) {
+        // Prevents non-core tabs from being removed through this method
         if (!(tab instanceof ClientTabController) && !(tab instanceof ServerTabController) && !(tab instanceof StartupTabController)) {
-            // TODO: Log
             return;
         }
 

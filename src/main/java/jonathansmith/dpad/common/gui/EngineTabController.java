@@ -72,8 +72,8 @@ public abstract class EngineTabController<T extends Display> implements ITabCont
             }
 
             int dividerLocation = this.coreDisplaySplitPane.getDividerLocation();
-            this.coreDisplaySplitPane.setLeftComponent(this.currentDisplay.getToolbarComponent());
-            this.coreDisplaySplitPane.setRightComponent(this.currentDisplay.getDisplayComponent());
+            this.coreDisplaySplitPane.setLeftComponent(this.currentDisplay.getToolbarComponent().getContentPane());
+            this.coreDisplaySplitPane.setRightComponent(this.currentDisplay.getDisplayComponent().getContentPane());
             this.coreDisplaySplitPane.setDividerLocation(dividerLocation);
             this.oldDisplay = this.currentDisplay;
         }

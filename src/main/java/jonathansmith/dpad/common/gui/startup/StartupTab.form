@@ -19,8 +19,10 @@
         </constraints>
         <properties>
           <editable value="false"/>
+          <focusable value="false"/>
           <maximumSize width="2147483647" height="30"/>
           <minimumSize width="300" height="30"/>
+          <opaque value="false"/>
           <text value="Database Connection Setup:"/>
         </properties>
       </component>
@@ -32,8 +34,10 @@
         </constraints>
         <properties>
           <editable value="false"/>
+          <focusable value="false"/>
           <maximumSize width="2147483647" height="30"/>
           <minimumSize width="14" height="30"/>
+          <opaque value="false"/>
           <text value="Connect to a DPAD Server:"/>
         </properties>
       </component>
@@ -45,8 +49,10 @@
         </constraints>
         <properties>
           <editable value="false"/>
+          <focusable value="false"/>
           <maximumSize width="2147483647" height="30"/>
           <minimumSize width="14" height="30"/>
+          <opaque value="false"/>
           <text value="Host a DPAD Server:"/>
         </properties>
       </component>
@@ -58,8 +64,10 @@
         </constraints>
         <properties>
           <editable value="false"/>
+          <focusable value="false"/>
           <maximumSize width="2147483647" height="30"/>
           <minimumSize width="100" height="30"/>
+          <opaque value="false"/>
           <text value="Create a local instance of DPAD:"/>
         </properties>
       </component>
@@ -102,4 +110,7 @@
       </vspacer>
     </children>
   </grid>
+  <inspectionSuppressions>
+    <suppress inspection="NoLabelFor"/>
+  </inspectionSuppressions>
 </form>

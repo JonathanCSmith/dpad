@@ -1,36 +1,28 @@
-Notes:
-- GUI is changed through events
-- NetworkManager should never be directly accessed. Instead session should deal with everything internally
-- Client side executors will be linear and communicate through sessions
-- Server side executors are independent of network communication as all replies should be handled through sessions
-- Tasks should heavily trace logging
-- Plugin Manager thread should have transient database session access so it does not lock down the database
-- Network sessions should NEVER hand off database connections!!!
-- Plugin handling detailed separately below
-
 GLOBAL CURRENT TODO:
-- Plugin version generation from filename
-- Plugin manager thread (server side) acquire transcendal database connection
-- Idle Exec tasks
-- Idle Execs restore/create standard gui?!
-- Idle GUIs
-- Disconnect GUI
-- Clean up TODOs
 - Clean up warnings
+- Think out user encryption
+- Think out user permissions
+- User login/create GUI
+- User login enables encryption
+- User uuid creation?!
+
+GLOBAL DELAYED TODO:
+- Plugin version generation from filename
+- Plugin sanity checking when relocating?!
+- PluginManager separation into client and server (Should better manage what functions are specific to each side)
+- Plugin manager thread (server side) acquire specific database connection
+- Plugin database submission
+- Finish plugin database entries, daos and managers
+- Plugin guis
+- Use of ID generic in recordDAO
 
 GLOBAL INCREMENTAL TODO:
 - RuntimeNetworkProtocols
 - Reformat local finals to use lowercase + underscores
 - Remove listeners when they die
 - Assess whether event threads need to api accessible
-
-GLOBAL DELAYED TODO:
-- Plugin Version checking
-- Plugin thread to acquire database access
-- Plugin database submission
-- Finish plugin database entries, daos and managers
-- Plugin guis
-- Use of ID generic in recordDAO
+- ServerHomeDisplay content
+- ClientHomeDisplay content
 
 Global MAYBE:
 - Have a debug variable for logging in threads to prevent cpu + memory usage (MAY NOT IMPLEMENT)
@@ -40,6 +32,17 @@ Global MAYBE:
 - allowing servers to blacklist/whitelist ips (not fully implemented).
 - Permission ruleset for db access
 - Can saveAndShutdown + forceShutdown (in engine) be made private. Perhaps also executors?!
+- Generify idle executors
+
+Task/Executor Handling
+- Tasks should use trace logging
+- Client side executors will be linear and communicate through sessions
+- Server side executors are independent of network communication as all replies should be handled through sessions
+- Idle Executors on the client just sleep, but can be replaced for dedicated cpu tasks to run in the background
+
+Network Handling
+- Network sessions should NEVER hand off database connections!!!
+- NetworkManager should never be directly accessed. Instead session should deal with everything internally
 
 Plugin Handling
 - Plugins are stored both on the client and the server
@@ -53,3 +56,6 @@ Plugin Handling
 - Server should identify when a plugin has been updated and start applying the update process in the background (threaded?!)
 - Plugin does not have a separate version setting. It MUST use the filename to ensure correctness
 - Plugin manager on the server must acquire a transient, non-session associated database connection
+
+Notes:
+- GUI is changed through events

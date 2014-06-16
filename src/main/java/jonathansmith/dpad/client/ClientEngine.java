@@ -2,6 +2,8 @@ package jonathansmith.dpad.client;
 
 import java.net.SocketAddress;
 
+import jonathansmith.dpad.api.client.session.ISessionData;
+
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.engine.executor.Executor;
 import jonathansmith.dpad.common.platform.Platform;
@@ -9,6 +11,7 @@ import jonathansmith.dpad.common.platform.Platform;
 import jonathansmith.dpad.client.engine.executor.idle.ClientIdleExecutor;
 import jonathansmith.dpad.client.engine.executor.startup.ClientStartupExecutor;
 import jonathansmith.dpad.client.gui.ClientTabController;
+import jonathansmith.dpad.client.network.ClientNetworkManager;
 
 import jonathansmith.dpad.DPAD;
 
@@ -37,5 +40,9 @@ public class ClientEngine extends Engine {
     @Override
     protected Executor getDefaultExecutor() {
         return new ClientIdleExecutor(this);
+    }
+
+    public ISessionData getSessionData() {
+        return ((ClientNetworkManager) this.getNetworkManager()).getSession().getSessionData();
     }
 }

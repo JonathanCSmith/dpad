@@ -1,7 +1,5 @@
 package jonathansmith.dpad.common.gui.display;
 
-import javax.swing.*;
-
 import jonathansmith.dpad.api.common.engine.IEngine;
 
 /**
@@ -11,11 +9,9 @@ import jonathansmith.dpad.api.common.engine.IEngine;
  */
 public abstract class Display {
 
-    public abstract JPanel getToolbarComponent();
+    public abstract DisplayPanel getToolbarComponent();
 
-    public abstract JPanel getDisplayComponent();
-
-    public abstract void init(IEngine loggingEngine);
+    public abstract DisplayPanel getDisplayComponent();
 
     public abstract void update();
 

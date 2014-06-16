@@ -14,4 +14,8 @@ public class ServerDisplayChangeEvent extends DisplayChangeEvent {
     public ServerDisplayChangeEvent(ServerDisplay display) {
         super(display);
     }
+
+    public ServerDisplay getTargetDisplay() {
+        return (ServerDisplay) this.targetDisplay;
+    }
 }

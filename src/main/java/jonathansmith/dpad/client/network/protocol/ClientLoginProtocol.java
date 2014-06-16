@@ -7,7 +7,7 @@ import javax.crypto.SecretKey;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import org.apache.commons.lang3.Validate;
 
 import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.common.network.ConnectionState;
@@ -16,7 +16,7 @@ import jonathansmith.dpad.common.network.packet.login.EncryptionResponsePacket;
 import jonathansmith.dpad.common.network.packet.login.LoginConfirmPacket;
 import jonathansmith.dpad.common.network.packet.login.LoginSuccessPacket;
 
-import org.apache.commons.lang3.Validate;
+import jonathansmith.dpad.client.ClientEngine;
 
 /**
  * Created by Jon on 23/03/14.
@@ -27,7 +27,7 @@ public class ClientLoginProtocol extends ClientNetworkProtocol {
 
     private static final String PROTOCOL_NAME = "Client Login Protocol";
 
-    public ClientLoginProtocol(IEngine engine, NetworkSession session) {
+    public ClientLoginProtocol(ClientEngine engine, NetworkSession session) {
         super(engine, session, PROTOCOL_NAME);
     }
 
