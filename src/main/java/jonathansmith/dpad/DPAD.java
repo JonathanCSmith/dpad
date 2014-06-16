@@ -270,7 +270,6 @@ public class DPAD extends Thread {
         API api = new API();
         APIAccess.setAPI(api);
         api.setGUI(this.gui);
-        // TODO: Add in api stuff
 
         if (this.getPlatformSelection() == Platform.SERVER || this.getPlatformSelection() == Platform.LOCAL) {
             this.serverEngine.injectVersion(new Version(SOFTWARE_VERSION, API_VERSION, DATABASE_VERION, NETWORK_VERSION, SOFTWARE_MINOR_VERSION));

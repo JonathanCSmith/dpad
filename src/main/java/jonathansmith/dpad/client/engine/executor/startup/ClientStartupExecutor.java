@@ -26,5 +26,6 @@ public class ClientStartupExecutor extends Executor {
         this.addTask(new CommonSetupTask(engine));
         this.addTask(new SetupClientLoggingTask(engine));
         this.addTask(new SetupClientNetworkTask(engine, address, DPAD.getInstance().getPlatformSelection() == Platform.LOCAL));
+        this.addTask(new SetupClientHomeDisplayTask(engine));
     }
 }

@@ -24,6 +24,9 @@ import jonathansmith.dpad.common.database.util.RecordList;
  * Created by Jon on 27/05/2014.
  * <p/>
  * Core thread for loading and distributing plugins.
+ * <p/>
+ * TODO: Separate into client and server.
+ * TODO: Allow server to acquire connection to the database
  */
 public class PluginManager extends Thread {
 
@@ -63,7 +66,13 @@ public class PluginManager extends Thread {
         this.snapshot();
     }
 
-    // TODO: Database submission
+    /**
+     * Should be called only when a plugin is required to be added to the local plugin database.
+     * All entries are entered into pending. Note: No sanity checking is performed here.
+     * But sanity checking does occur as part of the process, so if the provided plugin is outdated it will not be added.
+     *
+     * @param plugin the plugin to add.
+     */
     public void addPluginFile(File plugin) {
         if (plugin.isFile() && plugin.getName().toLowerCase().endsWith(".jar")) {
             try {
@@ -160,7 +169,7 @@ public class PluginManager extends Thread {
                 }
 
                 catch (InterruptedException ex) {
-                    // TODO Log?!
+                    // REVISIT
                 }
             }
         }
@@ -187,7 +196,7 @@ public class PluginManager extends Thread {
                 }
 
                 catch (InterruptedException ex) {
-                    // No issue?! TODO: Log?!
+                    // REVIST
                 }
             }
 
@@ -203,6 +212,37 @@ public class PluginManager extends Thread {
 
         this.utilities.shutdown();
         this.manager.shutdown();
+    }
+
+    /**
+     * Sanity checking for plugin files needs to happen here
+     */
+    private void relocatePendingPlugins() {
+        File updateFolder = new File(this.update_directory);
+        File[] pluginJars = updateFolder.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".jar");
+            }
+        });
+
+        boolean successful = true;
+        for (File updatePlugin : pluginJars) {
+            try {
+                File relocatedJar = new File(this.plugin_directory + "\\" + updatePlugin.getName());
+                FileUtils.copyFile(updatePlugin, relocatedJar);
+                updatePlugin.delete();
+            }
+
+            catch (IOException ex) {
+                successful = false;
+                this.engine.error("Could not update plugin: " + updatePlugin.getName(), ex);
+            }
+        }
+
+        if (successful) {
+            this.pendingUpdates = false;
+        }
     }
 
     // TODO: Database submission
@@ -242,34 +282,6 @@ public class PluginManager extends Thread {
         this.snapshotted_analysing_plugins.putAll(this.live_analysing_plugins);
         this.snapshotted_plugins.clear();
         this.snapshotted_plugins.putAll(this.live_plugins);
-    }
-
-    private void relocatePendingPlugins() {
-        File updateFolder = new File(this.update_directory);
-        File[] pluginJars = updateFolder.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".jar");
-            }
-        });
-
-        boolean successful = true;
-        for (File updatePlugin : pluginJars) {
-            try {
-                File relocatedJar = new File(this.plugin_directory + "\\" + updatePlugin.getName());
-                FileUtils.copyFile(updatePlugin, relocatedJar);
-                updatePlugin.delete();
-            }
-
-            catch (IOException ex) {
-                successful = false;
-                this.engine.error("Could not update plugin: " + updatePlugin.getName(), ex);
-            }
-        }
-
-        if (successful) {
-            this.pendingUpdates = false;
-        }
     }
 
     private IPlugin getPluginWithoutCheckout(String name) {

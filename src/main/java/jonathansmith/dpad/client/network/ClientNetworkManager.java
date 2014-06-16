@@ -10,6 +10,7 @@ import jonathansmith.dpad.common.network.NetworkManager;
 
 import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.network.channel.ClientChannelInitialiser;
+import jonathansmith.dpad.client.network.session.ClientNetworkSession;
 
 /**
  * Created by Jon on 23/03/14.
@@ -55,7 +56,8 @@ public class ClientNetworkManager extends NetworkManager {
                 }
 
                 catch (InterruptedException ex) {
-                    // Should not happen?! TODO: Log?!
+                    // Should not happen?!
+                    // REVIST
                 }
 
                 continue;
@@ -79,6 +81,10 @@ public class ClientNetworkManager extends NetworkManager {
                 this.shutdown(true);
             }
         }
+    }
+
+    public ClientNetworkSession getSession() {
+        return this.session;
     }
 
     public void setSession(ClientNetworkSession session) {

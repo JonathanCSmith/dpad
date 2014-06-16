@@ -16,6 +16,7 @@
         </constraints>
         <properties>
           <editable value="false"/>
+          <opaque value="false"/>
         </properties>
       </component>
       <component id="74fb8" class="javax.swing.JProgressBar" binding="progressBar" default-binding="true">
@@ -36,4 +37,7 @@
       </vspacer>
     </children>
   </grid>
+  <inspectionSuppressions>
+    <suppress inspection="NoLabelFor"/>
+  </inspectionSuppressions>
 </form>

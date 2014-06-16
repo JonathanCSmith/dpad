@@ -10,10 +10,6 @@ import net.xeoh.plugins.base.Plugin;
  */
 public interface IPlugin extends Plugin {
 
+    // TODO: Parse version information from file name instead
     IPluginRecord getPluginRecord();
-
-    /*
-    TODO:
-    IRuntime (Rename?) getRuntimeThread(Platform platform, ILogger logger);
-     */
 }

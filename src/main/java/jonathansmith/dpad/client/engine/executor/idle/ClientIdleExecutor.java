@@ -8,7 +8,7 @@ import jonathansmith.dpad.client.ClientEngine;
 /**
  * Created by Jon on 19/05/2014.
  * <p/>
- * Client Idle executor. Essentially is an event listener to determine which executors to queue up.
+ * Client Idle executor. Essentially sleeps and can be replaced for dedicated CPU tasks
  */
 public class ClientIdleExecutor extends Executor {
 
@@ -17,7 +17,6 @@ public class ClientIdleExecutor extends Executor {
     public ClientIdleExecutor(ClientEngine clientEngine) {
         super(EXECUTOR_NAME, clientEngine, true);
 
-        // TODO: Add idle tasks
         this.addTask(new IdleTask(clientEngine));
     }
 }

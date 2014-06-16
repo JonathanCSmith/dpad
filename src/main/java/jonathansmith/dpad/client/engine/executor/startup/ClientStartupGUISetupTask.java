@@ -21,8 +21,7 @@ public class ClientStartupGUISetupTask extends Task {
 
     @Override
     public void runTask() {
-        ClientStartupDisplay display = new ClientStartupDisplay();
-        display.init(this.loggingEngine);
+        ClientStartupDisplay display = new ClientStartupDisplay((ClientEngine) this.loggingEngine);
         ClientDisplayChangeEvent event = new ClientDisplayChangeEvent(display);
         this.loggingEngine.getEventThread().postEvent(event);
     }

@@ -84,7 +84,7 @@ public abstract class Engine extends Thread implements IEngine {
             }
 
             catch (InterruptedException ex) {
-                // TODO: Log?!
+                // REVIST
             }
         }
 
@@ -194,6 +194,10 @@ public abstract class Engine extends Thread implements IEngine {
 
         this.pluginManager = pluginManagerThread;
         this.pluginManagerSetup = true;
+    }
+
+    protected NetworkManager getNetworkManager() {
+        return this.networkManager;
     }
 
     public void setNetworkManager(NetworkManager networkManager) {
@@ -318,8 +322,6 @@ public abstract class Engine extends Thread implements IEngine {
     public synchronized void handleError(String message, Throwable e) {
         this.error(message, e);
         this.hasError = true;
-
-        // TODO: Do we need shutdown flag here?!
     }
 
     @Override

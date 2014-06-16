@@ -9,7 +9,6 @@ import jonathansmith.dpad.common.network.protocol.IRuntimeNetworkProtocol;
  * Created by Jon on 22/05/2014.
  * <p/>
  * Keep alive packet. Used by the server to keep channels open.
- * TODO: Do we need to sync anything in this packet. The smaller the better though.
  */
 public class KeepAlivePacket extends Packet {
 

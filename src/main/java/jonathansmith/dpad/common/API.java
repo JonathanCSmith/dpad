@@ -47,7 +47,7 @@ public class API implements IAPI {
     }
 
     public void setServerEngine(IEngine server) {
-        if (server == null) {
+        if (server == null || this.isServerRunning) {
             return;
         }
 
@@ -66,7 +66,7 @@ public class API implements IAPI {
     }
 
     public void setClientEngine(IEngine client) {
-        if (client == null) {
+        if (client == null || this.isClientRunning) {
             return;
         }
 

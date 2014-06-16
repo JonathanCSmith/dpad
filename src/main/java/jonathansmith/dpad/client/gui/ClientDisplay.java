@@ -2,6 +2,8 @@ package jonathansmith.dpad.client.gui;
 
 import jonathansmith.dpad.common.gui.display.Display;
 
+import jonathansmith.dpad.client.ClientEngine;
+
 /**
  * Created by Jon on 23/03/14.
  * <p/>
@@ -9,4 +11,9 @@ import jonathansmith.dpad.common.gui.display.Display;
  */
 public abstract class ClientDisplay extends Display {
 
+    protected final ClientEngine engine;
+
+    public ClientDisplay(ClientEngine engine) {
+        this.engine = engine;
+    }
 }

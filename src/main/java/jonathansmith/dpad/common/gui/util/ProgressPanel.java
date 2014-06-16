@@ -9,15 +9,14 @@ import jonathansmith.dpad.api.common.engine.event.IEventListener;
 
 import jonathansmith.dpad.common.engine.event.Event;
 import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
-import jonathansmith.dpad.common.gui.IContentPane;
+import jonathansmith.dpad.common.gui.display.DisplayPanel;
 
 /**
  * Created by Jon on 27/05/2014.
  * <p/>
- * Generic progress bar display. Used for engine startups.
- * Possible that this could be generified to just a progress display (TODO?)
+ * Generic progress bar display.
  */
-public class ProgressPanel implements IEventListener, IContentPane {
+public class ProgressPanel extends DisplayPanel implements IEventListener {
 
     private static List<Class<? extends Event>> EVENTS = new LinkedList<Class<? extends Event>>();
 
