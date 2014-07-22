@@ -1,12 +1,31 @@
 GLOBAL CURRENT TODO:
-- Clean up warnings
 - Think out user encryption
+    - Not done yet, move to delayed
 - Think out user permissions
+    - Local:
+        - No permissions?!
+        - Therefore can create user + group
+    - Server:
+        - New user generates a server side verification
+            - Server side verification can either be auto yes or send message to specific user
+            - The specific user must be created on db startup in config?
+        - Existing user can join group or create group
+            - Join, msg is sent to group owner
+            - Create, user becomes group owner
+            - Login to group involves checking the user is a member
 - User login/create GUI
+    -
 - User login enables encryption
 - User uuid creation?!
+- Clean up IEventListeners
+- Clean up TODOS
+- Clean up warnings
 
 GLOBAL DELAYED TODO:
+- On close window, the program is not killed properly
+- Add modal hooks for GUI
+- Cancel on main should return to main not quit
+- Pass pertinent information from properties to file system (i.e. servers and maybe clients can define db path)
 - Plugin version generation from filename
 - Plugin sanity checking when relocating?!
 - PluginManager separation into client and server (Should better manage what functions are specific to each side)
@@ -15,6 +34,7 @@ GLOBAL DELAYED TODO:
 - Finish plugin database entries, daos and managers
 - Plugin guis
 - Use of ID generic in recordDAO
+- Encrypt on user login
 
 GLOBAL INCREMENTAL TODO:
 - RuntimeNetworkProtocols
@@ -23,6 +43,7 @@ GLOBAL INCREMENTAL TODO:
 - Assess whether event threads need to api accessible
 - ServerHomeDisplay content
 - ClientHomeDisplay content
+- All exit and erroring situations
 
 Global MAYBE:
 - Have a debug variable for logging in threads to prevent cpu + memory usage (MAY NOT IMPLEMENT)
@@ -33,6 +54,9 @@ Global MAYBE:
 - Permission ruleset for db access
 - Can saveAndShutdown + forceShutdown (in engine) be made private. Perhaps also executors?!
 - Generify idle executors
+
+Startup Properties:
+- We cannot generify all of the startup properties into a config GUI as the local case requires server startup to happen first
 
 Task/Executor Handling
 - Tasks should use trace logging

@@ -30,7 +30,9 @@ public abstract class Record implements Serializable {
         this.uuid = uuid;
     }
 
-    public abstract void addToChildren(Record record);
+    // Method for updating this record with child information. (i.e. adding the relationships)
+    public void addToChildren(Record record) {
+    }
 
     @Override
     public abstract boolean equals(Object o);

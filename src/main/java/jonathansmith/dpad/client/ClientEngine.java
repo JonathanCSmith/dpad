@@ -32,6 +32,10 @@ public class ClientEngine extends Engine {
         this.setProposedExecutor(new ClientStartupExecutor(this, this.address));
     }
 
+    public ISessionData getSessionData() {
+        return ((ClientNetworkManager) this.getNetworkManager()).getSession().getSessionData();
+    }
+
     @Override
     public Platform getPlatform() {
         return Platform.CLIENT;
@@ -40,9 +44,5 @@ public class ClientEngine extends Engine {
     @Override
     protected Executor getDefaultExecutor() {
         return new ClientIdleExecutor(this);
-    }
-
-    public ISessionData getSessionData() {
-        return ((ClientNetworkManager) this.getNetworkManager()).getSession().getSessionData();
     }
 }

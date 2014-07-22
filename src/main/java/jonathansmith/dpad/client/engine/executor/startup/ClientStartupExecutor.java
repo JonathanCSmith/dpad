@@ -3,7 +3,9 @@ package jonathansmith.dpad.client.engine.executor.startup;
 import java.net.SocketAddress;
 
 import jonathansmith.dpad.common.engine.executor.CommonSetupTask;
+import jonathansmith.dpad.common.engine.executor.EventThreadStartTask;
 import jonathansmith.dpad.common.engine.executor.Executor;
+import jonathansmith.dpad.common.engine.executor.GlobalConfigurationLoadTask;
 import jonathansmith.dpad.common.platform.Platform;
 
 import jonathansmith.dpad.client.ClientEngine;
@@ -21,6 +23,13 @@ public class ClientStartupExecutor extends Executor {
 
     public ClientStartupExecutor(ClientEngine engine, SocketAddress address) {
         super(EXECUTOR_NAME, engine, false);
+
+        this.addTask(new EventThreadStartTask(engine));
+        this.addTask(new GlobalConfigurationLoadTask(engine));
+
+        if (engine.getPlatform() == Platform.CLIENT) {
+            this.addTask(new GatherClientStartupPropertiesTask(engine));
+        }
 
         this.addTask(new ClientStartupGUISetupTask(engine));
         this.addTask(new CommonSetupTask(engine));

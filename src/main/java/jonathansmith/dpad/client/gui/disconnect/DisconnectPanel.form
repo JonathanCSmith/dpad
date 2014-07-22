@@ -25,6 +25,8 @@
           </grid>
         </constraints>
         <properties>
+          <editable value="false"/>
+          <focusable value="false"/>
           <opaque value="false"/>
         </properties>
       </component>

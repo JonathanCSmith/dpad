@@ -7,20 +7,42 @@ import jonathansmith.dpad.api.common.engine.IEngine;
  * <p/>
  * Parent task for all executors.
  */
-public abstract class Task {
+public abstract class Task extends Thread {
 
     protected final IEngine loggingEngine;
-
-    private final String taskName;
+    private final   String  taskName;
+    private boolean isFinished = false;
 
     public Task(String taskName, IEngine engine) {
         this.taskName = taskName;
         this.loggingEngine = engine;
     }
 
-    public abstract void runTask();
+    protected abstract void runTask();
+
+    protected void killTask() {
+    }
 
     public String getTaskName() {
         return this.taskName;
+    }
+
+    public void kill() {
+        this.killTask();
+        this.isFinished = true;
+    }
+
+    public boolean isFinished() {
+        return this.isFinished;
+    }
+
+    protected void setFinished() {
+        this.isFinished = true;
+    }
+
+    @Override
+    public void run() {
+        this.runTask();
+        this.setFinished();
     }
 }

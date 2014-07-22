@@ -23,25 +23,11 @@ public interface IAPI {
     IGUIController getGUI();
 
     /**
-     * Queries whether a server instance is running in this session
-     *
-     * @return boolean, true if server is running
-     */
-    boolean isServerRunning();
-
-    /**
      * Returns the current server side engine. This can be null if the current session only pertains to the client side
      *
      * @return the {@link jonathansmith.dpad.api.common.engine.IEngine} instance specific to the server. Can be NULL
      */
     IEngine getServer();
-
-    /**
-     * Queries whether a client instance is running in this session
-     *
-     * @return boolean, true if client is running
-     */
-    boolean isClientRunning();
 
     /**
      * Returns the current client side engine. This can be null if the current session only pertains to the server side

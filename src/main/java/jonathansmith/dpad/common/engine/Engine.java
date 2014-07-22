@@ -34,6 +34,7 @@ public abstract class Engine extends Thread implements IEngine {
 
     private boolean  hasError            = false;
     private boolean  shutdownFlag        = false;
+    private boolean  isSetup             = false;
     private boolean  fileSystemSetup     = false;
     private boolean  networkManagerSetup = false;
     private boolean  pluginManagerSetup  = false;
@@ -236,6 +237,15 @@ public abstract class Engine extends Thread implements IEngine {
 
     public boolean isShuttingDown() {
         return this.shutdownFlag;
+    }
+
+    @Override
+    public boolean isSetup() {
+        return this.isSetup;
+    }
+
+    public void setSetupFinished() {
+        this.isSetup = true;
     }
 
     @Override

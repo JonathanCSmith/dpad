@@ -113,12 +113,7 @@ public class DPAD extends Thread {
 
         // GUI Setup - has to be here so that all GUI components get the correct look
         try {
-            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
+            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
         }
 
         catch (ClassNotFoundException e) {
@@ -275,6 +270,7 @@ public class DPAD extends Thread {
             this.serverEngine.injectVersion(new Version(SOFTWARE_VERSION, API_VERSION, DATABASE_VERION, NETWORK_VERSION, SOFTWARE_MINOR_VERSION));
             this.serverEngine.start();
             this.engines.add(this.serverEngine);
+            api.setServerEngine(this.serverEngine);
 
             while (!this.serverEngine.isSetup()) {
                 try {
@@ -286,8 +282,6 @@ public class DPAD extends Thread {
                     break;
                 }
             }
-
-            api.setServerEngine(this.serverEngine);
         }
 
         if (this.getPlatformSelection() == Platform.CLIENT || this.getPlatformSelection() == Platform.LOCAL) {

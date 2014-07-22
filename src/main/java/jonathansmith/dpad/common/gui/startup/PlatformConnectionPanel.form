@@ -65,6 +65,7 @@
             </constraints>
             <properties>
               <editable value="false"/>
+              <focusable value="false"/>
               <lineWrap value="false"/>
               <opaque value="false"/>
               <text value=""/>

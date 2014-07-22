@@ -11,6 +11,13 @@ import jonathansmith.dpad.api.common.util.Version;
 public interface IEngine {
 
     /**
+     * Return whether or not the IEngine has been setup. Until this returns true behaviour cannot be guaranteed.
+     *
+     * @return is this setup
+     */
+    boolean isSetup();
+
+    /**
      * Return the version of this engine. Includes the network protocol version string for comparing client / server compatibility
      *
      * @return String version information

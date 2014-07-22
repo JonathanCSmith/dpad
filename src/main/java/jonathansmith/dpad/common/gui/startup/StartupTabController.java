@@ -88,6 +88,11 @@ public class StartupTabController implements ITabController, ActionListener {
             return;
         }
 
+        // Handle cancels
+        if (DPAD.getInstance().getPlatformSelection() == null) {
+            return;
+        }
+
         if (this.port == -1) {
             DPAD.getInstance().handleError("Invalid port for platform. DPAD failed to initialise.", null, true);
             return;

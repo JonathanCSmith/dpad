@@ -4,7 +4,12 @@ import java.io.File;
 import java.net.URISyntaxException;
 
 import jonathansmith.dpad.common.engine.Engine;
+import jonathansmith.dpad.common.engine.util.configuration.Configuration;
+import jonathansmith.dpad.common.engine.util.configuration.ConfigurationProperty;
+import jonathansmith.dpad.common.engine.util.configuration.FileConfigurationValue;
 import jonathansmith.dpad.common.platform.Platform;
+
+import jonathansmith.dpad.DPAD;
 
 /**
  * Created by Jon on 23/03/14.
@@ -13,40 +18,58 @@ import jonathansmith.dpad.common.platform.Platform;
  */
 public class FileSystem {
 
-    private final Engine engine;
+    private static final File execution_domain;
 
-    private File   rootDirectory;
-    private File   platformDirectory;
-    private String platformPath;
+    static {
+        String path;
+        File file;
+
+        try {
+            path = FileSystem.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
+            file = new File(path);
+
+            if (path.contains(".jar")) {
+                file = file.getParentFile();
+            }
+        }
+
+        catch (URISyntaxException ex) {
+            DPAD.getInstance().handleError("Cannot identify execution path", ex, true);
+            path = "";
+
+            file = new File(path);
+        }
+
+        execution_domain = file;
+    }
+
+    private final Engine engine;
+    private       File   dataDirectory;
+    private       File   platformDirectory;
 
     public FileSystem(Engine engine) {
         this.engine = engine;
-        this.init();
-    }
 
-    public void init() {
         try {
-            String classPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-            File file = new File(classPath);
-            if (classPath.contains(".jar")) {
-                file = file.getParentFile();
-            }
-
-            this.rootDirectory = file;
+            this.dataDirectory = ((FileConfigurationValue) Configuration.getInstance().getConfigValue(ConfigurationProperty.LAST_KNOWN_DATA_LOCATION)).getPropertyValue();
             this.setupFileSystem();
         }
 
         catch (Exception ex) {
-            this.engine.handleError("Could not instantiate FileSystem", ex);
+            this.engine.handleError("Could not setup filesystem", ex);
         }
     }
 
+    public static File getExecutionDomain() {
+        return execution_domain;
+    }
+
     private void setupFileSystem() throws Exception {
-        if (!this.rootDirectory.exists()) {
+        if (!this.dataDirectory.exists()) {
             throw new NullPointerException("Root directory does not exist");
         }
 
-        File file = new File(this.rootDirectory, "DPAD");
+        File file = new File(this.dataDirectory, "DPAD");
         if (!file.exists() && !file.mkdir()) {
             throw new URISyntaxException("Could not build DPAD directory", file.getAbsolutePath());
         }
@@ -57,26 +80,25 @@ public class FileSystem {
         }
 
         this.platformDirectory = main;
-        this.platformPath = main.getAbsolutePath();
         this.buildFileStructure();
     }
 
     private void buildFileStructure() throws URISyntaxException {
         boolean successful = true;
-        if (successful && !this.getLogDirectory().exists()) {
-            successful &= this.getLogDirectory().mkdir();
+        if (!this.getLogDirectory().exists()) {
+            successful = this.getLogDirectory().mkdir();
         }
 
         if (successful && this.engine.getPlatform() == Platform.SERVER && !this.getDatabaseDirectory().exists()) {
-            successful &= this.getDatabaseDirectory().mkdir();
+            successful = this.getDatabaseDirectory().mkdir();
         }
 
         if (successful && !this.getPluginDirectory().exists()) {
-            successful &= this.getPluginDirectory().mkdir();
+            successful = this.getPluginDirectory().mkdir();
         }
 
         if (successful && !this.getUpdateDirectory().exists()) {
-            successful &= this.getUpdateDirectory().mkdir();
+            successful = this.getUpdateDirectory().mkdir();
         }
 
         if (!successful) {
