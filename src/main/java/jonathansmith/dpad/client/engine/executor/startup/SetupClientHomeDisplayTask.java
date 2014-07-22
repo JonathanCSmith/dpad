@@ -24,5 +24,7 @@ public class SetupClientHomeDisplayTask extends Task {
         this.loggingEngine.trace("Creating home display", null);
         ClientDisplayChangeEvent event = new ClientDisplayChangeEvent(new ClientHomeDisplay((ClientEngine) this.loggingEngine));
         this.loggingEngine.getEventThread().postEvent(event);
+
+        ((ClientEngine) this.loggingEngine).setSetupFinished();
     }
 }

@@ -12,7 +12,7 @@ import jonathansmith.dpad.common.engine.Engine;
  * <p/>
  * Abstract operation parent. Represents an internal execution thread.
  */
-public abstract class Executor extends Thread implements IExecutor {
+public abstract class Executor extends Thread implements IExecutor, Thread.UncaughtExceptionHandler {
 
     protected final IEngine engine;
 
@@ -91,13 +91,35 @@ public abstract class Executor extends Thread implements IExecutor {
         this.hasFinished = true;
     }
 
-    // Note: No must finish flags here as the premise is that the executor be allowed to complete all of its tasks
     private void runTasks() {
         while (!this.shutdownFlag && this.taskCount < this.task_list.size()) {
             Task task = this.task_list.get(this.taskCount);
+            task.setUncaughtExceptionHandler(this);
             this.engine.trace("Starting task: " + task.getTaskName(), null);
-            task.runTask();
+            task.start();
+
+            while (!task.isFinished()) {
+                if (this.mustFinish) {
+                    task.kill();
+                }
+
+                else {
+                    try {
+                        Thread.sleep(100);
+                    }
+
+                    catch (InterruptedException ex) {
+                        //
+                    }
+                }
+            }
+
             this.taskCount++;
         }
+    }
+
+    @Override
+    public void uncaughtException(Thread t, Throwable e) {
+        this.engine.handleError("Exception in executor thread: " + ((Task) t).getTaskName() + ". This is a fatal error", e);
     }
 }

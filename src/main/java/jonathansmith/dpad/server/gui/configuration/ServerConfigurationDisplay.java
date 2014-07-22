@@ -1,30 +1,27 @@
-package jonathansmith.dpad.server.gui.home;
-
-import java.awt.*;
+package jonathansmith.dpad.server.gui.configuration;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
 
 import jonathansmith.dpad.common.gui.display.DisplayPanel;
+import jonathansmith.dpad.common.gui.util.BlankPanel;
 
 import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.gui.ServerDisplay;
 
 /**
- * Created by Jon on 16/06/2014.
+ * Created by Jon on 17/07/2014.
  * <p/>
- * Represents the basic GUI for the server.
+ * Display's the server configuration properties.
  */
-public class ServerHomeDisplay extends ServerDisplay {
+public class ServerConfigurationDisplay extends ServerDisplay {
 
-    private final ServerHomePanel home_panel = new ServerHomePanel();
+    private final DisplayPanel toolbar_panel = new BlankPanel();
+    private final ServerConfigurationPanel home_panel;
 
-    private final DisplayPanel toolbar_panel;
-
-    public ServerHomeDisplay(ServerEngine engine) {
+    public ServerConfigurationDisplay(ServerEngine engine) {
         super(engine);
 
-        this.toolbar_panel = new ServerHomeToolbar(engine);
-        this.toolbar_panel.getContentPane().setMaximumSize(new Dimension(100, -1));
+        this.home_panel = new ServerConfigurationPanel(engine);
     }
 
     @Override
@@ -39,8 +36,7 @@ public class ServerHomeDisplay extends ServerDisplay {
 
     @Override
     public void update() {
-        this.toolbar_panel.update();
-        this.home_panel.update();
+
     }
 
     @Override

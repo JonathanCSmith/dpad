@@ -3,6 +3,8 @@ package jonathansmith.dpad.common.database.record;
 import java.util.LinkedList;
 import java.util.List;
 
+import jonathansmith.dpad.server.database.record.serverconfiguration.ServerConfigurationRecord;
+
 /**
  * Created by Jon on 27/05/2014.
  * <p/>
@@ -10,6 +12,7 @@ import java.util.List;
  */
 public enum DatabaseRecord {
 
+    SERVER_CONFIGURATION(ServerConfigurationRecord.class),
     LOADING_PLUGIN(LoadingPluginRecord.class),
     ANALYSING_PLUGIN(AnalysingPluginRecord.class);
 

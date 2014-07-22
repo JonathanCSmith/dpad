@@ -11,12 +11,10 @@ import jonathansmith.dpad.api.common.gui.IGUIController;
  */
 public class API implements IAPI {
 
-    private boolean        apiSetup        = false;
-    private IGUIController gui             = null;
-    private boolean        isServerRunning = false;
-    private IEngine        server          = null;
-    private boolean        isClientRunning = false;
-    private IEngine        client          = null;
+    private boolean        apiSetup = false;
+    private IGUIController gui      = null;
+    private IEngine        server   = null;
+    private IEngine        client   = null;
 
     @Override
     public boolean isAPIViable() {
@@ -37,27 +35,16 @@ public class API implements IAPI {
     }
 
     @Override
-    public boolean isServerRunning() {
-        return this.isServerRunning;
-    }
-
-    @Override
     public IEngine getServer() {
         return this.server;
     }
 
     public void setServerEngine(IEngine server) {
-        if (server == null || this.isServerRunning) {
+        if (server == null || this.server != null) {
             return;
         }
 
-        this.isServerRunning = true;
         this.server = server;
-    }
-
-    @Override
-    public boolean isClientRunning() {
-        return this.isClientRunning;
     }
 
     @Override
@@ -66,11 +53,10 @@ public class API implements IAPI {
     }
 
     public void setClientEngine(IEngine client) {
-        if (client == null || this.isClientRunning) {
+        if (client == null || this.client != null) {
             return;
         }
 
-        this.isClientRunning = true;
         this.client = client;
     }
 }

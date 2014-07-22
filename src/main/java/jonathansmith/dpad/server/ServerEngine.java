@@ -1,12 +1,14 @@
 package jonathansmith.dpad.server;
 
 import java.net.SocketAddress;
+import java.util.UUID;
 
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.engine.executor.Executor;
 import jonathansmith.dpad.common.platform.Platform;
 
 import jonathansmith.dpad.server.database.DatabaseManager;
+import jonathansmith.dpad.server.database.ServerDatabaseConnection;
 import jonathansmith.dpad.server.engine.executor.idle.ServerIdleExecutor;
 import jonathansmith.dpad.server.engine.executor.startup.ServerStartupExecutor;
 import jonathansmith.dpad.server.gui.ServerTabController;
@@ -20,10 +22,11 @@ import jonathansmith.dpad.DPAD;
  */
 public class ServerEngine extends Engine {
 
-    private boolean isSetup = false;
     private boolean isDatabaseSetup = false;
 
-    private DatabaseManager databaseManager;
+    private DatabaseManager          databaseManager;
+    private UUID                     serverUUID;
+    private ServerDatabaseConnection serverDatabaseConnection;
 
     public ServerEngine(SocketAddress address) {
         super(address, new ServerTabController());
@@ -48,12 +51,20 @@ public class ServerEngine extends Engine {
         this.isDatabaseSetup = true;
     }
 
-    public boolean isSetup() {
-        return this.isSetup;
+    public UUID getServerUUID() {
+        return this.serverUUID;
     }
 
-    public void setServerFinishedSetup() {
-        this.isSetup = true;
+    public void setServerUUID(UUID serverUUID) {
+        this.serverUUID = serverUUID;
+    }
+
+    public ServerDatabaseConnection getServerDatabaseConnection() {
+        if (this.serverDatabaseConnection == null) {
+            this.serverDatabaseConnection = new ServerDatabaseConnection(this, this.databaseManager.getConnectionFromUUID(this.serverUUID));
+        }
+
+        return this.serverDatabaseConnection;
     }
 
     @Override

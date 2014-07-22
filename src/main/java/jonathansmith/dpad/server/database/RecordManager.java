@@ -37,6 +37,7 @@ public abstract class RecordManager<T extends Record> {
         }
         catch (HibernateException ex) {
             this.engine.error("Database access error", ex);
+            connection.rollbackTransaction();
         }
 
         return all;
@@ -54,6 +55,7 @@ public abstract class RecordManager<T extends Record> {
         }
         catch (HibernateException ex) {
             this.engine.error("Database access error", ex);
+            connection.rollbackTransaction();
         }
 
         return success;
@@ -70,6 +72,7 @@ public abstract class RecordManager<T extends Record> {
         }
         catch (HibernateException ex) {
             this.engine.error("Database access error", ex);
+            connection.rollbackTransaction();
         }
 
         return success;
@@ -83,8 +86,10 @@ public abstract class RecordManager<T extends Record> {
             connection.commitTransaction();
 
         }
+
         catch (HibernateException ex) {
             this.engine.error("Database access error", ex);
+            connection.rollbackTransaction();
         }
 
         return out;
@@ -107,7 +112,9 @@ public abstract class RecordManager<T extends Record> {
         return success;
     }
 
-    public abstract <L extends RecordDAO<T, String>> L getDAO();
+    public T loadChildrenForUpdate(DatabaseConnection connection, T record, DatabaseRecord childType) {
+        return null;
+    }
 
-    public abstract T loadChildrenForUpdate(DatabaseConnection connection, T record, DatabaseRecord childType);
+    public abstract <L extends RecordDAO<T, String>> L getDAO();
 }

@@ -2,6 +2,7 @@ package jonathansmith.dpad.server.engine.executor.startup;
 
 import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -20,7 +21,7 @@ import jonathansmith.dpad.server.database.DatabaseManager;
 /**
  * Created by Jon on 20/05/2014.
  * <p/>
- * Server database setup
+ * Server database setup.
  */
 public class SetupHibernateTask extends Task {
 
@@ -28,12 +29,13 @@ public class SetupHibernateTask extends Task {
 
     private final ServerEngine engine;
 
-    private boolean isNewDatabase;
+    private GatherServerStartupPropertiesTask configTask;
 
-    public SetupHibernateTask(ServerEngine engine) {
+    public SetupHibernateTask(ServerEngine engine, GatherServerStartupPropertiesTask configTask) {
         super(TASK_NAME, engine);
 
         this.engine = engine;
+        this.configTask = configTask;
     }
 
     @Override
@@ -43,9 +45,16 @@ public class SetupHibernateTask extends Task {
         // Build the hibernate Configuration
         this.loggingEngine.info("Beginning database initialisation", null);
         this.loggingEngine.trace("Building hibernate configuration", null);
-        Configuration cfg = this.buildHibernateSessioncfguration();
+        Configuration cfg = this.buildHibernateSessionConfiguration();
 
         this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 3, 1));
+
+        if (this.configTask.getServerSetupConfiguration().isNewServer()) {
+            UUID suuuid = UUID.nameUUIDFromBytes(this.configTask.getServerSetupConfiguration().getSuperUsername().getBytes());
+            if (new File(this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase_" + suuuid.toString()).exists()) {
+                throw new UnsupportedOperationException(); // TODO: Move to a better error
+            }
+        }
 
         this.loggingEngine.trace("Building hibernate service registry", null);
         StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties());
@@ -58,24 +67,10 @@ public class SetupHibernateTask extends Task {
             Session session = sessionFactory.openSession();
             session.close();
             this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 3, 2));
-
-            // TODO: Assess whether we need this or not anymore
-//            if (this.isNewDatabase) {
-//                this.loggingEngine.trace("Rebuilding database as it is new... I am not sure why I have to do this though...", null);
-//                this.loggingEngine.warn("", null);
-//                this.loggingEngine.warn("==========================================================", null);
-//                this.loggingEngine.warn("Retrying database creation for a second time as it is new!", null);
-//                this.loggingEngine.warn("==========================================================", null);
-//                this.loggingEngine.warn("", null);
-//
-//                sessionFactory.close();
-//                sessionFactory = cfg.buildSessionFactory(builder.build());
-//                sessionFactory.openSession();
-//            }
         }
 
         catch (HibernateException ex) {
-            this.loggingEngine.handleError("Connection to: " + this.engine.getFileSystem().getDatabaseDirectory() + " was rejected or unavailable", ex);
+            this.loggingEngine.handleError("Connection to: " + this.engine.getFileSystem().getDatabaseDirectory() + " was rejected (i.e. wrong password) or unavailable", ex);
             return;
         }
 
@@ -86,39 +81,35 @@ public class SetupHibernateTask extends Task {
         this.loggingEngine.info("Database initialisation complete", null);
     }
 
-    private Configuration buildHibernateSessioncfguration() {
+    private Configuration buildHibernateSessionConfiguration() {
         Configuration cfg = new Configuration();
+
+        // Always use this, we check for existence elsewhere
+        cfg.setProperty("hibernate.hbm2ddl.auto", "update");
+
+        // Build the Super User UUID
+        UUID suuuid = UUID.nameUUIDFromBytes(this.configTask.getServerSetupConfiguration().getSuperUsername().getBytes());
 
         // Use h2 as that is our database type
         cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         cfg.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
-        cfg.setProperty("hibernate.connection.url", "jdbc:h2:file:" + this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase");
+        cfg.setProperty("hibernate.connection.url", "jdbc:h2:file:" + this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase_" + suuuid.toString());
 
         // Use custom connection manager for better IO to the database
-        cfg.setProperty("c3p0.acquire_increment", "1");
-        cfg.setProperty("c3p0.idle_test_period", "100");
-        cfg.setProperty("c3p0.max_size", "100");
-        cfg.setProperty("c3p0.max_statements", "0");
-        cfg.setProperty("c3p0.min_size", "10");
-        cfg.setProperty("c3p0.timeout", "10");
+        cfg.setProperty("hibernate.connection.provider_class", "org.hibernate.c3p0.internal.C3P0ConnectionProvider");
+        cfg.setProperty("hibernate.c3p0.acquire_increment", "1");
+        cfg.setProperty("hibernate.c3p0.idle_test_period", "100");
+        cfg.setProperty("hibernate.c3p0.max_size", "100");
+        cfg.setProperty("hibernate.c3p0.max_statements", "0");
+        cfg.setProperty("hibernate.c3p0.min_size", "10");
+        cfg.setProperty("hibernate.c3p0.timeout", "10");
 
-        cfg.setProperty("hibernate.connection.username", "sa");
-        cfg.setProperty("hibernate.connection.password", "");
+        // Super user properties
+        cfg.setProperty("hibernate.connection.username", this.configTask.getServerSetupConfiguration().getSuperUsername());
+        cfg.setProperty("hibernate.connection.password", this.configTask.getServerSetupConfiguration().getSuperUserPassword());
         cfg.setProperty("hibernate.current_session_context_class", "thread");
 
-        // Change configuration based on whether this is a new database or not
-        File file = new File(this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase.h2.db");
-        if (!file.exists()) {
-            cfg.setProperty("hibernate.hbm2ddl.auto", "create");
-            this.isNewDatabase = true;
-
-        }
-        else {
-            cfg.setProperty("hibernate.hbm2ddl.auto", "validate");
-            this.isNewDatabase = false;
-        }
-
-        // Build records for the database programatically
+        // Build records for the database
         List<Class<? extends Record>> annotatedClasses = DatabaseRecord.getRecordClasses();
         for (Class<? extends Record> clazz : annotatedClasses) {
             cfg.addAnnotatedClass(clazz);

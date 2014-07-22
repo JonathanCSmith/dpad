@@ -11,13 +11,13 @@ import jonathansmith.dpad.server.gui.home.ServerHomeDisplay;
  * <p/>
  * Final task for server setup. Allows correct ordering of setups when local connections are being created (i.e. server finishes first)
  */
-public class FinishServerSetup extends Task {
+public class FinishServerSetupTask extends Task {
 
     private static final String TASK_NAME = "Server Finish Setup";
 
     private final ServerEngine engine;
 
-    public FinishServerSetup(ServerEngine engine) {
+    public FinishServerSetupTask(ServerEngine engine) {
         super(TASK_NAME, engine);
 
         this.engine = engine;
@@ -31,6 +31,6 @@ public class FinishServerSetup extends Task {
 
         // Notify that executor has finished
         this.loggingEngine.trace("Server setup complete", null);
-        this.engine.setServerFinishedSetup();
+        ((ServerEngine) this.loggingEngine).setSetupFinished();
     }
 }
