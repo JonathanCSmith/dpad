@@ -6,6 +6,7 @@ import java.util.Arrays;
  * Created by Jon on 26/03/14.
  * <p/>
  * Version matching utilities.
+ * MAYBE: Can we move this? Or should we leave it to authors to determin how an outdated plugin is handled?
  */
 public class Version {
 

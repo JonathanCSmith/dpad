@@ -4,12 +4,15 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 import org.apache.commons.lang3.Validate;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
-import jonathansmith.dpad.common.network.packet.KeepAlivePacket;
+import jonathansmith.dpad.common.network.packet.play.KeepAlivePacket;
+import jonathansmith.dpad.common.network.packet.play.user.UserChangePasswordPacket;
+import jonathansmith.dpad.common.network.packet.play.user.UserLoginPacket;
 import jonathansmith.dpad.common.network.protocol.IRuntimeNetworkProtocol;
+
+import jonathansmith.dpad.server.ServerEngine;
+import jonathansmith.dpad.server.network.ServerNetworkSession;
 
 /**
  * Created by Jon on 08/04/14.
@@ -21,13 +24,13 @@ public class ServerRuntimeNetworkProtocol implements IRuntimeNetworkProtocol {
     private static final String PROTOCOL_NAME    = "Server Runtime Protocol";
     private static final long   KEEP_ALIVE_DELAY = 300L;
 
-    private final IEngine        engine;
+    private final ServerEngine   engine;
     private final NetworkSession network_session;
 
     private boolean sendKeepAlives    = false;
     private long    lastKeepAliveTime = 0L;
 
-    public ServerRuntimeNetworkProtocol(IEngine engine, NetworkSession session) {
+    public ServerRuntimeNetworkProtocol(ServerEngine engine, NetworkSession session) {
         this.engine = engine;
         this.network_session = session;
     }
@@ -67,10 +70,6 @@ public class ServerRuntimeNetworkProtocol implements IRuntimeNetworkProtocol {
     @Override
     public void onDisconnect(String exitMessage) {
         this.engine.info(this.network_session.buildSessionInformation() + " lost connection: " + exitMessage, null);
-        // TODO: get Session, sync pendings
-        // TODO: Close session
-        // TODO: Close channel
-        // TODO: if local, we shutdown the server?!
     }
 
     @Override
@@ -80,5 +79,38 @@ public class ServerRuntimeNetworkProtocol implements IRuntimeNetworkProtocol {
 
     public void handleLoginConfirmation() {
         this.sendKeepAlives = true;
+    }
+
+    public void handleUserLogin(UserLoginPacket userLoginPacket) {
+        if (this.network_session.getSessionData().isUserLoggedIn()) {
+            // How the fuck?!
+            // MAYBE: RE-SYNC as opposed to failure?
+            this.engine.handleError("Something is really wrong with the session data. Currently the user: " + this.network_session.getSessionData().getUserName() + " is attempting to login as: " + userLoginPacket.getUsername(), new RuntimeException());
+            return;
+        }
+
+        ((ServerNetworkSession) this.network_session).handleUserLogin(userLoginPacket.isNewUser(), userLoginPacket.getUsername(), userLoginPacket.getPassword());
+    }
+
+    public void handleUserLogout() {
+        if (!this.network_session.getSessionData().isUserLoggedIn()) {
+            // How the fuck?!
+            // MAYBE: RE-SYNC as opposed to failure?
+            this.engine.handleError("Something is really wrong with the session data. The session: " + this.network_session.getEngineAssignedUUID() + " is attempting to logout without being logged in!", new RuntimeException());
+            return;
+        }
+
+        ((ServerNetworkSession) this.network_session).handleUserLogout();
+    }
+
+    public void handleUserChangePassword(UserChangePasswordPacket userChangePasswordPacket) {
+        if (!this.network_session.getSessionData().isUserLoggedIn()) {
+            // How the fuck?!
+            // MAYBE: RE-SYNC as opposed to failure?
+            this.engine.handleError("Something is really wrong with the session data. The session: " + this.network_session.getEngineAssignedUUID() + " is attempting to change it's password without being logged in!", new RuntimeException());
+            return;
+        }
+
+        ((ServerNetworkSession) this.network_session).handleUserChangePassword(userChangePasswordPacket.getOldPassword(), userChangePasswordPacket.getNewPassword());
     }
 }

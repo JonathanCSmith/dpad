@@ -88,12 +88,21 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
 
         else if (ae.getSource() == this.finishButton) {
             if (this.buttonGroup1.getSelection() != null) {
+                if (this.username.getText().contentEquals("")) {
+                    this.showModal("Missing Username!");
+                    return;
+                }
+
                 try {
                     char[] pwd1 = this.pwd.getPassword();
                     char[] pwd2 = this.pwd.getPassword();
 
+                    if (pwd1.length == 0 || pwd2.length == 0) {
+                        this.showModal("Passwords cannot be null!");
+                    }
+
                     if (!Arrays.equals(pwd1, pwd2)) {
-                        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this.contentPane), "Passwords do not match!");
+                        this.showModal("Passwords do not match");
                         this.pwd.setText("");
                         this.pwdConfirm.setText("");
                         return;
@@ -101,7 +110,7 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
                 }
 
                 catch (NullPointerException ex) {
-                    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this.contentPane), "Missing field!");
+                    this.showModal("One of your password fields was empty!");
                     return;
                 }
 
@@ -110,7 +119,7 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
                     this.configuration.save(this.engine);
                 }
 
-                ServerStartupProperties configuration = new ServerStartupProperties(this.buttonGroup1.isSelected(this.radioButton1.getModel()), this.username.getText(), new String(this.pwd.getPassword()), this.buttonGroup1.isSelected(this.radioButton1.getModel()) && this.requireUsersToBeCheckBox.isSelected());
+                ServerStartupProperties configuration = new ServerStartupProperties(this.buttonGroup1.isSelected(this.radioButton1.getModel()), this.username.getText(), new String(this.pwd.getPassword()), true /* TODO: this.buttonGroup1.isSelected(this.radioButton1.getModel()) && this.requireUsersToBeCheckBox.isSelected() */);
                 this.engine.getEventThread().postEvent(new ServerStartupPropertiesFinishEvent(configuration));
             }
         }
@@ -138,7 +147,9 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
         this.pwdConfirmText.setVisible(state);
         this.pwdConfirm.setText("");
         this.pwdConfirm.setVisible(state);
+        /* TODO:
         this.requireUsersToBeCheckBox.setVisible(state);
+        */
         this.contentPane.validate();
     }
 }

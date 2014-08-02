@@ -1,11 +1,9 @@
 package jonathansmith.dpad.client.gui.disconnect;
 
-import java.awt.*;
-
 import jonathansmith.dpad.api.common.engine.IEngine;
 
 import jonathansmith.dpad.common.gui.display.DisplayPanel;
-import jonathansmith.dpad.common.gui.util.BlankPanel;
+import jonathansmith.dpad.common.gui.util.BlankToolbar;
 
 import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.gui.ClientDisplay;
@@ -17,13 +15,12 @@ import jonathansmith.dpad.client.gui.ClientDisplay;
  */
 public class ClientDisconnectDisplay extends ClientDisplay {
 
-    private final DisplayPanel disconnect_toolbar = new BlankPanel();
+    private final DisplayPanel disconnect_toolbar = new BlankToolbar();
     private final DisplayPanel disconnect_panel;
 
     public ClientDisconnectDisplay(ClientEngine engine, String reason) {
         super(engine);
 
-        this.disconnect_toolbar.getContentPane().setMinimumSize(new Dimension(100, -1));
         this.disconnect_panel = new DisconnectPanel(reason);
     }
 

@@ -5,17 +5,17 @@ import javax.swing.*;
 import jonathansmith.dpad.common.gui.display.DisplayPanel;
 
 /**
- * Created by Jon on 16/06/2014.
+ * Created by Jon on 22/07/2014.
  * <p/>
- * Blank panel for generic GUI use.
+ * Template display panel for all GUI displays
  */
 public class BlankPanel extends DisplayPanel {
 
-    private final JPanel panel = new JPanel();
+    private JPanel contentPane;
 
     @Override
     public JPanel getContentPane() {
-        return this.panel;
+        return this.contentPane;
     }
 
     @Override

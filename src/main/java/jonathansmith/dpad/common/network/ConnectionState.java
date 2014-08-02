@@ -8,10 +8,14 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Iterables;
 
-import jonathansmith.dpad.common.network.packet.KeepAlivePacket;
+import jonathansmith.dpad.common.network.packet.DisconnectPacket;
 import jonathansmith.dpad.common.network.packet.Packet;
-import jonathansmith.dpad.common.network.packet.login.*;
-import jonathansmith.dpad.common.network.packet.play.RuntimeDisconnectPacket;
+import jonathansmith.dpad.common.network.packet.handshake.*;
+import jonathansmith.dpad.common.network.packet.play.KeepAlivePacket;
+import jonathansmith.dpad.common.network.packet.play.user.UserAdministrationResponsePacket;
+import jonathansmith.dpad.common.network.packet.play.user.UserChangePasswordPacket;
+import jonathansmith.dpad.common.network.packet.play.user.UserLoginPacket;
+import jonathansmith.dpad.common.network.packet.play.user.UserLogoutPacket;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
@@ -25,8 +29,9 @@ import org.dom4j.IllegalAddException;
  */
 public enum ConnectionState {
 
-    LOGIN(0),
-    RUNTIME(1);
+    HANDSHAKE(0),
+    LOGIN(1),
+    RUNTIME(2);
     private static final TIntObjectMap<ConnectionState>                connectionStates  = new TIntObjectHashMap<ConnectionState>();
     private static final Map<Class<? extends Packet>, ConnectionState> packetMap         = Maps.newHashMap();
     private static       boolean                                       packetsRegistered = false;
@@ -53,6 +58,7 @@ public enum ConnectionState {
             return;
         }
 
+        registerHandshakePackets();
         registerLoginPackets();
         registerRuntimePackets();
 
@@ -75,22 +81,43 @@ public enum ConnectionState {
         packetsRegistered = true;
     }
 
+    private static void registerHandshakePackets() throws IllegalAddException {
+        // Alls
+        ConnectionState.HANDSHAKE.addServerPacket(DisconnectPacket.class);
+
+        // Handshaking
+        ConnectionState.HANDSHAKE.addClientPacket(HandshakeStartPacket.class);
+        ConnectionState.HANDSHAKE.addServerPacket(EncryptionRequestPacket.class);
+        ConnectionState.HANDSHAKE.addClientPacket(EncryptionResponsePacket.class);
+        ConnectionState.HANDSHAKE.addServerPacket(HandshakeSuccessPacket.class);
+        ConnectionState.HANDSHAKE.addClientPacket(HandshakeConfirmPacket.class);
+    }
+
     private static void registerLoginPackets() throws IllegalAddException {
-        ConnectionState.LOGIN.addClientPacket(LoginStartPacket.class);
-        ConnectionState.LOGIN.addServerPacket(EncryptionRequestPacket.class);
-        ConnectionState.LOGIN.addClientPacket(EncryptionResponsePacket.class);
-        ConnectionState.LOGIN.addServerPacket(LoginSuccessPacket.class);
-        ConnectionState.LOGIN.addClientPacket(LoginConfirmPacket.class);
-        ConnectionState.LOGIN.addServerPacket(LoginDisconnectPacket.class);
+        // Alls
+        ConnectionState.LOGIN.addClientPacket(DisconnectPacket.class);
+
+        // User Administration Packets
+        // TODO: Move encryption phase to user login
     }
 
     private static void registerRuntimePackets() throws IllegalAddException {
-        ConnectionState.RUNTIME.addServerPacket(RuntimeDisconnectPacket.class);
+        // Alls
+        ConnectionState.RUNTIME.addServerPacket(DisconnectPacket.class);
+
+        // Server Admins
         ConnectionState.RUNTIME.addServerPacket(KeepAlivePacket.class);
         ConnectionState.RUNTIME.addClientPacket(KeepAlivePacket.class);
+
+        // User
+        ConnectionState.RUNTIME.addClientPacket(UserLoginPacket.class);
+        ConnectionState.RUNTIME.addServerPacket(UserAdministrationResponsePacket.class);
+        ConnectionState.RUNTIME.addClientPacket(UserChangePasswordPacket.class);
+        ConnectionState.RUNTIME.addClientPacket(UserLogoutPacket.class);
+        ConnectionState.RUNTIME.addServerPacket(UserAdministrationResponsePacket.class);
     }
 
-    // Add packet to allowed sendables from client
+    // Add packet to allowed send-ables from client
     protected void addClientPacket(Class<? extends Packet> clazz) throws IllegalAddException {
         if (!this.addPacket(clazz, this.whiteListedClientPackets)) {
             String error = "Failure to register client packet: " + clazz.getCanonicalName();
@@ -99,7 +126,7 @@ public enum ConnectionState {
         }
     }
 
-    // Add packet to allowed sendables from server
+    // Add packet to allowed send-ables from server
     protected void addServerPacket(Class<? extends Packet> clazz) throws IllegalAddException {
         if (!this.addPacket(clazz, this.whiteListedServerPackets)) {
             String error = "Failure to register client packet: " + clazz.getCanonicalName();
@@ -108,12 +135,8 @@ public enum ConnectionState {
         }
     }
 
-    // Add packet to allowed sendables
+    // Add packet to allowed send-ables
     private boolean addPacket(Class<? extends Packet> clazz, BiMap<Integer, Class<? extends Packet>> map) {
-        if (map.containsValue(clazz)) {
-            return false;
-        }
-
         int id = map.size();
         map.put(id, clazz);
         return true;

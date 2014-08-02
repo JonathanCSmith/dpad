@@ -1,4 +1,4 @@
-package jonathansmith.dpad.api.client.session;
+package jonathansmith.dpad.api.common.network.session;
 
 /**
  * Created by Jon on 16/06/2014.

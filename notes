@@ -1,27 +1,17 @@
 GLOBAL CURRENT TODO:
-- Think out user encryption
-    - Not done yet, move to delayed
-- Think out user permissions
-    - Local:
-        - No permissions?!
-        - Therefore can create user + group
-    - Server:
-        - New user generates a server side verification
-            - Server side verification can either be auto yes or send message to specific user
-            - The specific user must be created on db startup in config?
-        - Existing user can join group or create group
-            - Join, msg is sent to group owner
-            - Create, user becomes group owner
-            - Login to group involves checking the user is a member
-- User login/create GUI
-    -
-- User login enables encryption
-- User uuid creation?!
 - Clean up IEventListeners
 - Clean up TODOS
 - Clean up warnings
 
 GLOBAL DELAYED TODO:
+- Messaging System:
+    - Permissions
+    - Message Table
+    - Message Viewer
+    - Message Sorting
+    - Message Permissions
+    - Message Deletion on Handling
+    - Multiple message replies == FIFO ignore other handling
 - On close window, the program is not killed properly
 - Add modal hooks for GUI
 - Cancel on main should return to main not quit

@@ -1,11 +1,9 @@
 package jonathansmith.dpad.server.gui.startup;
 
-import java.awt.*;
-
 import jonathansmith.dpad.api.common.engine.IEngine;
 
 import jonathansmith.dpad.common.gui.display.DisplayPanel;
-import jonathansmith.dpad.common.gui.util.BlankPanel;
+import jonathansmith.dpad.common.gui.util.BlankToolbar;
 import jonathansmith.dpad.common.gui.util.ProgressPanel;
 
 import jonathansmith.dpad.server.ServerEngine;
@@ -18,14 +16,14 @@ import jonathansmith.dpad.server.gui.ServerDisplay;
  */
 public class ServerStartupDisplay extends ServerDisplay {
 
-    private final DisplayPanel  toolbar_panel  = new BlankPanel();
+    private final DisplayPanel toolbar_panel = new BlankToolbar();
+
     private final ProgressPanel progress_panel = new ProgressPanel();
 
     public ServerStartupDisplay(ServerEngine engine) {
         super(engine);
 
         this.engine.getEventThread().addEventListener(this.progress_panel);
-        this.toolbar_panel.getContentPane().setMaximumSize(new Dimension(100, -1));
     }
 
     @Override

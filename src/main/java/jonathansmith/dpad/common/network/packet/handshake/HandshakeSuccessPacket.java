@@ -1,4 +1,4 @@
-package jonathansmith.dpad.common.network.packet.login;
+package jonathansmith.dpad.common.network.packet.handshake;
 
 import java.io.IOException;
 
@@ -14,15 +14,15 @@ import jonathansmith.dpad.client.network.protocol.ClientLoginProtocol;
  * <p/>
  * Passes the server side session information back to the client to confirm a successful login
  */
-public class LoginSuccessPacket extends Packet {
+public class HandshakeSuccessPacket extends Packet {
 
     private String uuid;
 
-    public LoginSuccessPacket() {
+    public HandshakeSuccessPacket() {
     }
 
-    public LoginSuccessPacket(NetworkSession networkSession) {
-        this.uuid = networkSession.getEngineAssignedUUID();
+    public HandshakeSuccessPacket(NetworkSession networkSession) {
+        this.uuid = networkSession.getEngineAssignedUUID().toString();
     }
 
     public String getUUIDPayload() {

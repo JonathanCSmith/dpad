@@ -70,9 +70,9 @@ public class GatherServerStartupPropertiesTask extends Task implements IEventLis
 
     @Override
     public void onEventReceived(Event event) {
-        this.isWaiting = false;
         this.properties = ((ServerStartupPropertiesFinishEvent) event).getProperties();
         ((ServerEngine) this.loggingEngine).setServerUUID(UUID.nameUUIDFromBytes(this.properties.getSuperUsername().getBytes()));
+        this.isWaiting = false;
     }
 
     public ServerStartupProperties getServerSetupConfiguration() {

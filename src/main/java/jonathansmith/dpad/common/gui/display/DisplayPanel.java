@@ -12,4 +12,8 @@ public abstract class DisplayPanel {
     public abstract JPanel getContentPane();
 
     public abstract void update();
+
+    public void showModal(String modalText) {
+        JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(this.getContentPane()), modalText);
+    }
 }

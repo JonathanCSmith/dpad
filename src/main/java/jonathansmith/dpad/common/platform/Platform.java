@@ -9,5 +9,5 @@ public enum Platform {
 
     LOCAL,
     CLIENT,
-    SERVER;
+    SERVER
 }

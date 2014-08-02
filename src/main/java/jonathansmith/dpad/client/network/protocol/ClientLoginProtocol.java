@@ -12,9 +12,9 @@ import org.apache.commons.lang3.Validate;
 import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
-import jonathansmith.dpad.common.network.packet.login.EncryptionResponsePacket;
-import jonathansmith.dpad.common.network.packet.login.LoginConfirmPacket;
-import jonathansmith.dpad.common.network.packet.login.LoginSuccessPacket;
+import jonathansmith.dpad.common.network.packet.handshake.EncryptionResponsePacket;
+import jonathansmith.dpad.common.network.packet.handshake.HandshakeConfirmPacket;
+import jonathansmith.dpad.common.network.packet.handshake.HandshakeSuccessPacket;
 
 import jonathansmith.dpad.client.ClientEngine;
 
@@ -43,9 +43,9 @@ public class ClientLoginProtocol extends ClientNetworkProtocol {
         });
     }
 
-    public void handleLoginSuccess(LoginSuccessPacket loginSuccessPacket) {
-        this.network_session.assignForeignUUID(loginSuccessPacket.getUUIDPayload());
-        this.network_session.scheduleOutboundPacket(new LoginConfirmPacket(this.network_session.getEngineAssignedUUID(), this.network_session.getForeignUUID()), new GenericFutureListener[]{
+    public void handleLoginSuccess(HandshakeSuccessPacket handshakeSuccessPacket) {
+        this.network_session.assignForeignUUID(handshakeSuccessPacket.getUUIDPayload());
+        this.network_session.scheduleOutboundPacket(new HandshakeConfirmPacket(this.network_session.getEngineAssignedUUID().toString(), this.network_session.getForeignUUID().toString()), new GenericFutureListener[]{
                 new GenericFutureListener() {
                     @Override
                     public void operationComplete(Future future) throws Exception {
@@ -60,7 +60,7 @@ public class ClientLoginProtocol extends ClientNetworkProtocol {
         this.engine.debug("Switching from: " + (connectionState == null ? "NULL" : connectionState.toString()) + " to: " + (connectionState1 == null ? "NULL" : connectionState1.toString()), null);
 
         try {
-            Validate.validState((connectionState == null && connectionState1 == ConnectionState.LOGIN) || (connectionState == ConnectionState.LOGIN && connectionState1 == ConnectionState.RUNTIME), "Cannot switch from connection state %s to %s", connectionState == null ? "NULL" : connectionState.toString(), connectionState1 == null ? "NULL" : connectionState1.toString());
+            Validate.validState((connectionState == null && connectionState1 == ConnectionState.HANDSHAKE) || (connectionState == ConnectionState.HANDSHAKE && connectionState1 == ConnectionState.RUNTIME), "Cannot switch from connection state %s to %s", connectionState == null ? "NULL" : connectionState.toString(), connectionState1 == null ? "NULL" : connectionState1.toString());
         }
 
         catch (IllegalStateException ex) {
@@ -69,7 +69,7 @@ public class ClientLoginProtocol extends ClientNetworkProtocol {
         }
 
         if (connectionState1 == ConnectionState.RUNTIME) {
-            this.network_session.setNetworkProtocol(new ClientRuntimeProtocol(this.engine, this.network_session));
+            this.network_session.setNetworkProtocol(new ClientRuntimeNetworkProtocol(this.engine, this.network_session));
         }
     }
 }

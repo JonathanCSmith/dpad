@@ -11,7 +11,7 @@ public class ServerConfigurationRecordManager extends RecordManager<ServerConfig
 
     private static ServerConfigurationRecordManager instance;
 
-    public ServerConfigurationRecordManager() {
+    private ServerConfigurationRecordManager() {
         super(new ServerConfigurationRecordDAO(), ServerConfigurationRecord.class);
     }
 

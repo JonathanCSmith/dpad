@@ -2,10 +2,11 @@ package jonathansmith.dpad.client;
 
 import java.net.SocketAddress;
 
-import jonathansmith.dpad.api.client.session.ISessionData;
+import jonathansmith.dpad.api.common.network.session.ISessionData;
 
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.engine.executor.Executor;
+import jonathansmith.dpad.common.network.ISession;
 import jonathansmith.dpad.common.platform.Platform;
 
 import jonathansmith.dpad.client.engine.executor.idle.ClientIdleExecutor;
@@ -30,6 +31,10 @@ public class ClientEngine extends Engine {
 
         // Add the client startup executor as the first program to be run. Ensuring that everything is setup before anything else is performed.
         this.setProposedExecutor(new ClientStartupExecutor(this, this.address));
+    }
+
+    public ISession getSession() {
+        return ((ClientNetworkManager) this.getNetworkManager()).getSession();
     }
 
     public ISessionData getSessionData() {

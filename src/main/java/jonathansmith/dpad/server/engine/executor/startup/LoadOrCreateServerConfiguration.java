@@ -4,7 +4,6 @@ import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
 import jonathansmith.dpad.common.engine.executor.Task;
 
 import jonathansmith.dpad.server.ServerEngine;
-import jonathansmith.dpad.server.database.ServerDatabaseConnection;
 import jonathansmith.dpad.server.database.record.serverconfiguration.ServerConfigurationRecord;
 
 /**
@@ -29,15 +28,14 @@ public class LoadOrCreateServerConfiguration extends Task {
         this.loggingEngine.trace("Beginning server configuration setup", null);
         this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(TASK_NAME, 0, 1, 0));
 
-        ServerDatabaseConnection connection = ((ServerEngine) this.loggingEngine).getServerDatabaseConnection();
-        ServerConfigurationRecord configuration = connection.loadConfiguration();
+        ServerConfigurationRecord configuration = ((ServerEngine) this.loggingEngine).getServerConfiguration();
 
         if (configuration == null) {
             this.loggingEngine.trace("Creating new configuration row", null);
             configuration = new ServerConfigurationRecord();
             configuration.setUUID(((ServerEngine) this.loggingEngine).getServerUUID().toString());
             configuration.setUserVerificationRequired(this.configTask.getServerSetupConfiguration().isAutoVerificationEnabled());
-            connection.saveConfiguration(configuration);
+            ((ServerEngine) this.loggingEngine).saveServerConfiguration(configuration);
         }
 
         this.loggingEngine.trace("Configuration presence verified", null);

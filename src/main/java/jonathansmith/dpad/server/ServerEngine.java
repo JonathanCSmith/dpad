@@ -9,6 +9,7 @@ import jonathansmith.dpad.common.platform.Platform;
 
 import jonathansmith.dpad.server.database.DatabaseManager;
 import jonathansmith.dpad.server.database.ServerDatabaseConnection;
+import jonathansmith.dpad.server.database.record.serverconfiguration.ServerConfigurationRecord;
 import jonathansmith.dpad.server.engine.executor.idle.ServerIdleExecutor;
 import jonathansmith.dpad.server.engine.executor.startup.ServerStartupExecutor;
 import jonathansmith.dpad.server.gui.ServerTabController;
@@ -38,19 +39,6 @@ public class ServerEngine extends Engine {
         this.setProposedExecutor(new ServerStartupExecutor(this, this.address));
     }
 
-    public DatabaseManager getDatabaseManager() {
-        return this.databaseManager;
-    }
-
-    public void setDatabaseManager(DatabaseManager dbm) {
-        if (dbm == null || this.isDatabaseSetup) {
-            return;
-        }
-
-        this.databaseManager = dbm;
-        this.isDatabaseSetup = true;
-    }
-
     public UUID getServerUUID() {
         return this.serverUUID;
     }
@@ -59,12 +47,26 @@ public class ServerEngine extends Engine {
         this.serverUUID = serverUUID;
     }
 
-    public ServerDatabaseConnection getServerDatabaseConnection() {
-        if (this.serverDatabaseConnection == null) {
-            this.serverDatabaseConnection = new ServerDatabaseConnection(this, this.databaseManager.getConnectionFromUUID(this.serverUUID));
+    public void setDatabaseManager(DatabaseManager dbm) {
+        if (dbm == null || this.isDatabaseSetup) {
+            return;
         }
 
-        return this.serverDatabaseConnection;
+        this.databaseManager = dbm;
+        this.databaseManager.buildServerConnection(this);
+        this.isDatabaseSetup = true;
+    }
+
+    public void assignServerConnection(ServerDatabaseConnection connection) {
+        this.serverDatabaseConnection = connection;
+    }
+
+    public ServerConfigurationRecord getServerConfiguration() {
+        return this.serverDatabaseConnection.loadConfiguration();
+    }
+
+    public void saveServerConfiguration(ServerConfigurationRecord configuration) {
+        this.serverDatabaseConnection.saveConfiguration(configuration);
     }
 
     @Override
