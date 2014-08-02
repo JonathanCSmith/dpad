@@ -52,7 +52,7 @@ public class SetupHibernateTask extends Task {
         if (this.configTask.getServerSetupConfiguration().isNewServer()) {
             UUID suuuid = UUID.nameUUIDFromBytes(this.configTask.getServerSetupConfiguration().getSuperUsername().getBytes());
             if (new File(this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase_" + suuuid.toString()).exists()) {
-                throw new UnsupportedOperationException(); // TODO: Move to a better error
+                throw new UnsupportedOperationException(); // TODO MAYBE: Move to a better error
             }
         }
 

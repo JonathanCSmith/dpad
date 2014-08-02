@@ -1,4 +1,4 @@
-package jonathansmith.dpad.common.network.packet.login;
+package jonathansmith.dpad.common.network.packet.handshake;
 
 import java.io.IOException;
 import java.security.PrivateKey;
@@ -11,7 +11,7 @@ import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
-import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
+import jonathansmith.dpad.server.network.protocol.ServerHandshakeNetworkProtocol;
 
 /**
  * Created by Jon on 08/04/14.
@@ -53,7 +53,7 @@ public class EncryptionResponsePacket extends Packet {
 
     @Override
     public void processPacket(INetworkProtocol networkProtocol) {
-        ((ServerLoginNetworkProtocol) networkProtocol).handleEncryptionResponse(this);
+        ((ServerHandshakeNetworkProtocol) networkProtocol).handleEncryptionResponse(this);
     }
 
     @Override

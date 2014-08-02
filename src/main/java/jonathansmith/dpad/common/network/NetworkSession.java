@@ -21,8 +21,8 @@ import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.channel.EncryptionDecoder;
 import jonathansmith.dpad.common.network.channel.EncryptionEncoder;
 import jonathansmith.dpad.common.network.listener.PacketListenersTuple;
-import jonathansmith.dpad.common.network.packet.KeepAlivePacket;
 import jonathansmith.dpad.common.network.packet.Packet;
+import jonathansmith.dpad.common.network.packet.play.KeepAlivePacket;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
 /**
@@ -30,13 +30,14 @@ import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
  * <p/>
  * Core session class for dealing with network states between the client and server
  */
-public abstract class NetworkSession extends SimpleChannelInboundHandler {
+public abstract class NetworkSession extends SimpleChannelInboundHandler implements ISession {
 
     public static final AttributeKey<ConnectionState>                         CONNECTION_STATE_ATTRIBUTE_KEY                = new AttributeKey<ConnectionState>("Connection State");
     public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITE_LISTED_RECEIVABLE_PACKETS_ATTRIBUTE_KEY = new AttributeKey<BiMap<Integer, Class<? extends Packet>>>("Receivable Packets");
     public static final AttributeKey<BiMap<Integer, Class<? extends Packet>>> WHITE_LISTED_SENDABLE_PACKETS_ATTRIBUTE_KEY   = new AttributeKey<BiMap<Integer, Class<? extends Packet>>>("Sendable Packets");
 
-    protected final Engine engine;
+    protected final Engine      engine;
+    protected final SessionData sessionData;
 
     private final Queue<PacketListenersTuple> outbound_packets_queue = Queues.newConcurrentLinkedQueue();
     private final Queue<Packet>               inbound_packets_queue  = Queues.newConcurrentLinkedQueue();
@@ -56,6 +57,7 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
 
     public NetworkSession(Engine engine, SocketAddress address, boolean isLocal, boolean isClient) {
         this.engine = engine;
+        this.sessionData = new SessionData();
         this.address = address;
         this.local_UUID = UUID.randomUUID();
         this.is_local_connection = isLocal;
@@ -75,16 +77,16 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
         return this.address.toString().split(":")[1];
     }
 
-    public String getEngineAssignedUUID() {
-        return this.local_UUID.toString();
+    public UUID getEngineAssignedUUID() {
+        return this.local_UUID;
     }
 
     public void assignForeignUUID(String foreignUUID) {
         this.foreignUUID = UUID.fromString(foreignUUID);
     }
 
-    public String getForeignUUID() {
-        return this.foreignUUID == null ? "NULL" : this.foreignUUID.toString();
+    public UUID getForeignUUID() {
+        return this.foreignUUID == null ? null : this.foreignUUID;
     }
 
     public INetworkProtocol getNetworkProtocol() {
@@ -130,17 +132,6 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
 
     public void disableAutoRead() {
         this.channel.config().setAutoRead(false);
-    }
-
-    public void scheduleOutboundPacket(Packet packet, GenericFutureListener[] listeners) {
-        if (this.isChannelOpen()) {
-            this.flushOutboundQueue();
-            this.dispatchPacket(packet, listeners);
-        }
-
-        else {
-            this.outbound_packets_queue.add(new PacketListenersTuple(packet, listeners));
-        }
     }
 
     public void processReceivedPackets() {
@@ -199,6 +190,48 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
 
     public void shutdown(boolean force) {
         this.closeChannel("Shutdown request received, request has status: " + force);
+    }
+
+    public SessionData getSessionData() {
+        return this.sessionData;
+    }
+
+    @Override
+    public void channelRead0(ChannelHandlerContext ctx, Object o) {
+        this.readPacket(ctx, (Packet) o);
+    }
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
+
+        this.channel = ctx.channel();
+        this.address = this.channel.remoteAddress();
+        this.setConnectionState(ConnectionState.HANDSHAKE);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        String info = "NETWORK: channel closed due to the channel becoming inactive (timeout or closure).";
+        this.engine.info(info, null);
+        this.closeChannel(info);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable reason) {
+        this.closeChannel("NETWORK: channel closed due to exception: " + reason.toString());
+    }
+
+    @Override
+    public void scheduleOutboundPacket(Packet packet, GenericFutureListener[] listeners) {
+        if (this.isChannelOpen()) {
+            this.flushOutboundQueue();
+            this.dispatchPacket(packet, listeners);
+        }
+
+        else {
+            this.outbound_packets_queue.add(new PacketListenersTuple(packet, listeners));
+        }
     }
 
     private void flushOutboundQueue() {
@@ -277,31 +310,5 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler {
             this.timeSinceLastProcess = System.currentTimeMillis();
             return false;
         }
-    }
-
-    @Override
-    public void channelRead0(ChannelHandlerContext ctx, Object o) {
-        this.readPacket(ctx, (Packet) o);
-    }
-
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
-
-        this.channel = ctx.channel();
-        this.address = this.channel.remoteAddress();
-        this.setConnectionState(ConnectionState.LOGIN);
-    }
-
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) {
-        String info = "NETWORK: channel closed due to the channel becoming inactive (timeout or closure).";
-        this.engine.info(info, null);
-        this.closeChannel(info);
-    }
-
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable reason) {
-        this.closeChannel("NETWORK: channel closed due to exception: " + reason.toString());
     }
 }

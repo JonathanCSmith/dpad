@@ -69,6 +69,8 @@ public abstract class EngineTabController<T extends Display> implements ITabCont
         if (this.currentDisplay != this.oldDisplay) {
             if (this.oldDisplay != null) {
                 this.oldDisplay.onDestroy(this.engine);
+                this.coreDisplaySplitPane.remove(this.oldDisplay.getToolbarComponent().getContentPane());
+                this.coreDisplaySplitPane.remove(this.oldDisplay.getDisplayComponent().getContentPane());
             }
 
             int dividerLocation = this.coreDisplaySplitPane.getDividerLocation();

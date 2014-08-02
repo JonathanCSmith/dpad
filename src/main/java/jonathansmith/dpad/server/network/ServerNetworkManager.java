@@ -16,7 +16,7 @@ import io.netty.util.concurrent.GenericFutureListener;
 import jonathansmith.dpad.common.crypto.CryptographyManager;
 import jonathansmith.dpad.common.network.NetworkManager;
 import jonathansmith.dpad.common.network.NetworkSession;
-import jonathansmith.dpad.common.network.packet.play.RuntimeDisconnectPacket;
+import jonathansmith.dpad.common.network.packet.DisconnectPacket;
 
 import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.network.channel.ServerChannelInitialiser;
@@ -84,7 +84,7 @@ public class ServerNetworkManager extends NetworkManager {
                                 this.engine.warn("Failed to process inbound packet from: " + session.getSocketAddress(), ex);
                             }
 
-                            session.scheduleOutboundPacket(new RuntimeDisconnectPacket("Internal server error"), new GenericFutureListener[]{new GenericFutureListener() {
+                            session.scheduleOutboundPacket(new DisconnectPacket("Internal server error"), new GenericFutureListener[]{new GenericFutureListener() {
                                 @Override
                                 public void operationComplete(Future f) {
                                     session.closeChannel("Internal Server Error");
@@ -100,7 +100,7 @@ public class ServerNetworkManager extends NetworkManager {
 
         for (final NetworkSession session : this.sessions) {
             if (!session.isLocalChannel() && session.isChannelOpen()) {
-                session.scheduleOutboundPacket(new RuntimeDisconnectPacket("Server shutdown"), new GenericFutureListener[]{new GenericFutureListener() {
+                session.scheduleOutboundPacket(new DisconnectPacket("Server shutdown"), new GenericFutureListener[]{new GenericFutureListener() {
                     @Override
                     public void operationComplete(Future future) throws Exception {
                         session.shutdown(ServerNetworkManager.this.hasError);

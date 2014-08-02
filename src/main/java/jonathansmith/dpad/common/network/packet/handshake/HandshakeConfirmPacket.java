@@ -1,4 +1,4 @@
-package jonathansmith.dpad.common.network.packet.login;
+package jonathansmith.dpad.common.network.packet.handshake;
 
 import java.io.IOException;
 
@@ -13,15 +13,15 @@ import jonathansmith.dpad.server.network.protocol.ServerRuntimeNetworkProtocol;
  * <p/>
  * Login confirmation packet. Begins the keep alive packet communiques
  */
-public class LoginConfirmPacket extends Packet {
+public class HandshakeConfirmPacket extends Packet {
 
     private String clientUUID;
     private String serverUUID;
 
-    public LoginConfirmPacket() {
+    public HandshakeConfirmPacket() {
     }
 
-    public LoginConfirmPacket(String clientUUID, String serverUUID) {
+    public HandshakeConfirmPacket(String clientUUID, String serverUUID) {
         this.clientUUID = clientUUID;
         this.serverUUID = serverUUID;
     }

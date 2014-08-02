@@ -1,7 +1,5 @@
 package jonathansmith.dpad.client.gui.startup;
 
-import java.awt.*;
-
 import jonathansmith.dpad.api.common.engine.IEngine;
 
 import jonathansmith.dpad.common.gui.display.DisplayPanel;
@@ -24,7 +22,6 @@ public class ClientStartupPropertiesDisplay extends ClientDisplay {
         super(loggingEngine);
 
         this.config_panel = new ClientStartupPropertiesPanel(engine);
-        this.toolbar_panel.getContentPane().setMaximumSize(new Dimension(100, -1));
     }
 
     @Override

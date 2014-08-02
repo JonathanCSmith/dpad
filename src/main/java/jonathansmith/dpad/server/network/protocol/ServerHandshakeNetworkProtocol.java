@@ -15,7 +15,11 @@ import jonathansmith.dpad.api.common.util.Version;
 
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
-import jonathansmith.dpad.common.network.packet.login.*;
+import jonathansmith.dpad.common.network.packet.DisconnectPacket;
+import jonathansmith.dpad.common.network.packet.handshake.EncryptionRequestPacket;
+import jonathansmith.dpad.common.network.packet.handshake.EncryptionResponsePacket;
+import jonathansmith.dpad.common.network.packet.handshake.HandshakeStartPacket;
+import jonathansmith.dpad.common.network.packet.handshake.HandshakeSuccessPacket;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
 import jonathansmith.dpad.server.network.ServerNetworkSession;
@@ -25,7 +29,7 @@ import jonathansmith.dpad.server.network.ServerNetworkSession;
  * <p/>
  * Protocol used by the network during the login process (Server side). Uses an unencrypted channel until keys are shared.
  */
-public class ServerLoginNetworkProtocol implements INetworkProtocol {
+public class ServerHandshakeNetworkProtocol implements INetworkProtocol {
 
     private static final String PROTOCOL_NAME       = "Server login protocol";
     private static final Random LOGIN_KEY_GENERATOR = new Random();
@@ -41,7 +45,7 @@ public class ServerLoginNetworkProtocol implements INetworkProtocol {
     private LoginState loginState = LoginState.GREETING;
     private SecretKey secretKey;
 
-    public ServerLoginNetworkProtocol(IEngine engine, NetworkSession networkSession, boolean isLocalConnection) {
+    public ServerHandshakeNetworkProtocol(IEngine engine, NetworkSession networkSession, boolean isLocalConnection) {
         this.engine = engine;
         this.network_session = networkSession;
         this.is_local_connection = isLocalConnection;
@@ -49,23 +53,13 @@ public class ServerLoginNetworkProtocol implements INetworkProtocol {
     }
 
     // Begins the login process by disseminating a shared key to the client for encryption
-    public void handleLoginStart(LoginStartPacket packet) {
+    public void handleHandshakeStart(HandshakeStartPacket packet) {
         Validate.validState(this.loginState == LoginState.GREETING, "Unexpected login start packet during the: " + this.loginState + " state");
         this.loginTime = System.currentTimeMillis();
 
-        boolean versionMatch = false;
-        if (this.is_local_connection) {
-            versionMatch = true;
-        }
-
-        else {
-            if (Version.matches(this.engine.getVersion(), packet.getVersion())) {
-                versionMatch = true;
-            }
-        }
-
+        boolean versionMatch = this.is_local_connection || Version.matches(this.engine.getVersion(), packet.getVersion());
         if (!versionMatch) {
-            this.handleLoginFailure("Network protocol version mismatch");
+            this.handleHandshakeFailure("Network protocol version mismatch");
             return;
         }
 
@@ -87,7 +81,7 @@ public class ServerLoginNetworkProtocol implements INetworkProtocol {
         PrivateKey privateKey = ((ServerNetworkSession) this.network_session).getNetworkManager().getKeyPair().getPrivate();
 
         if (!Arrays.equals(this.login_key, encryptionResponsePacket.decodeRandomSignature(privateKey))) {
-            this.handleLoginFailure("Invalid login sequence");
+            this.handleHandshakeFailure("Invalid login sequence");
         }
 
         else {
@@ -99,22 +93,22 @@ public class ServerLoginNetworkProtocol implements INetworkProtocol {
     }
 
     // Starts the transition process between logging in + general runtime
-    private void handleLoginFinish() {
+    private void handleHandshakeFinish() {
         String joinMsg = ((ServerNetworkSession) this.network_session).getNetworkManager().allowUserToConnect(this.network_session);
         if (joinMsg != null) {
-            this.handleLoginFailure(joinMsg);
+            this.handleHandshakeFailure(joinMsg);
         }
 
         else {
             this.loginState = LoginState.ACCEPTING;
-            this.network_session.scheduleOutboundPacket(new LoginSuccessPacket(this.network_session), new GenericFutureListener[0]);
+            this.network_session.scheduleOutboundPacket(new HandshakeSuccessPacket(this.network_session), new GenericFutureListener[0]);
             ((ServerNetworkSession) this.network_session).finaliseConnection();
         }
     }
 
-    private void handleLoginFailure(String reason) {
+    private void handleHandshakeFailure(String reason) {
         this.engine.error("Could not accept client due to: " + reason, null);
-        this.network_session.scheduleOutboundPacket(new LoginDisconnectPacket(reason), new GenericFutureListener[0]);
+        this.network_session.scheduleOutboundPacket(new DisconnectPacket(reason), new GenericFutureListener[0]);
         this.network_session.closeChannel(reason);
     }
 
@@ -127,7 +121,7 @@ public class ServerLoginNetworkProtocol implements INetworkProtocol {
     public void onConnectionStateTransition(ConnectionState connectionState, ConnectionState connectionState1) {
         try {
             Validate.validState(this.loginState == LoginState.ACCEPTING, "Unexpected connection state transition when login is not yet complete");
-            Validate.validState(connectionState == ConnectionState.LOGIN && connectionState1 == ConnectionState.RUNTIME, "Cannot switch from connection state %s to %s", connectionState == null ? "NULL" : connectionState.toString(), connectionState1 == null ? "NULL" : connectionState1.toString());
+            Validate.validState(connectionState == ConnectionState.HANDSHAKE && connectionState1 == ConnectionState.RUNTIME, "Cannot switch from connection state %s to %s", connectionState == null ? "NULL" : connectionState.toString(), connectionState1 == null ? "NULL" : connectionState1.toString());
         }
 
         catch (IllegalStateException ex) {
@@ -138,11 +132,11 @@ public class ServerLoginNetworkProtocol implements INetworkProtocol {
     @Override
     public void pulseScheduledProtocolTasks() {
         if (this.loginState == LoginState.READY_TO_FINISH) {
-            this.handleLoginFinish();
+            this.handleHandshakeFinish();
         }
 
         if (this.network_session.isChannelOpen() && System.currentTimeMillis() - this.loginTime == LOGIN_TIMEOUT) {
-            this.handleLoginFailure("Took too long to log in!");
+            this.handleHandshakeFailure("Took too long to log in!");
         }
     }
 

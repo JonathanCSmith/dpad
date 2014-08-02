@@ -1,4 +1,4 @@
-package jonathansmith.dpad.common.network.packet.login;
+package jonathansmith.dpad.common.network.packet.handshake;
 
 import java.io.IOException;
 import java.security.PublicKey;

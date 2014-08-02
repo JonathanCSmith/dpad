@@ -2,7 +2,7 @@ package jonathansmith.dpad.client.gui.home;
 
 import javax.swing.*;
 
-import jonathansmith.dpad.api.client.session.ISessionData;
+import jonathansmith.dpad.api.common.network.session.ISessionData;
 
 import jonathansmith.dpad.common.gui.display.DisplayPanel;
 
@@ -17,8 +17,9 @@ public class ClientHomePanel extends DisplayPanel {
 
     private final ClientEngine engine;
 
+    private boolean isUserLoggedIn = false;
+
     private JPanel     contentPane;
-    private JTextField userName;
     private JTextField userValue;
 
     public ClientHomePanel(ClientEngine engine) {
@@ -33,12 +34,16 @@ public class ClientHomePanel extends DisplayPanel {
     @Override
     public void update() {
         ISessionData data = this.engine.getSessionData();
-        if (data.isUserLoggedIn()) {
-            this.userValue.setText(data.getUserName());
-        }
+        if (data.isUserLoggedIn() != this.isUserLoggedIn) {
+            if (data.isUserLoggedIn()) {
+                this.userValue.setText(data.getUserName());
+            }
 
-        else {
-            this.userValue.setText("");
+            else {
+                this.userValue.setText("");
+            }
+
+            this.isUserLoggedIn = data.isUserLoggedIn();
         }
     }
 }

@@ -13,6 +13,7 @@ import jonathansmith.dpad.server.database.record.serverconfiguration.ServerConfi
 public enum DatabaseRecord {
 
     SERVER_CONFIGURATION(ServerConfigurationRecord.class),
+    USER(UserRecord.class),
     LOADING_PLUGIN(LoadingPluginRecord.class),
     ANALYSING_PLUGIN(AnalysingPluginRecord.class);
 

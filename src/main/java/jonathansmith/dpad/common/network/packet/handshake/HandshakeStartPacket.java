@@ -1,4 +1,4 @@
-package jonathansmith.dpad.common.network.packet.login;
+package jonathansmith.dpad.common.network.packet.handshake;
 
 import java.io.IOException;
 
@@ -9,26 +9,26 @@ import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
-import jonathansmith.dpad.server.network.protocol.ServerLoginNetworkProtocol;
+import jonathansmith.dpad.server.network.protocol.ServerHandshakeNetworkProtocol;
 
 /**
  * Created by Jon on 26/03/14.
  * <p/>
  * Initial login data
  */
-public class LoginStartPacket extends Packet {
+public class HandshakeStartPacket extends Packet {
 
     private Version version;
     private String  uuid;
     private String  address;
     private int     port;
 
-    public LoginStartPacket() {
+    public HandshakeStartPacket() {
     }
 
-    public LoginStartPacket(Version version, NetworkSession session) {
+    public HandshakeStartPacket(Version version, NetworkSession session) {
         this.version = version;
-        this.uuid = session.getEngineAssignedUUID();
+        this.uuid = session.getEngineAssignedUUID().toString();
         this.address = session.getAddress();
         this.port = Integer.parseInt(session.getPort());
     }
@@ -64,7 +64,7 @@ public class LoginStartPacket extends Packet {
 
     @Override
     public void processPacket(INetworkProtocol networkProtocol) {
-        ((ServerLoginNetworkProtocol) networkProtocol).handleLoginStart(this);
+        ((ServerHandshakeNetworkProtocol) networkProtocol).handleHandshakeStart(this);
     }
 
     @Override

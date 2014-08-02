@@ -9,11 +9,8 @@ import org.hibernate.SessionFactory;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
 
-import jonathansmith.dpad.common.database.record.DatabaseRecord;
-import jonathansmith.dpad.common.database.record.Record;
-
-import jonathansmith.dpad.server.database.record.analysingplugin.AnalysingPluginRecordManager;
-import jonathansmith.dpad.server.database.record.loadingplugin.LoadingPluginRecordManager;
+import jonathansmith.dpad.server.ServerEngine;
+import jonathansmith.dpad.server.network.ServerNetworkSession;
 
 /**
  * Created by Jon on 26/03/14.
@@ -22,57 +19,48 @@ import jonathansmith.dpad.server.database.record.loadingplugin.LoadingPluginReco
  */
 public class DatabaseManager {
 
+    private static DatabaseManager instance;
+
     private final HashMap<UUID, DatabaseConnection> connections = new HashMap<UUID, DatabaseConnection>();
 
     private final IEngine        engine;
     private final SessionFactory sessionFactory;
 
+    private DatabaseConnection serverConnection;
+
     private boolean isShuttingDown = false;
 
     public DatabaseManager(IEngine engine, SessionFactory sessionFactory) {
-        this.engine = engine;
-        this.sessionFactory = sessionFactory;
-    }
-
-    public DatabaseConnection getConnectionFromUUID(UUID uuid) {
-        if (this.isShuttingDown) {
-            return null;
+        if (instance != null) {
+            throw new RuntimeException("Cannot create multiple Database Managers!");
         }
 
-        if (this.connections.containsKey(uuid)) {
-            return this.connections.get(uuid);
+        this.engine = engine;
+        this.sessionFactory = sessionFactory;
+
+        instance = this;
+    }
+
+    public static void buildServerNetworkSessionDatabaseConnection(ServerNetworkSession serverNetworkSession) {
+        if (instance.isShuttingDown) {
+            return;
+        }
+
+        if (instance.connections.containsKey(serverNetworkSession.getEngineAssignedUUID())) {
+            instance.engine.error("The session " + serverNetworkSession.getEngineAssignedUUID() + "already has a reserved database connection", null);
         }
 
         else {
-            Session session = this.sessionFactory.openSession();
+            Session session = instance.sessionFactory.openSession();
             DatabaseConnection connection = new DatabaseConnection(session);
-            this.connections.put(uuid, connection);
-            return connection;
+            instance.connections.put(serverNetworkSession.getEngineAssignedUUID(), connection);
+            serverNetworkSession.assignDatabaseConnection(connection);
         }
     }
 
-    public RecordManager getRecordManager(Class<? extends Record> clazz) {
-        if (this.isShuttingDown) {
-            return null;
-        }
-
-        DatabaseRecord record = DatabaseRecord.getRecordTypeFromClass(clazz);
-
-        RecordManager manager;
-        switch (record) {
-            case LOADING_PLUGIN:
-                manager = LoadingPluginRecordManager.getInstance();
-                break;
-
-            case ANALYSING_PLUGIN:
-                manager = AnalysingPluginRecordManager.getInstance();
-                break;
-
-            default:
-                manager = null;
-        }
-
-        return manager;
+    public void buildServerConnection(ServerEngine engine) {
+        this.serverConnection = new DatabaseConnection(this.sessionFactory.openSession());
+        engine.assignServerConnection(new ServerDatabaseConnection(engine, this.serverConnection));
     }
 
     public void shutdown(boolean force) {
@@ -86,6 +74,14 @@ public class DatabaseManager {
             catch (HibernateException ex) {
                 this.engine.error("Could not close database connection", ex);
             }
+        }
+
+        try {
+            this.serverConnection.closeSession(force);
+        }
+
+        catch (HibernateException ex) {
+            this.engine.error("Error closing server side connection on shutdown!", ex);
         }
     }
 }

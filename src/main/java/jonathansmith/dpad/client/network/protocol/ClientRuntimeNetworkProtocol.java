@@ -4,22 +4,28 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
-import jonathansmith.dpad.common.network.packet.KeepAlivePacket;
+import jonathansmith.dpad.common.network.packet.play.KeepAlivePacket;
+import jonathansmith.dpad.common.network.packet.play.user.UserAdministrationResponsePacket;
 import jonathansmith.dpad.common.network.protocol.IRuntimeNetworkProtocol;
 
 import jonathansmith.dpad.client.ClientEngine;
+import jonathansmith.dpad.client.engine.event.ServerUserResponseEvent;
 
 /**
  * Created by Jon on 08/04/14.
  * <p/>
  * Client runtime protocol. Responsible for all packet specific functions. Storing the functions here prevents external packet influence on engine state.
  */
-public class ClientRuntimeProtocol extends ClientNetworkProtocol implements IRuntimeNetworkProtocol {
+public class ClientRuntimeNetworkProtocol extends ClientNetworkProtocol implements IRuntimeNetworkProtocol {
 
     private static final String PROTOCOL_NAME = "Client Runtime Protocol";
 
-    public ClientRuntimeProtocol(ClientEngine engine, NetworkSession session) {
+    public ClientRuntimeNetworkProtocol(ClientEngine engine, NetworkSession session) {
         super(engine, session, PROTOCOL_NAME);
+    }
+
+    public void handleUserAdministrationResponse(UserAdministrationResponsePacket userAdministrationResponsePacket) {
+        this.engine.getEventThread().postEvent(new ServerUserResponseEvent(userAdministrationResponsePacket.getState()));
     }
 
     @Override

@@ -13,6 +13,12 @@ import io.netty.buffer.ByteBuf;
  */
 public class PacketBuffer {
 
+    private final ByteBuf buffer;
+
+    public PacketBuffer(ByteBuf byteBuf) {
+        this.buffer = byteBuf;
+    }
+
     public static int getVarIntSize(int integer) {
         if ((integer & -128) == 0) {
             return 1;
@@ -33,12 +39,6 @@ public class PacketBuffer {
         else {
             return 5;
         }
-    }
-
-    private final ByteBuf buffer;
-
-    public PacketBuffer(ByteBuf byteBuf) {
-        this.buffer = byteBuf;
     }
 
     public int readVarIntFromBuffer() {
@@ -116,22 +116,6 @@ public class PacketBuffer {
         this.buffer.writeShort(s);
     }
 
-    public int readableBytes() {
-        return this.buffer.readableBytes();
-    }
-
-    private ByteBuf readBytes(byte[] bytes) {
-        return this.buffer.readBytes(bytes);
-    }
-
-    public void ensureWriteable(int i) {
-        this.buffer.ensureWritable(i);
-    }
-
-    public void writeBytes(ByteBuf source, int readerIndex, int length) {
-        this.buffer.writeBytes(source, readerIndex, length);
-    }
-
     private void writeBytes(byte[] encoded) {
         this.buffer.writeBytes(encoded);
     }
@@ -153,5 +137,29 @@ public class PacketBuffer {
     public void writeBlob(byte[] encoded) {
         this.writeShort(encoded.length);
         this.writeBytes(encoded);
+    }
+
+    public boolean readBoolean() {
+        return this.buffer.readBoolean();
+    }
+
+    public void writeBoolean(boolean state) {
+        this.buffer.writeBoolean(state);
+    }
+
+    public int readableBytes() {
+        return this.buffer.readableBytes();
+    }
+
+    private ByteBuf readBytes(byte[] bytes) {
+        return this.buffer.readBytes(bytes);
+    }
+
+    public void ensureWriteable(int i) {
+        this.buffer.ensureWritable(i);
+    }
+
+    public void writeBytes(ByteBuf source, int readerIndex, int length) {
+        this.buffer.writeBytes(source, readerIndex, length);
     }
 }

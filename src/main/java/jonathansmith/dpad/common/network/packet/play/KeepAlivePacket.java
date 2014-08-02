@@ -1,7 +1,9 @@
-package jonathansmith.dpad.common.network.packet;
+package jonathansmith.dpad.common.network.packet.play;
 
 import java.io.IOException;
 
+import jonathansmith.dpad.common.network.packet.Packet;
+import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 import jonathansmith.dpad.common.network.protocol.IRuntimeNetworkProtocol;
 

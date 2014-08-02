@@ -31,7 +31,7 @@ public class ServerConfigurationPanel extends DisplayPanel implements ActionList
 
         this.saveButton.addActionListener(this);
 
-        ServerConfigurationRecord configuration = this.engine.getServerDatabaseConnection().loadConfiguration();
+        ServerConfigurationRecord configuration = this.engine.getServerConfiguration();
         this.allowUserAutoVerificationCheckBox.setSelected(configuration.isUserVerificationRequired());
         this.allowGroupAutoCreationCheckBox.setSelected(configuration.isGroupCreationVerificationRequired());
     }
@@ -49,10 +49,10 @@ public class ServerConfigurationPanel extends DisplayPanel implements ActionList
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == this.saveButton) {
-            ServerConfigurationRecord configurationRecord = this.engine.getServerDatabaseConnection().loadConfiguration();
+            ServerConfigurationRecord configurationRecord = this.engine.getServerConfiguration();
             configurationRecord.setUserVerificationRequired(this.allowUserAutoVerificationCheckBox.isSelected());
             configurationRecord.setGroupCreationVerificationRequired(this.allowGroupAutoCreationCheckBox.isSelected());
-            this.engine.getServerDatabaseConnection().saveConfiguration(configurationRecord);
+            this.engine.saveServerConfiguration(configurationRecord);
 
             this.engine.getEventThread().postEvent(new ServerDisplayChangeEvent(new ServerHomeDisplay(this.engine)));
         }
