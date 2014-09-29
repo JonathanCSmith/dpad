@@ -12,6 +12,10 @@ import jonathansmith.dpad.common.network.packet.DisconnectPacket;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.handshake.*;
 import jonathansmith.dpad.common.network.packet.play.KeepAlivePacket;
+import jonathansmith.dpad.common.network.packet.play.SessionUpdatePacket;
+import jonathansmith.dpad.common.network.packet.play.dataset.DatasetAdministrationPacket;
+import jonathansmith.dpad.common.network.packet.play.experiment.ExperimentAdministrationPacket;
+import jonathansmith.dpad.common.network.packet.play.plugin.DatasetPacket;
 import jonathansmith.dpad.common.network.packet.play.user.UserAdministrationResponsePacket;
 import jonathansmith.dpad.common.network.packet.play.user.UserChangePasswordPacket;
 import jonathansmith.dpad.common.network.packet.play.user.UserLoginPacket;
@@ -83,7 +87,7 @@ public enum ConnectionState {
 
     private static void registerHandshakePackets() throws IllegalAddException {
         // Alls
-        ConnectionState.HANDSHAKE.addServerPacket(DisconnectPacket.class);
+        ConnectionState.HANDSHAKE.addServerPacket(LoginDisconnectPacket.class);
 
         // Handshaking
         ConnectionState.HANDSHAKE.addClientPacket(HandshakeStartPacket.class);
@@ -95,7 +99,7 @@ public enum ConnectionState {
 
     private static void registerLoginPackets() throws IllegalAddException {
         // Alls
-        ConnectionState.LOGIN.addClientPacket(DisconnectPacket.class);
+        // ConnectionState.LOGIN.addClientPacket(DisconnectPacket.class);
 
         // User Administration Packets
         // TODO: Move encryption phase to user login
@@ -109,12 +113,23 @@ public enum ConnectionState {
         ConnectionState.RUNTIME.addServerPacket(KeepAlivePacket.class);
         ConnectionState.RUNTIME.addClientPacket(KeepAlivePacket.class);
 
+        // Session
+        ConnectionState.RUNTIME.addServerPacket(SessionUpdatePacket.class);
+
         // User
         ConnectionState.RUNTIME.addClientPacket(UserLoginPacket.class);
-        ConnectionState.RUNTIME.addServerPacket(UserAdministrationResponsePacket.class);
         ConnectionState.RUNTIME.addClientPacket(UserChangePasswordPacket.class);
         ConnectionState.RUNTIME.addClientPacket(UserLogoutPacket.class);
         ConnectionState.RUNTIME.addServerPacket(UserAdministrationResponsePacket.class);
+
+        // Experiment
+        ConnectionState.RUNTIME.addClientPacket(ExperimentAdministrationPacket.class);
+        ConnectionState.RUNTIME.addServerPacket(ExperimentAdministrationPacket.class);
+
+        // Data
+        ConnectionState.RUNTIME.addClientPacket(DatasetPacket.class);
+        ConnectionState.RUNTIME.addClientPacket(DatasetAdministrationPacket.class);
+        ConnectionState.RUNTIME.addServerPacket(DatasetAdministrationPacket.class);
     }
 
     // Add packet to allowed send-ables from client

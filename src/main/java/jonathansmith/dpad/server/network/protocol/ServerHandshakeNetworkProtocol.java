@@ -15,21 +15,17 @@ import jonathansmith.dpad.api.common.util.Version;
 
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
-import jonathansmith.dpad.common.network.packet.DisconnectPacket;
-import jonathansmith.dpad.common.network.packet.handshake.EncryptionRequestPacket;
-import jonathansmith.dpad.common.network.packet.handshake.EncryptionResponsePacket;
-import jonathansmith.dpad.common.network.packet.handshake.HandshakeStartPacket;
-import jonathansmith.dpad.common.network.packet.handshake.HandshakeSuccessPacket;
+import jonathansmith.dpad.common.network.packet.handshake.*;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;
 
-import jonathansmith.dpad.server.network.ServerNetworkSession;
+import jonathansmith.dpad.server.network.session.ServerNetworkSession;
 
 /**
  * Created by Jon on 26/03/14.
  * <p/>
  * Protocol used by the network during the login process (Server side). Uses an unencrypted channel until keys are shared.
  */
-public class ServerHandshakeNetworkProtocol implements INetworkProtocol {
+public class ServerHandshakeNetworkProtocol extends ServerNetworkProtocol implements INetworkProtocol {
 
     private static final String PROTOCOL_NAME       = "Server login protocol";
     private static final Random LOGIN_KEY_GENERATOR = new Random();
@@ -108,7 +104,7 @@ public class ServerHandshakeNetworkProtocol implements INetworkProtocol {
 
     private void handleHandshakeFailure(String reason) {
         this.engine.error("Could not accept client due to: " + reason, null);
-        this.network_session.scheduleOutboundPacket(new DisconnectPacket(reason), new GenericFutureListener[0]);
+        this.network_session.scheduleOutboundPacket(new LoginDisconnectPacket(reason), new GenericFutureListener[0]);
         this.network_session.closeChannel(reason);
     }
 
@@ -143,5 +139,10 @@ public class ServerHandshakeNetworkProtocol implements INetworkProtocol {
     @Override
     public void onDisconnect(String exitMessage) {
         this.engine.info(this.network_session.buildSessionInformation() + " lost connection: " + exitMessage, null);
+    }
+
+    @Override
+    public void sendDisconnectPacket(String reason, GenericFutureListener[] listeners) {
+        this.network_session.scheduleOutboundPacket(new LoginDisconnectPacket(reason), listeners);
     }
 }

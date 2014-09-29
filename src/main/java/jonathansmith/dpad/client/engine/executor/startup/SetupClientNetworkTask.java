@@ -2,7 +2,8 @@ package jonathansmith.dpad.client.engine.executor.startup;
 
 import java.net.SocketAddress;
 
-import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
+import jonathansmith.dpad.api.events.ProgressBarUpdateEvent;
+
 import jonathansmith.dpad.common.engine.executor.Task;
 import jonathansmith.dpad.common.network.NetworkManager;
 

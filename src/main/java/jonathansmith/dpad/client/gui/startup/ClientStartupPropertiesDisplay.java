@@ -1,8 +1,7 @@
 package jonathansmith.dpad.client.gui.startup;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
 import jonathansmith.dpad.common.gui.util.BlankPanel;
 
 import jonathansmith.dpad.client.ClientEngine;
@@ -35,12 +34,17 @@ public class ClientStartupPropertiesDisplay extends ClientDisplay {
     }
 
     @Override
+    public void onActivation() {
+
+    }
+
+    @Override
     public void update() {
 
     }
 
     @Override
-    public void onDestroy(IEngine loggingEngine) {
+    public void onDestroy() {
 
     }
 }

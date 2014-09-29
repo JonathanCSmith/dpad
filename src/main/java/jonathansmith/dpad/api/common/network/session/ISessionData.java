@@ -9,5 +9,9 @@ public interface ISessionData {
 
     boolean isUserLoggedIn();
 
-    String getUserName();
+    String getCurrentUserName();
+
+    boolean isRunningExperiment();
+
+    String getCurrentExperimentName();
 }

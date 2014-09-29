@@ -1,7 +1,8 @@
 package jonathansmith.dpad.client.engine.event;
 
-import jonathansmith.dpad.common.engine.event.Event;
-import jonathansmith.dpad.common.engine.user.UserResponseState;
+import jonathansmith.dpad.api.plugins.events.Event;
+
+import jonathansmith.dpad.common.engine.state.UserResponseState;
 
 /**
  * Created by Jon on 22/07/2014.

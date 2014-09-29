@@ -7,8 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import jonathansmith.dpad.api.common.network.session.ISessionData;
-
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
 import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.engine.event.ClientDisplayChangeEvent;
@@ -24,20 +23,25 @@ public class UserAdministrationToolbar extends DisplayPanel implements ActionLis
 
     private final ClientEngine engine;
 
-    private boolean isLoggedIn           = false;
-    private boolean isAdministrationMode = false;
+    private boolean isLoggedIn       = false;
+    private boolean isDoingSomething = false;
 
     private JPanel  contentPane;
-    private JButton userButton;
+    private JButton logButton;
     private JButton backButton;
-    private JButton administrateButton;
+    private JButton userButton;
+    private JButton changePasswordButton;
 
     public UserAdministrationToolbar(ClientEngine engine) {
         this.engine = engine;
 
         this.contentPane.setMaximumSize(new Dimension(100, -1));
+        this.logButton.addActionListener(this);
         this.userButton.addActionListener(this);
-        this.administrateButton.addActionListener(this);
+        this.changePasswordButton.addActionListener(this);
+        this.backButton.addActionListener(this);
+
+        this.switchUserState();
     }
 
     @Override
@@ -57,20 +61,35 @@ public class UserAdministrationToolbar extends DisplayPanel implements ActionLis
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == this.userButton) {
-            this.engine.getEventThread().postEvent(new UserToolbarEvent((byte) 0));
+            this.engine.getEventThread().postEvent(new UserToolbarEvent(UserToolbarEvent.ToolbarStatus.NEW_USER));
+            this.isDoingSomething = true;
+            this.switchDisplayState();
         }
 
-        else if (ae.getSource() == this.administrateButton) {
-            this.engine.getEventThread().postEvent(new UserToolbarEvent((byte) 1));
-            this.isAdministrationMode = true;
-            this.switchUserState();
+        else if (ae.getSource() == this.logButton) {
+            if (this.isLoggedIn) {
+                this.engine.getEventThread().postEvent(new UserToolbarEvent(UserToolbarEvent.ToolbarStatus.LOGOUT));
+            }
+
+            else {
+                this.engine.getEventThread().postEvent(new UserToolbarEvent(UserToolbarEvent.ToolbarStatus.LOGIN));
+            }
+
+            this.isDoingSomething = true;
+            this.switchDisplayState();
+        }
+
+        else if (ae.getSource() == this.changePasswordButton) {
+            this.engine.getEventThread().postEvent(new UserToolbarEvent(UserToolbarEvent.ToolbarStatus.CHANGE_PASSWORD));
+            this.isDoingSomething = true;
+            this.switchDisplayState();
         }
 
         else if (ae.getSource() == this.backButton) {
-            if (this.isAdministrationMode) {
-                this.engine.getEventThread().postEvent(new UserToolbarEvent((byte) 2));
-                this.isAdministrationMode = false;
-                this.switchUserState();
+            if (this.isDoingSomething) {
+                this.engine.getEventThread().postEvent(new UserToolbarEvent(UserToolbarEvent.ToolbarStatus.BACK));
+                this.isDoingSomething = false;
+                this.switchDisplayState();
             }
 
             else {
@@ -80,30 +99,28 @@ public class UserAdministrationToolbar extends DisplayPanel implements ActionLis
     }
 
     private void switchUserState() {
-        if (this.isAdministrationMode) {
-            if (this.isLoggedIn) {
-                this.userButton.setText("Submit");
-                this.administrateButton.setEnabled(false);
-            }
-
-            else {
-                this.userButton.setText("Submit");
-                this.administrateButton.setEnabled(false);
-            }
+        if (this.isLoggedIn) {
+            this.userButton.setVisible(false);
+            this.logButton.setText("Logout");
+            this.changePasswordButton.setVisible(true);
         }
 
         else {
-            if (this.isLoggedIn) {
-                this.userButton.setText("Logout");
-                this.administrateButton.setEnabled(true);
-                this.administrateButton.setText("Change Password");
-            }
+            this.userButton.setVisible(true);
+            this.logButton.setText("Login");
+            this.changePasswordButton.setVisible(false);
+        }
+    }
 
-            else {
-                this.userButton.setText("Login");
-                this.administrateButton.setEnabled(true);
-                this.administrateButton.setText("New User");
-            }
+    private void switchDisplayState() {
+        if (this.isDoingSomething) {
+            this.userButton.setVisible(false);
+            this.logButton.setVisible(false);
+            this.changePasswordButton.setVisible(false);
+        }
+
+        else {
+            this.switchUserState();
         }
     }
 }

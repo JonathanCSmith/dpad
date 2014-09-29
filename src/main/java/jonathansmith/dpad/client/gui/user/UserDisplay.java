@@ -1,8 +1,6 @@
 package jonathansmith.dpad.client.gui.user;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
 import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.gui.ClientDisplay;
@@ -22,8 +20,6 @@ public class UserDisplay extends ClientDisplay {
 
         this.toolbar_panel = new UserAdministrationToolbar(engine);
         this.display_panel = new UserAdministrationPanel(engine);
-
-        this.engine.getEventThread().addEventListener(this.display_panel);
     }
 
     @Override
@@ -37,13 +33,18 @@ public class UserDisplay extends ClientDisplay {
     }
 
     @Override
+    public void onActivation() {
+        this.engine.getEventThread().addEventListener(this.display_panel);
+    }
+
+    @Override
     public void update() {
         this.toolbar_panel.update();
         this.display_panel.update();
     }
 
     @Override
-    public void onDestroy(IEngine loggingEngine) {
+    public void onDestroy() {
         this.engine.getEventThread().removeListener(this.display_panel);
     }
 }

@@ -5,9 +5,9 @@ import java.net.SocketAddress;
 import org.slf4j.Logger;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-import jonathansmith.dpad.api.common.engine.event.IEventThread;
 import jonathansmith.dpad.api.common.engine.executor.IExecutor;
 import jonathansmith.dpad.api.common.util.Version;
+import jonathansmith.dpad.api.plugins.events.IEventThread;
 
 import jonathansmith.dpad.common.engine.event.EventThread;
 import jonathansmith.dpad.common.engine.executor.Executor;
@@ -59,29 +59,30 @@ public abstract class Engine extends Thread implements IEngine {
     public void run() {
         while (!this.hasErrored() && !this.isShuttingDown()) {
             if (this.currentExecutor == null) {
-                this.currentExecutor = this.proposedExecutor;
-                this.proposedExecutor = null;
-            }
-
-            if (this.currentExecutor.hasFinished()) {
-                Executor proposedExecutor = this.getProposedExecutor();
-                if (proposedExecutor == null) {
-                    this.setCurrentExecutor(this.getDefaultExecutor());
-                    this.currentExecutor.execute();
+                if (this.getProposedExecutor() == null) {
+                    this.currentExecutor = this.getDefaultExecutor();
                 }
 
                 else {
-                    this.setCurrentExecutor(proposedExecutor);
-                    this.setProposedExecutor(null);
+                    this.currentExecutor = this.getProposedExecutor();
+                    this.proposedExecutor = null;
                 }
             }
 
-            if (!this.currentExecutor.isExecuting()) {
+            if (this.currentExecutor.hasFinished()) {
+                this.currentExecutor = null;
+            }
+
+            else if (this.currentExecutor.isRepeatExecution() && this.getProposedExecutor() != null) {
+                this.currentExecutor = null;
+            }
+
+            if (this.currentExecutor != null && !this.currentExecutor.isExecuting()) {
                 this.currentExecutor.execute();
             }
 
             try {
-                Thread.sleep(100);
+                Thread.sleep(5);
             }
 
             catch (InterruptedException ex) {
@@ -223,12 +224,25 @@ public abstract class Engine extends Thread implements IEngine {
         return this.proposedExecutor;
     }
 
-    public void setProposedExecutor(Executor op) {
+    public void setProposedExecutorWithoutWaiting(Executor op) {
         if (this.proposedExecutor != null) {
             this.error("An executor has been overridden, this is a program error that is likely due to concurrency issues...", null);
         }
 
         this.proposedExecutor = op;
+    }
+
+    public void setAndWaitForProposedExecutor(Executor op) {
+        this.setProposedExecutorWithoutWaiting(op);
+//        while (!op.isExecuting() && !op.hasFinished()) {
+//            try {
+//                Thread.sleep(5);
+//            }
+//
+//            catch (InterruptedException ex) {
+//
+//            }
+//        }
     }
 
     public boolean hasErrored() {

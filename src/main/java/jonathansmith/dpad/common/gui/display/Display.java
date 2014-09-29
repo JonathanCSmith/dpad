@@ -1,6 +1,6 @@
 package jonathansmith.dpad.common.gui.display;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
 /**
  * Created by Jon on 23/03/14.
@@ -13,7 +13,9 @@ public abstract class Display {
 
     public abstract DisplayPanel getDisplayComponent();
 
+    public abstract void onActivation();
+
     public abstract void update();
 
-    public abstract void onDestroy(IEngine loggingEngine);
+    public abstract void onDestroy();
 }

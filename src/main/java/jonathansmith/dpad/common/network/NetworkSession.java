@@ -55,9 +55,9 @@ public abstract class NetworkSession extends SimpleChannelInboundHandler impleme
     private String           terminationReason;
     private UUID             foreignUUID;
 
-    public NetworkSession(Engine engine, SocketAddress address, boolean isLocal, boolean isClient) {
+    public NetworkSession(Engine engine, SocketAddress address, boolean isLocal, boolean isClient, SessionData sessionData) {
         this.engine = engine;
-        this.sessionData = new SessionData();
+        this.sessionData = sessionData;
         this.address = address;
         this.local_UUID = UUID.randomUUID();
         this.is_local_connection = isLocal;

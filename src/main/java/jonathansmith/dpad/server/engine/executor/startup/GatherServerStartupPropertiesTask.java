@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import jonathansmith.dpad.api.common.engine.event.IEventListener;
+import jonathansmith.dpad.api.plugins.events.Event;
+import jonathansmith.dpad.api.plugins.events.IEventListener;
 
-import jonathansmith.dpad.common.engine.event.Event;
 import jonathansmith.dpad.common.engine.executor.Task;
 
 import jonathansmith.dpad.server.ServerEngine;

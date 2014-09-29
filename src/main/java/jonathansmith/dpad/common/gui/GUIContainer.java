@@ -105,6 +105,16 @@ public class GUIContainer extends JFrame implements IGUIController, WindowListen
         this.tabContainer.removeTabAt(index);
     }
 
+    public void setFocusOnClient() {
+        if (this.tabs.size() > 1) {
+            this.tabContainer.setSelectedIndex(1);
+        }
+    }
+
+    public void setFocusOnServer() {
+        this.tabContainer.setSelectedIndex(0);
+    }
+
     @Override
     public void windowOpened(WindowEvent e) {
         // NO-OP

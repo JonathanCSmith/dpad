@@ -6,6 +6,8 @@ import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.engine.event.ClientDisplayChangeEvent;
 import jonathansmith.dpad.client.gui.startup.ClientStartupDisplay;
 
+import jonathansmith.dpad.DPAD;
+
 /**
  * Created by Jon on 27/05/2014.
  * <p/>
@@ -24,5 +26,7 @@ public class ClientStartupGUISetupTask extends Task {
         ClientStartupDisplay display = new ClientStartupDisplay((ClientEngine) this.loggingEngine);
         ClientDisplayChangeEvent event = new ClientDisplayChangeEvent(display);
         this.loggingEngine.getEventThread().postEvent(event);
+
+        DPAD.getInstance().getGUI().setFocusOnClient();
     }
 }

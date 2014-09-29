@@ -1,4 +1,5 @@
 GLOBAL CURRENT TODO:
+- Clean up Users to match experiments
 - Clean up IEventListeners
 - Clean up TODOS
 - Clean up warnings
@@ -16,6 +17,7 @@ GLOBAL DELAYED TODO:
 - Add modal hooks for GUI
 - Cancel on main should return to main not quit
 - Pass pertinent information from properties to file system (i.e. servers and maybe clients can define db path)
+- Network plugins.
 - Plugin version generation from filename
 - Plugin sanity checking when relocating?!
 - PluginManager separation into client and server (Should better manage what functions are specific to each side)

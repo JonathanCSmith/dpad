@@ -1,8 +1,7 @@
 package jonathansmith.dpad.server.gui.startup;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
 import jonathansmith.dpad.common.gui.util.BlankToolbar;
 import jonathansmith.dpad.common.gui.util.ProgressPanel;
 
@@ -22,8 +21,6 @@ public class ServerStartupDisplay extends ServerDisplay {
 
     public ServerStartupDisplay(ServerEngine engine) {
         super(engine);
-
-        this.engine.getEventThread().addEventListener(this.progress_panel);
     }
 
     @Override
@@ -37,12 +34,17 @@ public class ServerStartupDisplay extends ServerDisplay {
     }
 
     @Override
+    public void onActivation() {
+        this.engine.getEventThread().addEventListener(this.progress_panel);
+    }
+
+    @Override
     public void update() {
         this.progress_panel.update();
     }
 
     @Override
-    public void onDestroy(IEngine loggingEngine) {
-        loggingEngine.getEventThread().removeListener(this.progress_panel);
+    public void onDestroy() {
+        this.engine.getEventThread().removeListener(this.progress_panel);
     }
 }

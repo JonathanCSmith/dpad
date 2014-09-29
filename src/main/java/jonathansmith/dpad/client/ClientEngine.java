@@ -23,6 +23,8 @@ import jonathansmith.dpad.DPAD;
  */
 public class ClientEngine extends Engine {
 
+    private final ClientIdleExecutor executor;
+
     public ClientEngine(SocketAddress address) {
         super(address, new ClientTabController());
 
@@ -30,7 +32,8 @@ public class ClientEngine extends Engine {
         DPAD.getInstance().getGUI().addTab(this.engine_tab_controller);
 
         // Add the client startup executor as the first program to be run. Ensuring that everything is setup before anything else is performed.
-        this.setProposedExecutor(new ClientStartupExecutor(this, this.address));
+        this.setProposedExecutorWithoutWaiting(new ClientStartupExecutor(this, this.address));
+        this.executor = new ClientIdleExecutor(this);
     }
 
     public ISession getSession() {
@@ -48,6 +51,6 @@ public class ClientEngine extends Engine {
 
     @Override
     protected Executor getDefaultExecutor() {
-        return new ClientIdleExecutor(this);
+        return this.executor;
     }
 }

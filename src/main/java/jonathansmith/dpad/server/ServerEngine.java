@@ -23,6 +23,8 @@ import jonathansmith.dpad.DPAD;
  */
 public class ServerEngine extends Engine {
 
+    private final ServerIdleExecutor executor;
+
     private boolean isDatabaseSetup = false;
 
     private DatabaseManager          databaseManager;
@@ -36,7 +38,8 @@ public class ServerEngine extends Engine {
         DPAD.getInstance().getGUI().addTab(this.engine_tab_controller);
 
         // Add the server startup executor as the first program to be run. Ensuring that everything is setup before anything else is performed.
-        this.setProposedExecutor(new ServerStartupExecutor(this, this.address));
+        this.setProposedExecutorWithoutWaiting(new ServerStartupExecutor(this, this.address));
+        this.executor = new ServerIdleExecutor(this);
     }
 
     public UUID getServerUUID() {
@@ -94,6 +97,6 @@ public class ServerEngine extends Engine {
 
     @Override
     protected Executor getDefaultExecutor() {
-        return new ServerIdleExecutor(this);
+        return this.executor;
     }
 }

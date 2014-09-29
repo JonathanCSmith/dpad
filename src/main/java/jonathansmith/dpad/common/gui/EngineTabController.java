@@ -2,8 +2,8 @@ package jonathansmith.dpad.common.gui;
 
 import javax.swing.*;
 
-import jonathansmith.dpad.api.common.engine.event.IEventListener;
 import jonathansmith.dpad.api.common.gui.ITabController;
+import jonathansmith.dpad.api.plugins.events.IEventListener;
 
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.engine.util.log.ILogDisplay;
@@ -33,8 +33,13 @@ public abstract class EngineTabController<T extends Display> implements ITabCont
         this.engine = engine;
     }
 
+    public T getCurrentDisplay() {
+        return this.currentDisplay;
+    }
+
     public void setCurrentDisplay(T targetDisplay) {
         this.currentDisplay = targetDisplay;
+        this.currentDisplay.onActivation();
     }
 
     @Override
@@ -56,19 +61,13 @@ public abstract class EngineTabController<T extends Display> implements ITabCont
                 this.logSplitPane.setResizeWeight(1.0D);
                 this.logSplitPane.setEnabled(false);
                 this.logArea.setEnabled(false);
-//                Dimension tooSmall = new Dimension(-1, 0);
-//                this.logArea.setPreferredSize(tooSmall);
-//                this.logArea.setMinimumSize(tooSmall);
-//                this.logArea.setMaximumSize(tooSmall);
-//                this.logSplitPane.setDividerLocation(0);
-//                this.logSplitPane.setEnabled(false);
                 this.isSetup = true;
             }
         }
 
         if (this.currentDisplay != this.oldDisplay) {
             if (this.oldDisplay != null) {
-                this.oldDisplay.onDestroy(this.engine);
+                this.oldDisplay.onDestroy();
                 this.coreDisplaySplitPane.remove(this.oldDisplay.getToolbarComponent().getContentPane());
                 this.coreDisplaySplitPane.remove(this.oldDisplay.getDisplayComponent().getContentPane());
             }

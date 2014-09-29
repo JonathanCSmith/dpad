@@ -20,6 +20,7 @@ import jonathansmith.dpad.common.network.packet.DisconnectPacket;
 
 import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.network.channel.ServerChannelInitialiser;
+import jonathansmith.dpad.server.network.session.ServerNetworkSession;
 
 /**
  * Created by Jon on 23/03/14.
@@ -100,12 +101,14 @@ public class ServerNetworkManager extends NetworkManager {
 
         for (final NetworkSession session : this.sessions) {
             if (!session.isLocalChannel() && session.isChannelOpen()) {
-                session.scheduleOutboundPacket(new DisconnectPacket("Server shutdown"), new GenericFutureListener[]{new GenericFutureListener() {
-                    @Override
-                    public void operationComplete(Future future) throws Exception {
-                        session.shutdown(ServerNetworkManager.this.hasError);
-                    }
-                }});
+                ((ServerNetworkSession) session).sendDisconnectPacket("Server shutting down", new GenericFutureListener[]{
+                        new GenericFutureListener() {
+                            @Override
+                            public void operationComplete(Future future) throws Exception {
+                                session.shutdown(ServerNetworkManager.this.hasError);
+                            }
+                        }
+                });
             }
         }
 

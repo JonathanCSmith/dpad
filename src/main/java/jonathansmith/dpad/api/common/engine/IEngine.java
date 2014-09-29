@@ -1,7 +1,7 @@
 package jonathansmith.dpad.api.common.engine;
 
-import jonathansmith.dpad.api.common.engine.event.IEventThread;
 import jonathansmith.dpad.api.common.util.Version;
+import jonathansmith.dpad.api.plugins.events.IEventThread;
 
 /**
  * Created by Jon on 23/03/14.
@@ -27,7 +27,7 @@ public interface IEngine {
     /**
      * Return the event thread for the engine
      *
-     * @return {@link jonathansmith.dpad.api.common.engine.event.IEventThread} the event thread used by the current engine
+     * @return {@link jonathansmith.dpad.api.plugins.events.IEventThread} the event thread used by the current engine
      */
     IEventThread getEventThread();
 

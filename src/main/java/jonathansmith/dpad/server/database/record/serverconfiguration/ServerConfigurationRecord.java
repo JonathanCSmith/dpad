@@ -4,7 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import jonathansmith.dpad.common.database.record.Record;
+import jonathansmith.dpad.api.database.Record;
 
 /**
  * Created by Jon on 17/07/2014.

@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
 import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.engine.event.ServerDisplayChangeEvent;

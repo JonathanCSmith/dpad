@@ -1,6 +1,6 @@
 package jonathansmith.dpad.server.database.record.loadingplugin;
 
-import jonathansmith.dpad.common.database.record.LoadingPluginRecord;
+import jonathansmith.dpad.api.database.LoadingPluginRecord;
 
 import jonathansmith.dpad.server.database.RecordManager;
 

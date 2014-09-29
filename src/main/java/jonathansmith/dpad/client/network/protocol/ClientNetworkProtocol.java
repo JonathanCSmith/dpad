@@ -1,6 +1,6 @@
 package jonathansmith.dpad.client.network.protocol;
 
-import jonathansmith.dpad.api.common.engine.event.IEventThread;
+import jonathansmith.dpad.api.plugins.events.IEventThread;
 
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;

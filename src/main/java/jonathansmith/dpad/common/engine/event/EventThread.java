@@ -8,8 +8,9 @@ import java.util.Map;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 
-import jonathansmith.dpad.api.common.engine.event.IEventListener;
-import jonathansmith.dpad.api.common.engine.event.IEventThread;
+import jonathansmith.dpad.api.plugins.events.Event;
+import jonathansmith.dpad.api.plugins.events.IEventListener;
+import jonathansmith.dpad.api.plugins.events.IEventThread;
 
 import jonathansmith.dpad.common.engine.Engine;
 
@@ -142,6 +143,9 @@ public class EventThread extends Thread implements IEventThread {
         }
 
         List<Class<? extends Event>> events = listener.getEventsToListenFor();
+        if (events == null) {
+            return;
+        }
 
         while (this.isModifyingEventListenersAdditionsMap) {
             try {
@@ -170,6 +174,9 @@ public class EventThread extends Thread implements IEventThread {
         }
 
         List<Class<? extends Event>> events = listener.getEventsToListenFor();
+        if (events == null) {
+            return;
+        }
 
         while (this.isModifyingEventListenerRemovalMap) {
             try {
