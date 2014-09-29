@@ -1,6 +1,7 @@
 package jonathansmith.dpad.server.engine.executor.startup;
 
-import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
+import jonathansmith.dpad.api.events.ProgressBarUpdateEvent;
+
 import jonathansmith.dpad.common.engine.executor.Task;
 
 import jonathansmith.dpad.server.ServerEngine;

@@ -1,6 +1,6 @@
 package jonathansmith.dpad.client.engine.event;
 
-import jonathansmith.dpad.common.engine.event.Event;
+import jonathansmith.dpad.api.plugins.events.Event;
 
 /**
  * Created by Jon on 22/07/2014.

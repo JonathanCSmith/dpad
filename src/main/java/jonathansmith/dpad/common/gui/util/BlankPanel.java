@@ -2,7 +2,7 @@ package jonathansmith.dpad.common.gui.util;
 
 import javax.swing.*;
 
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
 /**
  * Created by Jon on 22/07/2014.

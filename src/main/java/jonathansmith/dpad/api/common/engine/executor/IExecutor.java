@@ -9,6 +9,13 @@ package jonathansmith.dpad.api.common.engine.executor;
 public interface IExecutor {
 
     /**
+     * Returns whether this is an interruptable repeat executor
+     *
+     * @return
+     */
+    boolean isRepeatExecution();
+
+    /**
      * Query the name of the selected executor
      *
      * @return the unique name of the current executor

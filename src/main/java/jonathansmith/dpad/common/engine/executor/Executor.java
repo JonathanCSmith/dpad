@@ -45,6 +45,11 @@ public abstract class Executor extends Thread implements IExecutor, Thread.Uncau
     }
 
     @Override
+    public final boolean isRepeatExecution() {
+        return this.repeatExecution;
+    }
+
+    @Override
     public final String getExecutorName() {
         return this.executorName;
     }
@@ -105,7 +110,7 @@ public abstract class Executor extends Thread implements IExecutor, Thread.Uncau
 
                 else {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(5);
                     }
 
                     catch (InterruptedException ex) {

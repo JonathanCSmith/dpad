@@ -4,9 +4,9 @@ import org.hibernate.HibernateException;
 
 import jonathansmith.dpad.api.APIAccess;
 import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.api.database.DatabaseRecord;
+import jonathansmith.dpad.api.database.Record;
 
-import jonathansmith.dpad.common.database.record.DatabaseRecord;
-import jonathansmith.dpad.common.database.record.Record;
 import jonathansmith.dpad.common.database.util.RecordList;
 
 /**

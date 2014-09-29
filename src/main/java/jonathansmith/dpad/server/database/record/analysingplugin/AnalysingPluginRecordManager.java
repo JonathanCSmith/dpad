@@ -1,6 +1,6 @@
 package jonathansmith.dpad.server.database.record.analysingplugin;
 
-import jonathansmith.dpad.common.database.record.AnalysingPluginRecord;
+import jonathansmith.dpad.api.database.AnalysingPluginRecord;
 
 import jonathansmith.dpad.server.database.RecordManager;
 

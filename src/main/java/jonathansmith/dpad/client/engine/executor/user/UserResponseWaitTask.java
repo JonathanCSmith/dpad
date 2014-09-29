@@ -3,12 +3,13 @@ package jonathansmith.dpad.client.engine.executor.user;
 import java.util.ArrayList;
 import java.util.List;
 
-import jonathansmith.dpad.api.common.engine.event.IEventListener;
+import jonathansmith.dpad.api.events.ModalDialogRequestEvent;
+import jonathansmith.dpad.api.events.ProgressBarUpdateEvent;
+import jonathansmith.dpad.api.plugins.events.Event;
+import jonathansmith.dpad.api.plugins.events.IEventListener;
 
-import jonathansmith.dpad.common.engine.event.Event;
-import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
 import jonathansmith.dpad.common.engine.executor.Task;
-import jonathansmith.dpad.common.engine.user.UserResponseState;
+import jonathansmith.dpad.common.engine.state.UserResponseState;
 
 import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.engine.event.ServerUserResponseEvent;
@@ -20,7 +21,7 @@ import jonathansmith.dpad.client.engine.event.ServerUserResponseEvent;
  */
 public class UserResponseWaitTask extends Task implements IEventListener {
 
-    private static final String                       TASK_NAME = "User responce wait";
+    private static final String                       TASK_NAME = "User response wait";
     private static final List<Class<? extends Event>> EVENTS    = new ArrayList<Class<? extends Event>>();
 
     static {
@@ -48,7 +49,7 @@ public class UserResponseWaitTask extends Task implements IEventListener {
         }
 
         this.loggingEngine.getEventThread().removeListener(this);
-        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent("Rebuilding Client Home", 0, 3, 3));
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent("Rebuilding Client Home", 0, 2, 2));
     }
 
     @Override
@@ -105,7 +106,8 @@ public class UserResponseWaitTask extends Task implements IEventListener {
                 break;
         }
 
-        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(statement, 0, 3, 2));
+        this.loggingEngine.getEventThread().postEvent(new ProgressBarUpdateEvent(statement, 0, 2, 1));
+        this.loggingEngine.getEventThread().postEvent(new ModalDialogRequestEvent(statement));
         this.isWaiting = false;
     }
 }

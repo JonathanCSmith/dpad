@@ -5,7 +5,7 @@ import jonathansmith.dpad.api.common.engine.IEngine;
 /**
  * Created by Jon on 19/05/2014.
  * <p/>
- * Parent task for all executors.
+ * A task to be executed in a thread environment.
  */
 public abstract class Task extends Thread {
 
@@ -13,36 +13,66 @@ public abstract class Task extends Thread {
     private final   String  taskName;
     private boolean isFinished = false;
 
+    /**
+     * Construct the task
+     *
+     * @param taskName
+     * @param engine
+     */
     public Task(String taskName, IEngine engine) {
         this.taskName = taskName;
         this.loggingEngine = engine;
     }
 
+    /**
+     * Function called to actually run the task
+     */
     protected abstract void runTask();
 
+    /**
+     * Overridable function to kill the task early
+     */
     protected void killTask() {
     }
 
-    public String getTaskName() {
+    /**
+     * Normal runtime called by executors
+     */
+    @Override
+    public final void run() {
+        this.runTask();
+        this.setFinished();
+    }
+
+    /**
+     * @return a string description of the task name.
+     */
+    public final String getTaskName() {
         return this.taskName;
     }
 
-    public void kill() {
+    /**
+     * Kill the task when desired
+     */
+    public final void kill() {
         this.killTask();
         this.isFinished = true;
     }
 
-    public boolean isFinished() {
-        return this.isFinished;
-    }
-
-    protected void setFinished() {
+    /**
+     * Allows internal markup of when a task is finished. This should be called when the task is finished to
+     * allow the executor to determine that it is finished
+     */
+    protected final void setFinished() {
         this.isFinished = true;
     }
 
-    @Override
-    public void run() {
-        this.runTask();
-        this.setFinished();
+    /**
+     * Query the state of the task.
+     *
+     * @return whether the task is finished or not
+     */
+    public final boolean isFinished() {
+        return this.isFinished;
     }
 }

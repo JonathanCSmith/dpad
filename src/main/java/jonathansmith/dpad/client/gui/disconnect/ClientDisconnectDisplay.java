@@ -1,8 +1,7 @@
 package jonathansmith.dpad.client.gui.disconnect;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
 import jonathansmith.dpad.common.gui.util.BlankToolbar;
 
 import jonathansmith.dpad.client.ClientEngine;
@@ -35,12 +34,17 @@ public class ClientDisconnectDisplay extends ClientDisplay {
     }
 
     @Override
+    public void onActivation() {
+
+    }
+
+    @Override
     public void update() {
         this.disconnect_panel.update();
     }
 
     @Override
-    public void onDestroy(IEngine loggingEngine) {
+    public void onDestroy() {
 
     }
 }

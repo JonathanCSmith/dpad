@@ -1,8 +1,7 @@
 package jonathansmith.dpad.client.gui.startup;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
 import jonathansmith.dpad.common.gui.util.BlankToolbar;
 import jonathansmith.dpad.common.gui.util.ProgressPanel;
 
@@ -36,12 +35,17 @@ public class ClientStartupDisplay extends ClientDisplay {
     }
 
     @Override
+    public void onActivation() {
+
+    }
+
+    @Override
     public void update() {
         this.progress_panel.update();
     }
 
     @Override
-    public void onDestroy(IEngine loggingEngine) {
-        loggingEngine.getEventThread().removeListener(this.progress_panel);
+    public void onDestroy() {
+        this.engine.getEventThread().removeListener(this.progress_panel);
     }
 }

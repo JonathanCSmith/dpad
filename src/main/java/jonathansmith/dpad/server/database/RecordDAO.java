@@ -7,7 +7,8 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
-import jonathansmith.dpad.common.database.record.Record;
+import jonathansmith.dpad.api.database.Record;
+
 import jonathansmith.dpad.common.database.util.RecordList;
 
 /**

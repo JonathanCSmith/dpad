@@ -4,10 +4,9 @@ import java.util.List;
 
 import javax.swing.*;
 
-import jonathansmith.dpad.api.common.engine.event.IEventListener;
-
-import jonathansmith.dpad.common.engine.event.Event;
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
+import jonathansmith.dpad.api.plugins.events.Event;
+import jonathansmith.dpad.api.plugins.events.IEventListener;
 
 /**
  * Created by Jon on 16/06/2014.

@@ -6,10 +6,11 @@ import java.io.File;
 
 import javax.swing.*;
 
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
+
 import jonathansmith.dpad.common.engine.util.configuration.Configuration;
 import jonathansmith.dpad.common.engine.util.configuration.ConfigurationProperty;
 import jonathansmith.dpad.common.engine.util.configuration.FileConfigurationValue;
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
 
 import jonathansmith.dpad.client.ClientEngine;
 import jonathansmith.dpad.client.engine.event.ClientStartupPropertiesFinishEvent;

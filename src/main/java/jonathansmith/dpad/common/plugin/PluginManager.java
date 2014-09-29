@@ -3,6 +3,7 @@ package jonathansmith.dpad.common.plugin;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 
 import org.apache.commons.io.FileUtils;
@@ -12,12 +13,13 @@ import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
 
 import jonathansmith.dpad.api.common.engine.IEngine;
-import jonathansmith.dpad.api.common.plugin.IAnalyserPlugin;
-import jonathansmith.dpad.api.common.plugin.ILoaderPlugin;
-import jonathansmith.dpad.api.common.plugin.IPlugin;
-import jonathansmith.dpad.api.common.plugin.IPluginRecord;
+import jonathansmith.dpad.api.database.AnalysingPluginRecord;
+import jonathansmith.dpad.api.database.LoadingPluginRecord;
+import jonathansmith.dpad.api.plugins.IAnalyserPlugin;
+import jonathansmith.dpad.api.plugins.ILoaderPlugin;
+import jonathansmith.dpad.api.plugins.IPlugin;
+import jonathansmith.dpad.api.plugins.records.IPluginRecord;
 
-import jonathansmith.dpad.common.database.record.Record;
 import jonathansmith.dpad.common.database.util.RecordList;
 
 /**
@@ -87,21 +89,23 @@ public class PluginManager extends Thread {
         }
     }
 
-    public RecordList<Record> getLoaderPluginRecordList() {
-        RecordList<Record> list = new RecordList<Record>();
+    public RecordList<LoadingPluginRecord> getLoaderPluginRecordList() {
+        RecordList<LoadingPluginRecord> list = new RecordList<LoadingPluginRecord>();
         for (ILoaderPlugin plugin : this.snapshotted_loading_plugins.values()) {
-            // TODO: Fix
-            //list.add((plugin).getPluginRecord());
+            LoadingPluginRecord record = new LoadingPluginRecord();
+            record.buildRecordFromPlugin(plugin);
+            list.add(record);
         }
 
         return list;
     }
 
-    public RecordList<Record> getAnalyserPluginRecordList() {
-        RecordList<Record> list = new RecordList<Record>();
+    public RecordList<AnalysingPluginRecord> getAnalyserPluginRecordList() {
+        RecordList<AnalysingPluginRecord> list = new RecordList<AnalysingPluginRecord>();
         for (IAnalyserPlugin plugin : this.snapshotted_analysing_plugins.values()) {
-            // TODO: Fix
-            //list.add((plugin).getPluginRecord());
+            AnalysingPluginRecord record = new AnalysingPluginRecord();
+            record.buildRecordFromPlugin(plugin);
+            list.add(record);
         }
 
         return list;
@@ -258,6 +262,13 @@ public class PluginManager extends Thread {
             return;
         }
 
+        try {
+            this.manager.addPluginsFrom(new URI("classpath://jonathansmith.**"));
+        }
+
+        catch (Exception e) {
+            this.engine.handleError("Error loading plugins from the classpath", e);
+        }
         this.manager.addPluginsFrom(dir.toURI());
 
         // Loading plugins

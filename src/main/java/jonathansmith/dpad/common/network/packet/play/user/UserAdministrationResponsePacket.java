@@ -2,7 +2,7 @@ package jonathansmith.dpad.common.network.packet.play.user;
 
 import java.io.IOException;
 
-import jonathansmith.dpad.common.engine.user.UserResponseState;
+import jonathansmith.dpad.common.engine.state.UserResponseState;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
 import jonathansmith.dpad.common.network.protocol.INetworkProtocol;

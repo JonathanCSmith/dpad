@@ -1,17 +1,20 @@
 package jonathansmith.dpad.common.gui.util;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
 /**
  * Created by Jon on 22/07/2014.
  * <p/>
  * Template display panel for toolbars.
  */
-public class BlankToolbar extends DisplayPanel {
+public class BlankToolbar extends DisplayPanel implements ActionListener {
+
     private JPanel contentPane;
 
     public BlankToolbar() {
@@ -25,6 +28,11 @@ public class BlankToolbar extends DisplayPanel {
 
     @Override
     public void update() {
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent ae) {
 
     }
 }

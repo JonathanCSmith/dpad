@@ -2,8 +2,9 @@ package jonathansmith.dpad.client.engine.executor.startup;
 
 import org.apache.log4j.Level;
 
+import jonathansmith.dpad.api.events.ProgressBarUpdateEvent;
+
 import jonathansmith.dpad.common.engine.Engine;
-import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
 import jonathansmith.dpad.common.engine.executor.Task;
 import jonathansmith.dpad.common.engine.util.log.LoggerFactory;
 import jonathansmith.dpad.common.engine.util.log.LoggingLevel;

@@ -1,8 +1,7 @@
 package jonathansmith.dpad.server.gui.configuration;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
 import jonathansmith.dpad.common.gui.util.BlankToolbar;
 
 import jonathansmith.dpad.server.ServerEngine;
@@ -36,12 +35,17 @@ public class ServerConfigurationDisplay extends ServerDisplay {
     }
 
     @Override
+    public void onActivation() {
+
+    }
+
+    @Override
     public void update() {
 
     }
 
     @Override
-    public void onDestroy(IEngine loggingEngine) {
+    public void onDestroy() {
 
     }
 }

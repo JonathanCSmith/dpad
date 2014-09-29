@@ -7,10 +7,11 @@ import java.util.Arrays;
 
 import javax.swing.*;
 
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
+
 import jonathansmith.dpad.common.engine.util.configuration.Configuration;
 import jonathansmith.dpad.common.engine.util.configuration.ConfigurationProperty;
 import jonathansmith.dpad.common.engine.util.configuration.FileConfigurationValue;
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
 
 import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.engine.event.ServerStartupPropertiesFinishEvent;
@@ -42,6 +43,7 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
     private JCheckBox      requireUsersToBeCheckBox;
     private JButton        setDPADPathButton;
     private JTextField     dataPath;
+    private JTextField     path;
     private ButtonGroup    buttonGroup1;
 
     public ServerStartupPropertiesPanel(ServerEngine engine) {
@@ -56,6 +58,10 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
         this.dataFile = ((FileConfigurationValue) this.configuration.getConfigValue(ConfigurationProperty.LAST_KNOWN_DATA_LOCATION)).getPropertyValue();
         this.dataPath.setText(this.dataFile.getAbsolutePath());
 
+        this.path.setVisible(false);
+        this.dataPath.setVisible(false);
+        this.setDPADPathButton.setVisible(false);
+        this.finishButton.setVisible(false);
         this.pleaseEnterTheAppropriateTextField.setVisible(false);
         this.superUserText.setVisible(false);
         this.username.setVisible(false);
@@ -119,7 +125,7 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
                     this.configuration.save(this.engine);
                 }
 
-                ServerStartupProperties configuration = new ServerStartupProperties(this.buttonGroup1.isSelected(this.radioButton1.getModel()), this.username.getText(), new String(this.pwd.getPassword()), true /* TODO: this.buttonGroup1.isSelected(this.radioButton1.getModel()) && this.requireUsersToBeCheckBox.isSelected() */);
+                ServerStartupProperties configuration = new ServerStartupProperties(this.buttonGroup1.isSelected(this.radioButton1.getModel()), this.username.getText(), new String(this.pwd.getPassword()), false /* TODO: this.buttonGroup1.isSelected(this.radioButton1.getModel()) && this.requireUsersToBeCheckBox.isSelected() */);
                 this.engine.getEventThread().postEvent(new ServerStartupPropertiesFinishEvent(configuration));
             }
         }
@@ -151,5 +157,10 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
         this.requireUsersToBeCheckBox.setVisible(state);
         */
         this.contentPane.validate();
+
+        this.path.setVisible(true);
+        this.dataPath.setVisible(true);
+        this.setDPADPathButton.setVisible(true);
+        this.finishButton.setVisible(true);
     }
 }

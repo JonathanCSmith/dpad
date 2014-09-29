@@ -3,7 +3,9 @@ package jonathansmith.dpad.server.gui;
 import java.util.LinkedList;
 import java.util.List;
 
-import jonathansmith.dpad.common.engine.event.Event;
+import jonathansmith.dpad.api.events.ModalDialogRequestEvent;
+import jonathansmith.dpad.api.plugins.events.Event;
+
 import jonathansmith.dpad.common.gui.EngineTabController;
 
 import jonathansmith.dpad.server.engine.event.ServerDisplayChangeEvent;
@@ -44,12 +46,18 @@ public class ServerTabController extends EngineTabController<ServerDisplay> {
                 return;
             case 0:
                 ServerDisplayChangeEvent evt = (ServerDisplayChangeEvent) event;
-                this.setCurrentDisplay((ServerDisplay) evt.getTargetDisplay());
+                this.setCurrentDisplay(evt.getTargetDisplay());
+                break;
+            case 1:
+                ModalDialogRequestEvent mevt = (ModalDialogRequestEvent) event;
+                this.getCurrentDisplay().getDisplayComponent().showModal(mevt.getModalContent());
+                break;
         }
     }
 
     static {
         EVENTS.add(ServerDisplayChangeEvent.class);
+        EVENTS.add(ModalDialogRequestEvent.class);
     }
 
     @Override

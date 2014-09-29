@@ -3,8 +3,7 @@ package jonathansmith.dpad.client.gui.home;
 import javax.swing.*;
 
 import jonathansmith.dpad.api.common.network.session.ISessionData;
-
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
 import jonathansmith.dpad.client.ClientEngine;
 
@@ -17,10 +16,12 @@ public class ClientHomePanel extends DisplayPanel {
 
     private final ClientEngine engine;
 
-    private boolean isUserLoggedIn = false;
+    private boolean isUserLoggedIn      = false;
+    private boolean isRunningExperiment = false;
 
     private JPanel     contentPane;
     private JTextField userValue;
+    private JTextField experimentValue;
 
     public ClientHomePanel(ClientEngine engine) {
         this.engine = engine;
@@ -36,7 +37,7 @@ public class ClientHomePanel extends DisplayPanel {
         ISessionData data = this.engine.getSessionData();
         if (data.isUserLoggedIn() != this.isUserLoggedIn) {
             if (data.isUserLoggedIn()) {
-                this.userValue.setText(data.getUserName());
+                this.userValue.setText(data.getCurrentUserName());
             }
 
             else {
@@ -44,6 +45,18 @@ public class ClientHomePanel extends DisplayPanel {
             }
 
             this.isUserLoggedIn = data.isUserLoggedIn();
+        }
+
+        if (data.isRunningExperiment() != this.isRunningExperiment) {
+            if (data.isRunningExperiment()) {
+                this.experimentValue.setText(data.getCurrentExperimentName());
+            }
+
+            else {
+                this.experimentValue.setText("");
+            }
+
+            this.isRunningExperiment = data.isRunningExperiment();
         }
     }
 }

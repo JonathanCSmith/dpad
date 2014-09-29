@@ -1,6 +1,6 @@
 package jonathansmith.dpad.server.engine.event;
 
-import jonathansmith.dpad.common.engine.event.Event;
+import jonathansmith.dpad.api.plugins.events.Event;
 
 import jonathansmith.dpad.server.engine.util.config.ServerStartupProperties;
 

@@ -2,9 +2,7 @@ package jonathansmith.dpad.server.gui.home;
 
 import java.awt.*;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
-import jonathansmith.dpad.common.gui.display.DisplayPanel;
+import jonathansmith.dpad.api.plugins.display.DisplayPanel;
 
 import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.gui.ServerDisplay;
@@ -38,13 +36,18 @@ public class ServerHomeDisplay extends ServerDisplay {
     }
 
     @Override
+    public void onActivation() {
+
+    }
+
+    @Override
     public void update() {
         this.toolbar_panel.update();
         this.home_panel.update();
     }
 
     @Override
-    public void onDestroy(IEngine loggingEngine) {
+    public void onDestroy() {
 
     }
 }

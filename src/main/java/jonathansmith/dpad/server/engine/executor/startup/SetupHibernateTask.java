@@ -10,9 +10,10 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
-import jonathansmith.dpad.common.database.record.DatabaseRecord;
-import jonathansmith.dpad.common.database.record.Record;
-import jonathansmith.dpad.common.engine.event.gui.ProgressBarUpdateEvent;
+import jonathansmith.dpad.api.database.DatabaseRecord;
+import jonathansmith.dpad.api.database.Record;
+import jonathansmith.dpad.api.events.ProgressBarUpdateEvent;
+
 import jonathansmith.dpad.common.engine.executor.Task;
 
 import jonathansmith.dpad.server.ServerEngine;
@@ -51,8 +52,15 @@ public class SetupHibernateTask extends Task {
 
         if (this.configTask.getServerSetupConfiguration().isNewServer()) {
             UUID suuuid = UUID.nameUUIDFromBytes(this.configTask.getServerSetupConfiguration().getSuperUsername().getBytes());
-            if (new File(this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase_" + suuuid.toString()).exists()) {
+            if (new File(this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase_" + suuuid.toString() + ".mv.db").exists()) {
                 throw new UnsupportedOperationException(); // TODO MAYBE: Move to a better error
+            }
+        }
+
+        else {
+            UUID suuuid = UUID.nameUUIDFromBytes(this.configTask.getServerSetupConfiguration().getSuperUsername().getBytes());
+            if (!new File(this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase_" + suuuid.toString() + ".mv.db").exists()) {
+                throw new UnsupportedOperationException();
             }
         }
 

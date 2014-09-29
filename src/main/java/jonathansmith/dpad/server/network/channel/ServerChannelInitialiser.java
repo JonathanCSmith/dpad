@@ -8,7 +8,7 @@ import jonathansmith.dpad.common.network.channel.*;
 
 import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.network.ServerNetworkManager;
-import jonathansmith.dpad.server.network.ServerNetworkSession;
+import jonathansmith.dpad.server.network.session.ServerNetworkSession;
 
 /**
  * Created by Jon on 26/03/14.
