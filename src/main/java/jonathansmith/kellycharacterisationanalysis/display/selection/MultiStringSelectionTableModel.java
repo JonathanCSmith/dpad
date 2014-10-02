@@ -36,7 +36,7 @@ public class MultiStringSelectionTableModel extends AbstractTableModel {
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
-        return columnIndex == 3 ? boolean.class : String.class;
+        return columnIndex == 3 ? Boolean.class : String.class;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class MultiStringSelectionTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 1) {
+        if (columnIndex == 3) {
             this.selections[rowIndex] = (Boolean) aValue;
             fireTableCellUpdated(rowIndex, columnIndex);
         }

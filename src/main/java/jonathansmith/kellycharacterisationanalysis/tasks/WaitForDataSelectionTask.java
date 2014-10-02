@@ -3,26 +3,24 @@ package jonathansmith.kellycharacterisationanalysis.tasks;
 import java.util.ArrayList;
 import java.util.List;
 
-import jonathansmith.dpad.api.events.dataset.FullDatasetsArrivalEvent;
 import jonathansmith.dpad.api.plugins.events.Event;
 import jonathansmith.dpad.api.plugins.events.IEventListener;
 import jonathansmith.dpad.api.plugins.runtime.IPluginRuntime;
 import jonathansmith.dpad.api.plugins.tasks.IPluginTask;
 
 import jonathansmith.kellycharacterisationanalysis.KellyCharacterisationAnalysis;
-import jonathansmith.kellycharacterisationanalysis.events.KellyCharacterisationFinishEvent;
+import jonathansmith.kellycharacterisationanalysis.events.KellySelectDataFinishEvent;
 
 /**
  * Created by Jon on 29/09/2014.
  */
-public class RequestAndWaitForDatasetsTask implements IPluginTask, IEventListener {
+public class WaitForDataSelectionTask implements IPluginTask, IEventListener {
 
     private static final ArrayList<Class<? extends Event>> EVENTS    = new ArrayList<Class<? extends Event>>();
-    private static final String                            TASK_NAME = "Wait for datasets";
+    private static final String                            TASK_NAME = "Wait for data selection";
 
     static {
-        EVENTS.add(KellyCharacterisationFinishEvent.class);
-        EVENTS.add(FullDatasetsArrivalEvent.class);
+        EVENTS.add(KellySelectDataFinishEvent.class);
     }
 
     private final KellyCharacterisationAnalysis core;
@@ -30,7 +28,7 @@ public class RequestAndWaitForDatasetsTask implements IPluginTask, IEventListene
     private boolean isWaiting = true;
     private boolean isKilled  = false;
 
-    public RequestAndWaitForDatasetsTask(KellyCharacterisationAnalysis kellyCharacterisationAnalysis) {
+    public WaitForDataSelectionTask(KellyCharacterisationAnalysis kellyCharacterisationAnalysis) {
         this.core = kellyCharacterisationAnalysis;
     }
 
@@ -46,7 +44,6 @@ public class RequestAndWaitForDatasetsTask implements IPluginTask, IEventListene
         }
 
         runtime.getEventThread().addEventListener(this);
-        runtime.getFullDatasetInformation(this.core.getLazyLoadedDatasets());
         while (this.isWaiting && !this.isKilled) {
             try {
                 Thread.sleep(100);
@@ -56,6 +53,7 @@ public class RequestAndWaitForDatasetsTask implements IPluginTask, IEventListene
 
             }
         }
+
         runtime.getEventThread().removeListener(this);
     }
 
@@ -73,12 +71,12 @@ public class RequestAndWaitForDatasetsTask implements IPluginTask, IEventListene
     @Override
     public void onEventReceived(Event event) {
         this.isWaiting = false;
-        if (event instanceof FullDatasetsArrivalEvent) {
-            this.core.setFullDatasets(((FullDatasetsArrivalEvent) event).getDatasets());
+        if (((KellySelectDataFinishEvent) event).getInterestedRecords() == null) {
+            this.core.quitEarly();
         }
 
-        else if (event instanceof KellyCharacterisationFinishEvent) {
-            this.core.quitEarly();
+        else {
+            this.core.setLazyLoadedDatasets(((KellySelectDataFinishEvent) event).getInterestedRecords());
         }
     }
 }

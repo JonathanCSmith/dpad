@@ -54,6 +54,7 @@ public class CharacterisationDisplayPanel extends DisplayPanel implements IEvent
     private JPanel      contentPane;
     private JTextField  waitingForDataFromTextField;
     private JScrollPane scrollPane;
+    private JPanel chartPanel;
 
     private LinkedList<DeconvolutedData> data;
 
@@ -62,6 +63,7 @@ public class CharacterisationDisplayPanel extends DisplayPanel implements IEvent
         this.runtime = runtime;
 
         this.scrollPane.setVisible(false);
+        this.chartPanel.setVisible(false);
     }
 
     @Override
@@ -103,8 +105,11 @@ public class CharacterisationDisplayPanel extends DisplayPanel implements IEvent
             final JFreeChart chart = this.createChart(categoryDataset);
             final ChartPanel chartPanel = new ChartPanel(chart);
             chartPanel.setPreferredSize(new Dimension(500, 270));
-            this.scrollPane.add(chartPanel);
             this.scrollPane.setVisible(true);
+            this.chartPanel.setVisible(true);
+            this.chartPanel.setLayout(new BorderLayout());
+            this.chartPanel.add(chartPanel, BorderLayout.CENTER);
+            this.chartPanel.validate();
         }
     }
 
@@ -147,7 +152,7 @@ public class CharacterisationDisplayPanel extends DisplayPanel implements IEvent
     private CategoryDataset createDataset() {
         final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
         for (DeconvolutedData value : this.data) {
-            dataset.addValue(value.getRelativeStrength(), "", value.getName());
+            dataset.addValue(value.getRelativeStrength(), "Samples", value.getName());
         }
         return dataset;
     }

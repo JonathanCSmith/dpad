@@ -85,20 +85,21 @@ public class CalculateCharacterisationTask implements IPluginTask {
             for (int j = 0; j < independentNumber; j++) {
                 for (int k = 0; k < dependentNumber; k++) {
                     for (KellyDeconvolutionMask mask : masks) {
-                        if (mask.getSampleNumber() == i
-                                && mask.getIndependentRepeatNumber() == j
-                                && mask.getDependentRepeatNumber() == k) {
+                        if (mask.getSampleNumber() == i + 1
+                                && mask.getIndependentRepeatNumber() == j + 1
+                                && mask.getDependentRepeatNumber() == k + 1) {
 
-                            data.setGFPValues(independentNumber, dependentNumber, mask.getData());
-
-                            if (newSample) {
-                                newSample = false;
-                                data.setName(mask.getName());
-                            }
+                            data.setGFPValues(j, k, mask.getData());
 
                             if (mask.isReferenceSample()) {
                                 data.setIsReference(true);
                                 dataReference = i;
+                            }
+
+                            if (newSample) {
+                                newSample = false;
+                                data.setName(mask.getName());
+                                dataList.add(data);
                             }
                         }
                     }
@@ -116,7 +117,8 @@ public class CalculateCharacterisationTask implements IPluginTask {
 
             double[] values = data.getAveragedGFP();
             double[] times = data.getAveragedTimes();
-            for (int j = 0; j < values.length; j++) {
+            diffs[i] = new double[values.length - 1];
+            for (int j = 0; j < values.length - 1; j++) {
                 diffs[i][j] = (values[j + 1] + values[j]) / (times[j + 1] / times[j]);
             }
         }
@@ -156,11 +158,10 @@ public class CalculateCharacterisationTask implements IPluginTask {
         }
 
         // Calculate rates for all the samples
-        double[] maxRateOfProduction = new double[diffs.length - 1];
-        int indexCounter = 0;
+        double[] maxRateOfProduction = new double[diffs.length];
         for (int i = 0; i < diffs.length; i++) {
             DeconvolutedData data = dataList.get(i);
-            maxRateOfProduction[indexCounter] = (data.getAveragedGFP()[optimumMin + 1] + data.getAveragedGFP()[optimumMin]) / (data.getAveragedTimes()[optimumMin + 1] + data.getAveragedTimes()[optimumMin]);
+            maxRateOfProduction[i] = (data.getAveragedGFP()[optimumMin + 1] + data.getAveragedGFP()[optimumMin]) / (data.getAveragedTimes()[optimumMin + 1] + data.getAveragedTimes()[optimumMin]);
         }
 
         // Calculate the relative strengths for the samples

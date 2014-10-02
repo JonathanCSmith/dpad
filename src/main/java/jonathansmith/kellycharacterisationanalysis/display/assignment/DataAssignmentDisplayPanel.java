@@ -62,6 +62,7 @@ public class DataAssignmentDisplayPanel extends DisplayPanel implements IEventLi
 
         this.scrollPane.setVisible(false);
         this.table1.setVisible(false);
+        this.tableModel = new DataAssignmentTableModel();
         this.table1.setModel(this.tableModel);
         this.submitButton.addActionListener(this);
     }
@@ -117,7 +118,7 @@ public class DataAssignmentDisplayPanel extends DisplayPanel implements IEventLi
                     this.numberOfDependentRepeats = dependent;
 
                     this.records = this.core.getLazyLoadedDatasets();
-                    int numberRequired = this.numberOfSamples * this.numberOfDependentRepeats * this.numberOfIndependentRepeats * 2;
+                    int numberRequired = this.numberOfSamples * this.numberOfDependentRepeats * this.numberOfIndependentRepeats;
                     if (numberRequired != this.records.size()) {
                         this.showModal("You need: " + numberRequired + " datasets to perform the characterisation you are specifying. There are either too many or too little that have been selected.");
                         return;
@@ -161,8 +162,6 @@ public class DataAssignmentDisplayPanel extends DisplayPanel implements IEventLi
                     int sampleNumber = 1;
                     int independentNumber = 1;
                     int dependentNumber = 1;
-                    boolean hasFoundOD = false;
-                    boolean hasFoundGFP = false;
                     int potentialReference = -1;
                     while (!isFinished) {
                         boolean isCompleteRun = true;
@@ -170,6 +169,13 @@ public class DataAssignmentDisplayPanel extends DisplayPanel implements IEventLi
                             if (mask.getSampleNumber() == sampleNumber) {
                                 if (mask.getIndependentRepeatNumber() == independentNumber) {
                                     if (mask.getDependentRepeatNumber() == dependentNumber) {
+                                        if (sampleNumber == this.numberOfSamples
+                                                && independentNumber == this.numberOfIndependentRepeats
+                                                && dependentNumber == this.numberOfDependentRepeats
+                                                && potentialReference != -1) {
+                                            isFinished = true;
+                                        }
+
                                         if (mask.isReferenceSample()
                                                 && (potentialReference == -1 || potentialReference == mask.getSampleNumber())) {
                                             potentialReference = mask.getSampleNumber();
@@ -183,32 +189,22 @@ public class DataAssignmentDisplayPanel extends DisplayPanel implements IEventLi
                                         orderedMasks.add(mask);
                                         isCompleteRun = false;
                                         dependentNumber++;
-                                        break;
                                     }
 
-                                    if (dependentNumber == this.numberOfDependentRepeats) {
-                                        isCompleteRun = false;
+                                    if (!isCompleteRun && dependentNumber == this.numberOfDependentRepeats + 1) {
                                         independentNumber++;
                                         dependentNumber = 1;
-                                        break;
                                     }
                                 }
 
-                                if (independentNumber == this.numberOfIndependentRepeats) {
-                                    isCompleteRun = false;
+                                if (!isCompleteRun && independentNumber == this.numberOfIndependentRepeats + 1) {
                                     sampleNumber++;
                                     independentNumber = 1;
-                                    break;
                                 }
                             }
 
-                            if (sampleNumber == this.numberOfSamples
-                                    && independentNumber == this.numberOfIndependentRepeats
-                                    && dependentNumber == this.numberOfDependentRepeats
-                                    && hasFoundOD
-                                    && hasFoundGFP
-                                    && potentialReference != -1) {
-                                isFinished = true;
+                            if (!isCompleteRun) {
+                                break;
                             }
                         }
 

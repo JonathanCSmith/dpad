@@ -33,7 +33,7 @@ public class StringSelectionTableModel extends AbstractTableModel {
                 return String.class;
 
             case 1:
-                return boolean.class;
+                return Boolean.class;
 
             default:
                 return Object.class;
@@ -62,9 +62,16 @@ public class StringSelectionTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        if (columnIndex == 1) {
-            this.selections[rowIndex] = (Boolean) aValue;
-            fireTableCellUpdated(rowIndex, columnIndex);
+        switch (columnIndex) {
+            case 0:
+                this.names.set(rowIndex, (String) aValue);
+                fireTableCellUpdated(rowIndex, columnIndex);
+                break;
+
+            case 1:
+                this.selections[rowIndex] = (Boolean) aValue;
+                fireTableCellUpdated(rowIndex, columnIndex);
+                break;
         }
     }
 
@@ -72,7 +79,7 @@ public class StringSelectionTableModel extends AbstractTableModel {
         this.names = values;
         this.selections = new boolean[this.names.size()];
         this.fireTableDataChanged();
-        this.fireTableRowsInserted(0, this.names.size());
+        this.fireTableRowsInserted(0, this.names.size() - 1);
     }
 
     public LinkedList<String> getSelectedNames() {

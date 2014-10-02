@@ -63,7 +63,7 @@ public class ExperimentRecordManager extends RecordManager<ExperimentRecord> {
         try {
             connection.beginTransaction();
             final Criteria criteria = connection.getSession().createCriteria(ExperimentRecord.class);
-            criteria.setFetchMode("Datasets", FetchMode.JOIN);
+            criteria.setFetchMode("datasets", FetchMode.JOIN);
             criteria.add(Property.forName("UUID").eq(record.getUUID()));
             result = (ExperimentRecord) criteria.uniqueResult();
             connection.commitTransaction();
