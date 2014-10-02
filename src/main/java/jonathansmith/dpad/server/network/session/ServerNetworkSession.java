@@ -285,10 +285,10 @@ public class ServerNetworkSession extends NetworkSession {
             index++;
         }
 
+        DatasetRecordManager.getInstance().saveNew(this.connection, datasetRecord);
+
         this.sessionData.getCurrentExperiment().addDataset(datasetRecord);
         ExperimentRecordManager.getInstance().save(this.connection, this.sessionData.getCurrentExperiment());
-
-        DatasetRecordManager.getInstance().saveNew(this.connection, datasetRecord);
     }
 
     public void retrieveDatasetsFromExperiments(HashSet<ExperimentRecord> interestedRecords) {

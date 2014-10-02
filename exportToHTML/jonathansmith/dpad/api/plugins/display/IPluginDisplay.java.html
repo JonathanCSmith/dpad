@@ -1,0 +1,66 @@
+<html>
+<head>
+    <title>IPluginDisplay.java</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+        .s0 { color: rgb(204,120,50); }
+        .s1 { color: rgb(169,183,198); }
+        .s2 { color: rgb(98,151,85); }
+    </style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0">
+    <TR>
+        <TD>
+            <CENTER>
+                <FONT FACE="Arial, Helvetica" COLOR="#000000">
+                    IPluginDisplay.java</FONT>
+            </center>
+        </TD>
+    </TR>
+</TABLE>
+<pre>
+
+<span class="s0">package </span><span class="s1">jonathansmith.dpad.api.plugins.display</span><span
+        class="s0">;</span><span class="s1">
+ 
+</span><span class="s2">/** 
+ * Created by Jon on 29/09/2014. 
+ */</span><span class="s1"> 
+</span><span class="s0">public interface </span><span class="s1">IPluginDisplay { 
+ 
+    </span><span class="s2">/** 
+     * Return the display panel responsible for handling your toolbar 
+     *  
+     * @return 
+     */</span><span class="s1"> 
+    DisplayPanel getDisplayToolbar()</span><span class="s0">;</span><span class="s1"> 
+ 
+    </span><span class="s2">/** 
+     * Return the display panel that will act as the core of your plugin 
+     * @return 
+     */</span><span class="s1"> 
+    DisplayPanel getDisplayPanel()</span><span class="s0">;</span><span class="s1"> 
+ 
+    </span><span class="s2">/** 
+     * Called when a display becomes active 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">onDisplayActivation()</span><span class="s0">;</span><span
+        class="s1">
+ 
+    </span><span class="s2">/** 
+     * Called when a display is updated 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">onDisplayUpdate()</span><span class="s0">;</span><span
+        class="s1">
+ 
+    </span><span class="s2">/** 
+     * Called when a display is destroyed 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">onDisplayDestroy()</span><span class="s0">;</span><span
+        class="s1">
+} 
+</span></pre>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<html>
+<head>
+    <title>IPlugin.java</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+        .s0 { color: rgb(204,120,50); }
+        .s1 { color: rgb(169,183,198); }
+        .s2 { color: rgb(98,151,85); }
+    </style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0">
+    <TR>
+        <TD>
+            <CENTER>
+                <FONT FACE="Arial, Helvetica" COLOR="#000000">
+                    IPlugin.java</FONT>
+            </center>
+        </TD>
+    </TR>
+</TABLE>
+<pre>
+
+<span class="s0">package </span><span class="s1">jonathansmith.dpad.api.common.plugin</span><span
+        class="s0">;</span><span class="s1">
+ 
+</span><span class="s0">import </span><span class="s1">java.util.LinkedList</span><span class="s0">;</span><span
+        class="s1">
+ 
+</span><span class="s0">import </span><span class="s1">net.xeoh.plugins.base.Plugin</span><span class="s0">;</span><span
+        class="s1">
+ 
+</span><span class="s2">/** 
+ * Created by Jon on 28/05/2014. 
+ * &lt;p/&gt; 
+ * Core plugin class. Not to be used directly. Merely inherited either by 
+ * {@link jonathansmith.dpad.api.common.plugin.ILoaderPlugin} 
+ * or {@link jonathansmith.dpad.api.common.plugin.IAnalyserPlugin} 
+ * To implement this class you must compile with jspf found at &lt;a href=&quot;https://code.google.com/p/jspf/&quot;&gt;JSPF&lt;/a&gt; 
+ */</span><span class="s1"> 
+</span><span class="s0">public interface </span><span class="s1">IPlugin&lt;T </span><span
+        class="s0">extends </span><span class="s1">IPluginRecord&gt; </span><span class="s0">extends </span><span
+        class="s1">Plugin {
+ 
+    </span><span class="s2">/** 
+     * Return the plugin record type 
+     * 
+     * @return either an ILoaderPluginRecord or an IAnalyserPluginRecord depending on the type of plugin 
+     */</span><span class="s1"> 
+    T getPluginRecord()</span><span class="s0">;</span><span class="s1"> 
+ 
+    </span><span class="s2">/** 
+     * Return the list of tasks that this plugin should run when the user selects it 
+     * 
+     * @return 
+     */</span><span class="s1"> 
+    LinkedList&lt;IPluginTask&gt; getPluginRuntimeTasks()</span><span class="s0">;</span><span class="s1"> 
+} 
+</span></pre>
+</body>
+</html>

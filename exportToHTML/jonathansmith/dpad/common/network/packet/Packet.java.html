@@ -1,0 +1,119 @@
+<html>
+<head>
+    <title>Packet.java</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+        .s0 { color: rgb(204,120,50); }
+        .s1 { color: rgb(169,183,198); }
+        .s2 { color: rgb(98,151,85); }
+    </style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0">
+    <TR>
+        <TD>
+            <CENTER>
+                <FONT FACE="Arial, Helvetica" COLOR="#000000">
+                    Packet.java</FONT>
+            </center>
+        </TD>
+    </TR>
+</TABLE>
+<pre>
+
+<span class="s0">package </span><span class="s1">jonathansmith.dpad.common.network.packet</span><span
+        class="s0">;</span><span class="s1">
+ 
+</span><span class="s0">import </span><span class="s1">java.io.IOException</span><span class="s0">;</span><span
+        class="s1">
+ 
+</span><span class="s0">import </span><span class="s1">com.google.common.collect.BiMap</span><span
+        class="s0">;</span><span class="s1">
+ 
+</span><span class="s0">import </span><span
+        class="s1">jonathansmith.dpad.common.network.protocol.INetworkProtocol</span><span class="s0">;</span><span
+        class="s1">
+ 
+</span><span class="s2">/** 
+ * Created by Jon on 26/03/14. 
+ * &lt;p/&gt; 
+ * Abstract packet class. Parent for all networking packets. 
+ */</span><span class="s1"> 
+</span><span class="s0">public abstract class </span><span class="s1">Packet { 
+ 
+    </span><span class="s2">/** 
+     * Empty constructor to allow for packet registration without data 
+     */</span><span class="s1"> 
+    </span><span class="s0">public </span><span class="s1">Packet() { 
+    } 
+ 
+    </span><span class="s2">/** 
+     * Generate an empty packet for automatic regeneration of the packet from the byte stream that is transmitted 
+     * through the packet pipeline 
+     * 
+     * @param integerClassBiMap the list of packets that are pre registered 
+     * @param packetId the id of the packet within the packet list 
+     * 
+     * @return the empty packet 
+     * @throws Exception if the packet could not be initialised 
+     */</span><span class="s1"> 
+    </span><span class="s0">public static </span><span class="s1">Packet getEmptyPacket(BiMap&lt;Integer</span><span
+        class="s0">, </span><span class="s1">Class&lt;? </span><span class="s0">extends </span><span class="s1">Packet&gt;&gt; integerClassBiMap</span><span
+        class="s0">, int </span><span class="s1">packetId) </span><span class="s0">throws </span><span class="s1">Exception {
+        Class clazz = integerClassBiMap.get(packetId)</span><span class="s0">;</span><span class="s1"> 
+        </span><span class="s0">return </span><span class="s1">clazz == </span><span class="s0">null </span><span
+        class="s1">? </span><span class="s0">null </span><span class="s1">: (Packet) clazz.newInstance()</span><span
+        class="s0">;</span><span class="s1">
+    } 
+ 
+    </span><span class="s2">/** 
+     * Used to determine whether the packet needs to be processed immediately or should enter the packet queue. 
+     * 
+     * @return true if the packet should be processed out of order. Conventionally used for setup purposes only. 
+     * Return false if the packet should be processed normally. 
+     */</span><span class="s1"> 
+    </span><span class="s0">public boolean </span><span class="s1">isUrgent() { 
+        </span><span class="s0">return false;</span><span class="s1"> 
+    } 
+ 
+    </span><span class="s2">/** 
+     * Function called to generate the packet data from the byte stream 
+     * 
+     * @param packetBuffer the byte stream containing the packet's data 
+     * @throws IOException 
+     */</span><span class="s1"> 
+    </span><span class="s0">public abstract void </span><span
+        class="s1">readPacketData(PacketBuffer packetBuffer) </span><span class="s0">throws </span><span class="s1">IOException</span><span
+        class="s0">;</span><span class="s1">
+ 
+    </span><span class="s2">/** 
+     * Function to write the packet data into the bytestream using convenience methods in the {@link jonathansmith.dpad.common.network.packet.PacketBuffer} 
+     * class 
+     * 
+     * @param packetBuffer the packet buffer to write the data to 
+     * @throws IOException 
+     */</span><span class="s1"> 
+    </span><span class="s0">public abstract void </span><span
+        class="s1">writePacketData(PacketBuffer packetBuffer) </span><span class="s0">throws </span><span class="s1">IOException</span><span
+        class="s0">;</span><span class="s1">
+ 
+    </span><span class="s2">/** 
+     * Function called to handle the packet after it has been reconstituted from the byte stream 
+     * 
+     * @param networkProtocol a situational network protocol dependent on the state of the network connection. 
+     */</span><span class="s1"> 
+    </span><span class="s0">public abstract void </span><span
+        class="s1">processPacket(INetworkProtocol networkProtocol)</span><span class="s0">;</span><span class="s1">
+ 
+    </span><span class="s2">/** 
+     * Convenience method for debugging that converts the packet into a string 
+     * 
+     * @return summary of the packet 
+     */</span><span class="s1"> 
+    </span><span class="s0">public abstract </span><span class="s1">String payloadToString()</span><span
+        class="s0">;</span><span class="s1">
+} 
+</span></pre>
+</body>
+</html>

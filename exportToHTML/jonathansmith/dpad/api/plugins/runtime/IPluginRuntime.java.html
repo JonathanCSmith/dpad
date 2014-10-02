@@ -1,0 +1,110 @@
+<html>
+<head>
+    <title>IPluginRuntime.java</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+        .s0 { color: rgb(204,120,50); }
+        .s1 { color: rgb(169,183,198); }
+        .s2 { color: rgb(98,151,85); }
+    </style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0">
+    <TR>
+        <TD>
+            <CENTER>
+                <FONT FACE="Arial, Helvetica" COLOR="#000000">
+                    IPluginRuntime.java</FONT>
+            </center>
+        </TD>
+    </TR>
+</TABLE>
+<pre>
+
+<span class="s0">package </span><span class="s1">jonathansmith.dpad.api.plugins.runtime</span><span
+        class="s0">;</span><span class="s1">
+ 
+</span><span class="s0">import </span><span class="s1">java.util.HashSet</span><span class="s0">;</span><span
+        class="s1">
+ 
+</span><span class="s0">import </span><span class="s1">jonathansmith.dpad.api.database.DatasetRecord</span><span
+        class="s0">;</span><span class="s1">
+</span><span class="s0">import </span><span class="s1">jonathansmith.dpad.api.database.ExperimentRecord</span><span
+        class="s0">;</span><span class="s1">
+</span><span class="s0">import </span><span class="s1">jonathansmith.dpad.api.plugins.data.Dataset</span><span
+        class="s0">;</span><span class="s1">
+</span><span class="s0">import </span><span class="s1">jonathansmith.dpad.api.plugins.display.IPluginDisplay</span><span
+        class="s0">;</span><span class="s1">
+</span><span class="s0">import </span><span class="s1">jonathansmith.dpad.api.plugins.events.IEventThread</span><span
+        class="s0">;</span><span class="s1">
+ 
+</span><span class="s2">/** 
+ * Created by Jon on 29/09/2014. 
+ * &lt;p/&gt; 
+ * All accessible methods for plugins 
+ */</span><span class="s1"> 
+</span><span class="s0">public interface </span><span class="s1">IPluginRuntime { 
+ 
+    </span><span class="s2">/** 
+     * Change the current display within the plugin runtime environment 
+     * 
+     * @param pluginDisplay 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">changeDisplay(IPluginDisplay pluginDisplay)</span><span
+        class="s0">;</span><span class="s1">
+ 
+    </span><span class="s2">/** 
+     * Return the main event thread for the plugin environment 
+     * 
+     * @return 
+     */</span><span class="s1"> 
+    IEventThread getEventThread()</span><span class="s0">;</span><span class="s1"> 
+ 
+    </span><span class="s2">/** 
+     * Build standard progressbar display 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">buildProgressbarDisplay()</span><span class="s0">;</span><span
+        class="s1">
+ 
+    </span><span class="s2">/** 
+     * Record an error to the engine 
+     *  
+     * @param errorMessage 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">error(String errorMessage)</span><span class="s0">;</span><span
+        class="s1">
+ 
+    </span><span class="s2">/** 
+     * Submit a dataset to the server 
+     *  
+     * @param dataset 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">sumbitDataset(Dataset dataset)</span><span
+        class="s0">;</span><span class="s1">
+ 
+    </span><span class="s2">/** 
+     * Obtain experiments available to the user 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">getAvailableExperiments()</span><span class="s0">;</span><span
+        class="s1">
+ 
+    </span><span class="s2">/** 
+     * Return lazy loaded datasets (do not contain full information) 
+     *  
+     * @param interestedRecords 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">getDatasetsForExperiments(HashSet&lt;ExperimentRecord&gt; interestedRecords)</span><span
+        class="s0">;</span><span class="s1">
+ 
+    </span><span class="s2">/** 
+     * Fully load datasets 
+     *  
+     * @param lazyLoadedDatasets 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">getFullDatasetInformation(HashSet&lt;DatasetRecord&gt; lazyLoadedDatasets)</span><span
+        class="s0">;</span><span class="s1">
+} 
+</span></pre>
+</body>
+</html>

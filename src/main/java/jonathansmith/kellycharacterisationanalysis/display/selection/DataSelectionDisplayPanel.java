@@ -98,6 +98,7 @@ public class DataSelectionDisplayPanel extends DisplayPanel implements IEventLis
             }
 
             this.singleModel.setData(names);
+            this.table.setVisible(true);
             this.infoText.setText("Please select the experiments that are of interest to you:");
             this.finishButton.setVisible(true);
         }
@@ -129,6 +130,13 @@ public class DataSelectionDisplayPanel extends DisplayPanel implements IEventLis
         if (ae.getSource() == this.finishButton) {
             if (this.state == State.EXPERIMENTS) {
                 LinkedList<String> names = this.singleModel.getSelectedNames();
+                if (names.isEmpty()) {
+                    this.runtime.getEventThread().postEvent(new KellySelectDataFinishEvent(null));
+                    this.core.quitEarly();
+                    this.showModal("No experiments were chosen!");
+                    return;
+                }
+
                 HashSet<ExperimentRecord> interestedRecords = new HashSet<ExperimentRecord>();
                 for (String name : names) {
                     for (Object record : this.records) {

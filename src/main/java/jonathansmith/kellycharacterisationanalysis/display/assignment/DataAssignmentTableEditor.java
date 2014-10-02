@@ -41,10 +41,10 @@ public class DataAssignmentTableEditor extends AbstractCellEditor implements Tab
             case 2:
                 return null;
             case 3:
-                list = this.dependents;
+                list = this.samples;
             case 4:
                 if (column == 4) {
-                    list = this.dependents;
+                    list = this.independents;
                 }
             case 5:
                 if (column == 5) {
