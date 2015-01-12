@@ -1,0 +1,61 @@
+<html>
+<head>
+    <title>IEventThread.java</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+        .s0 { color: rgb(204,120,50); }
+        .s1 { color: rgb(169,183,198); }
+        .s2 { color: rgb(98,151,85); }
+    </style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0">
+    <TR>
+        <TD>
+            <CENTER>
+                <FONT FACE="Arial, Helvetica" COLOR="#000000">
+                    IEventThread.java</FONT>
+            </center>
+        </TD>
+    </TR>
+</TABLE>
+<pre>
+
+<span class="s0">package </span><span class="s1">jonathansmith.dpad.api.plugins.events</span><span
+        class="s0">;</span><span class="s1">
+ 
+</span><span class="s2">/** 
+ * Created by Jon on 23/03/14. 
+ * &lt;p/&gt; 
+ * Methods for subscribing to and posting events 
+ */</span><span class="s1"> 
+</span><span class="s0">public interface </span><span class="s1">IEventThread { 
+ 
+    </span><span class="s2">/** 
+     * Method to add an event listener into the event listener pool 
+     * 
+     * @param listener to add 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">addEventListener(IEventListener listener)</span><span
+        class="s0">;</span><span class="s1">
+ 
+    </span><span class="s2">/** 
+     * Method to remove an event listener from the event listener pool 
+     * 
+     * @param listener to remove 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">removeListener(IEventListener listener)</span><span class="s0">;</span><span
+        class="s1">
+ 
+    </span><span class="s2">/** 
+     * Post an event into the event thread for other listeners to respond to 
+     * 
+     * @param event 
+     */</span><span class="s1"> 
+    </span><span class="s0">void </span><span class="s1">postEvent(Event event)</span><span class="s0">;</span><span
+        class="s1">
+} 
+</span></pre>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<html>
+<head>
+    <title>Task.java</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style type="text/css">
+        .ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+        .s0 { color: rgb(204,120,50); }
+        .s1 { color: rgb(169,183,198); }
+        .s2 { color: rgb(98,151,85); }
+    </style>
+</head>
+<BODY BGCOLOR="#2b2b2b">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#C0C0C0">
+    <TR>
+        <TD>
+            <CENTER>
+                <FONT FACE="Arial, Helvetica" COLOR="#000000">
+                    Task.java</FONT>
+            </center>
+        </TD>
+    </TR>
+</TABLE>
+<pre>
+
+<span class="s0">package </span><span class="s1">jonathansmith.dpad.api.common.engine.executor</span><span
+        class="s0">;</span><span class="s1">
+ 
+</span><span class="s0">import </span><span class="s1">jonathansmith.dpad.api.common.engine.IEngine</span><span
+        class="s0">;</span><span class="s1">
+ 
+</span><span class="s2">/** 
+ * Created by Jon on 19/05/2014. 
+ * &lt;p/&gt; 
+ * A task to be executed in a thread environment. 
+ */</span><span class="s1"> 
+</span><span class="s0">public abstract class </span><span class="s1">Task </span><span class="s0">extends </span><span
+        class="s1">Thread {
+ 
+    </span><span class="s0">protected final </span><span class="s1">IEngine loggingEngine</span><span
+        class="s0">;</span><span class="s1">
+    </span><span class="s0">private final   </span><span class="s1">String  taskName</span><span
+        class="s0">;</span><span class="s1">
+    </span><span class="s0">private boolean </span><span class="s1">isFinished = </span><span
+        class="s0">false;</span><span class="s1">
+ 
+    </span><span class="s2">/** 
+     * Construct the task 
+     * 
+     * @param taskName 
+     * @param engine 
+     */</span><span class="s1"> 
+    </span><span class="s0">public </span><span class="s1">Task(String taskName</span><span class="s0">, </span><span
+        class="s1">IEngine engine) {
+        </span><span class="s0">this</span><span class="s1">.taskName = taskName</span><span class="s0">;</span><span
+        class="s1">
+        </span><span class="s0">this</span><span class="s1">.loggingEngine = engine</span><span class="s0">;</span><span
+        class="s1">
+    } 
+ 
+    </span><span class="s2">/** 
+     * Function called to actually run the task 
+     */</span><span class="s1"> 
+    </span><span class="s0">protected abstract void </span><span class="s1">runTask()</span><span
+        class="s0">;</span><span class="s1">
+ 
+    </span><span class="s2">/** 
+     * Overridable function to kill the task early 
+     */</span><span class="s1"> 
+    </span><span class="s0">protected void </span><span class="s1">killTask() {} 
+ 
+    </span><span class="s2">/** 
+     * Normal runtime called by executors 
+     */</span><span class="s1"> 
+    @Override 
+    </span><span class="s0">public final void </span><span class="s1">run() { 
+        </span><span class="s0">this</span><span class="s1">.runTask()</span><span class="s0">;</span><span class="s1"> 
+        </span><span class="s0">this</span><span class="s1">.setFinished()</span><span class="s0">;</span><span
+        class="s1">
+    } 
+ 
+    </span><span class="s2">/** 
+     * @return a string description of the task name. 
+     */</span><span class="s1"> 
+    </span><span class="s0">public final </span><span class="s1">String getTaskName() { 
+        </span><span class="s0">return this</span><span class="s1">.taskName</span><span class="s0">;</span><span
+        class="s1">
+    } 
+ 
+    </span><span class="s2">/** 
+     * Kill the task when desired 
+     */</span><span class="s1"> 
+    </span><span class="s0">public final void </span><span class="s1">kill() { 
+        </span><span class="s0">this</span><span class="s1">.killTask()</span><span class="s0">;</span><span class="s1"> 
+        </span><span class="s0">this</span><span class="s1">.isFinished = </span><span class="s0">true;</span><span
+        class="s1">
+    } 
+ 
+    </span><span class="s2">/** 
+     * Allows internal markup of when a task is finished. This should be called when the task is finished to 
+     * allow the executor to determine that it is finished 
+     */</span><span class="s1"> 
+    </span><span class="s0">protected final void </span><span class="s1">setFinished() { 
+        </span><span class="s0">this</span><span class="s1">.isFinished = </span><span class="s0">true;</span><span
+        class="s1">
+    } 
+ 
+    </span><span class="s2">/** 
+     * Query the state of the task. 
+     * @return whether the task is finished or not 
+     */</span><span class="s1"> 
+    </span><span class="s0">public final boolean </span><span class="s1">isFinished() { 
+        </span><span class="s0">return this</span><span class="s1">.isFinished</span><span class="s0">;</span><span
+        class="s1">
+    } 
+} 
+</span></pre>
+</body>
+</html>

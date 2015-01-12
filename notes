@@ -1,0 +1,77 @@
+GLOBAL CURRENT TODO:
+- Clean up Users to match experiments
+- Clean up IEventListeners
+- Clean up TODOS
+- Clean up warnings
+
+GLOBAL DELAYED TODO:
+- Messaging System:
+    - Permissions
+    - Message Table
+    - Message Viewer
+    - Message Sorting
+    - Message Permissions
+    - Message Deletion on Handling
+    - Multiple message replies == FIFO ignore other handling
+- On close window, the program is not killed properly
+- Add modal hooks for GUI
+- Cancel on main should return to main not quit
+- Pass pertinent information from properties to file system (i.e. servers and maybe clients can define db path)
+- Network plugins.
+- Plugin version generation from filename
+- Plugin sanity checking when relocating?!
+- PluginManager separation into client and server (Should better manage what functions are specific to each side)
+- Plugin manager thread (server side) acquire specific database connection
+- Plugin database submission
+- Finish plugin database entries, daos and managers
+- Plugin guis
+- Use of ID generic in recordDAO
+- Encrypt on user login
+
+GLOBAL INCREMENTAL TODO:
+- RuntimeNetworkProtocols
+- Reformat local finals to use lowercase + underscores
+- Remove listeners when they die
+- Assess whether event threads need to api accessible
+- ServerHomeDisplay content
+- ClientHomeDisplay content
+- All exit and erroring situations
+
+Global MAYBE:
+- Have a debug variable for logging in threads to prevent cpu + memory usage (MAY NOT IMPLEMENT)
+- White list
+- Black list
+- Config?!
+- allowing servers to blacklist/whitelist ips (not fully implemented).
+- Permission ruleset for db access
+- Can saveAndShutdown + forceShutdown (in engine) be made private. Perhaps also executors?!
+- Generify idle executors
+
+Startup Properties:
+- We cannot generify all of the startup properties into a config GUI as the local case requires server startup to happen first
+
+Task/Executor Handling
+- Tasks should use trace logging
+- Client side executors will be linear and communicate through sessions
+- Server side executors are independent of network communication as all replies should be handled through sessions
+- Idle Executors on the client just sleep, but can be replaced for dedicated cpu tasks to run in the background
+
+Network Handling
+- Network sessions should NEVER hand off database connections!!!
+- NetworkManager should never be directly accessed. Instead session should deal with everything internally
+
+Plugin Handling
+- Plugins are stored both on the client and the server
+- Plugins are distributed globally by the server
+- Client can upload plugins
+- Version strings are parsed using the filename
+- Plugins are added to the database when they are used
+- Plugins that are updated need a way of identifying relevant datasets and updating them
+- Plugins must include an update feature
+- Update feature must be able to handle *generic* datasets from the database
+- Server should identify when a plugin has been updated and start applying the update process in the background (threaded?!)
+- Plugin does not have a separate version setting. It MUST use the filename to ensure correctness
+- Plugin manager on the server must acquire a transient, non-session associated database connection
+
+Notes:
+- GUI is changed through events
