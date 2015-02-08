@@ -10,9 +10,9 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 import org.apache.commons.lang3.Validate;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.util.Version;
 
+import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.ConnectionState;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.handshake.*;
@@ -31,7 +31,7 @@ public class ServerHandshakeNetworkProtocol extends ServerNetworkProtocol implem
     private static final Random LOGIN_KEY_GENERATOR = new Random();
     private static final long   LOGIN_TIMEOUT       = 300;
 
-    private final IEngine        engine;
+    private final Engine engine;
     private final NetworkSession network_session;
     private final boolean        is_local_connection;
     private final byte[] login_key = new byte[4];
@@ -41,7 +41,7 @@ public class ServerHandshakeNetworkProtocol extends ServerNetworkProtocol implem
     private LoginState loginState = LoginState.GREETING;
     private SecretKey secretKey;
 
-    public ServerHandshakeNetworkProtocol(IEngine engine, NetworkSession networkSession, boolean isLocalConnection) {
+    public ServerHandshakeNetworkProtocol(Engine engine, NetworkSession networkSession, boolean isLocalConnection) {
         this.engine = engine;
         this.network_session = networkSession;
         this.is_local_connection = isLocalConnection;

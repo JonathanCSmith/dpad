@@ -2,12 +2,15 @@ package jonathansmith.dpad.server.database;
 
 import org.hibernate.HibernateException;
 
-import jonathansmith.dpad.api.APIAccess;
-import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.database.DatabaseRecord;
 import jonathansmith.dpad.api.database.Record;
 
 import jonathansmith.dpad.common.database.util.RecordList;
+import jonathansmith.dpad.common.platform.Platform;
+
+import jonathansmith.dpad.server.ServerEngine;
+
+import jonathansmith.dpad.DPAD;
 
 /**
  * Created by Jon on 28/05/2014.
@@ -16,13 +19,13 @@ import jonathansmith.dpad.common.database.util.RecordList;
  */
 public abstract class RecordManager<T extends Record> {
 
-    protected final IEngine   engine;
-    protected final RecordDAO database_access_object;
+    protected final ServerEngine engine;
+    protected final RecordDAO    database_access_object;
 
     private final Class<T> clazz;
 
     public RecordManager(RecordDAO dao, Class<T> clazz) {
-        this.engine = APIAccess.getAPI().getServer();
+        this.engine = (ServerEngine) DPAD.getInstance().getEngine(Platform.SERVER);
         this.database_access_object = dao;
         this.clazz = clazz;
     }

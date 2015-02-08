@@ -7,8 +7,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
+import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.network.NetworkSession;
 import jonathansmith.dpad.common.network.packet.Packet;
 import jonathansmith.dpad.common.network.packet.PacketBuffer;
@@ -20,9 +19,9 @@ import jonathansmith.dpad.common.network.packet.PacketBuffer;
  */
 public class MessageDecoder extends ByteToMessageDecoder {
 
-    private final IEngine engine;
+    private final Engine engine;
 
-    public MessageDecoder(IEngine engine) {
+    public MessageDecoder(Engine engine) {
         this.engine = engine;
     }
 

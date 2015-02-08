@@ -4,19 +4,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
-import java.util.LinkedList;
-
-import javax.swing.*;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
 import io.netty.channel.local.LocalAddress;
 
-import jonathansmith.dpad.api.APIAccess;
 import jonathansmith.dpad.api.common.util.Version;
 
-import jonathansmith.dpad.common.API;
 import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.gui.GUIContainer;
 import jonathansmith.dpad.common.gui.startup.StartupTabController;
@@ -36,19 +31,15 @@ import jonathansmith.dpad.server.ServerEngine;
 public class DPAD extends Thread {
 
     private static final int SOFTWARE_VERSION       = 1;
-    private static final int SOFTWARE_MINOR_VERSION = 0;
+    private static final int SOFTWARE_MINOR_VERSION = 3;
     private static final int API_VERSION            = 1;
-    private static final int DATABASE_VERION        = 0;
-    private static final int NETWORK_VERSION        = 0;
+    private static final int DATABASE_VERSION       = 1;
+    private static final int NETWORK_VERSION        = 1;
 
     private static boolean runtimeShutdownFlag = false;
     private static boolean errorFlag           = false;
 
     private static DPAD instance;
-    private final LinkedList<Engine> engines = new LinkedList<Engine>();
-    private ServerEngine serverEngine;
-    private ClientEngine clientEngine;
-
     // JCommander arguments. TODO: Detail these in args TODO: change to defaults
     @Parameter(names = {"-platform"}, converter = PlatformConverter.class, description = "Platform Type")
     private Platform platform         = null;
@@ -60,19 +51,34 @@ public class DPAD extends Thread {
     private boolean  isVerboseLogging = true;
     @Parameter(names = {"-debug"}, description = "Is debug runtime")
     private boolean  debugging        = false;
-
-    private boolean isInitialised = false;
-    private boolean isShutdown    = false;
-
+    private ServerEngine serverEngine  = null;
+    private ClientEngine clientEngine  = null;
+    private boolean      isInitialised = false;
+    private boolean      isShutdown    = false;
     private GUIContainer  gui;
     private SocketAddress platformAddress;
 
     public DPAD() {
+    }
 
+    public static DPAD getInstance() {
+        if (instance == null) {
+            instance = new DPAD();
+        }
+
+        return instance;
     }
 
     /**
      * Main entry point for the DPAD program.
+     * Parameters are pair values.
+     * Parameters are as follows:
+     *      property:                               specifier tag:          possible values:
+     *          runtime type                            -platform               local, client, server
+     *          target ip address                       -ip                     127.0.0.1 (i.e. a valid ip address)
+     *          target port to host OR connect to       -port                   6567 (i.e. a valid port)
+     *          logging verbosity                       -verbose                true or false
+     *          is debug runtime                        -debug                  true or false
      *
      * @param args TODO
      */
@@ -112,25 +118,26 @@ public class DPAD extends Thread {
         }
 
         // GUI Setup - has to be here so that all GUI components get the correct look
-        try {
-            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
-        }
-
-        catch (ClassNotFoundException e) {
-            main.handleError("Look and feel not found", e, false);
-        }
-
-        catch (UnsupportedLookAndFeelException e) {
-            main.handleError("Unsupported look and feel!", e, false);
-        }
-
-        catch (InstantiationException e) {
-            main.handleError("Look and feel instantiate exception", e, false);
-        }
-
-        catch (IllegalAccessException e) {
-            main.handleError("Illegal access for look and feel", e, false);
-        }
+        // TODO: Reintroduce a cross platform look and feel
+//        try {
+//            UIManager.setLookAndFeel("com.seaglasslookandfeel.SeaGlassLookAndFeel");
+//        }
+//
+//        catch (ClassNotFoundException e) {
+//            main.handleError("Look and feel not found", e, false);
+//        }
+//
+//        catch (UnsupportedLookAndFeelException e) {
+//            main.handleError("Unsupported look and feel!", e, false);
+//        }
+//
+//        catch (InstantiationException e) {
+//            main.handleError("Look and feel instantiate exception", e, false);
+//        }
+//
+//        catch (IllegalAccessException e) {
+//            main.handleError("Illegal access for look and feel", e, false);
+//        }
 
         // Conditional setup dialog based on what arguments have been validated
         GUIContainer gui = new GUIContainer(main);
@@ -140,6 +147,7 @@ public class DPAD extends Thread {
             gui.addTab(tab);
             gui.run();
 
+            // Sleep until we have acquired the startup parameters
             while (main.getPlatformSelection() == null && !runtimeShutdownFlag) {
                 try {
                     Thread.sleep(100);
@@ -226,14 +234,6 @@ public class DPAD extends Thread {
         }
     }
 
-    public static DPAD getInstance() {
-        if (instance == null) {
-            instance = new DPAD();
-        }
-
-        return instance;
-    }
-
     public void init(GUIContainer gui) {
         if (this.isInitialised) {
             return;
@@ -262,15 +262,11 @@ public class DPAD extends Thread {
 
     @Override
     public void run() {
-        API api = new API();
-        APIAccess.setAPI(api);
-        api.setGUI(this.gui);
-
+        int engineCount = 0;
         if (this.getPlatformSelection() == Platform.SERVER || this.getPlatformSelection() == Platform.LOCAL) {
-            this.serverEngine.injectVersion(new Version(SOFTWARE_VERSION, API_VERSION, DATABASE_VERION, NETWORK_VERSION, SOFTWARE_MINOR_VERSION));
+            this.serverEngine.injectVersion(new Version(SOFTWARE_VERSION, API_VERSION, DATABASE_VERSION, NETWORK_VERSION, SOFTWARE_MINOR_VERSION));
             this.serverEngine.start();
-            this.engines.add(this.serverEngine);
-            api.setServerEngine(this.serverEngine);
+            engineCount++;
 
             while (!this.serverEngine.isSetup()) {
                 try {
@@ -285,34 +281,40 @@ public class DPAD extends Thread {
         }
 
         if (this.getPlatformSelection() == Platform.CLIENT || this.getPlatformSelection() == Platform.LOCAL) {
-            this.clientEngine.injectVersion(new Version(SOFTWARE_VERSION, API_VERSION, DATABASE_VERION, NETWORK_VERSION, SOFTWARE_MINOR_VERSION));
+            this.clientEngine.injectVersion(new Version(SOFTWARE_VERSION, API_VERSION, DATABASE_VERSION, NETWORK_VERSION, SOFTWARE_MINOR_VERSION));
             this.clientEngine.start();
-            this.engines.add(this.clientEngine);
-            api.setClientEngine(this.clientEngine);
+            engineCount++;
         }
 
-        api.finishAPISetup();
-
+        int shutdownCount;
         while (!runtimeShutdownFlag) {
-            int shutdownCount = 0;
-            for (Engine engine : this.engines) {
-                if (engine.isShuttingDown()) {
-                    shutdownCount++;
-                }
+            shutdownCount = 0;
+            if (this.serverEngine != null && this.serverEngine.isShuttingDown()) {
+                shutdownCount++;
             }
 
-            if (shutdownCount == this.engines.size()) {
+            if (this.clientEngine != null && this.clientEngine.isShuttingDown()) {
+                shutdownCount++;
+            }
+
+            // Both engines are shutdown, escape the while loop
+            if (shutdownCount == engineCount) {
                 runtimeShutdownFlag = true;
             }
 
+            // Wait for the engines to be shutdown. This is a monitor thread.
             else {
                 try {
                     Thread.sleep(100);
                 }
 
                 catch (InterruptedException ex) {
-                    for (Engine engine : this.engines) {
-                        engine.error("Background monitor thread was interrupted. A critical failure has occurred", ex);
+                    if (this.serverEngine != null) {
+                        this.serverEngine.error("Background monitor thread was interrupted. A critical failure has occurred", ex);
+                    }
+
+                    if (this.clientEngine != null) {
+                        this.clientEngine.error("Background monitor thread was interrupted. A critical failure has occurred", ex);
                     }
 
                     this.handleError("Background monitor thread was interrupted. A critical failure has occurred", ex, true);
@@ -320,37 +322,41 @@ public class DPAD extends Thread {
             }
         }
 
-        for (Engine engine : this.engines) {
-            // Theoretically any erroring engine would have shut itself down
-            // TODO: Looks like the engines are never viable at this stage?
-            if (engine.isViable()) {
-                engine.handleShutdown("Exit on main thread.");
+        /*
+         * Handle an external shutdown call - here we need to shutdown everything as there is an application wide
+         * error. However, because the root cause is unknown, we check the viability of each of the engines to determine
+         * the shutdown type that should be performed.
+         */
+        if (this.serverEngine != null && !this.serverEngine.isShuttingDown()) {
+            if (this.serverEngine.isViable()) {
+                this.serverEngine.saveAndShutdown();
+            }
+
+            else {
+                this.serverEngine.forceShutdown();
+            }
+        }
+
+        if (this.clientEngine != null && !this.clientEngine.isShuttingDown()) {
+            if (this.clientEngine.isViable()) {
+                this.clientEngine.saveAndShutdown();
+            }
+
+            else {
+                this.clientEngine.forceShutdown();
             }
         }
 
         this.isShutdown = true;
     }
 
-    public Platform getPlatformSelection() {
-        return this.platform;
-    }
-
-    public void setPlatformSelection(Platform platform) {
-        this.platform = platform;
-    }
-
-    public void setPlatformAddress(SocketAddress address) {
-        this.platformAddress = address;
-    }
-
-    public String getIPAddress() {
-        return this.ipAddress;
-    }
-
-    public int getPortAddress() {
-        return this.port;
-    }
-
+    /**
+     * Handle an error that propagates to all runtimes.
+     *
+     * @param errorHeader     the error information associated with a possible exception
+     * @param ex              an optional exception for stack tracing
+     * @param runtimeQuitFlag whether or not this error is fatal for all the runtimes
+     */
     public void handleError(String errorHeader, Exception ex, boolean runtimeQuitFlag) {
         System.out.println(errorHeader);
         if (ex != null) {
@@ -361,18 +367,107 @@ public class DPAD extends Thread {
         runtimeShutdownFlag |= runtimeQuitFlag;
     }
 
+    /**
+     * Call to begin shutting down all the runtimes
+     */
     public void shutdownAll() {
         runtimeShutdownFlag = true;
     }
 
-    public boolean isVerboseLogging() {
-        return this.isVerboseLogging;
+    /**
+     * Get the current running mode for this application instance.
+     *
+     * @return {@link jonathansmith.dpad.common.platform.Platform}
+     */
+    public Platform getPlatformSelection() {
+        return this.platform;
     }
 
+    /**
+     * Set the running mode for this application instance. Does nothing once the application is running.
+     *
+     * @param platform {@link jonathansmith.dpad.common.platform.Platform}
+     */
+    public void setPlatformSelection(Platform platform) {
+        if (this.isInitialised) {
+            return;
+        }
+
+        this.platform = platform;
+    }
+
+    /**
+     * Get a string representation of the application's ip address. Depending on the context, this is either the
+     * ip address being hosted on, or connecting to. In a local context the ip is 127.0.0.1
+     * @return
+     */
+    public String getIPAddress() {
+        return this.ipAddress;
+    }
+
+    /**
+     * Return an integer representation of the applications port address. Depending on the context this is either the
+     * port being hosted on or connecting to.
+     * @return
+     */
+    public int getPortAddress() {
+        return this.port;
+    }
+
+    /**
+     * Set the platform address. Note this will do nothing once the application is running fully.
+     *
+     * @param address
+     */
+    public void setPlatformAddress(SocketAddress address) {
+        if (this.isInitialised) {
+            return;
+        }
+
+        this.platformAddress = address;
+    }
+
+    /**
+     * Return the core GUI Container for the current application.
+     *
+     * @return
+     */
     public GUIContainer getGUI() {
         return this.gui;
     }
 
+    /**
+     * Return the engine based upon the platform.
+     *
+     * @param platform see {@link jonathansmith.dpad.common.platform.Platform}
+     * @return the {@link jonathansmith.dpad.common.engine.Engine} for the Platform. It can be null if that portion of
+     * the platform is not running.
+     */
+    public Engine getEngine(Platform platform) {
+        switch (platform) {
+            case SERVER:
+                return this.serverEngine;
+
+            case CLIENT:
+                return this.clientEngine;
+
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Return whether the logging should be verbose.
+     * @return
+     */
+    public boolean isVerboseLogging() {
+        return this.isVerboseLogging;
+    }
+
+    /**
+     * Return whether the software is running in debug mode.
+     * @return
+     */
     public boolean isDebugging() {
         return this.debugging;
     }

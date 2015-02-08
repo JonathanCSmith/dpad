@@ -258,6 +258,10 @@ public class ServerNetworkSession extends NetworkSession {
     }
 
     public void handleNewDataset(Dataset dataset) {
+        if (dataset == null) {
+            return;
+        }
+
         DatasetRecord datasetRecord = new DatasetRecord();
         SampleRecord sampleRecord = new SampleRecord();
         sampleRecord.setSampleName(dataset.getSampleName());
@@ -292,6 +296,10 @@ public class ServerNetworkSession extends NetworkSession {
     }
 
     public void retrieveDatasetsFromExperiments(HashSet<ExperimentRecord> interestedRecords) {
+        if (interestedRecords.isEmpty()) {
+            return;
+        }
+
         HashSet<DatasetRecord> datasets = new HashSet<DatasetRecord>();
         for (ExperimentRecord record : interestedRecords) {
             Set<DatasetRecord> nonHash = ExperimentRecordManager.getInstance().fetchDatasets(this.connection, record).getDatasets();
@@ -301,6 +309,10 @@ public class ServerNetworkSession extends NetworkSession {
     }
 
     public void retrieveFullDatasetInformation(HashSet<DatasetRecord> interestedRecords) {
+        if (interestedRecords.isEmpty()) {
+            return;
+        }
+
         HashSet<DatasetRecord> fullDatasets = new HashSet<DatasetRecord>();
         for (DatasetRecord record : interestedRecords) {
             fullDatasets.add(DatasetRecordManager.getInstance().fetchFull(this.connection, record));

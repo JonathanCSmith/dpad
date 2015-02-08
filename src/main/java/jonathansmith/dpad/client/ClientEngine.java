@@ -32,7 +32,7 @@ public class ClientEngine extends Engine {
         DPAD.getInstance().getGUI().addTab(this.engine_tab_controller);
 
         // Add the client startup executor as the first program to be run. Ensuring that everything is setup before anything else is performed.
-        this.setProposedExecutorWithoutWaiting(new ClientStartupExecutor(this, this.address));
+        this.setProposedExecutor(new ClientStartupExecutor(this, this.address));
         this.executor = new ClientIdleExecutor(this);
     }
 

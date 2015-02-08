@@ -82,7 +82,7 @@ public class LoadDataPanel extends DisplayPanel implements IEventListener, ListS
             case REFRESH_PLUGINS:
                 // TODO: Convert to networkable plugin infrastructure
                 if (false) {
-                    this.engine.setAndWaitForProposedExecutor(new PluginSelectionExecutor(this.engine, PluginSelectionExecutor.PluginType.LOADING, this.display));
+                    this.engine.setProposedExecutor(new PluginSelectionExecutor(this.engine, PluginSelectionExecutor.PluginType.LOADING, this.display));
                 }
 
                 // TODO: Remove
@@ -125,7 +125,7 @@ public class LoadDataPanel extends DisplayPanel implements IEventListener, ListS
                 }
 
                 if (plugin != null) {
-                    this.engine.setAndWaitForProposedExecutor(new PluginRuntimeExecutor(this.engine, plugin));
+                    this.engine.setProposedExecutor(new PluginRuntimeExecutor(this.engine, plugin));
                 }
             }
         }

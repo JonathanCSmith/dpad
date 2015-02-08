@@ -38,7 +38,7 @@ public class ServerEngine extends Engine {
         DPAD.getInstance().getGUI().addTab(this.engine_tab_controller);
 
         // Add the server startup executor as the first program to be run. Ensuring that everything is setup before anything else is performed.
-        this.setProposedExecutorWithoutWaiting(new ServerStartupExecutor(this, this.address));
+        this.setProposedExecutor(new ServerStartupExecutor(this, this.address));
         this.executor = new ServerIdleExecutor(this);
     }
 

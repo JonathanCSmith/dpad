@@ -53,14 +53,14 @@ public class SetupHibernateTask extends Task {
         if (this.configTask.getServerSetupConfiguration().isNewServer()) {
             UUID suuuid = UUID.nameUUIDFromBytes(this.configTask.getServerSetupConfiguration().getSuperUsername().getBytes());
             if (new File(this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase_" + suuuid.toString() + ".mv.db").exists()) {
-                throw new UnsupportedOperationException(); // TODO MAYBE: Move to a better error
+                throw new UnsupportedOperationException("A database with this username already exists."); // TODO MAYBE: Move to a better error
             }
         }
 
         else {
             UUID suuuid = UUID.nameUUIDFromBytes(this.configTask.getServerSetupConfiguration().getSuperUsername().getBytes());
             if (!new File(this.engine.getFileSystem().getDatabaseDirectory() + "/DPADDatabase_" + suuuid.toString() + ".mv.db").exists()) {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("Cannot find the specified database. This is a fatal error.");
             }
         }
 

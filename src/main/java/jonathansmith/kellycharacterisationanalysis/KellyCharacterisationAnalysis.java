@@ -65,7 +65,7 @@ public class KellyCharacterisationAnalysis implements IAnalyserPlugin {
     }
 
     public HashSet<DatasetRecord> getLazyLoadedDatasets() {
-        return lazyLoadedDatasets;
+        return this.lazyLoadedDatasets;
     }
 
     public void setLazyLoadedDatasets(HashSet<DatasetRecord> lazyLoadedDatasets) {

@@ -1,6 +1,6 @@
 package jonathansmith.dpad.common.engine.executor;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.common.engine.Engine;
 
 /**
  * Created by Jon on 19/05/2014.
@@ -11,7 +11,7 @@ public class IdleTask extends Task {
 
     private static final String TASK_NAME = "Idle";
 
-    public IdleTask(IEngine engine) {
+    public IdleTask(Engine engine) {
         super(TASK_NAME, engine);
     }
 

@@ -29,6 +29,8 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
 
     private File dataFile = null;
 
+    private boolean isNewServer = false;
+
     private JRadioButton   radioButton1;
     private JRadioButton   radioButton2;
     private JPanel         contentPane;
@@ -125,7 +127,7 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
                     this.configuration.save(this.engine);
                 }
 
-                ServerStartupProperties configuration = new ServerStartupProperties(this.buttonGroup1.isSelected(this.radioButton1.getModel()), this.username.getText(), new String(this.pwd.getPassword()), false /* TODO: this.buttonGroup1.isSelected(this.radioButton1.getModel()) && this.requireUsersToBeCheckBox.isSelected() */);
+                ServerStartupProperties configuration = new ServerStartupProperties(this.isNewServer, this.username.getText(), new String(this.pwd.getPassword()), false /* TODO: this.buttonGroup1.isSelected(this.radioButton1.getModel()) && this.requireUsersToBeCheckBox.isSelected() */);
                 this.engine.getEventThread().postEvent(new ServerStartupPropertiesFinishEvent(configuration));
             }
         }
@@ -143,6 +145,7 @@ public class ServerStartupPropertiesPanel extends DisplayPanel implements Action
     }
 
     private void radioSwitch(boolean state) {
+        this.isNewServer = state;
         this.pleaseEnterTheAppropriateTextField.setVisible(true);
         this.superUserText.setVisible(true);
         this.username.setText("");

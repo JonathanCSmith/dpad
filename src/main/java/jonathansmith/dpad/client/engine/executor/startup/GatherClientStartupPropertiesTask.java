@@ -3,7 +3,6 @@ package jonathansmith.dpad.client.engine.executor.startup;
 import java.util.ArrayList;
 import java.util.List;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.plugins.events.Event;
 import jonathansmith.dpad.api.plugins.events.IEventListener;
 
@@ -31,7 +30,7 @@ public class GatherClientStartupPropertiesTask extends Task implements IEventLis
     private boolean isWaiting = true;
     private boolean isKilled  = false;
 
-    public GatherClientStartupPropertiesTask(IEngine engine) {
+    public GatherClientStartupPropertiesTask(ClientEngine engine) {
         super(TASK_NAME, engine);
     }
 

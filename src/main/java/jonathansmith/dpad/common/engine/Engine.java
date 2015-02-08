@@ -4,7 +4,6 @@ import java.net.SocketAddress;
 
 import org.slf4j.Logger;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.executor.IExecutor;
 import jonathansmith.dpad.api.common.util.Version;
 import jonathansmith.dpad.api.plugins.events.IEventThread;
@@ -25,7 +24,7 @@ import jonathansmith.dpad.DPAD;
  * <p/>
  * Parent class for all runnable engines in the DPAD framework
  */
-public abstract class Engine extends Thread implements IEngine {
+public abstract class Engine extends Thread {
 
     protected final EngineTabController engine_tab_controller;
     protected final SocketAddress       address;
@@ -35,9 +34,6 @@ public abstract class Engine extends Thread implements IEngine {
     private boolean  hasError            = false;
     private boolean  shutdownFlag        = false;
     private boolean  isSetup             = false;
-    private boolean  fileSystemSetup     = false;
-    private boolean  networkManagerSetup = false;
-    private boolean  pluginManagerSetup  = false;
     private Executor currentExecutor     = null;
     private Executor proposedExecutor    = null;
 
@@ -155,10 +151,11 @@ public abstract class Engine extends Thread implements IEngine {
         return this.engine_tab_controller;
     }
 
-    public Logger getLogger() {
-        return this.logger;
-    }
-
+    /**
+     * Set the logger for the engine
+     *
+     * @param logger
+     */
     public void setLogger(Logger logger) {
         if (this.logger != null) {
             this.error("Cannot change loggers once they are set!", null);
@@ -168,63 +165,101 @@ public abstract class Engine extends Thread implements IEngine {
         this.logger = logger;
     }
 
+    /**
+     * Get the current filesystem for the engine. Can be null
+     *
+     * @return
+     */
     public FileSystem getFileSystem() {
         return this.fileSystem;
     }
 
+    /**
+     * Set the current filesystem for the engine.
+     *
+     * @param fileSystem
+     */
     public void setFileSystem(FileSystem fileSystem) {
-        if (fileSystem == null || this.fileSystemSetup) {
+        if (fileSystem == null || this.fileSystem != null) {
             this.error("Cannot change the filesystem once it has been set!", null);
             return;
         }
 
         this.fileSystem = fileSystem;
-        this.fileSystemSetup = true;
 
         this.setPluginManager(new PluginManager(fileSystem.getPluginDirectory().getAbsolutePath(), fileSystem.getUpdateDirectory().getAbsolutePath(), this));
     }
 
+    /**
+     * Get the current plugin manager. Can be null
+     *
+     * @return
+     */
     public PluginManager getPluginManager() {
         return this.pluginManager;
     }
 
+    /**
+     * Set the current plugin manager.
+     *
+     * @param pluginManagerThread
+     */
     public void setPluginManager(PluginManager pluginManagerThread) {
-        if (pluginManagerThread == null || this.pluginManagerSetup) {
+        if (pluginManagerThread == null || this.pluginManager != null) {
             this.error("Cannot change the plugin manager once it has been set!", null);
             return;
         }
 
         this.pluginManager = pluginManagerThread;
-        this.pluginManagerSetup = true;
     }
 
+    /**
+     * Return the current network manager. Can be null
+     *
+     * @return
+     */
     protected NetworkManager getNetworkManager() {
         return this.networkManager;
     }
 
+    /**
+     * Set the current network manager. Cannot be changed once it has been established
+     *
+     * @param networkManager
+     */
     public void setNetworkManager(NetworkManager networkManager) {
-        if (networkManager == null || this.networkManagerSetup) {
+        if (networkManager == null || this.networkManager != null) {
             this.error("Cannot change the network manager once it has been set!", null);
             return;
         }
 
         this.networkManager = networkManager;
-        this.networkManagerSetup = true;
     }
 
+    /**
+     * Return the current executor
+     *
+     * @return
+     */
     public IExecutor getCurrentExecutor() {
         return this.currentExecutor;
     }
 
-    private void setCurrentExecutor(Executor op) {
-        this.currentExecutor = op;
-    }
-
+    /**
+     * Return the current proposed executor. Can be null!
+     *
+     * @return
+     */
     private Executor getProposedExecutor() {
         return this.proposedExecutor;
     }
 
-    public void setProposedExecutorWithoutWaiting(Executor op) {
+    /**
+     * Set a new executor for the engine. It will override and existing executors waiting in the wings.
+     *
+     * @param op
+     */
+    public void setProposedExecutor(Executor op) {
         if (this.proposedExecutor != null) {
             this.error("An executor has been overridden, this is a program error that is likely due to concurrency issues...", null);
         }
@@ -232,49 +267,70 @@ public abstract class Engine extends Thread implements IEngine {
         this.proposedExecutor = op;
     }
 
-    public void setAndWaitForProposedExecutor(Executor op) {
-        this.setProposedExecutorWithoutWaiting(op);
-//        while (!op.isExecuting() && !op.hasFinished()) {
-//            try {
-//                Thread.sleep(5);
-//            }
-//
-//            catch (InterruptedException ex) {
-//
-//            }
-//        }
-    }
-
+    /**
+     * Return whether or not the engine has an error
+     *
+     * @return
+     */
     public boolean hasErrored() {
         return this.hasError;
     }
 
+    /**
+     * Return whether or not the engine is currently shutting down or is shut down
+     *
+     * @return
+     */
     public boolean isShuttingDown() {
         return this.shutdownFlag;
     }
 
-    @Override
+    /**
+     * Return whether or not the IEngine has been setup. Until this returns true behaviour cannot be guaranteed.
+     *
+     * @return is this setup
+     */
     public boolean isSetup() {
         return this.isSetup;
     }
 
+    /**
+     * Set whether the engine is setup. Cannot be changed once the engine has been setup once
+     */
     public void setSetupFinished() {
+        if (this.isSetup) {
+            return;
+        }
+
         this.isSetup = true;
     }
 
-    @Override
+    /**
+     * Return the version of this engine. Includes the network protocol version string for comparing client / server compatibility
+     *
+     * @return String version information
+     */
     public Version getVersion() {
         return this.version;
     }
 
-    @Override
+    /**
+     * Return the event thread for the engine
+     *
+     * @return {@link jonathansmith.dpad.api.plugins.events.IEventThread} the event thread used by the current engine
+     */
     public IEventThread getEventThread() {
         return this.event_thread;
     }
 
-    @Override
+    /**
+     * Log a trace with a possible exception
+     *
+     * @param message
+     * @param e
+     */
     public synchronized void trace(String message, Throwable e) {
-        Logger logger = this.getLogger();
+        Logger logger = this.logger;
         if (logger != null) {
             if (e != null) {
                 logger.trace(message, e);
@@ -286,9 +342,14 @@ public abstract class Engine extends Thread implements IEngine {
         }
     }
 
-    @Override
+    /**
+     * Log debug information with a possible exception
+     *
+     * @param message
+     * @param e
+     */
     public synchronized void debug(String message, Throwable e) {
-        Logger logger = this.getLogger();
+        Logger logger = this.logger;
         if (logger != null) {
             if (e != null) {
                 logger.debug(message, e);
@@ -300,9 +361,14 @@ public abstract class Engine extends Thread implements IEngine {
         }
     }
 
-    @Override
+    /**
+     * Log info with a possible exception
+     *
+     * @param message
+     * @param e
+     */
     public synchronized void info(String message, Throwable e) {
-        Logger logger = this.getLogger();
+        Logger logger = this.logger;
         if (logger != null) {
             if (e != null) {
                 logger.info(message, e);
@@ -314,9 +380,14 @@ public abstract class Engine extends Thread implements IEngine {
         }
     }
 
-    @Override
+    /**
+     * Log a warning with a possible exception
+     *
+     * @param message
+     * @param e
+     */
     public synchronized void warn(String message, Throwable e) {
-        Logger logger = this.getLogger();
+        Logger logger = this.logger;
         if (logger != null) {
             if (e != null) {
                 logger.warn(message, e);
@@ -328,9 +399,14 @@ public abstract class Engine extends Thread implements IEngine {
         }
     }
 
-    @Override
+    /**
+     * Log an error with a possible exception
+     *
+     * @param message
+     * @param e
+     */
     public synchronized void error(String message, Throwable e) {
-        Logger logger = this.getLogger();
+        Logger logger = this.logger;
         if (logger != null) {
             if (e != null) {
                 logger.error(message, e);
@@ -342,13 +418,22 @@ public abstract class Engine extends Thread implements IEngine {
         }
     }
 
-    @Override
+    /**
+     * Handle an error that will cause this engine to shutdown
+     *
+     * @param message
+     * @param e
+     */
     public synchronized void handleError(String message, Throwable e) {
         this.error(message, e);
         this.hasError = true;
     }
 
-    @Override
+    /**
+     * Causes a shutdown of the engine with full saving.
+     *
+     * @param exitMessage debug shutdown message
+     */
     public synchronized void handleShutdown(String exitMessage) {
         this.debug(exitMessage, null);
         this.shutdownFlag = true;

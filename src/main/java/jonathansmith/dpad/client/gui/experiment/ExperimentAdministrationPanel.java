@@ -160,7 +160,7 @@ public class ExperimentAdministrationPanel extends DisplayPanel implements IEven
 
                 this.engine.getEventThread().postEvent(new ExperimentToolbarEvent(ExperimentToolbarEvent.ToolbarStatus.RESET));
 
-                this.engine.setAndWaitForProposedExecutor(new ExperimentServerResponseExecutor(this.engine, this.display));
+                this.engine.setProposedExecutor(new ExperimentServerResponseExecutor(this.engine, this.display));
                 this.engine.getSession().scheduleOutboundPacket(new ExperimentAdministrationPacket(ExperimentAdministrationState.NEW_EXPERIMENT, record), new GenericFutureListener[0]);
             }
         }
@@ -173,7 +173,7 @@ public class ExperimentAdministrationPanel extends DisplayPanel implements IEven
             this.engine.getEventThread().postEvent(new ExperimentToolbarEvent(ExperimentToolbarEvent.ToolbarStatus.RESET));
 
             ExperimentRecord record = ((ExperimentListModel) this.experimentList.getModel()).getRecord(this.experimentList.getSelectedIndex());
-            this.engine.setAndWaitForProposedExecutor(new ExperimentServerResponseExecutor(this.engine, this.display));
+            this.engine.setProposedExecutor(new ExperimentServerResponseExecutor(this.engine, this.display));
             this.engine.getSession().scheduleOutboundPacket(new ExperimentAdministrationPacket(ExperimentAdministrationState.SETTING_CURRENT_EXPERIMENT, record), new GenericFutureListener[0]);
         }
 

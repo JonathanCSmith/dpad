@@ -1,7 +1,6 @@
 package jonathansmith.dpad.common.engine.executor;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
+import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.engine.event.EventThread;
 
 /**
@@ -13,7 +12,7 @@ public class EventThreadStartTask extends Task {
 
     private static final String TASK_NAME = "Event thread setup";
 
-    public EventThreadStartTask(IEngine engine) {
+    public EventThreadStartTask(Engine engine) {
         super(TASK_NAME, engine);
     }
 

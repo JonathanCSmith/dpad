@@ -1,6 +1,5 @@
 package jonathansmith.dpad.client.engine.executor.user;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.events.ProgressBarUpdateEvent;
 
 import jonathansmith.dpad.common.engine.executor.Task;
@@ -18,7 +17,7 @@ public class CreateUserWaitDisplayTask extends Task {
 
     private static final String TASK_NAME = "Create User Wait Display";
 
-    public CreateUserWaitDisplayTask(IEngine engine) {
+    public CreateUserWaitDisplayTask(ClientEngine engine) {
         super(TASK_NAME, engine);
     }
 

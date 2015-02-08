@@ -1,6 +1,6 @@
 package jonathansmith.dpad.common.engine.executor;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.common.engine.Engine;
 
 /**
  * Created by Jon on 19/05/2014.
@@ -9,8 +9,8 @@ import jonathansmith.dpad.api.common.engine.IEngine;
  */
 public abstract class Task extends Thread {
 
-    protected final IEngine loggingEngine;
-    private final   String  taskName;
+    protected final Engine loggingEngine;
+    private final   String taskName;
     private boolean isFinished = false;
 
     /**
@@ -19,7 +19,7 @@ public abstract class Task extends Thread {
      * @param taskName
      * @param engine
      */
-    public Task(String taskName, IEngine engine) {
+    public Task(String taskName, Engine engine) {
         this.taskName = taskName;
         this.loggingEngine = engine;
     }

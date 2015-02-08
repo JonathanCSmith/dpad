@@ -101,6 +101,10 @@ public class GUIContainer extends JFrame implements IGUIController, WindowListen
         }
 
         int index = this.tabs.indexOf(tab);
+        if (index == -1) {
+            return;
+        }
+
         this.tabs.remove(tab);
         this.tabContainer.removeTabAt(index);
     }

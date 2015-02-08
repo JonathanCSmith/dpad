@@ -71,7 +71,7 @@ public class WaitForDataSelectionTask implements IPluginTask, IEventListener {
     @Override
     public void onEventReceived(Event event) {
         this.isWaiting = false;
-        if (((KellySelectDataFinishEvent) event).getInterestedRecords() == null) {
+        if (((KellySelectDataFinishEvent) event).getInterestedRecords() == null || ((KellySelectDataFinishEvent) event).getInterestedRecords().isEmpty()) {
             this.core.quitEarly();
         }
 

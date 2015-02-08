@@ -82,7 +82,7 @@ public class AnalyseDataPanel extends DisplayPanel implements IEventListener, Li
             case REFRESH_PLUGINS:
                 // TODO: Convert to networkable plugin infrastructure
                 if (false) {
-                    this.engine.setAndWaitForProposedExecutor(new PluginSelectionExecutor(this.engine, PluginSelectionExecutor.PluginType.ANALYSING, this.display));
+                    this.engine.setProposedExecutor(new PluginSelectionExecutor(this.engine, PluginSelectionExecutor.PluginType.ANALYSING, this.display));
                 }
 
                 // TODO: Remove
@@ -125,7 +125,7 @@ public class AnalyseDataPanel extends DisplayPanel implements IEventListener, Li
                 }
 
                 if (plugin != null) {
-                    this.engine.setAndWaitForProposedExecutor(new PluginRuntimeExecutor(this.engine, plugin));
+                    this.engine.setProposedExecutor(new PluginRuntimeExecutor(this.engine, plugin));
                 }
             }
         }

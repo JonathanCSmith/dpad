@@ -1,4 +1,4 @@
-package jonathansmith.kellycharacterisationanalysis.display.selection;
+package jonathansmith.kellycharacterisationwithod.display.selection;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,8 +18,7 @@ import jonathansmith.dpad.api.plugins.events.Event;
 import jonathansmith.dpad.api.plugins.events.IEventListener;
 import jonathansmith.dpad.api.plugins.runtime.IPluginRuntime;
 
-import jonathansmith.kellycharacterisationanalysis.KellyCharacterisationAnalysis;
-import jonathansmith.kellycharacterisationanalysis.events.KellySelectDataFinishEvent;
+import jonathansmith.kellycharacterisationwithod.KellyCharacterisationWithOD;
 
 /**
  * Created by Jon on 22/07/2014.
@@ -36,8 +35,8 @@ public class DataSelectionDisplayPanel extends DisplayPanel implements IEventLis
         EVENTS.add(DatasetsArrivalEvent.class);
     }
 
-    private final KellyCharacterisationAnalysis core;
-    private final IPluginRuntime                runtime;
+    private final KellyCharacterisationWithOD parent;
+    private final IPluginRuntime              runtime;
 
     private State state = State.EXPERIMENTS;
 
@@ -50,8 +49,8 @@ public class DataSelectionDisplayPanel extends DisplayPanel implements IEventLis
     private JTable     table;
     private JButton    finishButton;
 
-    public DataSelectionDisplayPanel(KellyCharacterisationAnalysis core, IPluginRuntime runtime) {
-        this.core = core;
+    public DataSelectionDisplayPanel(KellyCharacterisationWithOD parent, IPluginRuntime runtime) {
+        this.parent = parent;
         this.runtime = runtime;
 
         this.table.setVisible(false);
@@ -132,7 +131,7 @@ public class DataSelectionDisplayPanel extends DisplayPanel implements IEventLis
                 LinkedList<String> names = this.singleModel.getSelectedNames();
                 if (names.isEmpty()) {
                     this.runtime.getEventThread().postEvent(new KellySelectDataFinishEvent(null));
-                    this.core.quitEarly();
+                    this.parent.quitEarly();
                     this.showModal("No experiments were chosen!");
                     return;
                 }
@@ -157,7 +156,7 @@ public class DataSelectionDisplayPanel extends DisplayPanel implements IEventLis
                 LinkedList<String> samples = this.multiModel.getSelectedSamples();
                 if (samples.isEmpty()) {
                     this.runtime.getEventThread().postEvent(new KellySelectDataFinishEvent(null));
-                    this.core.quitEarly();
+                    this.parent.quitEarly();
                     this.showModal("No datasets were selected...");
                     return;
                 }

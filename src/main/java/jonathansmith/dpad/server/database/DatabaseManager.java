@@ -7,7 +7,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.common.engine.Engine;
 
 import jonathansmith.dpad.server.ServerEngine;
 import jonathansmith.dpad.server.network.session.ServerNetworkSession;
@@ -23,14 +23,14 @@ public class DatabaseManager {
 
     private final HashMap<UUID, DatabaseConnection> connections = new HashMap<UUID, DatabaseConnection>();
 
-    private final IEngine        engine;
+    private final Engine engine;
     private final SessionFactory sessionFactory;
 
     private DatabaseConnection serverConnection;
 
     private boolean isShuttingDown = false;
 
-    public DatabaseManager(IEngine engine, SessionFactory sessionFactory) {
+    public DatabaseManager(Engine engine, SessionFactory sessionFactory) {
         if (instance != null) {
             throw new RuntimeException("Cannot create multiple Database Managers!");
         }
@@ -75,6 +75,8 @@ public class DatabaseManager {
                 this.engine.error("Could not close database connection", ex);
             }
         }
+
+        this.connections.clear();
 
         try {
             this.serverConnection.closeSession(force);

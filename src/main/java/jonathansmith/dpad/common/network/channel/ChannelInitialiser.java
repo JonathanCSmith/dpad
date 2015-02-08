@@ -2,7 +2,7 @@ package jonathansmith.dpad.common.network.channel;
 
 import io.netty.channel.ChannelInitializer;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.common.engine.Engine;
 
 /**
  * Created by Jon on 26/03/14.
@@ -11,9 +11,9 @@ import jonathansmith.dpad.api.common.engine.IEngine;
  */
 public abstract class ChannelInitialiser extends ChannelInitializer {
 
-    protected final IEngine engine;
+    protected final Engine engine;
 
-    public ChannelInitialiser(IEngine engine) {
+    public ChannelInitialiser(Engine engine) {
         this.engine = engine;
     }
 }

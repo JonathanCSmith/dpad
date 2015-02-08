@@ -12,7 +12,6 @@ import net.xeoh.plugins.base.impl.PluginManagerFactory;
 import net.xeoh.plugins.base.util.JSPFProperties;
 import net.xeoh.plugins.base.util.PluginManagerUtil;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.database.AnalysingPluginRecord;
 import jonathansmith.dpad.api.database.LoadingPluginRecord;
 import jonathansmith.dpad.api.plugins.IAnalyserPlugin;
@@ -21,6 +20,7 @@ import jonathansmith.dpad.api.plugins.IPlugin;
 import jonathansmith.dpad.api.plugins.records.IPluginRecord;
 
 import jonathansmith.dpad.common.database.util.RecordList;
+import jonathansmith.dpad.common.engine.Engine;
 
 /**
  * Created by Jon on 27/05/2014.
@@ -41,9 +41,9 @@ public class PluginManager extends Thread {
     private final List<IPlugin>                in_use_plugins                = new LinkedList<IPlugin>();
     private final JSPFProperties               plugin_manager_properties     = new JSPFProperties();
 
-    private final String  plugin_directory;
-    private final String  update_directory;
-    private final IEngine engine;
+    private final String plugin_directory;
+    private final String update_directory;
+    private final Engine engine;
 
     private boolean hasError       = false;
     private boolean isAlive        = false;
@@ -53,14 +53,14 @@ public class PluginManager extends Thread {
     private net.xeoh.plugins.base.PluginManager manager;
     private PluginManagerUtil                   utilities;
 
-    public PluginManager(String pluginDir, String updateDir, IEngine engine) {
+    public PluginManager(String pluginDir, String updateDir, Engine engine) {
         this.plugin_directory = pluginDir;
         this.update_directory = updateDir;
         this.engine = engine;
 
         this.plugin_manager_properties.setProperty(net.xeoh.plugins.base.PluginManager.class, "cache.enabled", "true");
         this.plugin_manager_properties.setProperty(net.xeoh.plugins.base.PluginManager.class, "cache.mode", "weak");
-        this.plugin_manager_properties.setProperty(net.xeoh.plugins.base.PluginManager.class, "cache.file", "jspf.cache");
+        this.plugin_manager_properties.setProperty(net.xeoh.plugins.base.PluginManager.class, "cache.file", engine.getFileSystem().getPluginDirectory().getAbsolutePath());
 
         this.manager = PluginManagerFactory.createPluginManager(this.plugin_manager_properties);
         this.utilities = new PluginManagerUtil(this.manager);

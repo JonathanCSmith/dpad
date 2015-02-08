@@ -81,7 +81,7 @@ public class ExperimentAdministrationToolbar extends DisplayPanel implements Act
             this.loadExperimentButton.setVisible(false);
 
             this.engine.getSession().scheduleOutboundPacket(new ExperimentAdministrationPacket(ExperimentAdministrationState.REQUESTING_EXPERIMENTS), new GenericFutureListener[0]);
-            this.engine.setAndWaitForProposedExecutor(new ExperimentServerResponseExecutor(this.engine, this.display));
+            this.engine.setProposedExecutor(new ExperimentServerResponseExecutor(this.engine, this.display));
         }
 
         else if (ae.getSource() == this.backButton) {

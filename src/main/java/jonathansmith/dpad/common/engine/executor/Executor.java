@@ -2,7 +2,6 @@ package jonathansmith.dpad.common.engine.executor;
 
 import java.util.LinkedList;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
 import jonathansmith.dpad.api.common.engine.executor.IExecutor;
 
 import jonathansmith.dpad.common.engine.Engine;
@@ -14,7 +13,7 @@ import jonathansmith.dpad.common.engine.Engine;
  */
 public abstract class Executor extends Thread implements IExecutor, Thread.UncaughtExceptionHandler {
 
-    protected final IEngine engine;
+    protected final Engine engine;
 
     private final LinkedList<Task> task_list = new LinkedList<Task>();
 

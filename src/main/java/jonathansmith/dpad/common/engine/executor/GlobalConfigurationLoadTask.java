@@ -2,8 +2,7 @@ package jonathansmith.dpad.common.engine.executor;
 
 import java.io.File;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
-
+import jonathansmith.dpad.common.engine.Engine;
 import jonathansmith.dpad.common.engine.io.FileSystem;
 import jonathansmith.dpad.common.engine.util.configuration.Configuration;
 
@@ -16,7 +15,7 @@ public class GlobalConfigurationLoadTask extends Task {
 
     private static final String TASK_NAME = "Configuration Load/Create";
 
-    public GlobalConfigurationLoadTask(IEngine engine) {
+    public GlobalConfigurationLoadTask(Engine engine) {
         super(TASK_NAME, engine);
     }
 

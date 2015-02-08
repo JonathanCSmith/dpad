@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import jonathansmith.dpad.api.common.engine.IEngine;
+import jonathansmith.dpad.common.engine.Engine;
 
 /**
  * Created by Jon on 22/07/2014.
@@ -15,9 +15,11 @@ public class Configuration {
 
     private static Configuration instance;
     private static boolean isConfigurationBuilt = false;
+
     private final File config;
     private final Map<ConfigurationProperty, ConfigurationValue> configurationProperties = new LinkedHashMap<ConfigurationProperty, ConfigurationValue>();
-    private       boolean                                        changeFlag              = true;
+
+    private boolean changeFlag = true;
 
     private Configuration(File configFile) {
         this.config = new File(configFile.getAbsolutePath() + "//DPADConfiguration.txt");
@@ -25,7 +27,7 @@ public class Configuration {
         this.configurationProperties.put(ConfigurationProperty.LAST_KNOWN_DATA_LOCATION, new FileConfigurationValue(new File(this.config.getParentFile().getAbsolutePath())));
     }
 
-    public static void build(File executionDomain, IEngine engine) {
+    public static void build(File executionDomain, Engine engine) {
         if (isConfigurationBuilt) {
             return;
         }
@@ -43,7 +45,7 @@ public class Configuration {
      * This function attempts to load the configuration from its provided location.
      * If it does not exist a default will be created!
      */
-    public void load(IEngine engine) {
+    public void load(Engine engine) {
         // Build the file structure if it is not present
         if (this.config.getParentFile() != null) {
             this.config.getParentFile().mkdirs();
@@ -144,7 +146,7 @@ public class Configuration {
         this.resetChangeFlag();
     }
 
-    public void save(IEngine engine) {
+    public void save(Engine engine) {
         if (!this.changeFlag) {
             return;
         }
@@ -167,7 +169,7 @@ public class Configuration {
         this.writeData(engine);
     }
 
-    private void writeData(IEngine engine) {
+    private void writeData(Engine engine) {
         try {
             if (this.config.canWrite()) {
                 FileOutputStream fos = new FileOutputStream(this.config);

@@ -156,7 +156,7 @@ public class UserAdministrationPanel extends DisplayPanel implements IEventListe
                 break;
 
             case LOGOUT:
-                this.engine.setAndWaitForProposedExecutor(new UserServerResponseExecutor(this.engine));
+                this.engine.setProposedExecutor(new UserServerResponseExecutor(this.engine));
                 this.engine.getSession().scheduleOutboundPacket(new UserLogoutPacket(), new GenericFutureListener[]{
                         new GenericFutureListener() {
                             @Override
@@ -254,7 +254,7 @@ public class UserAdministrationPanel extends DisplayPanel implements IEventListe
                     return;
                 }
 
-                this.engine.setAndWaitForProposedExecutor(new UserServerResponseExecutor(this.engine));
+                this.engine.setProposedExecutor(new UserServerResponseExecutor(this.engine));
 
                 this.engine.getSession().scheduleOutboundPacket(new UserLoginPacket(true, this.userName.getText(), new String(this.password.getPassword())), new GenericFutureListener[]{
                         new GenericFutureListener() {
@@ -278,7 +278,7 @@ public class UserAdministrationPanel extends DisplayPanel implements IEventListe
                     return;
                 }
 
-                this.engine.setAndWaitForProposedExecutor(new UserServerResponseExecutor(this.engine));
+                this.engine.setProposedExecutor(new UserServerResponseExecutor(this.engine));
 
                 this.engine.getSession().scheduleOutboundPacket(new UserLoginPacket(false, this.userName.getText(), pwd), new GenericFutureListener[]{
                         new GenericFutureListener() {
@@ -328,7 +328,7 @@ public class UserAdministrationPanel extends DisplayPanel implements IEventListe
                     return;
                 }
 
-                this.engine.setAndWaitForProposedExecutor(new UserServerResponseExecutor(this.engine));
+                this.engine.setProposedExecutor(new UserServerResponseExecutor(this.engine));
 
                 this.engine.getSession().scheduleOutboundPacket(new UserChangePasswordPacket(new String(this.oldPassword.getPassword()), new String(pwd2)), new GenericFutureListener[]{
                         new GenericFutureListener() {
